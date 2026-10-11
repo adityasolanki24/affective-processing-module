@@ -1,0 +1,14 @@
+{
+ "note": "Pilot (partition P) only: programme F's tuned values for B1 (λc 1, λs 2) and B2 (λc 0.5, λs 2, k_pad 2, k_t 0.25); untuned mid-range values for the new families. Used for debugging, timing and variance (sizing) only.",
+ "best_simple": "R2",
+ "systems": {
+  "B0": {"kind": "b0"},
+  "R0": {"kind": "regulated", "regulator": "static", "lam_c": 1.0, "lam_s": 2.0},
+  "R2": {"kind": "regulated", "regulator": "ema", "lam_c": 1.0, "lam_s": 2.0, "params": {"tau": 5.0, "k": 2.0, "c": 0.5}},
+  "R3": {"kind": "regulated", "regulator": "hysteresis", "lam_c": 1.0, "lam_s": 2.0, "params": {"tau_up": 1.0, "tau_down": 20.0, "k": 2.0, "c": 0.5}},
+  "R4": {"kind": "regulated", "regulator": "bayes", "lam_c": 1.0, "lam_s": 2.0, "params": {"tau_f": 120.0, "z": 1.0, "k": 0.5}},
+  "R6": {"kind": "b2v", "mode": "pad", "lam_c": 0.5, "lam_s": 2.0, "k": 2.0, "k_t": 0.25},
+  "R7": {"kind": "b2v", "mode": "appraisal", "lam_c": 0.5, "lam_s": 2.0, "k": 2.0, "k_t": 0.25},
+  "R8": {"kind": "b2v", "mode": "filter", "lam_c": 0.5, "lam_s": 2.0, "k": 2.0, "k_t": 0.25, "tau": 5.0, "c": 0.5}
+ }
+}
