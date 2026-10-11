@@ -1,0 +1,238 @@
+// AffectLink v1: the canonical, transport-independent contract between a robot (via its embodiment adapter)
+// and an Affective Processing Module (APM).
+//
+// This file is the normative schema. The Python reference implementation (src/apm/protocol/messages.py) mirrors
+// it field by field; tests/test_proto_sync.py checks that the two stay in sync.
+//
+// Rules (docs/affectlink.md):
+//  - Every message carries a Header: schema version, source, stream, epoch, sequence number, timestamp.
+//  - Physical quantities carry explicit units, uncertainty and a validity status. An unavailable measurement is
+//    MISSING (value absent), never zero.
+//  - Predictions (OutcomeHypothesis) and observations (OutcomeSignal) are different message types.
+//  - Field numbers are never reused. New fields are optional; consumers ignore unknown fields (minor versions).
+syntax = "proto3";
+
+package affectlink.v1;
+
+// ---------------------------------------------------------------- common
+
+message Header {
+  string schema_version = 1;   // "affectlink/1.<minor>"
+  string source = 2;           // emitting robot/adapter/component id
+  string stream = 3;           // logical stream within the source, e.g. "self_state"
+  uint32 epoch = 4;            // increments on every sender reset (Reset message); orders streams across restarts
+  uint64 seq = 5;              // per (source, stream, epoch), strictly increasing
+  double stamp_s = 6;          // seconds on the shared session clock (monotonic within an epoch)
+}
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  VALID = 1;                   // measured and usable
+  ESTIMATED = 2;               // derived by an estimator; usable with its uncertainty
+  MISSING = 3;                 // not available now (value absent)
+  STALE = 4;                   // last value too old (set by the receiver)
+  INVALID = 5;                 // sensor reports a fault (value absent)
+  UNSUPPORTED = 6;             // this embodiment does not provide the field at all
+}
+
+message Quantity {
+  optional double value = 1;   // absent unless status is VALID or ESTIMATED
+  string unit = 2;             // SI symbol or "fraction" (dimensionless 0..1)
+  optional double sigma = 3;   // one standard deviation, same unit
+  Status status = 4;
+}
+
+message Provenance {
+  string origin = 1;           // sensor, estimator or model id
+  string method = 2;           // "measured" | "estimated" | "predicted" | "declared" | "interpreted"
+  string model_version = 3;
+}
+
+message Vector3 {               // metres, robot body frame: x forward, y left, z up
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+// ---------------------------------------------------------------- capability
+
+message MarginCalibration {     // maps a raw embodiment quantity onto a margin fraction 0..1
+  string field = 1;            // canonical SelfState field, e.g. "stability_margin"
+  string raw_unit = 2;
+  double nominal = 3;          // raw value meaning "fully comfortable" (margin 1)
+  double critical = 4;         // raw value meaning "no margin left" (margin 0)
+  string meaning = 5;          // human-readable definition for this embodiment
+}
+
+message EmbodimentProfile {
+  Header header = 1;
+  string robot_id = 2;
+  string embodiment_class = 3; // e.g. "biped", "wheeled", "arm"
+  repeated string self_fields = 4;      // SelfState fields this robot provides
+  repeated string outcome_kinds = 5;    // OutcomeSignal kinds this robot can detect
+  repeated string goal_types = 6;
+  repeated MarginCalibration calibration = 7;
+}
+
+// ---------------------------------------------------------------- inputs
+
+message EntityObservation {
+  Header header = 1;
+  string track_id = 2;                  // temporary, sender-assigned
+  optional string identity = 3;         // persistent identity if known
+  double identity_confidence = 4;       // 0..1
+  string entity_type = 5;               // "person", "obstacle", "object", ...
+  optional Vector3 position = 6;
+  Quantity bearing = 7;                 // rad, body frame, positive left
+  Quantity distance = 8;                // m
+  Quantity closing_speed = 9;           // m/s, positive when approaching
+  double confidence = 10;               // detection confidence 0..1
+  Provenance provenance = 11;
+}
+
+message RelationObservation {
+  Header header = 1;
+  string subject = 2;
+  string relation = 3;
+  string object = 4;
+  double confidence = 5;
+  Provenance provenance = 6;
+}
+
+message SelfState {
+  Header header = 1;
+  Quantity energy_margin = 2;           // raw or "fraction"; calibrated via the profile
+  Quantity thermal_margin = 3;
+  Quantity stability_margin = 4;        // control/stability margin where applicable
+  Quantity actuation_stress = 5;        // 0..1 fraction of actuation capacity in use
+  Quantity contact_slip = 6;            // fraction of support contacts slipping/unloaded
+  Quantity sensor_health = 7;           // fraction of expected sensors healthy
+  string mode = 8;                      // operational mode label from the robot
+  Provenance provenance = 9;
+}
+
+message GoalState {
+  Header header = 1;
+  string goal_id = 2;
+  string goal_type = 3;
+  double priority = 4;                  // 0..1
+  optional string target = 5;
+  Quantity progress = 6;                // fraction
+  bool active = 7;
+}
+
+message OutcomeHypothesis {             // a PREDICTION; never learned as an outcome
+  Header header = 1;
+  string hypothesis_id = 2;
+  string kind = 3;                      // outcome-catalog kind, e.g. "collision"
+  optional string target = 4;           // entity involved
+  string affected = 5;                  // goal id or self variable
+  double probability = 6;
+  double horizon_s = 7;
+  double expected_magnitude = 8;        // 0..1 if it happens
+  double confidence = 9;
+  optional string action_context = 10;
+  Provenance provenance = 11;
+}
+
+message OutcomeSignal {                 // an OBSERVATION of what happened
+  Header header = 1;
+  string outcome_id = 2;
+  string kind = 3;
+  double magnitude = 4;                 // 0..1 normalized severity (adverse) or benefit (benign)
+  optional string target = 5;
+  string affected = 6;
+  double evidence_quality = 7;          // 0..1
+  optional string action_context = 8;
+  bool confirmed = 9;                   // false: estimated from indirect evidence
+  Provenance provenance = 10;
+}
+
+message SemanticCue {
+  Header header = 1;
+  string speaker = 2;
+  optional string target = 3;
+  string meaning = 4;
+  double confidence = 5;
+  Provenance provenance = 6;
+}
+
+message Reset {                         // sender restarted: receiver clears that source's ordering state
+  Header header = 1;
+  string reason = 2;
+}
+
+// ---------------------------------------------------------------- outputs
+
+message AffectState {
+  Header header = 1;
+  double valence = 2;                   // PAD readout, -1..1 (experimental representation)
+  double arousal = 3;
+  double dominance = 4;
+  repeated double baseline = 5;         // [V, A, D]
+  double uncertainty = 6;
+  string model_version = 7;
+}
+
+message AppraisalFrame {
+  Header header = 1;
+  string reference_id = 2;              // hypothesis_id or outcome_id
+  string reference_type = 3;            // "hypothesis" | "outcome" | "memory" (APM-internal prediction)
+  string kind = 4;
+  optional string target = 5;
+  double relevance = 6;
+  double desirability = 7;              // -1..1
+  double likelihood = 8;
+  double expectedness = 9;
+  double controllability = 10;
+  double uncertainty = 11;
+}
+
+message ActionTendency {
+  Header header = 1;
+  string target = 2;                    // entity id or "self"
+  double approach = 3;
+  double avoid = 4;
+  double orient = 5;
+  double explore = 6;
+  double disengage = 7;
+  double seek_assistance = 8;
+}
+
+message AttentionBias {
+  Header header = 1;
+  string target = 2;
+  double priority = 3;
+  double expires_s = 4;
+}
+
+message ExpressionIntent {
+  Header header = 1;
+  double activation = 2;                // 0..1
+  double posture = 3;                   // -1 withdrawn .. 1 upright/open
+  double movement_energy = 4;           // 0..1
+  double openness = 5;                  // -1 withdrawal .. 1 openness
+  double urgency = 6;                   // 0..1
+}
+
+message MemoryExpectation {
+  Header header = 1;
+  string target = 2;
+  string context = 3;
+  double p_adverse = 4;
+  double p_benign = 5;
+  double familiarity = 6;               // 0..1
+  double predictability = 7;            // 0..1
+  double confidence = 8;                // 0..1
+}
+
+message Diagnostics {
+  Header header = 1;
+  map<string, double> input_age_s = 2;  // per stream
+  map<string, double> saturation = 3;   // fraction of recent time near the PAD bounds
+  repeated string missing_capabilities = 4;
+  string model_version = 5;
+  uint64 memory_updates = 6;
+  string health = 7;                    // "ok" | "degraded" | "stale_inputs" | "fault"
+  uint64 rejected_messages = 8;
+}
