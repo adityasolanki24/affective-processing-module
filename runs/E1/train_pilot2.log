@@ -96,3 +96,6 @@ Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pyto
 Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
   total += float(loss) * len(idx)
 {"emb": "wheeled", "target": "stability_loss", "arm": "RL", "seed": 0, "params": 22081, "train_s": 756.0337574481964, "train_n": 292364, "train_pos": 3229, "val_brier": 0.0055229514837265015, "epochs": 11, "P_infer_us_per_sample": 86.7869704234262}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)

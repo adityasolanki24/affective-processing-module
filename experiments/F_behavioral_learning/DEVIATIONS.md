@@ -22,3 +22,12 @@ None of these change a hypothesis, metric, criterion or seed.
 | item | change | reason |
 |---|---|---|
 | `apm/adapters/wheeled_ctrl.py` | a TTC hypothesis is emitted only when `ttc_p > 0` **and** closing speed `> 0` | E7 pilot (fault "conflicting predictions", partition P) showed a `ZeroDivisionError` in the v0.2 adapter when an estimate arrives without closing motion; the exception reached the harness and B2 fell back to GO for the rest of the episode. Under unfaulted inputs `ttc_p > 0` implies closing > 0, so E0–E2 behaviour is unchanged. Regression test `test_d7_…`. |
+
+## 2026-10-11 — E2 confirmatory run started in the cloud container and aborted (no data)
+
+`scripts/e2_run.py --partition X --n 240` was started at 10:27 UTC (commit `88c23b0`, lock passed) in the 4-vCPU
+cloud container and terminated at the user's request to stop that session, before it wrote any output
+(`runs/E2/X/` never existed; the runner writes only at the end). No partition-X result was produced or seen. The run
+is to be executed once, in full, by the continuing session (see `HANDOFF.md`). E1 wheeled training was also stopped:
+collision models complete except those listed missing in `runs/E1/preds/`; stability_loss models partial. Training
+resumes with `--skip-existing`; finished models are unaffected.
