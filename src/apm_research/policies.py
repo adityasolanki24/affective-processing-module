@@ -180,3 +180,22 @@ class B2(B1):
             self.apm.tendency_filter.state.clear()
         self.last_utility = u
         return int(np.argmax(u))
+
+
+class B1Eps(B1):
+    """B1 with ε randomised safe action variation near people (E3 S6 censoring control): when a person is within
+    `radius` m, with probability ε the action is drawn uniformly instead of by the rule."""
+    name = "B1-eps"
+
+    def __init__(self, predictor: ActionPredictor, lam_c: float, lam_s: float, eps: float = 0.1,
+                 radius: float = 1.5, seed: int | np.random.SeedSequence = 0):
+        super().__init__(predictor, lam_c, lam_s)
+        self.eps, self.radius, self.rng = eps, radius, np.random.default_rng(seed)
+
+    def decide(self, t: float) -> int:
+        a = super().decide(t)
+        obs = self.state.last_obs
+        near = obs is not None and any(e.kind == "person" and e.distance < self.radius for e in obs.entities)
+        if near and self.rng.random() < self.eps:
+            return int(self.rng.integers(N_ACTIONS))
+        return a
