@@ -36,6 +36,7 @@ BUCKET = os.environ.get("APM_GCP_BUCKET", "").strip()
 SERVICE_ACCOUNT = os.environ.get("APM_GCP_SERVICE_ACCOUNT", "").strip()
 ZONE = os.environ.get("APM_GCP_ZONE", "us-central1-a").strip()
 REGION = ZONE.rsplit("-", 1)[0]
+ZONES = list(dict.fromkeys([ZONE] + [f"{REGION}-{z}" for z in "abcf"]))
 ROUTER, NAT = "apm-f-router", "apm-f-nat"
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
@@ -97,14 +98,22 @@ def cmd_launch(a) -> None:
         subprocess.run(["git", "-C", str(REPO), "bundle", "create", str(bundle), branch], check=True)
         run([g, "storage", "cp", str(bundle), f"{prefix(run_id)}/code.bundle"])
         startup = lf_copy(HERE / "vm_startup.sh", Path(tmp))
-        run([g, "compute", "instances", "create", vm_name(run_id), f"--project={PROJECT}", f"--zone={ZONE}",
+        base = [g, "compute", "instances", "create", vm_name(run_id), f"--project={PROJECT}",
              f"--machine-type={a.machine}", f"--image-family={IMAGE_FAMILY}", f"--image-project={IMAGE_PROJECT}",
              "--boot-disk-size=50GB", "--no-address", f"--service-account={SERVICE_ACCOUNT}", "--scopes=cloud-platform",
              f"--max-run-duration={a.max_minutes}m", "--instance-termination-action=DELETE",
              "--labels=apm-f=1", f"--metadata-from-file=startup-script={startup}",
              "--metadata=" + ",".join([f"apm-bucket={BUCKET}", f"apm-run-id={run_id}", f"apm-code-sha={sha}",
-                                       f"apm-branch={branch}", f"apm-job={a.job}"])])
-    print(f"started run {run_id}; follow with: python {Path(__file__).name} status {run_id}")
+                                       f"apm-branch={branch}", f"apm-job={a.job}"])]
+        for zone in ZONES:  # capacity differs by zone (stockouts)
+            print(f"  trying {zone}")
+            r = subprocess.run([*base, f"--zone={zone}"], text=True, capture_output=True)
+            if r.returncode == 0:
+                break
+            print("   ", (r.stderr or "").strip().splitlines()[-1] if r.stderr else "failed")
+        else:
+            sys.exit("VM creation failed in every zone; nothing is running")
+    print(f"started run {run_id} in {zone}; follow with: python {Path(__file__).name} status {run_id}")
 
 
 def cmd_network_up(a) -> None:
@@ -154,8 +163,13 @@ def cmd_fetch(a) -> None:
 
 def cmd_kill(a) -> None:
     need_config()
-    run([gcloud(), "compute", "instances", "delete", vm_name(a.run), f"--project={PROJECT}", f"--zone={ZONE}",
-         "--quiet"], check=False)
+    g = gcloud()
+    zone = run([g, "compute", "instances", "list", f"--project={PROJECT}", f"--filter=name={vm_name(a.run)}",
+                "--format=value(zone.basename())"], capture=True)
+    if zone:
+        run([g, "compute", "instances", "delete", vm_name(a.run), f"--project={PROJECT}", f"--zone={zone}", "--quiet"])
+    else:
+        print("no such VM")
 
 
 def cmd_audit(a) -> None:
