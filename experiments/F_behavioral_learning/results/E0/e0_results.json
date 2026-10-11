@@ -1,0 +1,105 @@
+{
+ "environment": {
+  "python": "3.13.16",
+  "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "cpus": 4,
+  "commit": "d0b0f297b0e99dc4b81376ecad544b477e06f119",
+  "dirty": true,
+  "start_utc": "2026-10-11T07:14:22Z",
+  "numpy": "2.5.3",
+  "torch": "2.14.1+cu130",
+  "mujoco": "3.3.0",
+  "onnxruntime": "1.21.0"
+ },
+ "sources": {
+  "src/apm/__init__.py": "9a596d39ebe4ec3fc6329ad5d92f1a865b8b705bc83a0a2836b2f6b9103e42ab",
+  "src/apm/adapters/__init__.py": "c9bf9d2da4b41cf64c0412cc2ff9489e0732349f13aecbf2a589a3d7728b01a9",
+  "src/apm/adapters/base.py": "2365ab309d4968dd9c309286b294214a55f64eb2c4084e97a3cd501fcf481d15",
+  "src/apm/adapters/nerva.py": "dbbc5616e24c2ab7d2e38a9d9a6573a0858a058ffe845b43b908cc4ae0d4b45d",
+  "src/apm/adapters/wheeled.py": "fc756c84214a7b8ed95dc07422b1fc03135239ead18371a829242b3084a73cc7",
+  "src/apm/adapters/wheeled_ctrl.py": "76b53ea3f2da1a744f1e378fcb60d5afdeab25339996fb1cd4e2d4f17f390bb1",
+  "src/apm/core/__init__.py": "20cfb62d98a58db7fa374a079a989763418edefc2e639507a55b5e32c75e3800",
+  "src/apm/core/affect.py": "943f46fc966cacd9710381ebec84b7951de0c6eeb54cd98ab5ee12be9893159a",
+  "src/apm/core/appraisal.py": "5b11ad6b8f74e14e8f23231e135fe51157ee853e051e1fda2285cf15e4c17102",
+  "src/apm/core/context.py": "e3c2f01cbb5c918bfab595797e24999c4cf4a30efbdf9b26ec00870ae7360741",
+  "src/apm/core/outcomes.py": "2faa4d20975321ac1bff7699bca533d82f1ddea420bb5ee64193bd2d0f98d8a9",
+  "src/apm/core/runtime.py": "e0ed5095d98c7cd3311d4818eb9e44899e5fa3b98928b9defcc5335f29c61f00",
+  "src/apm/core/tendencies.py": "c3be9a43b21766ca1dbb10d1e3beb074657eec212fd86718a9292d51c816f60c",
+  "src/apm/learning/__init__.py": "a4e3af8828979aed3dfa99a1e1f419cbba6b2067c33d9593eb9f10d1b1a2303a",
+  "src/apm/learning/baselines.py": "8879436188b04780d3e56ca614677941857150d5748610b1e300d67ed162783c",
+  "src/apm/learning/dataset.py": "e9c721bd082b5426cbbfc0178433bbd8796ad56de64a03928b7b7753c92f1ce0",
+  "src/apm/learning/evaluation.py": "03278271024815ee69e616e9b64ec92df4e4f97ebc17c083dbad16cd8e89d2ab",
+  "src/apm/learning/features.py": "b141492a7e4344fb78cdd9a4ff14826bf6a7357b3e04a9d3905db16ef8e49af7",
+  "src/apm/learning/predictor.py": "e1b018bdd373e0c9d0c9fffa4ae0c8edca6ca22b98c1072303755e58b604fdd6",
+  "src/apm/learning/replay.py": "eef52f4d22111de28c4890bd107d7b74ba54e5512af6f861a262a3d138e62b86",
+  "src/apm/memory/__init__.py": "62ac475ddabf697b0f8fc180649ace5ee3b732b6ebea5ddb2c7907b731ecc2a0",
+  "src/apm/memory/entities.py": "173d414ebb546054d9acd8369f9b573793676e8284fc8a8764b31fc0ba8de0d9",
+  "src/apm/memory/episodes.py": "87580bab7899d9c01ab6be9ff6647f8d869a1501d3c2db86ac73b1979f3e2aca",
+  "src/apm/protocol/__init__.py": "3cfca2a7fa01ffbc0cebebb22a2314e3265bf69481494ca9b5eb224f94e26c74",
+  "src/apm/protocol/codec.py": "14e88aa21be77a3ec0ef97e89ab6fbc3a9308b5f29ec9af4a1114f4cb1b1f58d",
+  "src/apm/protocol/messages.py": "e865d265cd144d3d8cc261b51f4dc5ef90fd05fad31e4b27342cdb611225ada7",
+  "src/apm/protocol/validation.py": "0fd57e70e7e0001ff94539bf9acb2016025ebe8c30b4687db21d6a5d5c4c57d5",
+  "src/apm_research/__init__.py": "7d6698a2157cb823a4aa032610b50d904b045f077c4a30d4c0d2fd8b8cc05845",
+  "src/apm_research/dataset.py": "71c053311345761b32c288988abbcf4ef2a691361cfa3df93a897890440aa95b",
+  "src/apm_research/features.py": "9a2f03e6e381d3467d1f068f97e9920b7780aa6ae28bacba09842d7a29886d2e",
+  "src/apm_research/harness.py": "6af5bcc7cf6f5ba6e8ecb9c2bf16b01612136283df3ac4da4c905fe64f582fbf",
+  "src/apm_research/memory.py": "138c5742b0619051867c1ebb3c152830491a73f0515842fe5be88035d2a6b95e",
+  "src/apm_research/policies.py": "93a7d43366988420b3734dacbaec45d03ca0a36ddbd7306e68ef869d2e96d672",
+  "src/apm_research/predictor.py": "f61c64655efa8e310117e79a9678443490c261f88190640c8c9debfd1ffcae48",
+  "src/apm_research/provenance.py": "91441e429eb41f468442a276b276c49553b905dfd01521647aefdb5eed7fa564",
+  "src/apm_testbeds/__init__.py": "1d801ac1d4b636c72388a83529448a1a7272aea061461c5afe30232191fd2d72",
+  "src/apm_testbeds/wheeled.py": "986b8320e7806be6b07a4718fd31a510ad64cf6ba7391b826ee89976afaefc36",
+  "src/apm_testbeds/wheeled_ctrl.py": "2c25364a8caad451c9fca4f655533c4cbd54c5884e96b493a60eea02443c7c61",
+  "experiments/F_behavioral_learning/scripts/e0_integrity.py": "83efe21d0874db8fdc68d947530741b8f5cfc759218793ae878159a4326bec8e",
+  "experiments/F_behavioral_learning/seeds.py": "422461665a6ae75b9e840fba8ef5acd1c1583162ea3d74877b9f362cd5071c71"
+ },
+ "gate_tests": {
+  "returncode": 0,
+  "summary": "19 passed in 13.95s"
+ },
+ "benchmarks": {
+  "world_steps_per_s": 21172.80326565858,
+  "explore_lifetime5_s": 0.35847798555000737,
+  "predictor_train_samples_per_s": 104322.10543275646,
+  "predictor_parameters": 7299,
+  "pilot_decisions": 23200,
+  "B0_lifetime10_s": 0.6541246480001064,
+  "B1_lifetime10_s": 0.893865076000111,
+  "B2_lifetime10_s": 8.127875050000057,
+  "peak_rss_mb": 711.375
+ },
+ "ttc_estimator": {
+  "pairs": 38084,
+  "steps": 48000,
+  "alarm_step_fraction": 0.3612916666666667,
+  "precision_at_0.5_same_target_1s": 0.08167870036101083,
+  "mean_p": 0.5665496222000562,
+  "event_rate": 0.049075727339565174,
+  "brier": 0.4074997410850132
+ },
+ "fixed_action_behaviour": {
+  "always_GO": {
+   "completion": 0.4699046177635574,
+   "collision_rate": 2.787500000000059,
+   "idle_fraction": 0.005104166666666667,
+   "J": -4.625,
+   "careless_share_of_person_collisions": 0.9730941704035875
+  },
+  "always_SLOW": {
+   "completion": 0.2709488060958649,
+   "collision_rate": 0.08750000000000187,
+   "idle_fraction": 0.007187500000000001,
+   "J": 3.325,
+   "careless_share_of_person_collisions": 0.14285714285714285
+  },
+  "always_YIELD": {
+   "completion": 0.007435897435897436,
+   "collision_rate": 0.08750000000000187,
+   "idle_fraction": 0.31135416666666665,
+   "J": -0.075,
+   "careless_share_of_person_collisions": 0.14285714285714285
+  }
+ },
+ "wall_s": 75.69314503669739
+}
