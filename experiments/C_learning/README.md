@@ -46,9 +46,22 @@ message stream, including the NERVA adapter's tilt-extrapolation hypotheses. The
 samples of the canonical features. M5's advantage therefore may come from **higher-rate information routed
 through the affect machinery, rather than from the PAD representation itself**.
 
-C3 passes exactly as preregistered. It does **not** show that PAD as a representation adds predictive value. A
-post-hoc ablation (`ablation.json`, if present; labelled exploratory) separates PAD from the appraisal vector. A
-proper test would give the plain GRU the same 50 Hz summary information.
+C3 passes exactly as preregistered. It does **not** show that PAD as a representation adds predictive value.
+
+**Exploratory ablation** (post-hoc, `ablation.json`; same data, split, GRU and seed; M5 reproduced exactly):
+
+| added inputs | Brier change vs M4 | 95% CI |
+|---|---|---|
+| PAD only (V, A, D) | +0.00001 | [−0.00022, +0.00024], **no measurable effect** |
+| tonic appraisal vector u only | −0.00127 | [−0.00188, −0.00077] |
+| PAD + u (M5) | −0.00140 | [−0.00199, −0.00089] |
+
+**Finding [measured, exploratory]:** PAD adds no measurable predictive benefit in this test.
+- The whole gain comes from the appraisal vector u.
+- u carries the adapter's 50 Hz tilt-extrapolation risk (as `threat`) and the current body strain.
+
+So the appraisal layer is a useful channel for a robot-side estimate, and PAD as a representation is not supported
+here. A fair follow-up would give the plain GRU the same 50 Hz summary directly.
 
 ### Secondary target: fall within 1 s (reported only)
 
