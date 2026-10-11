@@ -52,3 +52,10 @@ the (up to) three p-values.
 Secondary: every cell vs A0 and vs its PPO cell; learning-curve area; interactions and wall time; seed variance;
 action distributions and entropy (GO/YIELD collapse); A1 vs A0; F's E4 B3/B4 action use (from F's committed
 results) for the collapse diagnosis.
+
+## Amendment (2026-10-12, before any G4-X data): A5
+
+G3's Q2 holds (fastslow beat ema), so A5 is due. A4's network is already an explicit fast/slow regulator (F's B3 net:
+fast GRU 32 + slow leaky latent 16 with learned rates, residual on A0's utility), so A5 is covered by A4 and no
+separate network is trained. Note for interpretation: G3's fastslow predictor did not beat the stateless predictor
+(−2.2%, CI spans 0), so G3 gives no support for a slow state beyond "not worse than ema".
