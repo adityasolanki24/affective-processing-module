@@ -31,3 +31,19 @@ cloud container and terminated at the user's request to stop that session, befor
 is to be executed once, in full, by the continuing session (see `HANDOFF.md`). E1 wheeled training was also stopped:
 collision models complete except those listed missing in `runs/E1/preds/`; stability_loss models partial. Training
 resumes with `--skip-existing`; finished models are unaffected.
+
+## 2026-10-11 — machine and compute-limit change for the remaining programme (before any partition-X data)
+
+Recorded before any confirmatory (partition X) data of any experiment exist; the only partition-X run so far was
+aborted without output (entry above).
+
+| item | preregistered (§4.5) | now | reason |
+|---|---|---|---|
+| machine | the 4-vCPU cloud container | pilots and debugging: the user's Windows 11 PC (12 logical CPUs, Python 3.12.4, NumPy 2.5.4, torch 2.14.1+cpu). Confirmatory runs: one temporary Google Cloud CPU VM (Linux x86-64, Python 3.12, same NumPy/torch versions where installable), hard maximum run duration with automatic deletion | the cloud container was stopped at the user's request (`HANDOFF.md`) |
+| compute limit | 60 CPU-hours in the container; no paid cloud without an approved ceiling | the user approved paid cloud with a hard ceiling of **US$10 total** for the remaining programme-F compute (`HANDOFF.md`, 2026-10-11); a large VM for ≤ 1 h can exceed 60 vCPU-hours, so the dollar ceiling replaces the CPU-hour figure | user decision |
+| worker count | E2 runner fixed at 4 worker processes | `scripts/e2_run.py --workers N` (default 4) | parallelism only: `Pool.map` returns results in job order and every job is seeded from `seeds.py`, so outputs do not depend on N. The E2 addendum's "code = the commit that contains this file" therefore becomes "that commit plus this change" |
+
+Floating-point results may differ in the last bits between machines/BLAS builds; no criterion depends on that, and
+all systems of one experiment run on the same machine. The frozen E2 predictor was restored from the committed copy
+`runs/E2/predictor.json` (force-added in `8601f6e`), SHA-256 verified equal to the addendum's
+`0735d854…be314`; it was not retrained.

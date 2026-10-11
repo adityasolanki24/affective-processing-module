@@ -49,6 +49,7 @@ def main() -> None:
     ap.add_argument("--systems", default="B0,B1,B2,B2_noPAD,B2_noTonic,B2_noMemoryFrames,B2_noPersistence,"
                                         "B2_shuffled,Oracle")
     ap.add_argument("--out", type=Path, default=Path("runs/E2"))
+    ap.add_argument("--workers", type=int, default=4)
     args = ap.parse_args()
     provenance = (confirmatory_lock(HERE / "prereg" / f"{args.experiment}_ADDENDUM.md")
                   if args.partition in ("X", "S") else environment())
@@ -62,13 +63,13 @@ def main() -> None:
     jobs = [{"spec": specs[s], "experiment": args.experiment, "partition": args.partition, "index": i,
              "n_episodes": EPISODES} for s in plain for i in range(args.n)]
     jobs.sort(key=lambda j: j["spec"]["system"] != "B2")
-    results = run_jobs(jobs, args.predictor)
+    results = run_jobs(jobs, args.predictor, args.workers)
     if "B2_shuffled" in wanted:
         traces = {r["index"]: r["readouts"] for r in results if r["label"] == "B2"}
         shuffled = [{"spec": {**specs["B2"], "label": "B2_shuffled", "trace": traces[(i + 1) % args.n]},
                      "experiment": args.experiment, "partition": args.partition, "index": i, "n_episodes": EPISODES}
                     for i in range(args.n)]
-        results += run_jobs(shuffled, args.predictor)
+        results += run_jobs(shuffled, args.predictor, args.workers)
     out_dir = args.out / args.partition
     out_dir.mkdir(parents=True, exist_ok=True)
     with open(out_dir / "lifetimes.jsonl", "w", encoding="utf-8") as fh:
