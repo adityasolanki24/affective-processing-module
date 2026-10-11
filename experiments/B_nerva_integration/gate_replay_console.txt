@@ -1,0 +1,5 @@
+trials 160; outcomes {}; min stability margin 0.651; max predicted stability-loss p 0.983; trials with a p >= 0.5 prediction 14, control steps 50 of 150000
+steady     n= 70 peak |V| 0.249 peak A +0.328 min margin 0.744
+transition n= 10 peak |V| 0.128 peak A +0.169 min margin 0.744
+push       n= 80 peak |V| 0.271 peak A +0.350 min margin 0.651
+diagnostics: health stale_inputs, rejected 0, memory updates 423, missing ('actuation_stress', 'stability_margin'), saturation {'valence': 0.0, 'arousal': 0.0, 'dominance': 0.0}
