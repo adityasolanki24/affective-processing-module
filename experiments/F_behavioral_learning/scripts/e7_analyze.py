@@ -1,5 +1,6 @@
-"""E7 analysis: per fault, (1) exceptions that reached the harness and its GO fallbacks, (4) collision rate of B1
-and B2 relative to B0 on the same faulted lifetimes (paired cluster bootstrap; criterion: CI upper ≤ +5%).
+"""E7 analysis: per fault, (1) exceptions that reached the harness (injected model failures counted separately) and
+GO fallbacks, (4) collision rate of B1 and B2 relative to B0 on the same faulted lifetimes (paired cluster bootstrap;
+criterion: CI upper <= +5%).
 
     python scripts/e7_analyze.py --partition P
 """
@@ -36,6 +37,7 @@ def main() -> None:
         for s, lives in systems.items():
             tot = {k: sum(r["totals"][k] for r in lives.values()) for k in ("collisions", "minutes")}
             row[s] = {"lifetimes": len(lives), "exceptions": int(sum(r["exceptions"] for r in lives.values())),
+                      "injected": int(sum(r.get("injected", 0) for r in lives.values())),
                       "fallbacks": int(sum(r["fallbacks"] for r in lives.values())),
                       "collisions_per_min": tot["collisions"] / max(1e-9, tot["minutes"])}
         for s in ("B1", "B2"):
@@ -49,6 +51,11 @@ def main() -> None:
                 row[f"{s}_vs_B0"] = c
                 row[f"criterion4_{s}"] = bool(c["collision_rate_relative"]["ci95"][1] <= MARGIN)
         res["faults"][fault] = row
+    res["criterion1_no_exceptions"] = bool(all(row[s]["exceptions"] == 0 for row in res["faults"].values()
+                                               for s in ("B1", "B2") if s in row))
+    res["criterion2_model_failure_fallbacks"] = {s: {"injected": res["faults"]["model_failure"][s]["injected"],
+                                                     "fallbacks": res["faults"]["model_failure"][s]["fallbacks"]}
+                                                 for s in ("B1", "B2") if s in res["faults"].get("model_failure", {})}
     res["criterion4_all"] = bool(all(v for f in res["faults"].values() for k, v in f.items()
                                      if k.startswith("criterion4_")))
     out = args.out or HERE / "results" / "E7" / f"e7_{args.partition}.json"

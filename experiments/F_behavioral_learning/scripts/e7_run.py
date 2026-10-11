@@ -45,7 +45,8 @@ class FaultyPolicy:
 
     def __init__(self, policy, fault: str, rng: np.random.Generator, tmp: Path):
         self.policy, self.fault, self.rng, self.tmp = policy, fault, rng, tmp
-        self.exceptions = 0
+        self.exceptions = 0  # raised by the policy's own code and passed to the harness (criterion 1)
+        self.injected = 0  # deliberately injected model failures (the `model_failure` fault itself; criterion 2)
         self.prev = None
         self.pending_action: int | None = None
         self.outage_until = -1.0
@@ -143,7 +144,7 @@ class FaultyPolicy:
 
     def decide(self, t: float) -> int:
         if self.fault == "model_failure" and hasattr(self.policy, "predictor") and self.rng.random() < 0.1:
-            self.exceptions += 1
+            self.injected += 1
             raise RuntimeError("injected model failure")
         a = self._guard(self.policy.decide, t)
         if self.fault == "delayed_inference":  # the decision computed now takes effect one period (0.5 s) later
@@ -179,7 +180,7 @@ def run_job(job: dict) -> dict:
     for r in out["episodes"]:
         r.pop("collision_log", None)
     return {"fault": job["fault"], "system": job["spec"]["label"], "index": job["index"],
-            "exceptions": policy.exceptions, "fallbacks": out["fallbacks"],
+            "exceptions": policy.exceptions, "injected": policy.injected, "fallbacks": out["fallbacks"],
             "totals": {k: out[k] for k in ("collisions", "minutes", "goals_completed", "goals_issued", "idle",
                                            "periods", "severe", "interventions")}}
 

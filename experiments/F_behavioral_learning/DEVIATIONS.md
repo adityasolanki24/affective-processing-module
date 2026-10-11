@@ -47,3 +47,17 @@ Floating-point results may differ in the last bits between machines/BLAS builds;
 all systems of one experiment run on the same machine. The frozen E2 predictor was restored from the committed copy
 `runs/E2/predictor.json` (force-added in `8601f6e`), SHA-256 verified equal to the addendum's
 `0735d854…be314`; it was not retrained.
+
+## 2026-10-11 — pilots on a cloud VM; code added or changed before the E3/E4/E7 addenda (no partition-X data)
+
+- Local pilots on the user's laptop were stopped after ≈ 15 min (each process got ≈ 20% of a core) and discarded
+  unused. All pilots (E3, E3 retention, E4 learning curves and pilot evaluation, E7; partition P / E4-T/V only)
+  ran on one temporary VM (n2d-highcpu-64, 21 min, self-deleted; `cloud/pilot.sh`).
+- **E4:** `scripts/e4_eval.py` and `scripts/e4_analyze.py` (no test runner or analysis existed) and
+  `stats.paired_lifetimes_two_level` (the two-level bootstrap §2 requires; regression-tested to equal the
+  one-level bootstrap with one seed); `e4_train.py --collect-workers` (parallel rollout collection, verified
+  output-identical). Details fixed in `prereg/E4_ADDENDUM.md`.
+- **E7:** the runner counted deliberately injected `model_failure` exceptions together with genuine policy
+  exceptions; they are now counted separately (`injected`) and `e7_analyze.py` reports criterion (1) (genuine
+  exceptions = 0) and criterion (2) evidence (fallbacks under `model_failure`). Instrumentation only; behaviour is
+  unchanged. The pilot showed that all counted exceptions were injected ones (`prereg/E7_ADDENDUM.md`).
