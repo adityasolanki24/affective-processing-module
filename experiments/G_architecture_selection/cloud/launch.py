@@ -106,15 +106,21 @@ def cmd_launch(a) -> None:
              "--metadata=" + ",".join([f"apm-bucket={BUCKET}", f"apm-run-id={run_id}", f"apm-code-sha={sha}",
                                        f"apm-branch={branch}", f"apm-job={a.job}",
                                        f"apm-input-run={a.input_run}"])]
-        for zone in ZONES:  # capacity differs by zone (stockouts)
-            print(f"  trying {zone}")
-            r = subprocess.run([*base, f"--zone={zone}"], text=True, capture_output=True)
-            if r.returncode == 0:
+        started = False
+        for machine in a.machine.split(","):  # fallback machine types, then zones (stockouts)
+            spec = [x if not x.startswith("--machine-type=") else f"--machine-type={machine}" for x in base]
+            for zone in ZONES:
+                print(f"  trying {machine} in {zone}")
+                r = subprocess.run([*spec, f"--zone={zone}"], text=True, capture_output=True)
+                if r.returncode == 0:
+                    started = True
+                    break
+                print("   ", (r.stderr or "").strip().splitlines()[-1] if r.stderr else "failed")
+            if started:
                 break
-            print("   ", (r.stderr or "").strip().splitlines()[-1] if r.stderr else "failed")
-        else:
-            sys.exit("VM creation failed in every zone; nothing is running")
-    print(f"started run {run_id} in {zone}; follow with: python {Path(__file__).name} status {run_id}")
+        if not started:
+            sys.exit("VM creation failed for every machine type and zone; nothing is running")
+    print(f"started run {run_id} ({machine}) in {zone}; follow with: python {Path(__file__).name} status {run_id}")
 
 
 def cmd_network_up(a) -> None:
