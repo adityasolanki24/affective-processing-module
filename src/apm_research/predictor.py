@@ -110,3 +110,25 @@ class ActionPredictor:
         m.mean, m.scale = np.asarray(d["mean"], np.float32), np.asarray(d["scale"], np.float32)
         m.weights = [(np.asarray(w, np.float32), np.asarray(b, np.float32)) for w, b in d["weights"]]
         return m
+
+
+class EnsemblePredictor:
+    """Mean of several seeds' predictions (the B1/B2 predictor; MASTER_PREREGISTRATION.md §4.2 trains 5 seeds)."""
+
+    def __init__(self, members: list[ActionPredictor]):
+        self.members = members
+
+    def predict(self, X: np.ndarray, A: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        outs = [m.predict(X, A) for m in self.members]
+        return tuple(np.mean([o[i] for o in outs], axis=0) for i in range(3))
+
+    def predict_actions(self, x: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        X = np.repeat(np.asarray(x, dtype=np.float32)[None], N_ACTIONS, 0)
+        return self.predict(X, np.arange(N_ACTIONS))
+
+    def to_dict(self) -> dict:
+        return {"members": [m.to_dict() for m in self.members]}
+
+    @classmethod
+    def from_dict(cls, d: dict) -> EnsemblePredictor:
+        return cls([ActionPredictor.from_dict(m) for m in d["members"]])

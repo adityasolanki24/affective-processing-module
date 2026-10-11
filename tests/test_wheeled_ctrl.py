@@ -270,3 +270,21 @@ def test_partitions_are_disjoint_and_never_reproduce_old_seeds():
     old = {seedmod.fingerprint(np.random.SeedSequence(s)) for s in seedmod.V01_WHEELED_INT_SEEDS}
     assert not old & set(prints)
     assert child(seedmod.world_seed("E2", "X", 0), 1).spawn_key == (2, 4, 0, 1)
+
+
+# ---------------------------------------------------------------- statistics helpers
+def test_cluster_bootstrap_is_cluster_level_and_detects_a_real_difference():
+    from apm_research.stats import holm, relative_loss_difference
+    rng = np.random.default_rng(0)
+    groups = np.repeat(np.arange(40), 50)
+    base = rng.random((3, 2000))
+    same = relative_loss_difference(base, base, groups, n_boot=500)
+    assert same["relative_difference"] == pytest.approx(0.0) and same["ci95"][0] <= 0 <= same["ci95"][1]
+    better = relative_loss_difference(base * 0.8, base, groups, n_boot=500)
+    assert better["relative_difference"] == pytest.approx(-0.2) and better["ci95"][1] < 0
+    # duplicating every sample inside its cluster must not shrink the interval (no step-level pseudo-replication)
+    dup = relative_loss_difference(np.repeat(base * 0.95, 2, 1), np.repeat(base, 2, 1), np.repeat(groups, 2),
+                                   n_boot=500)
+    one = relative_loss_difference(base * 0.95, base, groups, n_boot=500)
+    assert dup["se"] == pytest.approx(one["se"], rel=0.3)
+    assert holm({"a": 0.01, "b": 0.04, "c": 0.03}) == {"a": 0.03, "c": 0.06, "b": 0.06}
