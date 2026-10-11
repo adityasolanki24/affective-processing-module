@@ -76,7 +76,24 @@ N = 100 lifetimes × 5 episodes × 15 conditions × B0/B1/B2 (`results/E7/e7_X.j
   (B1 −30.7% [−36.8, −24.2]; B2 −21.9% [−30.1, −13.1]) and delayed inference (B1 −84.7%). Caveat: B0 collides ≈ 20×
   more often than B1/B2 in this testbed, so (4) is a weak bar here.
 
+## E1: does affective machinery add predictive information? **No (one inconclusive).** (completed 2026-10-12)
+
+Run from the programme-G session under `prereg/E1_ADDENDUM.md` (wheeled X 100 lifetimes, NERVA X 160 trials; datasets
+regenerated bit-identically to F's manifests; locks passed; `results/E1/*_X.json`). Relative Brier vs the baseline
+selected on V (R), Holm over U, P, UP; 5 seeds; lifetime/trial clusters.
+
+| embodiment / target | U (appraisal) | P (PAD) | UP | decision |
+|---|---|---|---|---|
+| wheeled collision (primary) | −0.2% [−4.1, +3.9] | −1.6% [−5.6, +2.2] | −0.8% [−4.3, +2.4] | U, UP: no meaningful information; **P: inconclusive** |
+| wheeled stability_loss | +1.5% [−1.5, +4.8] | +1.3% [−1.2, +3.6] | +1.8% [−0.4, +3.8] | no meaningful information (all) |
+| NERVA stability_loss (primary) | −1.1% [−2.4, +0.4] | +0.4% [−0.8, +2.1] | −0.7% [−2.2, +1.0] | no meaningful information (all) |
+
+Secondary: entity-memory expectations add nothing (M vs R +1.9% [−1.3, +4.9]); high-rate summaries help NERVA (R vs
+G −6.7%) but not wheeled; the noise-width control is worse than R (+3–10%), and the capacity control equals R.
+Decision (F's rule): **PAD is no longer treated as a necessary predictive representation** — it adds no measurable
+information in two of three settings and is inconclusive (point estimate −1.6%, far from the −5% margin) in the third.
+
 ## Not yet done
 
-E1 confirmatory (in-container training was stopped part-way; see `HANDOFF.md`), reduced E5 and E6, and the §5 final
-report (GO / PIVOT / REDESIGN / STOP).
+Reduced E5/E6 are superseded by programme G's G7 (see `../G_architecture_selection/reports/F_ACCOUNTING.md`); the §5
+final report is replaced by programme G's `reports/ARCHITECTURE_DECISION.md`.
