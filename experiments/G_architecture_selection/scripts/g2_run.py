@@ -134,11 +134,13 @@ def main() -> None:
     ap.add_argument("--scenarios", default=",".join(SCENARIOS))
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", type=Path, default=Path("runs/G2"))
+    ap.add_argument("--addendum", default="G2_ADDENDUM.md")
     args = ap.parse_args()
-    provenance = (confirmatory_lock(HERE / "prereg" / "G2_ADDENDUM.md") if args.partition in ("X", "S")
+    provenance = (confirmatory_lock(HERE / "prereg" / args.addendum) if args.partition in ("X", "S")
                   else environment())
     start = time.time()
     systems = json.loads(args.systems.read_text())["systems"]
+    systems = {k: {kk: vv for kk, vv in v.items() if kk not in ("label", "config_id")} for k, v in systems.items()}
     jobs = [{"spec": {**spec, "label": name}, "scenario": sc, "partition": args.partition, "index": args.first + i}
             for name, spec in systems.items() for sc in args.scenarios.split(",") for i in range(args.n)]
     out_dir = args.out / args.partition

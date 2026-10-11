@@ -130,3 +130,15 @@ def test_probing_only_replaces_avoidance_with_slow_within_budget(gc):
     from apm_testbeds.wheeled_ctrl import DETOUR, SLOW, YIELD
     assert all(rule in (YIELD, DETOUR) and done == SLOW and k <= 3 for k, rule, done in pol.probe_log)
     assert sum(r["actions"]) == sum(ref["actions"])
+
+
+def test_time_decay_reverts_toward_prior_without_new_evidence():
+    from apm_select.memory import TimeDecay
+    now = [0.0]
+    b = TimeDecay(100.0, lambda: now[0])
+    for _ in range(10):
+        b.update(1.0, 1.0, 0.05)
+    high = b.p(0.05)[0]
+    now[0] = 1000.0  # no evidence for ten time constants
+    low = b.p(0.05)[0]
+    assert high > 0.8 and low < 0.1 and b.n < 0.01

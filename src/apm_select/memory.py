@@ -84,6 +84,30 @@ class Cumulative(Belief):
         return (self.k + s * prior) / (self.n + s), self.n / (self.n + s)
 
 
+class TimeDecay(Cumulative):
+    """M1t: evidence decays with lifetime time, n, k ← n·e^(−Δt/τ), k·e^(−Δt/τ), whether or not new evidence arrives,
+    so an avoided identity drifts back toward the pool prior (G2b). `clock()` returns the memory's current time."""
+
+    def __init__(self, tau_s: float, clock):
+        super().__init__()
+        self.tau, self.clock, self.t = tau_s, clock, None
+
+    def _decay(self) -> None:
+        now = self.clock()
+        if self.t is not None and now > self.t:
+            f = math.exp(-(now - self.t) / self.tau)
+            self.n, self.k = self.n * f, self.k * f
+        self.t = now
+
+    def update(self, y: float, w: float, prior: float) -> None:
+        self._decay()
+        super().update(y, w, prior)
+
+    def p(self, prior: float) -> tuple[float, float]:
+        self._decay()
+        return super().p(prior)
+
+
 class Window(Belief):
     def __init__(self, size: int):
         self.trials: deque = deque(maxlen=max(1, int(size)))
@@ -186,7 +210,9 @@ class Neural(Belief):
         return 1 / (1 + math.exp(-logit)), self.n / (self.n + PRIOR_STRENGTH)
 
 
-def make_belief(model: str, p: dict) -> Belief:
+def make_belief(model: str, p: dict, clock=None) -> Belief:
+    if model == "M1t":
+        return TimeDecay(p["tau_s"], clock)
     if model == "M0":
         return Cumulative()
     if model == "M1":
@@ -219,9 +245,11 @@ class BeliefMemory:
         self.last_seen: dict[str, float] = {}
         self.log: list[tuple] = []  # (end time, identity, confidence, class, reliable, p_before) — evaluation only
         self.counts = dict.fromkeys((*CLASSES, "unreliable"), 0)
+        self.now = 0.0
 
     # --------------------------------------------------------------- stream
     def observe(self, obs, t: float) -> None:
+        self.now = t
         careful_action = obs.action in (SLOW, YIELD, DETOUR)
         for e in obs.entities:
             if e.kind != "person":
@@ -265,7 +293,7 @@ class BeliefMemory:
             return
         b = self.beliefs.get(enc.identity)
         if b is None:
-            b = self.beliefs[enc.identity] = make_belief(self.model, self.params)
+            b = self.beliefs[enc.identity] = make_belief(self.model, self.params, clock=lambda: self.now)
         b.update(y, enc.confidence, prior)
         if self.model == "M3":
             self._empirical_bayes()
