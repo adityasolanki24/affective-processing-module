@@ -24,6 +24,17 @@
   stable expectations and tendencies in the same situation?
   - Requires multiple runs; a single anecdote is not evidence.
 
+## Status (2026-10-11)
+
+| RQ | result |
+|---|---|
+| RQ1 portability | **demonstrated** in simulation: biped and wheeled robot on the unmodified core (Milestone D, P1/P2) |
+| RQ2 learning | **partial**: biped GRU calibrated with better ranking, but failed the preregistered Brier margin (C1) and context criterion (C4); wheeled GRU beat logistic regression clearly (−17% slip, −38% collision Brier); incremental shadow learning safe but nearly a no-op |
+| RQ3 affect | C3 passed (affect + appraisal inputs helped), but an exploratory ablation showed **PAD adds nothing measurable**; the appraisal vector carries the gain |
+| RQ4 transfer | **not demonstrated**: zero-shot ranking transferred (AUROC 0.83), fine-tuning did not improve sample efficiency (TR2 failed) |
+| RQ5 persistent affect | bounded, rate-invariant, recovering, memory-carrying in tests and both embodiments; the hand-set baseline is chronically negative on the busy wheeled robot (calibration limitation) |
+| RQ6 dispositions | per-identity expectations diverged within one wheeled run (collision p 0.01–0.16); multi-robot, multi-run evidence not yet collected |
+
 ## Limitations stated up front
 - All affect and appraisal constants are hand-set design values.
 - No human evaluation of expressive or social effects.

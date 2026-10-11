@@ -11,3 +11,11 @@ All notable changes; the project follows docs/versioning.md.
 - Outcome-grounded memory (entity and context statistics, ambiguous identity credit, episodes) with atomic
   persistence and corrupt-state fallback.
 - Standalone synthetic example; CI (ruff, mypy, pytest).
+- NERVA embodiment adapter (arrays only; measured stability margin and actuation stress; documented detectors for
+  stability loss, fall, recovery and task interruption; tilt-extrapolation estimator), stored-telemetry replay and a
+  bounded live rollout (observe-only).
+- Memory-derived internal predictions; seek-assistance control fallback; periodic-only staleness.
+- Learning stack: canonical masked features, observed-outcome datasets, statistical baselines, GRU predictor,
+  evaluation with grouped bootstrap, replay buffer and shadow learner with promotion and rollback.
+- Second embodiment: a wheeled-robot testbed (`apm_testbeds.wheeled`) and its adapter.
+- Embedded hardware design document and local resource benchmark.
