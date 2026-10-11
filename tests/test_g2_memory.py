@@ -93,3 +93,40 @@ def test_exposed_encounter_and_collision_are_evidence():
     b = m.beliefs["ped-0"]
     assert b.n == pytest.approx(0.9 * 0.9 + 0.9) and b.k == pytest.approx(0.9)
     assert m.counts["exposed"] == 1 and m.counts["collision"] == 1
+
+
+def test_m6_numpy_inference_matches_torch_gru():
+    import importlib.util
+    torch = pytest.importorskip("torch")
+    from apm_select.memory import Neural
+    path = ROOT / "experiments" / "G_architecture_selection" / "scripts" / "g2_m6_train.py"
+    spec = importlib.util.spec_from_file_location("g2_m6_train", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    torch.manual_seed(3)
+    model = mod.M6()
+    belief = Neural(mod.export(model))
+    h = torch.zeros(mod.HIDDEN)
+    prior = 0.12
+    for y, w in [(0.0, 0.9), (1.0, 0.9), (0.0, 0.4), (0.0, 0.9), (1.0, 1.0)]:
+        with torch.no_grad():
+            logit = float(model.out(h)[0]) + np.log(prior / (1 - prior))
+        assert belief.p(prior)[0] == pytest.approx(1 / (1 + np.exp(-logit)), abs=1e-6)
+        with torch.no_grad():
+            h = model.cell(torch.tensor([[y, w]], dtype=torch.float32), h[None])[0]
+        belief.update(y, w, prior)
+
+
+@pytest.mark.skipif(not PRED.exists(), reason="frozen predictor not present")
+def test_probing_only_replaces_avoidance_with_slow_within_budget(gc):
+    base = {"kind": "regulated", "regulator": "static", "lam_c": 2.5, "lam_s": 1.5}
+    mem = {"model": "M1", "params": {"gamma": 0.9}, "evidence": "exposed"}
+    ref = gc.run_job({"spec": {**base, "memory": mem}, "experiment": "G2", "partition": "P", "index": 3,
+                      "n_episodes": 2})
+    pol = gc.make_policy({**base, "memory": {**mem, "probe": {"mode": "random", "budget": 3, "p_random": 1.0}}})
+    from apm_research.harness import run_lifetime
+    r = run_lifetime(gc.lifetime_for("G2", "P", 3, 2), pol)
+    assert 0 < pol.probes <= 3 * 2 and len(pol.probe_log) == pol.probes
+    from apm_testbeds.wheeled_ctrl import DETOUR, SLOW, YIELD
+    assert all(rule in (YIELD, DETOUR) and done == SLOW and k <= 3 for k, rule, done in pol.probe_log)
+    assert sum(r["actions"]) == sum(ref["actions"])

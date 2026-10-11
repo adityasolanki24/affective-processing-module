@@ -106,6 +106,7 @@ def run_job(job: dict) -> dict:
             "index": job["index"], "partition": job["partition"],
             "totals": {k: float(r[k]) for k in RESULT_KEYS} | {k: float(v) for k, v in policy.stats.items()},
             "actions": r["actions"], "memory_counts": dict(mem.counts), "state_size": mem.state_size(),
+            "probes": getattr(inner, "probes", 0),
             "snapshots": tracker.snapshots, "truth": tracker.truth, "encounters": truth_by_time}
 
 

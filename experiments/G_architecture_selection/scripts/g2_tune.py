@@ -9,7 +9,7 @@ Stage B (validation selection): every selected memory, plus M0 with both evidenc
 (i)–(iii) on validation (point estimates; adaptation medians ≤ 6, collision rate within +10% of M0_all, false blame
 within ±0.03); ties → lower Brier. Written to configs/G2_selected.json.
 
-    python scripts/g2_tune.py --regulator configs/G1_selected.json --k 16 --n 6 --nv 12 --workers 90
+    python scripts/g2_tune.py --regulator configs/G1_selected.json --k 16 --n 6 --nv 12 --m6 results/G2/m6_weights.json
 """
 from __future__ import annotations
 
@@ -52,6 +52,7 @@ def main() -> None:
     ap.add_argument("--n", type=int, required=True)
     ap.add_argument("--nv", type=int, required=True)
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--m6", type=Path, default=None, help="M6 weights (g2_m6_train.py output) for stage B")
     ap.add_argument("--out", type=Path, default=Path("runs/G2"))
     args = ap.parse_args()
     start = time.time()
@@ -79,6 +80,9 @@ def main() -> None:
     systems = {"M0_all": {"model": "M0", "params": {}, "evidence": "all"},
                "M0_exp": {"model": "M0", "params": {}, "evidence": "exposed"}}
     systems |= {m: {"model": m, "params": c["params"], "evidence": "exposed"} for m, c in chosen.items() if m != "M0"}
+    if args.m6 is not None:
+        systems["M6"] = {"model": "M6", "params": {"weights": json.loads(args.m6.read_text())["weights"]},
+                         "evidence": "exposed"}
     vjobs = [{"spec": {**reg, "label": name, "config_id": name, "memory": mem}, "scenario": sc, "partition": "V",
               "index": 100 + i}
              for name, mem in systems.items() for sc in ("S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9")
