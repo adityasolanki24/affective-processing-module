@@ -104,7 +104,8 @@ class WheeledWorld:
             nearest = min(nearest, d)
             if d < 0.8:
                 w = (0.8 - d) / 0.8
-                push_x, push_y = push_x + w * dx / max(1e-6, d + o.r + ROBOT_R), push_y + w * dy / max(1e-6, d + o.r + ROBOT_R)
+                norm = max(1e-6, d + o.r + ROBOT_R)
+                push_x, push_y = push_x + w * dx / norm, push_y + w * dy / norm
         heading = math.atan2(math.sin(heading) + 1.5 * push_y, math.cos(heading) + 1.5 * push_x)
         error = math.atan2(math.sin(heading - self.theta), math.cos(heading - self.theta))
         w_cmd = max(-W_MAX, min(W_MAX, 3.0 * error))

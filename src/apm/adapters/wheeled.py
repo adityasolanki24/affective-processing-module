@@ -63,9 +63,14 @@ class WheeledAdapter:
     def profile(self) -> EmbodimentProfile:
         return profile(self.emitter)
 
+    @staticmethod
+    def _progress(s) -> float:
+        return min(1.0, max(0.0, 1 - s.goal_distance / max(1e-6, s.goal_start_distance)))
+
     def _outcome(self, t, kind, magnitude, target=None, affected="self") -> OutcomeSignal:
         self.counter += 1
-        return OutcomeSignal(header=self.emitter.header("outcomes", t), outcome_id=f"{self.emitter.source}:{self.counter}",
+        return OutcomeSignal(header=self.emitter.header("outcomes", t),
+                             outcome_id=f"{self.emitter.source}:{self.counter}",
                              kind=kind, magnitude=magnitude, target=target, affected=affected, evidence_quality=1.0,
                              confirmed=True, provenance=Provenance(origin="wheeled-adapter/detector"))
 
@@ -86,8 +91,7 @@ class WheeledAdapter:
             self._sent_goal_s = t
             out.append(GoalState(header=self.emitter.header("goal", t), goal_id="waypoint", goal_type="navigate",
                                  priority=0.7, target=f"({s.goal[0]:.2f},{s.goal[1]:.2f})",
-                                 progress=Quantity.measured(min(1.0, max(0.0, 1 - s.goal_distance /
-                                                                         max(1e-6, s.goal_start_distance))), "fraction")))
+                                 progress=Quantity.measured(self._progress(s), "fraction")))
         for e in s.entities:
             out.append(EntityObservation(
                 header=self.emitter.header("entities", t), track_id=e["track"], identity=e["identity"],
