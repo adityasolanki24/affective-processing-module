@@ -26,6 +26,30 @@ other uncommitted results or logs) exists only in the cloud container. It must b
 a tracked path such as `experiments/F_behavioral_learning/frozen/`) and pushed before the cloud session stops.
 Retraining it locally would very likely not reproduce the hash and would be a recorded deviation.
 
+## Update 2026-10-11 (local session): E2, E3, E4, E7 confirmatory done
+
+Results: `results/CONFIRMATORY_SUMMARY.md`. In short: **E2** B2 beats B1 (criterion A, collisions −25%);
+**E3** "encounter statistics only (no timely revision)" (ii fails, i/iii/iv pass); **E4** B3 beats B1 but not B4 →
+not a credible candidate, E5/E6 stay gated; **E7** all criteria pass.
+
+| item | state |
+|---|---|
+| frozen predictor | committed copy `runs/E2/predictor.json` verified (SHA-256 `0735d854…be314`), not retrained |
+| machine change | recorded in `DEVIATIONS.md` before any partition-X data |
+| addenda | E2 (existing), E3, E4, E7 committed before their runs |
+| cloud | `cloud/launch.py` (project/bucket/service account from `APM_GCP_*` environment variables; private VM behind a temporary Cloud NAT, org policy forbids external IPs); jobs `pilot.sh`, `confirmatory.sh`, `confirmatory2.sh`, `e4eval.sh` |
+| raw data | local only, git-ignored: `runs/E2/X`, `runs/E3/X`, `runs/E4/X` (40 checkpoints), `runs/E4/eval_X`, `runs/E7/X`, and every VM's full output under `runs/cloud/<run id>/`; hashes in `manifests/` |
+| cloud spend | 4 VMs, all self-deleted or deleted: pilot n2d-highcpu-64 ≈ 21 min; confirmatory n2d-highcpu-128 ≈ 29 min; n2-highcpu-32 ≈ 31 min; n2d-highcpu-96 ≈ 8 min (≈ 115 vCPU-hours) plus ≈ 2 h of Cloud NAT. Estimated from list prices at **≈ US$3–5** of the US$10 ceiling; the billing console is authoritative (it lags by a day) |
+| teardown audit | no VMs, disks, addresses or routers; NAT deleted; bucket prefix `apm-f/` deleted; no IAM changes were made (the existing NERVA runner service account and bucket were reused) |
+
+### Next steps (updated)
+
+1. E1 confirmatory: the in-container training stopped part-way (`DEVIATIONS.md`); resume with `--skip-existing`
+   (wheeled), NERVA arm needs the policy file (`AUDIT.md` B3). Needs an E1 addendum if not yet fixed.
+2. E5 reduced version (infrastructure + reduced run on the B1 predictor) and E6 reduced predictive study only, since
+   E4 found no credible candidate.
+3. §5 final report (Q1–Q7, GO / PIVOT / REDESIGN / STOP). Remaining budget under the ceiling: ≈ US$5 (check billing).
+
 ## Rules that continue to apply
 
 - Confirmatory runs only on frozen, committed inputs. Thresholds, rewards, seeds and criteria never change after
