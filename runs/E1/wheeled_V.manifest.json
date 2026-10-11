@@ -1,0 +1,50 @@
+{
+ "embodiment": "wheeled",
+ "partition": "V",
+ "episodes": 150,
+ "samples": 90120,
+ "event_counts": {
+  "collision": 367,
+  "stability_loss": 314,
+  "recovery": 183,
+  "task_completed": 667,
+  "task_interrupted": 409,
+  "fall": 0
+ },
+ "sha256": "29b4482f5e783b0b4d1768e5a03391d8f64ceba281f9d741a99bf6c2b4c4ae8a",
+ "wall_s": 88.9,
+ "source": {
+  "seeds": [
+   "8cdee86c83d65790",
+   "a64f850657fb1aad",
+   "f293387898427399",
+   "69fe0f6d1fb3bbaa",
+   "f3232357faefe350",
+   "93acbbc07f1dff56",
+   "78ea3edaacd60036",
+   "e11c0b2f0a69fc71",
+   "13ceb6e68b0a97f2",
+   "cacdd8784d09461d",
+   "b4a686a24535889f",
+   "ed4f19339533f460",
+   "b481beec72fbf743",
+   "01dbdc7f7f14f626",
+   "faca7370802359f6",
+   "c4641395f2ed0ca6",
+   "805a85c74e12d925",
+   "d89a4631d1c746e6",
+   "5ed202d3c76ec395",
+   "7cdab7b53e578b4f",
+   "5de5bd44d12093b9",
+   "e26b6b5f7d82e597",
+   "951241e9415436b4",
+   "1123a4710adad998",
+   "4818c6bb59c219dd",
+   "ad7417729cd9009b",
+   "33e4be2b4fecb5df",
+   "b3e71e807b91b65b",
+   "afb9e55b007fc9b5",
+   "3fe20b287c2969f4"
+  ]
+ }
+}

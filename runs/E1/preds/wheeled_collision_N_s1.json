@@ -1,0 +1,1 @@
+{"emb": "wheeled", "target": "collision", "arm": "N", "seed": 1, "params": 21313, "train_s": 412.9215018749237, "train_n": 292364, "train_pos": 11508, "val_brier": 0.023770539090037346, "epochs": 7, "P_infer_us_per_sample": 77.59960726537575}

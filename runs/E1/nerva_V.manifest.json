@@ -1,0 +1,20 @@
+{
+ "embodiment": "nerva",
+ "partition": "V",
+ "episodes": 160,
+ "samples": 24000,
+ "event_counts": {
+  "collision": 0,
+  "stability_loss": 67,
+  "recovery": 0,
+  "task_completed": 0,
+  "task_interrupted": 0,
+  "fall": 67
+ },
+ "sha256": "8334b86bd1195191f4df1272de795c5ff25c3ab85c63038db72ea87c41b03f19",
+ "wall_s": 41.1,
+ "source": {
+  "experience_manifest_sha256": "0033147a46224c509d55ac22e4990a034dae622af79efd9cccc5dde6d4b84a0e",
+  "policy_sha256": "610b1c59446cb9f6067238a61a641a60aa706c48f4a56dc8b07d1956d4813446"
+ }
+}

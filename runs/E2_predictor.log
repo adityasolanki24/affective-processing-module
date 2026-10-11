@@ -1,0 +1,33 @@
+{
+ "train_decisions": 87000,
+ "val_decisions": 23200,
+ "train_rates": {
+  "collision": 0.036988504230976105,
+  "slip": 0.023459769785404205,
+  "progress_mean": 0.2959612309932709
+ },
+ "val": {
+  "collision": {
+   "brier": 0.02646244503557682,
+   "auroc": 0.9368507385707102,
+   "ece": 0.006938789845573307
+  },
+  "slip": {
+   "brier": 0.01904563419520855,
+   "auroc": 0.8833506586815306,
+   "ece": 0.0019599929902654693
+  },
+  "progress_rmse": 0.1942119300365448,
+  "progress_r2": 0.6744070053100586
+ },
+ "member_epochs": [
+  25,
+  25,
+  21,
+  27,
+  24
+ ],
+ "parameters_each": 7299,
+ "wall_s": 82.9,
+ "predictor_sha256": "0735d85487ac031cccbb171745ec8e3d5daf6f111d5b3daadc3401b2ed4be314"
+}

@@ -1,0 +1,1 @@
+{"emb": "nerva", "target": "stability_loss", "arm": "UP", "seed": 2, "params": 21313, "train_s": 102.39587426185608, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010826780460774899, "epochs": 18, "P_infer_us_per_sample": 29.802532899610636}

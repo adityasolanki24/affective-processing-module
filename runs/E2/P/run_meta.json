@@ -1,0 +1,83 @@
+{
+ "provenance": {
+  "python": "3.13.16",
+  "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "cpus": 4,
+  "commit": "939ea1f66dba582cd5979156515267f035192976",
+  "dirty": false,
+  "start_utc": "2026-10-11T10:06:52Z",
+  "numpy": "2.5.3",
+  "torch": "2.14.1+cu130",
+  "mujoco": "3.3.0",
+  "onnxruntime": "1.21.0"
+ },
+ "systems": {
+  "B0": {
+   "system": "B0",
+   "label": "B0"
+  },
+  "B1": {
+   "system": "B1",
+   "lam_c": 1.0,
+   "lam_s": 2.0,
+   "label": "B1"
+  },
+  "B2": {
+   "system": "B2",
+   "lam_c": 0.5,
+   "lam_s": 2.0,
+   "k_pad": 2.0,
+   "k_t": 0.25,
+   "label": "B2"
+  },
+  "B2_noPAD": {
+   "system": "B2",
+   "lam_c": 0.5,
+   "lam_s": 2.0,
+   "k_pad": 0.0,
+   "k_t": 0.25,
+   "label": "B2_noPAD"
+  },
+  "B2_noTonic": {
+   "system": "B2",
+   "lam_c": 0.5,
+   "lam_s": 2.0,
+   "k_pad": 2.0,
+   "k_t": 0.25,
+   "tonic": false,
+   "label": "B2_noTonic"
+  },
+  "B2_noMemoryFrames": {
+   "system": "B2",
+   "lam_c": 0.5,
+   "lam_s": 2.0,
+   "k_pad": 2.0,
+   "k_t": 0.25,
+   "memory_frames": false,
+   "label": "B2_noMemoryFrames"
+  },
+  "B2_noPersistence": {
+   "system": "B2",
+   "lam_c": 0.5,
+   "lam_s": 2.0,
+   "k_pad": 2.0,
+   "k_t": 0.25,
+   "persistent": false,
+   "label": "B2_noPersistence"
+  },
+  "Oracle": {
+   "system": "B1",
+   "lam_c": 1.0,
+   "lam_s": 2.0,
+   "oracle_by_disposition": {
+    "careful": 0.02367431078293182,
+    "careless": 0.2692321221280104
+   },
+   "label": "Oracle"
+  }
+ },
+ "n": 40,
+ "episodes": 10,
+ "wall_s": 1178.0
+}

@@ -1,0 +1,329 @@
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "C", "seed": 1, "params": 21304, "train_s": 78.4820966720581, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010983317159116268, "epochs": 12, "P_infer_us_per_sample": 36.538778944260144}
+{"emb": "nerva", "target": "stability_loss", "arm": "C", "seed": 3, "params": 21304, "train_s": 81.14515161514282, "train_n": 55836, "train_pos": 1143, "val_brier": 0.01106399018317461, "epochs": 12, "P_infer_us_per_sample": 38.649558406058254}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "C", "seed": 0, "params": 21304, "train_s": 93.86001920700073, "train_n": 55836, "train_pos": 1143, "val_brier": 0.011022549122571945, "epochs": 14, "P_infer_us_per_sample": 37.12207755433573}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "C", "seed": 2, "params": 21304, "train_s": 166.88988637924194, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010903671383857727, "epochs": 25, "P_infer_us_per_sample": 37.58075136773362}
+{"emb": "nerva", "target": "stability_loss", "arm": "G", "seed": 0, "params": 17857, "train_s": 83.97733068466187, "train_n": 55836, "train_pos": 1143, "val_brier": 0.012043023481965065, "epochs": 15, "P_infer_us_per_sample": 31.270781162207935}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "G", "seed": 1, "params": 17857, "train_s": 82.75643229484558, "train_n": 55836, "train_pos": 1143, "val_brier": 0.011964979581534863, "epochs": 15, "P_infer_us_per_sample": 30.136264305799806}
+{"emb": "nerva", "target": "stability_loss", "arm": "C", "seed": 4, "params": 21304, "train_s": 99.75625848770142, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010991678573191166, "epochs": 15, "P_infer_us_per_sample": 39.461347183231815}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "G", "seed": 2, "params": 17857, "train_s": 67.28648233413696, "train_n": 55836, "train_pos": 1143, "val_brier": 0.01221430767327547, "epochs": 12, "P_infer_us_per_sample": 30.981021440165943}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "R", "seed": 0, "params": 19777, "train_s": 64.61357235908508, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010958901606500149, "epochs": 11, "P_infer_us_per_sample": 34.41883025283773}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "G", "seed": 3, "params": 17857, "train_s": 94.53288197517395, "train_n": 55836, "train_pos": 1143, "val_brier": 0.012115110643208027, "epochs": 17, "P_infer_us_per_sample": 31.582149341999976}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "G", "seed": 4, "params": 17857, "train_s": 89.09342455863953, "train_n": 55836, "train_pos": 1143, "val_brier": 0.012019511312246323, "epochs": 16, "P_infer_us_per_sample": 30.379342081893245}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "R", "seed": 1, "params": 19777, "train_s": 69.65126919746399, "train_n": 55836, "train_pos": 1143, "val_brier": 0.011011193506419659, "epochs": 12, "P_infer_us_per_sample": 30.935990610674413}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "R", "seed": 2, "params": 19777, "train_s": 70.51799368858337, "train_n": 55836, "train_pos": 1143, "val_brier": 0.011045347899198532, "epochs": 12, "P_infer_us_per_sample": 37.68602506282843}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "R", "seed": 3, "params": 19777, "train_s": 64.3265073299408, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010977898724377155, "epochs": 11, "P_infer_us_per_sample": 29.50126171819017}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "R", "seed": 4, "params": 19777, "train_s": 75.6752278804779, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010938297025859356, "epochs": 13, "P_infer_us_per_sample": 31.969147345844394}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "RL", "seed": 1, "params": 22081, "train_s": 72.28367328643799, "train_n": 55836, "train_pos": 1143, "val_brier": 0.0109850550070405, "epochs": 12, "P_infer_us_per_sample": 33.62725536005618}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "RL", "seed": 3, "params": 22081, "train_s": 76.72998666763306, "train_n": 55836, "train_pos": 1143, "val_brier": 0.01098897960036993, "epochs": 13, "P_infer_us_per_sample": 30.12422149932338}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "RL", "seed": 2, "params": 22081, "train_s": 108.39606142044067, "train_n": 55836, "train_pos": 1143, "val_brier": 0.011063368991017342, "epochs": 18, "P_infer_us_per_sample": 33.41378182760289}
+{"emb": "nerva", "target": "stability_loss", "arm": "RL", "seed": 0, "params": 22081, "train_s": 136.816752910614, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010963015258312225, "epochs": 23, "P_infer_us_per_sample": 31.273234067703985}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "U", "seed": 1, "params": 20737, "train_s": 67.46300458908081, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010912836529314518, "epochs": 12, "P_infer_us_per_sample": 29.383665237322127}
+{"emb": "nerva", "target": "stability_loss", "arm": "RL", "seed": 4, "params": 22081, "train_s": 115.99159049987793, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010981041938066483, "epochs": 20, "P_infer_us_per_sample": 34.67862878899625}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "U", "seed": 0, "params": 20737, "train_s": 100.83653426170349, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010795061476528645, "epochs": 18, "P_infer_us_per_sample": 29.446312952828727}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "U", "seed": 2, "params": 20737, "train_s": 99.81416964530945, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010790842585265636, "epochs": 18, "P_infer_us_per_sample": 40.604534156444444}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "U", "seed": 4, "params": 20737, "train_s": 56.06931781768799, "train_n": 55836, "train_pos": 1143, "val_brier": 0.01084764115512371, "epochs": 10, "P_infer_us_per_sample": 31.27432123323125}
+{"emb": "nerva", "target": "stability_loss", "arm": "U", "seed": 3, "params": 20737, "train_s": 61.15282154083252, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010889935307204723, "epochs": 11, "P_infer_us_per_sample": 29.90882189855229}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "P", "seed": 1, "params": 20353, "train_s": 71.25385332107544, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010997927747666836, "epochs": 13, "P_infer_us_per_sample": 36.12338193110165}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "P", "seed": 3, "params": 20353, "train_s": 61.68685793876648, "train_n": 55836, "train_pos": 1143, "val_brier": 0.011018139310181141, "epochs": 11, "P_infer_us_per_sample": 31.11042547684835}
+{"emb": "nerva", "target": "stability_loss", "arm": "P", "seed": 0, "params": 20353, "train_s": 110.78695821762085, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010885893367230892, "epochs": 20, "P_infer_us_per_sample": 30.926729779683495}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "P", "seed": 2, "params": 20353, "train_s": 99.5736391544342, "train_n": 55836, "train_pos": 1143, "val_brier": 0.01105977687984705, "epochs": 18, "P_infer_us_per_sample": 32.0829775247656}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "P", "seed": 4, "params": 20353, "train_s": 74.46495175361633, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010977448895573616, "epochs": 13, "P_infer_us_per_sample": 28.95873000149119}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "UP", "seed": 0, "params": 21313, "train_s": 92.83551216125488, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010885140858590603, "epochs": 16, "P_infer_us_per_sample": 28.779469614061544}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "UP", "seed": 1, "params": 21313, "train_s": 99.42842602729797, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010944793932139874, "epochs": 17, "P_infer_us_per_sample": 34.93193227857938}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "UP", "seed": 3, "params": 21313, "train_s": 73.46193838119507, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010899812914431095, "epochs": 13, "P_infer_us_per_sample": 31.370626053505845}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "UP", "seed": 2, "params": 21313, "train_s": 102.39587426185608, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010826780460774899, "epochs": 18, "P_infer_us_per_sample": 29.802532899610636}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "UP", "seed": 4, "params": 21313, "train_s": 73.43798232078552, "train_n": 55836, "train_pos": 1143, "val_brier": 0.01098308339715004, "epochs": 13, "P_infer_us_per_sample": 31.11847131453285}
+{"emb": "nerva", "target": "stability_loss", "arm": "N", "seed": 0, "params": 21313, "train_s": 68.96687769889832, "train_n": 55836, "train_pos": 1143, "val_brier": 0.011167428456246853, "epochs": 12, "P_infer_us_per_sample": 29.853283749827956}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "nerva", "target": "stability_loss", "arm": "N", "seed": 1, "params": 21313, "train_s": 66.41714644432068, "train_n": 55836, "train_pos": 1143, "val_brier": 0.010921379551291466, "epochs": 12, "P_infer_us_per_sample": 34.19958420817798}
+{"emb": "nerva", "target": "stability_loss", "arm": "LR", "seed": 0, "params": 27, "train_s": 0.9956855773925781, "train_n": 55836, "train_pos": 1143, "val_brier": 0.011286036722387472, "epochs": 0, "P_infer_us_per_sample": 0.1307244565691962}
+{"emb": "nerva", "target": "stability_loss", "arm": "N", "seed": 2, "params": 21313, "train_s": 74.9586992263794, "train_n": 55836, "train_pos": 1143, "val_brier": 0.011005081236362457, "epochs": 13, "P_infer_us_per_sample": 34.96061858648439}
+{"emb": "nerva", "target": "stability_loss", "arm": "N", "seed": 3, "params": 21313, "train_s": 51.164485692977905, "train_n": 55836, "train_pos": 1143, "val_brier": 0.0111496951431036, "epochs": 9, "P_infer_us_per_sample": 31.657161762540166}
+{"emb": "nerva", "target": "stability_loss", "arm": "N", "seed": 4, "params": 21313, "train_s": 56.63370490074158, "train_n": 55836, "train_pos": 1143, "val_brier": 0.01109519973397255, "epochs": 10, "P_infer_us_per_sample": 30.671573192392945}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "C", "seed": 0, "params": 21304, "train_s": 304.6892478466034, "train_n": 292364, "train_pos": 11508, "val_brier": 0.01990213617682457, "epochs": 9, "P_infer_us_per_sample": 37.48910213631921}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "C", "seed": 1, "params": 21304, "train_s": 334.2410728931427, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020136862993240356, "epochs": 10, "P_infer_us_per_sample": 36.314076555184414}
+{"emb": "wheeled", "target": "collision", "arm": "C", "seed": 2, "params": 21304, "train_s": 337.65137672424316, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020386476069688797, "epochs": 10, "P_infer_us_per_sample": 37.610419658975104}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "C", "seed": 3, "params": 21304, "train_s": 363.79380774497986, "train_n": 292364, "train_pos": 11508, "val_brier": 0.02039429359138012, "epochs": 11, "P_infer_us_per_sample": 37.92386741442672}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "G", "seed": 0, "params": 17857, "train_s": 350.872624874115, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020229356363415718, "epochs": 11, "P_infer_us_per_sample": 35.00725687226298}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "G", "seed": 1, "params": 17857, "train_s": 379.0365228652954, "train_n": 292364, "train_pos": 11508, "val_brier": 0.02040761150419712, "epochs": 12, "P_infer_us_per_sample": 33.12180181891412}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "G", "seed": 2, "params": 17857, "train_s": 376.79883909225464, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020400265231728554, "epochs": 12, "P_infer_us_per_sample": 31.57578879734415}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "C", "seed": 4, "params": 21304, "train_s": 478.12558484077454, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020063238218426704, "epochs": 13, "P_infer_us_per_sample": 37.14175498575225}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "R", "seed": 0, "params": 19777, "train_s": 228.92320489883423, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020978564396500587, "epochs": 8, "P_infer_us_per_sample": 32.28335849524768}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "G", "seed": 4, "params": 17857, "train_s": 303.12995648384094, "train_n": 292364, "train_pos": 11508, "val_brier": 0.021378131583333015, "epochs": 11, "P_infer_us_per_sample": 31.71745850123775}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "G", "seed": 3, "params": 17857, "train_s": 359.12036752700806, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020071059465408325, "epochs": 13, "P_infer_us_per_sample": 32.522001873663605}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "R", "seed": 1, "params": 19777, "train_s": 413.6279034614563, "train_n": 292364, "train_pos": 11508, "val_brier": 0.01982874982059002, "epochs": 13, "P_infer_us_per_sample": 70.61669295791299}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "R", "seed": 2, "params": 19777, "train_s": 469.43125796318054, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020102037116885185, "epochs": 10, "P_infer_us_per_sample": 92.95941191618586}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "R", "seed": 3, "params": 19777, "train_s": 621.4776101112366, "train_n": 292364, "train_pos": 11508, "val_brier": 0.01988443173468113, "epochs": 11, "P_infer_us_per_sample": 73.45847529580965}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "RL", "seed": 0, "params": 22081, "train_s": 641.1577613353729, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020995840430259705, "epochs": 9, "P_infer_us_per_sample": 102.67473858473917}
+{"emb": "wheeled", "target": "collision", "arm": "R", "seed": 4, "params": 19777, "train_s": 864.4224891662598, "train_n": 292364, "train_pos": 11508, "val_brier": 0.01963214948773384, "epochs": 14, "P_infer_us_per_sample": 74.92276331031806}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "RL", "seed": 2, "params": 22081, "train_s": 608.3580403327942, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020619051530957222, "epochs": 9, "P_infer_us_per_sample": 72.13273161195183}
+{"emb": "wheeled", "target": "collision", "arm": "RL", "seed": 1, "params": 22081, "train_s": 817.5030472278595, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020140554755926132, "epochs": 12, "P_infer_us_per_sample": 72.09771017171413}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "RL", "seed": 4, "params": 22081, "train_s": 754.782026052475, "train_n": 292364, "train_pos": 11508, "val_brier": 0.019770629703998566, "epochs": 12, "P_infer_us_per_sample": 69.2197133971559}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "RL", "seed": 3, "params": 22081, "train_s": 821.374076128006, "train_n": 292364, "train_pos": 11508, "val_brier": 0.019986052066087723, "epochs": 13, "P_infer_us_per_sample": 76.49864935020472}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "M", "seed": 0, "params": 20353, "train_s": 479.85623836517334, "train_n": 292364, "train_pos": 11508, "val_brier": 0.021325837820768356, "epochs": 8, "P_infer_us_per_sample": 68.28729912818449}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "M", "seed": 1, "params": 20353, "train_s": 714.831239938736, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020128734409809113, "epochs": 12, "P_infer_us_per_sample": 70.37340448995602}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "M", "seed": 2, "params": 20353, "train_s": 609.8485124111176, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020451698452234268, "epochs": 10, "P_infer_us_per_sample": 69.69968253723272}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "M", "seed": 3, "params": 20353, "train_s": 609.9108643531799, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020829711109399796, "epochs": 10, "P_infer_us_per_sample": 72.01782336182195}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "M", "seed": 4, "params": 20353, "train_s": 671.2047696113586, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020045436918735504, "epochs": 11, "P_infer_us_per_sample": 74.65484282572994}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "RLM", "seed": 0, "params": 22657, "train_s": 583.3772859573364, "train_n": 292364, "train_pos": 11508, "val_brier": 0.02108832262456417, "epochs": 9, "P_infer_us_per_sample": 71.80286815876207}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "RLM", "seed": 2, "params": 22657, "train_s": 567.4159557819366, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020601358264684677, "epochs": 9, "P_infer_us_per_sample": 73.89159905205322}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "RLM", "seed": 1, "params": 22657, "train_s": 765.2282977104187, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020968403667211533, "epochs": 12, "P_infer_us_per_sample": 71.77624425279913}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "RLM", "seed": 3, "params": 22657, "train_s": 702.2571225166321, "train_n": 292364, "train_pos": 11508, "val_brier": 0.021323254331946373, "epochs": 11, "P_infer_us_per_sample": 67.92582521839155}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "RLM", "seed": 4, "params": 22657, "train_s": 699.4078657627106, "train_n": 292364, "train_pos": 11508, "val_brier": 0.02027403563261032, "epochs": 11, "P_infer_us_per_sample": 71.62829495306673}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "U", "seed": 0, "params": 20737, "train_s": 680.3652844429016, "train_n": 292364, "train_pos": 11508, "val_brier": 0.021021530032157898, "epochs": 11, "P_infer_us_per_sample": 68.25725178168514}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "U", "seed": 1, "params": 20737, "train_s": 619.0755286216736, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020845040678977966, "epochs": 10, "P_infer_us_per_sample": 70.67467006322292}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "U", "seed": 2, "params": 20737, "train_s": 616.7623438835144, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020449630916118622, "epochs": 10, "P_infer_us_per_sample": 70.21921290520608}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "U", "seed": 3, "params": 20737, "train_s": 691.627669095993, "train_n": 292364, "train_pos": 11508, "val_brier": 0.02074040286242962, "epochs": 11, "P_infer_us_per_sample": 72.43841757142701}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "P", "seed": 0, "params": 20353, "train_s": 562.6038067340851, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020680716261267662, "epochs": 9, "P_infer_us_per_sample": 73.62822682512845}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "U", "seed": 4, "params": 20737, "train_s": 761.0070300102234, "train_n": 292364, "train_pos": 11508, "val_brier": 0.02067135088145733, "epochs": 12, "P_infer_us_per_sample": 66.25503592480442}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "P", "seed": 1, "params": 20353, "train_s": 754.822016954422, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020339136943221092, "epochs": 12, "P_infer_us_per_sample": 66.71358835759678}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "P", "seed": 2, "params": 20353, "train_s": 622.6508958339691, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020405791699886322, "epochs": 10, "P_infer_us_per_sample": 70.0672409845863}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
+{"emb": "wheeled", "target": "collision", "arm": "P", "seed": 3, "params": 20353, "train_s": 553.4776635169983, "train_n": 292364, "train_pos": 11508, "val_brier": 0.020281897857785225, "epochs": 9, "P_infer_us_per_sample": 70.43666855744605}
+/home/claude/affective-processing-module/src/apm/learning/predictor.py:72: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  total += float(loss) * len(idx)
