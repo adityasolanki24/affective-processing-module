@@ -74,7 +74,7 @@ class WheeledCtrlAdapter:
                 identity_confidence=e.identity_confidence if e.identity else 0.0, entity_type=e.kind,
                 distance=Quantity.measured(e.distance, "m"), bearing=Quantity.measured(e.bearing, "rad"),
                 closing_speed=Quantity.measured(e.closing, "m/s"), provenance=Provenance(origin="wheeled-ctrl-sim")))
-            if e.ttc_p > 0:
+            if e.ttc_p > 0 and e.closing > 0:  # D7: an estimate without closing motion is inconsistent; drop it
                 live.add(e.track)
                 out.append(OutcomeHypothesis(
                     header=self.emitter.header("hypotheses", t), hypothesis_id=f"collision:{e.track}",

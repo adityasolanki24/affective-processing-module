@@ -16,3 +16,9 @@ Made on E0 pilot runs of fixed-action policies (always GO / SLOW / YIELD / DETOU
 | navigation speed near people | v0.1 rule (nearest entity) | obstacle and person proximity factors separate (person factor ≥ 0.3 within 0.4 m) | people were slowing the robot to a crawl everywhere |
 
 None of these change a hypothesis, metric, criterion or seed.
+
+## 2026-10-11 — D7 found in the E7 pilot (before any E2/E7 confirmatory data)
+
+| item | change | reason |
+|---|---|---|
+| `apm/adapters/wheeled_ctrl.py` | a TTC hypothesis is emitted only when `ttc_p > 0` **and** closing speed `> 0` | E7 pilot (fault "conflicting predictions", partition P) showed a `ZeroDivisionError` in the v0.2 adapter when an estimate arrives without closing motion; the exception reached the harness and B2 fell back to GO for the rest of the episode. Under unfaulted inputs `ttc_p > 0` implies closing > 0, so E0–E2 behaviour is unchanged. Regression test `test_d7_…`. |

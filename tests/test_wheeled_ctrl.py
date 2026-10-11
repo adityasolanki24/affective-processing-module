@@ -288,3 +288,13 @@ def test_cluster_bootstrap_is_cluster_level_and_detects_a_real_difference():
     one = relative_loss_difference(base * 0.95, base, groups, n_boot=500)
     assert dup["se"] == pytest.approx(one["se"], rel=0.3)
     assert holm({"a": 0.01, "b": 0.04, "c": 0.03}) == {"a": 0.03, "c": 0.06, "b": 0.06}
+
+
+def test_d7_inconsistent_ttc_estimate_does_not_crash_adapter():
+    """E7 pilot finding: a positive TTC probability with zero closing speed divided by zero inside the adapter."""
+    world = WheeledCtrlWorld(np.random.SeedSequence(7), [Identity("ped-0", "careless")])
+    obs = world.observe_now()
+    bad = Seen("p9", "person", "ped-0", 0.9, 0.5, 0.0, 0.0, 0.7)
+    obs = dataclasses.replace(obs, entities=(*obs.entities, bad))
+    msgs = WheeledCtrlAdapter(Emitter("t")).step(obs, 0.0)
+    assert not any(getattr(m, "hypothesis_id", "") == "collision:p9" for m in msgs)
