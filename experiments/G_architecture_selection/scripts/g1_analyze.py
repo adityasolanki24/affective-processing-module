@@ -55,6 +55,8 @@ def describe(rows: dict) -> dict:
     idx = sorted(rows)
     t = {k: float(v.sum()) for k, v in arrays(rows, idx).items()}
     t["collisions_x100"] = 100 * t["collisions"]
+    if "observe_us" in t:
+        t["compute_us"] = t["decide_us"] + t["observe_us"]
     out = {name: t[num] / max(1e-12, t[den]) for name, (num, den) in METRICS.items() if num in t and den in t}
     acts = np.sum([rows[i]["actions"] for i in idx], axis=0)
     out |= {"lifetimes": len(idx), "J_mean": t["J"] / len(idx),

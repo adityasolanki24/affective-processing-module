@@ -78,12 +78,17 @@ METRICS = {
     "interventions_per_min": ("interventions", "minutes"),
     "careless_collisions_per_min": ("careless_collisions", "minutes"),
     "decide_us": ("decide_us", "decisions"),
+    "compute_us_per_decision": ("compute_us", "decisions"),
 }
 
 
 def compare_systems(a: dict, b: dict, metrics=METRICS, n_boot: int = N_BOOT, seed: int = 0) -> dict:
-    a = {**a, "collisions_x100": np.asarray(a["collisions"], float) * 100.0}
-    b = {**b, "collisions_x100": np.asarray(b["collisions"], float) * 100.0}
+    def extra(d: dict) -> dict:
+        d = {**d, "collisions_x100": np.asarray(d["collisions"], float) * 100.0}
+        if "decide_us" in d and "observe_us" in d:
+            d["compute_us"] = np.asarray(d["decide_us"], float) + np.asarray(d["observe_us"], float)
+        return d
+    a, b = extra(a), extra(b)
     p = Paired(a, b, n_boot, seed)
     return {name: p.compare(num, den) for name, (num, den) in metrics.items() if num in a and den in a}
 

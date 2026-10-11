@@ -12,6 +12,7 @@ Per lifetime (sums over episodes):
   oscillations           A → B → A within three consecutive decisions (A ≠ B)
   hesitant               SLOW or YIELD decisions with no person within 1.5 m and no obstacle within 0.5 m
   decide_us              total wall time spent in `decide` (µs), decisions
+  observe_us             total wall time spent in `observe` (µs; the 20 Hz state updates, e.g. the APM core)
   max_decide_us          the slowest single decision
 """
 from __future__ import annotations
@@ -22,7 +23,7 @@ from apm_testbeds.wheeled_ctrl import SLOW, YIELD
 
 ENCOUNTER_M, CLOSE_M, HESITATION_PERSON_M, HESITATION_OBSTACLE_M = 1.0, 0.5, 1.5, 0.5
 KEYS = ("person_encounters", "close_encounters", "person_exposure_s", "switches", "oscillations", "hesitant",
-        "decisions", "decide_us", "max_decide_us")
+        "decisions", "decide_us", "max_decide_us", "observe_us")
 
 
 class Instrumented:
@@ -56,7 +57,11 @@ class Instrumented:
         if self.t_prev is not None and any(e.distance < ENCOUNTER_M for e in people):
             self.stats["person_exposure_s"] += t - self.t_prev
         self.t_prev, self.last_obs = t, obs
-        self.policy.observe(obs, t)
+        start = time.perf_counter()
+        try:
+            self.policy.observe(obs, t)
+        finally:
+            self.stats["observe_us"] += (time.perf_counter() - start) * 1e6
 
     def decide(self, t: float) -> int:
         start = time.perf_counter()
