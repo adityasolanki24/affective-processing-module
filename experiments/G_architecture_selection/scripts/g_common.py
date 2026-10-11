@@ -3,7 +3,8 @@
 A spec is a JSON dict. `kind`:
   "b0"         always GO
   "regulated"  B1 + regulator (`regulator` ∈ static | ema | hysteresis | bayes | learned, `params`), lam_c, lam_s;
-               optional `memory` {model, params, evidence} replaces F's memory with a G2 belief memory
+               optional `memory` {model, params, evidence} replaces F's memory with a G2 belief memory;
+               G8: `predictor` ∈ heuristic | single (default: F's ensemble), `no_memory` (memory columns zeroed)
   "b2v"        B2 variant (`mode` ∈ pad | appraisal | filter), lam_c, lam_s, k, k_t, tau, c
 Optional `trace` (list of (m, detour bonus, yield bonus)) replays a recorded modulation (negative controls).
 
@@ -30,6 +31,7 @@ from apm_research.harness import Lifetime, run_lifetime  # noqa: E402
 from apm_research.policies import B0  # noqa: E402
 from apm_research.predictor import EnsemblePredictor  # noqa: E402
 from apm_select.instrument import Instrumented  # noqa: E402
+from apm_select.minimal import HeuristicPredictor, NoMemory, SingleMember  # noqa: E402
 from apm_select.policies import MemoryRegulated  # noqa: E402
 from apm_select.regulators import B2Variant, Regulated, make_regulator  # noqa: E402
 from apm_testbeds.wheeled_ctrl import WorldConfig  # noqa: E402
@@ -50,7 +52,14 @@ def make_policy(spec: dict):
     if kind == "b0":
         return B0()
     pred = _STATE["predictor"]
+    if spec.get("predictor") == "heuristic":
+        pred = HeuristicPredictor()
+    elif spec.get("predictor") == "single":
+        pred = SingleMember.first_of(pred)
     trace = [tuple(x) for x in spec["trace"]] if spec.get("trace") else None
+    if kind == "regulated" and spec.get("no_memory"):
+        return NoMemory(pred, spec["lam_c"], spec["lam_s"], make_regulator(spec["regulator"], spec.get("params", {})),
+                        trace=trace, name=spec.get("label", "R"))
     if kind == "regulated" and spec.get("memory"):
         return MemoryRegulated(pred, spec["lam_c"], spec["lam_s"],
                                make_regulator(spec["regulator"], spec.get("params", {})), spec["memory"],
