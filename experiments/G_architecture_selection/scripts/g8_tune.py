@@ -32,13 +32,15 @@ def main() -> None:
     ap.add_argument("--n", type=int, required=True)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", type=Path, default=Path("runs/G8/tune"))
+    ap.add_argument("--first", type=int, default=0, help="first G8-V lifetime index")
+    ap.add_argument("--tag", default="", help="suffix for the output files (stage 2: _min)")
     args = ap.parse_args()
     start = time.time()
     variants = json.loads(args.variants.read_text())["variants"]
     grid = lhs(LAM, args.k, SEED)
     specs = [{**v, "lam_c": g["lam_c"], "lam_s": g["lam_s"], "label": name, "config_id": f"{name}:{i}"}
              for name, v in variants.items() for i, g in enumerate(grid)]
-    jobs = [{"spec": s, "experiment": "G8", "partition": "V", "index": i, "n_episodes": 10}
+    jobs = [{"spec": s, "experiment": "G8", "partition": "V", "index": args.first + i, "n_episodes": 10}
             for s in specs for i in range(args.n)]
     jobs.sort(key=lambda j: j["spec"].get("memory") is None)
     args.out.mkdir(parents=True, exist_ok=True)
@@ -48,14 +50,14 @@ def main() -> None:
         by[r["config_id"]].append(r)
     table = [{**s, **summarise(by[s["config_id"]])} for s in specs]
     best = {name: max((t for t in table if t["label"] == name), key=lambda t: t["J_mean"]) for name in variants}
-    write_json(HERE / "results" / "G8" / "tuning_table.json", {"table": table, "environment": environment(),
+    write_json(HERE / "results" / "G8" / f"tuning_table{args.tag}.json", {"table": table, "environment": environment(),
                                                                 "wall_s": round(time.time() - start, 1)})
     keep = {k for v in variants.values() for k in v} | {"lam_c", "lam_s"}
     systems = {name: {k: b[k] for k in keep if k in b} for name, b in best.items()}
     out = {"rule": "per variant max mean J on G8-V (equal K)", "systems": systems,
            "validation": {n: {k: best[n][k] for k in ("config_id", "J_mean", "collision_rate", "completion")}
                           for n in best}}
-    (HERE / "configs" / "G8_selected.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    (HERE / "configs" / f"G8_selected{args.tag}.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
     print(json.dumps(out["validation"], indent=1))
     assert np.isfinite([b["J_mean"] for b in best.values()]).all()
 
