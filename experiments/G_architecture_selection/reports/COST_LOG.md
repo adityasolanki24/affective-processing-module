@@ -5,4 +5,4 @@ login, see COMPUTE_PLAN.md). Programme F's spend (≈ US$3–5 estimated, unconf
 
 | date | phase | machine(s) | VM minutes | estimate (US$) | cumulative (US$) |
 |---|---|---|---|---|---|
-| — | approval pending | — | — | — | 0.00 |
+| 2026-10-12 | 1a G1 tuning + R5 ES | n2d-highcpu-96 (13:48–14:06) | 18 | 0.87 | 0.87 |

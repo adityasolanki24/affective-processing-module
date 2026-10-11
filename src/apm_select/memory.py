@@ -25,6 +25,9 @@ the prior for individuals and for unknown people:
   M4 Bayesian online change-point detection (Adams & MacKay 2007), constant hazard h, Beta prior from the pool,
      run length truncated at RMAX
   M5 two-state hidden Markov filter (low/high risk, emission q_low/q_high, switch probability s per trial)
+  M6 learned recurrent per-identity memory: a GRU cell (hidden 8) over the identity's own trial sequence
+     (input [y, w]) with a logistic read-out mixed with the pool prior; weights trained offline on G2-T encounter
+     logs (scripts/g2_m6_train.py), pure-NumPy inference
 """
 from __future__ import annotations
 
@@ -160,6 +163,29 @@ class HiddenState(Belief):
         return ph * hi + (1 - ph) * lo, self.n / (self.n + PRIOR_STRENGTH)
 
 
+class Neural(Belief):
+    """GRU over trials; p = σ(w·h + b + logit(prior)) so that an empty history returns the prior."""
+
+    def __init__(self, weights: dict):
+        self.w = {k: np.asarray(v, float) for k, v in weights.items()}
+        self.h = np.zeros(self.w["W_hr"].shape[0])
+        self.n = 0.0
+
+    def update(self, y: float, w: float, prior: float) -> None:
+        x = np.array([y, w])
+        W = self.w
+        r = 1 / (1 + np.exp(-(W["W_ir"] @ x + W["b_ir"] + W["W_hr"] @ self.h + W["b_hr"])))
+        z = 1 / (1 + np.exp(-(W["W_iz"] @ x + W["b_iz"] + W["W_hz"] @ self.h + W["b_hz"])))
+        n = np.tanh(W["W_in"] @ x + W["b_in"] + r * (W["W_hn"] @ self.h + W["b_hn"]))
+        self.h = (1 - z) * n + z * self.h
+        self.n += w
+
+    def p(self, prior: float) -> tuple[float, float]:
+        pr = min(1 - 1e-6, max(1e-6, prior))
+        logit = float(self.w["w_out"] @ self.h + self.w["b_out"][0]) + math.log(pr / (1 - pr))
+        return 1 / (1 + math.exp(-logit)), self.n / (self.n + PRIOR_STRENGTH)
+
+
 def make_belief(model: str, p: dict) -> Belief:
     if model == "M0":
         return Cumulative()
@@ -173,6 +199,8 @@ def make_belief(model: str, p: dict) -> Belief:
         return ChangePoint(p["hazard"])
     if model == "M5":
         return HiddenState(p["q_low"], p["q_high"], p["switch"])
+    if model == "M6":
+        return Neural(p["weights"])
     raise ValueError(model)
 
 
@@ -276,6 +304,8 @@ class BeliefMemory:
             return 3 * ChangePoint.RMAX
         if isinstance(b, HiddenState):
             return 2
+        if isinstance(b, Neural):
+            return int(b.h.size) + 1
         return 2
 
 
