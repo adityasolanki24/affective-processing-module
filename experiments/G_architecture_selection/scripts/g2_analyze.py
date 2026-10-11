@@ -68,7 +68,7 @@ def encounter_brier(rows: list[dict]) -> dict:
     sq, sq_or, n = 0.0, 0.0, 0
     bins = np.zeros((10, 3))
     for r in rows:
-        for (_, ident, _, klass, reliable, p0, disp, _) in r["encounters"]:
+        for (_, _ident, _, klass, reliable, p0, disp, _) in r["encounters"]:
             if klass not in ("collision", "exposed") or p0 is None or not reliable or disp is None:
                 continue
             y = 1.0 if klass == "collision" else 0.0
@@ -97,7 +97,7 @@ def selective(rows: list[dict]) -> dict:
     for r in rows:
         for k, v in r["memory_counts"].items():
             c[k] += v
-        for (_, ident, _, klass, _, _, disp, _) in r["encounters"]:
+        for (_, _ident, _, klass, _, _, disp, _) in r["encounters"]:
             if disp == "careful":
                 careful_total += 1
                 careful_avoided += klass == "avoided"
