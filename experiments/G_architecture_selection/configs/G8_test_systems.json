@@ -1,0 +1,85 @@
+{
+ "note": "G8 stage 1 test systems (prereg/G8_ADDENDUM.md)",
+ "systems": {
+  "A0": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.842559,
+   "lam_s": 1.770364,
+   "regulator": "ema",
+   "kind": "regulated"
+  },
+  "A0_static": {
+   "params": {},
+   "lam_c": 4.460059,
+   "lam_s": 2.300233,
+   "regulator": "static",
+   "kind": "regulated"
+  },
+  "A0_nomem": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 0.647692,
+   "lam_s": 3.888327,
+   "regulator": "ema",
+   "no_memory": true,
+   "kind": "regulated"
+  },
+  "A0_single": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 4.880455,
+   "lam_s": 2.561782,
+   "regulator": "ema",
+   "kind": "regulated",
+   "predictor": "single"
+  },
+  "A0_heur": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 1.933642,
+   "lam_s": 1.000742,
+   "regulator": "ema",
+   "kind": "regulated",
+   "predictor": "heuristic"
+  },
+  "A0_mem": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 1.214914,
+   "lam_s": 1.154961,
+   "regulator": "ema",
+   "kind": "regulated",
+   "memory": {
+    "model": "M1t",
+    "params": {
+     "tau_s": 356.352646
+    },
+    "evidence": "exposed",
+    "probe": {
+     "mode": "uncertainty",
+     "budget": 2,
+     "conf_max": 0.5
+    }
+   }
+  },
+  "B0": {
+   "kind": "b0"
+  }
+ }
+}
