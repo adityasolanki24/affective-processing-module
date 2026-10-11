@@ -72,3 +72,7 @@ too. No E3/E7/E4 test data were produced. E4 training (partitions T/V, no lock) 
 The refused runs execute once, with the addenda's sizes unchanged, on a second VM (`cloud/confirmatory2.sh`, logs
 under the untracked `runs/logs_X/`); the E4 evaluation uses the 40 networks trained on the first VM, whose SHA-256
 hashes `e4_eval.py` records.
+- (same day, 12:30 UTC) The second VM (n2-highcpu-32) ran ≈ 2.3× slower per vCPU than the pilot VM, so E3 + the E4
+  evaluation risked its 75-min hard cap. The E4 evaluation therefore runs on a third VM (`cloud/e4eval.sh`, same
+  N, models and code); the second VM is stopped after E3 and E3 retention. Any partial E4 evaluation it may have
+  started is discarded without inspection.
