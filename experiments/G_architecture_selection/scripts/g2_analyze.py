@@ -159,6 +159,7 @@ def main() -> None:
     ap.add_argument("--power", action="store_true")
     ap.add_argument("--tuning", action="store_true")
     ap.add_argument("--candidate", default=None, help="M* (from the validation selection)")
+    ap.add_argument("--tag", default="g2", help="output file prefix")
     args = ap.parse_args()
     data = load(args.runs / args.partition / "lifetimes.jsonl")
     if args.tuning:
@@ -202,11 +203,11 @@ def main() -> None:
                           "closed_loop_vs_M0": cl, "noninferiority": ni, "all_pass": all(crit.values())}
     others = {}
     for label in data:
-        if label != "M0_all" and "M0_all" in data:
+        if label != "M0_all" and "M0_all" in data and data[label]:
             others[label] = closed_loop([r for rs in data[label].values() for r in rs],
                                         [r for rs in data["M0_all"].values() for r in rs])
     res["closed_loop_vs_M0_all"] = others
-    print(write_json(HERE / "results" / "G2" / f"g2_{args.partition}.json", strip(res)))
+    print(write_json(HERE / "results" / "G2" / f"{args.tag}_{args.partition}.json", strip(res)))
     brief = {k: {"brier": round(v["brier"]["brier"], 4), "regret": round(v["brier"]["regret"], 4),
                  "S1": (v.get("adaptation_S1") or {}).get("median"), "S2": (v.get("adaptation_S2") or {}).get("median"),
                  "no_evidence": round(v["selective"]["no_evidence_share"], 3)} for k, v in res["summary"].items()}

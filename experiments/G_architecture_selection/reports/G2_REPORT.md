@@ -46,3 +46,25 @@ people involve avoidance.
    on F's policy; under the G1 rule they are miscalibrated (the Oracle's Brier is worse than the memories'), so regret
    is not interpreted. F's median-based adaptation definition can also tie when most identities share a rate (the
    Oracle's S1 median is "not reached" for that reason).
+
+## G2b — revision under selective feedback (`prereg/G2b_ADDENDUM.md`)
+
+Validation again selected no M\* (no candidate met criterion (i) with both medians ≤ 6), so the test (G2-X indices
+1000–1059 per family, 6 systems; commit `5dd220e`, lock passed; `results/G2/g2b_X.json`) is secondary.
+
+| system | S1 median [95% CI] | S1 RMST | S2 median | S2 RMST | collisions vs M0_all | completion | probes |
+|---|---|---|---|---|---|---|---|
+| M0_all | not reached | 10.7 | not reached | 12.5 | — | — | 0 |
+| M1 (trial discount) | not reached | 10.8 | not reached | 11.7 | −9.5% | −0.7 pp | 0 |
+| M1t (time decay, τ 356 s) | 9 [4, —] | 8.6 | 11 | 9.4 | −11.6% [−14.1, −9.1] | −0.6 pp | 0 |
+| **M1t + uncertainty probing** | **6 [2, 13]** | **7.1** | **8** | **8.3** | −10.1% [−12.5, −7.7] | −0.7 pp | 9,242 |
+| M1 + uncertainty probing | not reached | 10.4 | not reached | 11.6 | −10.0% | −0.7 pp | 6,047 |
+| M1t + random probing (same budget) | 12 | 8.8 | 13 | 9.4 | −11.0% | −0.7 pp | 7,595 |
+
+**Findings.** Revision needs *both* ingredients: evidence-free decay toward the prior (without it, probing alone does
+nothing: M1 + probing = M1) and *targeted* information gathering (random probing at a similar probe count is
+clearly worse). The combination halves the time to revise a risky→safe person (RMST 7.1 vs 10.7 episodes) without a
+safety cost (collisions still −10% vs F's memory; probes are budgeted SLOW approaches under the unchanged safety
+supervisor). It still falls short of the preregistered ≤ 6-episode criterion in S2 (safe→risky: median 8), so G2's
+answer remains "no memory met the adaptation criterion"; the best-supported memory design is **exposure-gated
+evidence + time decay + uncertainty-guided probing**.
