@@ -8,6 +8,7 @@ Deployment identifiers are local configuration, never repository content:
   APM_GCP_ZONE             default us-central1-a
 
 Subcommands (anything that costs money prints its plan and needs --yes):
+  network-up --yes / network-down     temporary Cloud NAT so the private (no external IP) VM can install packages
   launch --machine M --max-minutes K   bundle the committed HEAD (git bundle, so the confirmatory lock sees a clean
                                        clone), upload it and start a VM that runs cloud/vm_startup.sh → cloud/job.sh
   status RUN                           VM state and the tail of the run's log
@@ -34,6 +35,8 @@ PROJECT = os.environ.get("APM_GCP_PROJECT", "").strip()
 BUCKET = os.environ.get("APM_GCP_BUCKET", "").strip()
 SERVICE_ACCOUNT = os.environ.get("APM_GCP_SERVICE_ACCOUNT", "").strip()
 ZONE = os.environ.get("APM_GCP_ZONE", "us-central1-a").strip()
+REGION = ZONE.rsplit("-", 1)[0]
+ROUTER, NAT = "apm-f-router", "apm-f-nat"
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 IMAGE_FAMILY, IMAGE_PROJECT = "ubuntu-2404-lts-amd64", "ubuntu-os-cloud"
@@ -96,12 +99,39 @@ def cmd_launch(a) -> None:
         startup = lf_copy(HERE / "vm_startup.sh", Path(tmp))
         run([g, "compute", "instances", "create", vm_name(run_id), f"--project={PROJECT}", f"--zone={ZONE}",
              f"--machine-type={a.machine}", f"--image-family={IMAGE_FAMILY}", f"--image-project={IMAGE_PROJECT}",
-             "--boot-disk-size=50GB", f"--service-account={SERVICE_ACCOUNT}", "--scopes=cloud-platform",
+             "--boot-disk-size=50GB", "--no-address", f"--service-account={SERVICE_ACCOUNT}", "--scopes=cloud-platform",
              f"--max-run-duration={a.max_minutes}m", "--instance-termination-action=DELETE",
              "--labels=apm-f=1", f"--metadata-from-file=startup-script={startup}",
              "--metadata=" + ",".join([f"apm-bucket={BUCKET}", f"apm-run-id={run_id}", f"apm-code-sha={sha}",
                                        f"apm-branch={branch}", f"apm-job={a.job}"])])
     print(f"started run {run_id}; follow with: python {Path(__file__).name} status {run_id}")
+
+
+def cmd_network_up(a) -> None:
+    need_config()
+    if not a.yes:
+        sys.exit(f"not executed; re-run with --yes (creates router {ROUTER} and Cloud NAT {NAT} in {REGION})")
+    g = gcloud()
+    run([g, "compute", "routers", "create", ROUTER, f"--project={PROJECT}", "--network=default", f"--region={REGION}"])
+    run([g, "compute", "routers", "nats", "create", NAT, f"--router={ROUTER}", f"--project={PROJECT}",
+         f"--region={REGION}", "--auto-allocate-nat-external-ips", "--nat-all-subnet-ip-ranges"])
+
+
+def cmd_network_down(a) -> None:
+    need_config()
+    g = gcloud()
+    if run([g, "compute", "instances", "list", f"--project={PROJECT}", "--filter=labels.apm-f=1",
+            "--format=value(name)"], capture=True):
+        sys.exit("a programme-F VM still exists; delete it first")
+    run([g, "compute", "routers", "nats", "delete", NAT, f"--router={ROUTER}", f"--project={PROJECT}",
+         f"--region={REGION}", "--quiet"], check=False)
+    for _ in range(5):  # the router can briefly stay "in use" right after the NAT is deleted
+        if subprocess.run([g, "compute", "routers", "delete", ROUTER, f"--project={PROJECT}", f"--region={REGION}",
+                           "--quiet"], capture_output=True).returncode == 0:
+            print(f"deleted {NAT} and {ROUTER}")
+            return
+        time.sleep(30)
+    sys.exit(f"router {ROUTER} could not be deleted; check with: audit")
 
 
 def cmd_status(a) -> None:
@@ -133,7 +163,8 @@ def cmd_audit(a) -> None:
     g = gcloud()
     for what, args in (("VMs", ["compute", "instances", "list", "--filter=labels.apm-f=1"]),
                        ("disks", ["compute", "disks", "list", "--filter=name~^apm-f-"]),
-                       ("addresses", ["compute", "addresses", "list"])):
+                       ("addresses", ["compute", "addresses", "list"]),
+                       ("routers", ["compute", "routers", "list"])):
         print(f"{what}:", run([g, *args, f"--project={PROJECT}", "--format=value(name)"], capture=True) or "none")
     objs = subprocess.run([g, "storage", "ls", f"gs://{BUCKET}/apm-f/"], text=True, capture_output=True)
     print("bucket objects under apm-f/:", (objs.stdout or "").strip() or "none")
@@ -160,9 +191,11 @@ def main() -> None:
         q.add_argument("--lines", type=int, default=30)
         q.add_argument("--yes", action="store_true")
     sub.add_parser("audit")
+    sub.add_parser("network-up").add_argument("--yes", action="store_true")
+    sub.add_parser("network-down")
     a = ap.parse_args()
     {"launch": cmd_launch, "status": cmd_status, "fetch": cmd_fetch, "kill": cmd_kill, "audit": cmd_audit,
-     "cleanup": cmd_cleanup}[a.cmd](a)
+     "cleanup": cmd_cleanup, "network-up": cmd_network_up, "network-down": cmd_network_down}[a.cmd](a)
 
 
 if __name__ == "__main__":
