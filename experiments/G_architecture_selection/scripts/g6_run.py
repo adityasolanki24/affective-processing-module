@@ -17,9 +17,21 @@ from pathlib import Path
 
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 HERE = Path(__file__).resolve().parents[1]
+
+
+def _load_g_seeds():
+    """Programme G's seeds.py under a unique module name (programme F also has a `seeds` module)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("g_seeds", HERE / "seeds.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault("g_seeds", mod)
+    spec.loader.exec_module(mod)
+    return sys.modules["g_seeds"] if sys.modules["g_seeds"] is not mod else mod
+
+
+S = _load_g_seeds()
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "scripts"))
-import seeds as S  # noqa: E402
 from g45_eval import _NETS  # noqa: E402
 from g45_eval import _init as _init_nets  # noqa: E402
 from g45_train import _W, make_learner  # noqa: E402

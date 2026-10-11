@@ -1,28 +1,23 @@
-# Programme G status / handoff (2026-10-12, ≈14:15 UTC)
+# Programme G status (2026-10-12, 17:55 UTC) — complete
 
-## Done
-- G0: framework, 14 integrity tests, audit (gate passed) — `reports/G0_AUDIT.md`.
-- G1: pilot, addendum (N_X = 280, S 4 × 100), equal-budget tuning on V (VM 13:48–14:06, ≈ US$0.87),
-  frozen selection `configs/G1_selected.json` (R_best = R2, EMA).
-- E1 (F) stage 1: wheeled and NERVA P/T/V data regenerated **bit-identically** to F's manifests; models training.
-- G2: memories M0–M6 (`src/apm_select/memory.py`; M6 added last, untested), scenarios S1–S9, runner, tuning,
-  analysis, KM survival; local pilot done (power: closed-loop NI needs ≈ 56 pooled lifetimes → N = 60/scenario floor).
+All experiments G0–G9 and programme F's E1 are complete, analysed, committed and pushed on
+`research/apm-v0.3-architecture-selection`. **Final decision: A — simple predictive regulator**
+(`ARCHITECTURE_DECISION.md`).
 
-## Running at hand-off (self-deleting; hard caps)
-| run id | job | cap (UTC) |
-|---|---|---|
-| 20261012-010834-g1test | G1 confirmatory X + S | 14:49 |
-| 20261012-005126-e1s1 | E1 wheeled training (T/V/P) | 14:52 |
-| 20261012-005704-e1nerva | E1 NERVA data + training | 14:47 |
+| item | state |
+|---|---|
+| G0 fair-comparison framework | done; 120/120 repository tests pass |
+| G1 PAD vs simple regulators | done; G9 re-test governs (PAD +99% avoidable collisions; EMA regulator −47% vs static) |
+| G2 / G2b memory | done; no memory meets the adaptation criterion; best design = exposure gating + time decay + probing |
+| G3 persistent predictor state | done; no state required (fast+slow −38% avoidable, secondary) |
+| G4 / G5 tournament and training | done; no neural candidate beats A0; BC→PPO ≫ PPO from scratch |
+| G6 robustness | done; A0 + revisable memory most robust; G9 eligibility underpowered |
+| G7 lifelong learning | done; no validated weight learning (gate blocked all updates) |
+| G8 minimisation | done; G9: no A0 component removable |
+| G9 validity re-test (defect D8) | done |
+| F's E1 | done; PAD/appraisal add no predictive information |
+| Cloud | ≈ US$13.3 of the approved US$30 (estimate; reconcile in the billing console); teardown audit clean |
 
-## Next steps
-1. After the VMs are gone: `python experiments/G_architecture_selection/cloud/launch.py fetch <run>` for each run,
-   then `network-down` and `audit` (env vars APM_GCP_*), delete `apm-g/` bucket objects after fetching; update
-   `reports/COST_LOG.md`.
-2. G1: copy `runs/cloud/<g1test>/runs/G1/{X,S}` to `runs/G1/`, run `scripts/g1_analyze.py --partition X` and `--partition S`,
-   commit results; write the G1 report and decision.
-3. E1: power from P preds (`F/scripts/e1_analyze.py --part P --power`), write `F/prereg/E1_ADDENDUM.md`, stage 2
-   (generate X, retrain with X predictions), analyse.
-4. G2: add a test for M6 + `scripts/g2_m6_train.py` (T logs) and probing factor, write `prereg/G2_ADDENDUM.md`
-   (K 16, N 6 tuning, NV 12 validation, N_X 60/scenario), run `g2_tune.py` then the test.
-5. Then G3 → G8 per `MASTER_PREREGISTRATION.md`; budget approved US$30 (phase 1 cap US$6).
+Open follow-ups (each needs its own preregistration): revisable memory as default with a fixed calibrated penalty;
+slow context state in the predictor; safety-constrained learned efficiency layer; powered promotion gate; a testbed
+that does not spawn the robot overlapping people.

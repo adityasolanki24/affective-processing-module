@@ -15,8 +15,20 @@ from multiprocessing import Pool
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parents[1]
+
+
+def _load_g_seeds():
+    """Programme G's seeds.py under a unique module name (programme F also has a `seeds` module)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("g_seeds", HERE / "seeds.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault("g_seeds", mod)
+    spec.loader.exec_module(mod)
+    return sys.modules["g_seeds"] if sys.modules["g_seeds"] is not mod else mod
+
+
+S = _load_g_seeds()
 sys.path.insert(0, str(HERE))
-import seeds as S  # noqa: E402
 
 from apm_research.harness import Lifetime, run_lifetime  # noqa: E402
 from apm_select.stateful import ExploreRecorder, LabelRecorder, lifetime_arrays  # noqa: E402

@@ -31,9 +31,21 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).resolve().parents[1]
+
+
+def _load_g_seeds():
+    """Programme G's seeds.py under a unique module name (programme F also has a `seeds` module)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("g_seeds", HERE / "seeds.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault("g_seeds", mod)
+    spec.loader.exec_module(mod)
+    return sys.modules["g_seeds"] if sys.modules["g_seeds"] is not mod else mod
+
+
+S = _load_g_seeds()
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "scripts"))
-import seeds as S  # noqa: E402
 
 from apm_research.dataset import DecisionRecorder  # noqa: E402
 from apm_research.features import WIDTH  # noqa: E402

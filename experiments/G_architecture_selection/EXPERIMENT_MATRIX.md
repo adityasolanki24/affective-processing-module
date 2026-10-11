@@ -15,6 +15,6 @@ Status legend: **done** (results committed) · **ready** (code + tests + pilot, 
 | G7 | continual adaptation, cross-embodiment? | frozen + memory / periodic / shadow + replay / alt. CL; NERVA comparable signals only | new phase partitions | per addendum | G6 survivors | **done** (predictor updates): gate blocked all updates; ungated replay learns but regresses safety (`reports/G7_REPORT.md`) |
 | G8 | minimal architecture | ablations of every component; Pareto (behaviour vs complexity, compute, robustness) | X/S reuse only for reporting ablations of the already-selected model; no reselection | per addendum | G7 | **done**: memory and neural prediction needed; combined minimal model not confirmed (`reports/G8_REPORT.md`) |
 
-| G9 | validity re-test of G1/G3/G4–G5/G6/G8 on avoidable collisions (testbed defect D8) | same frozen systems/models | fresh X/S indices 10000+ | as the original families | G1–G8 | running |
+| G9 | validity re-test of G1/G3/G4–G5/G6/G8 on avoidable collisions (testbed defect D8) | same frozen systems/models | fresh X/S indices 10000+ | as the original families | G1–G8 | **done** (governs; `reports/G9_REPORT.md`) |
 
 Programme F items accounted for in `reports/F_ACCOUNTING.md` (E1 completed under `F/prereg/E1_ADDENDUM.md`; E5/E6 reduced versions superseded by G7).
