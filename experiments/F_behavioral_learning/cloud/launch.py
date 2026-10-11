@@ -104,7 +104,8 @@ def cmd_launch(a) -> None:
              f"--max-run-duration={a.max_minutes}m", "--instance-termination-action=DELETE",
              "--labels=apm-f=1", f"--metadata-from-file=startup-script={startup}",
              "--metadata=" + ",".join([f"apm-bucket={BUCKET}", f"apm-run-id={run_id}", f"apm-code-sha={sha}",
-                                       f"apm-branch={branch}", f"apm-job={a.job}"])]
+                                       f"apm-branch={branch}", f"apm-job={a.job}",
+                                       f"apm-input-run={a.input_run}"])]
         for zone in ZONES:  # capacity differs by zone (stockouts)
             print(f"  trying {zone}")
             r = subprocess.run([*base, f"--zone={zone}"], text=True, capture_output=True)
@@ -198,6 +199,7 @@ def main() -> None:
     p.add_argument("--machine", default="n2d-highcpu-96")
     p.add_argument("--max-minutes", type=int, required=True)
     p.add_argument("--job", required=True, choices=sorted(f.stem for f in HERE.glob("*.sh") if f.stem != "vm_startup"))
+    p.add_argument("--input-run", default="", help="earlier run id whose outputs the job reads")
     p.add_argument("--yes", action="store_true")
     for name in ("status", "fetch", "kill", "cleanup"):
         q = sub.add_parser(name)

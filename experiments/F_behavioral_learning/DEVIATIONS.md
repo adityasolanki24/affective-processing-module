@@ -61,3 +61,14 @@ all systems of one experiment run on the same machine. The frozen E2 predictor w
   exceptions; they are now counted separately (`injected`) and `e7_analyze.py` reports criterion (1) (genuine
   exceptions = 0) and criterion (2) evidence (fallbacks under `model_failure`). Instrumentation only; behaviour is
   unchanged. The pilot showed that all counted exceptions were injected ones (`prereg/E7_ADDENDUM.md`).
+
+## 2026-10-11 — E3/E7/E4-evaluation refused on the first confirmatory VM (no data); rerun on a second VM
+
+On the first confirmatory VM (run `20261011-225736`, commit `24aabfe`), `cloud/confirmatory.sh` redirected the E2
+log to `runs/E2_X.log`, a file force-added (empty) by the container snapshot `8601f6e`. E2's lock passed (the file
+was still empty) and E2 ran completely with a clean-tree provenance; once E2 wrote its log the tracked file was
+modified, so the locks of E7, E3 and E3 retention refused to run, as designed, and the E4 evaluation will refuse
+too. No E3/E7/E4 test data were produced. E4 training (partitions T/V, no lock) continued unaffected on that VM.
+The refused runs execute once, with the addenda's sizes unchanged, on a second VM (`cloud/confirmatory2.sh`, logs
+under the untracked `runs/logs_X/`); the E4 evaluation uses the 40 networks trained on the first VM, whose SHA-256
+hashes `e4_eval.py` records.
