@@ -1,0 +1,200 @@
+{
+ "provenance": {
+  "python": "3.12.3",
+  "platform": "Linux-7.0.0-1011-gcp-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "cpus": 96,
+  "commit": "f3806f0f6c0c141e46d6f09c206e38a7cc46a335",
+  "dirty": false,
+  "start_utc": "2026-10-11T14:14:46Z",
+  "numpy": "2.5.4",
+  "torch": "2.14.1+cpu",
+  "mujoco": null,
+  "onnxruntime": null,
+  "addendum": "experiments/G_architecture_selection/prereg/G1_ADDENDUM.md",
+  "addendum_sha256": "d4da6d9d0c260f338c9888cf5904e582b343d813d9b5c0c56c9494a011688eb1",
+  "sources": {
+   "src/apm/__init__.py": "9a596d39ebe4ec3fc6329ad5d92f1a865b8b705bc83a0a2836b2f6b9103e42ab",
+   "src/apm/adapters/__init__.py": "c9bf9d2da4b41cf64c0412cc2ff9489e0732349f13aecbf2a589a3d7728b01a9",
+   "src/apm/adapters/base.py": "2365ab309d4968dd9c309286b294214a55f64eb2c4084e97a3cd501fcf481d15",
+   "src/apm/adapters/nerva.py": "dbbc5616e24c2ab7d2e38a9d9a6573a0858a058ffe845b43b908cc4ae0d4b45d",
+   "src/apm/adapters/wheeled.py": "fc756c84214a7b8ed95dc07422b1fc03135239ead18371a829242b3084a73cc7",
+   "src/apm/adapters/wheeled_ctrl.py": "bfe27767e6677480e7e2124eebb80692baf81df212a91093d10e0b36848c2e4c",
+   "src/apm/core/__init__.py": "20cfb62d98a58db7fa374a079a989763418edefc2e639507a55b5e32c75e3800",
+   "src/apm/core/affect.py": "943f46fc966cacd9710381ebec84b7951de0c6eeb54cd98ab5ee12be9893159a",
+   "src/apm/core/appraisal.py": "5b11ad6b8f74e14e8f23231e135fe51157ee853e051e1fda2285cf15e4c17102",
+   "src/apm/core/context.py": "e3c2f01cbb5c918bfab595797e24999c4cf4a30efbdf9b26ec00870ae7360741",
+   "src/apm/core/outcomes.py": "2faa4d20975321ac1bff7699bca533d82f1ddea420bb5ee64193bd2d0f98d8a9",
+   "src/apm/core/runtime.py": "e0ed5095d98c7cd3311d4818eb9e44899e5fa3b98928b9defcc5335f29c61f00",
+   "src/apm/core/tendencies.py": "c3be9a43b21766ca1dbb10d1e3beb074657eec212fd86718a9292d51c816f60c",
+   "src/apm/learning/__init__.py": "a4e3af8828979aed3dfa99a1e1f419cbba6b2067c33d9593eb9f10d1b1a2303a",
+   "src/apm/learning/baselines.py": "8879436188b04780d3e56ca614677941857150d5748610b1e300d67ed162783c",
+   "src/apm/learning/dataset.py": "e9c721bd082b5426cbbfc0178433bbd8796ad56de64a03928b7b7753c92f1ce0",
+   "src/apm/learning/evaluation.py": "03278271024815ee69e616e9b64ec92df4e4f97ebc17c083dbad16cd8e89d2ab",
+   "src/apm/learning/features.py": "b141492a7e4344fb78cdd9a4ff14826bf6a7357b3e04a9d3905db16ef8e49af7",
+   "src/apm/learning/predictor.py": "e1b018bdd373e0c9d0c9fffa4ae0c8edca6ca22b98c1072303755e58b604fdd6",
+   "src/apm/learning/replay.py": "eef52f4d22111de28c4890bd107d7b74ba54e5512af6f861a262a3d138e62b86",
+   "src/apm/memory/__init__.py": "62ac475ddabf697b0f8fc180649ace5ee3b732b6ebea5ddb2c7907b731ecc2a0",
+   "src/apm/memory/entities.py": "173d414ebb546054d9acd8369f9b573793676e8284fc8a8764b31fc0ba8de0d9",
+   "src/apm/memory/episodes.py": "87580bab7899d9c01ab6be9ff6647f8d869a1501d3c2db86ac73b1979f3e2aca",
+   "src/apm/protocol/__init__.py": "3cfca2a7fa01ffbc0cebebb22a2314e3265bf69481494ca9b5eb224f94e26c74",
+   "src/apm/protocol/codec.py": "14e88aa21be77a3ec0ef97e89ab6fbc3a9308b5f29ec9af4a1114f4cb1b1f58d",
+   "src/apm/protocol/messages.py": "e865d265cd144d3d8cc261b51f4dc5ef90fd05fad31e4b27342cdb611225ada7",
+   "src/apm/protocol/validation.py": "0fd57e70e7e0001ff94539bf9acb2016025ebe8c30b4687db21d6a5d5c4c57d5",
+   "src/apm_research/__init__.py": "7d6698a2157cb823a4aa032610b50d904b045f077c4a30d4c0d2fd8b8cc05845",
+   "src/apm_research/dataset.py": "71c053311345761b32c288988abbcf4ef2a691361cfa3df93a897890440aa95b",
+   "src/apm_research/features.py": "9a2f03e6e381d3467d1f068f97e9920b7780aa6ae28bacba09842d7a29886d2e",
+   "src/apm_research/harness.py": "6af5bcc7cf6f5ba6e8ecb9c2bf16b01612136283df3ac4da4c905fe64f582fbf",
+   "src/apm_research/memory.py": "138c5742b0619051867c1ebb3c152830491a73f0515842fe5be88035d2a6b95e",
+   "src/apm_research/policies.py": "44c53853ea866d1a6fffa4e8248a8e78e0e230a7aa51332716fc900ba944ddef",
+   "src/apm_research/predictor.py": "e2ffc8be28a4397df2134baf127fcffb1cd281633701f63d8cecf1395039549b",
+   "src/apm_research/provenance.py": "91441e429eb41f468442a276b276c49553b905dfd01521647aefdb5eed7fa564",
+   "src/apm_research/rl.py": "ea9fb16a3e5725fd01a3c074b02509140146573fe3892a4b7011ec787789f965",
+   "src/apm_research/stats.py": "1ba7f0afdc0adaa33eb2aa367ff54e94435d06ebaf20eb76092abe86ada4b4a9",
+   "src/apm_testbeds/__init__.py": "1d801ac1d4b636c72388a83529448a1a7272aea061461c5afe30232191fd2d72",
+   "src/apm_testbeds/wheeled.py": "986b8320e7806be6b07a4718fd31a510ad64cf6ba7391b826ee89976afaefc36",
+   "src/apm_testbeds/wheeled_ctrl.py": "2c25364a8caad451c9fca4f655533c4cbd54c5884e96b493a60eea02443c7c61",
+   "src/apm_select/__init__.py": "865398e77cd5d6d9caff665d205588a095ec0ca38fb3701db6e9eee26cdab99e",
+   "src/apm_select/instrument.py": "3c8c5b7a6d19fdf9b801340dd6d6485a31056c29f00c44f6fab79a847de6caf0",
+   "src/apm_select/memory.py": "75ba30f989c739dc7a041b2218886e330e4280a6fb0185e8c769351bbf1be211",
+   "src/apm_select/policies.py": "d7ba0c15df0ccefea0f41a418f26b5e6dad6ee35060d0fac19c613f2dac9e2af",
+   "src/apm_select/provenance.py": "63681fabf1e8be5f97b1f81eaec3c9b7ff312a716c1f32bdd5f88a971c446b63",
+   "src/apm_select/regulators.py": "3a1b6d8f4d5747dfe5d92e720a71dab993305a22ff6f6b4916dcbf1c4bfa50d2",
+   "src/apm_select/scenarios.py": "07536fccd8325331af64a426626f56aadf8c74766ba0ec57e83121fa4674db63",
+   "src/apm_select/stats.py": "3a73044da9182ff1f9cc8b1c8e768e57075fda07a1740ab8d34f3bd5c7a84614",
+   "src/apm_select/survival.py": "4be6fd82ec44ea364dfecf1569006c1931a1fc2bce30592032b428e8113b3a70",
+   "src/apm_select/tuning.py": "e40193c26979c14b924026f8080a88846e2c696067ebe2c379916bca43d32b21",
+   "experiments/G_architecture_selection/cloud/launch.py": "b2e353570cbd06357b9cb0d1e87776322972d39040824a5e637782e1cda3b3a4",
+   "experiments/G_architecture_selection/scripts/g1_analyze.py": "6f7b935359b3a2579e80cab465e319ecba47fdb0427efe714551b679b5a19b9d",
+   "experiments/G_architecture_selection/scripts/g1_es.py": "69c25a2dab0c486eb104343590751434b013777c0dddfa39835c0c2c7edf349b",
+   "experiments/G_architecture_selection/scripts/g1_run.py": "302829793ef43cb968430a39779a73dab76e0341e3d63886359b88301d86c412",
+   "experiments/G_architecture_selection/scripts/g1_select.py": "d1a611905afccc102fc353284312dbf960931bca27c2dce26dad29db9d5d000e",
+   "experiments/G_architecture_selection/scripts/g1_tune.py": "14efaf97d071173df6512aff82e22d7a46720d08d5cb69218998bb0238791ef9",
+   "experiments/G_architecture_selection/scripts/g2_analyze.py": "24da6e06a140f736d3b171d5b3e75fe9beb6f0a1f4dbc750013549b3d99fd763",
+   "experiments/G_architecture_selection/scripts/g2_run.py": "ac82f7648dfdfdacbbeacc27f37f7fc2a133c80a1e204bd41b3cf021d2a42485",
+   "experiments/G_architecture_selection/scripts/g2_tune.py": "3c8e29895eb073190fad3ae58677d98678810eaf1547d13d2cdebb7888b0d337",
+   "experiments/G_architecture_selection/scripts/g_common.py": "8521e4dd2f506583356fadadcb66a0a46fd1363a2e06170bb498e86c78735986",
+   "experiments/G_architecture_selection/seeds.py": "65c69ef77ecffee9b6b15b3c7414bbf07d37b9e76bf034a0c1634dad42fcb20a"
+  }
+ },
+ "systems_file": "experiments/G_architecture_selection/configs/G1_selected.json",
+ "systems_sha256": "8ace1902159e52f23f6d1cecb66c45f8a06a78bf3cef6fd984431a925b698800",
+ "systems": {
+  "B0": {
+   "kind": "b0"
+  },
+  "R0": {
+   "kind": "regulated",
+   "regulator": "static",
+   "lam_c": 1.0,
+   "lam_s": 2.0
+  },
+  "R1": {
+   "kind": "regulated",
+   "regulator": "static",
+   "params": {},
+   "lam_c": 2.507591,
+   "lam_s": 1.513288,
+   "config_id": "R1:40"
+  },
+  "R2": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "config_id": "R2:10"
+  },
+  "R3": {
+   "kind": "regulated",
+   "regulator": "hysteresis",
+   "params": {
+    "tau_up": 2.951774,
+    "tau_down": 18.59798,
+    "k": 6.218624,
+    "c": 0.38764
+   },
+   "lam_c": 0.360657,
+   "lam_s": 2.661762,
+   "config_id": "R3:5"
+  },
+  "R4": {
+   "kind": "regulated",
+   "regulator": "bayes",
+   "params": {
+    "tau_f": 52.812602,
+    "z": 1.742761,
+    "k": 0.236065
+   },
+   "lam_c": 1.543699,
+   "lam_s": 1.745095,
+   "config_id": "R4:18"
+  },
+  "R5": {
+   "kind": "regulated",
+   "regulator": "learned",
+   "params": {
+    "w": [
+     0.24280987599765666,
+     -0.3340517708092281,
+     0.35617552281009196,
+     -0.457315614872924,
+     0.49332354402137846,
+     0.2569382204123129,
+     0.38472081085372095,
+     0.08893245745273497
+    ]
+   },
+   "lam_c": 1.2488114483273174,
+   "lam_s": 2.167610672601844,
+   "config_id": "R5:final"
+  },
+  "R6": {
+   "kind": "b2v",
+   "mode": "pad",
+   "lam_c": 0.167548,
+   "lam_s": 2.452224,
+   "k": 4.007308,
+   "k_t": 0.326636,
+   "tau": 1.0,
+   "c": 0.0,
+   "config_id": "R6:10"
+  },
+  "R7": {
+   "kind": "b2v",
+   "mode": "appraisal",
+   "lam_c": 2.221136,
+   "lam_s": 1.503195,
+   "k": 0.98738,
+   "k_t": 0.220434,
+   "tau": 1.0,
+   "c": 0.0,
+   "config_id": "R7:33"
+  },
+  "R8": {
+   "kind": "b2v",
+   "mode": "filter",
+   "lam_c": 1.735436,
+   "lam_s": 1.021132,
+   "k": 3.690263,
+   "k_t": 0.285519,
+   "tau": 0.745141,
+   "c": 0.005261,
+   "config_id": "R8:25"
+  }
+ },
+ "controls": [],
+ "n": 100,
+ "episodes": 10,
+ "conditions": [
+  "nominal",
+  "miscal_x3",
+  "dense",
+  "sparse"
+ ],
+ "wall_s": 221.8
+}
