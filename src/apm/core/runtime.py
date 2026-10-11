@@ -74,6 +74,9 @@ class Outputs:
     expectations: list[MemoryExpectation]
     diagnostics: Diagnostics
 
+    def affect_vector(self) -> np.ndarray:
+        return np.array([self.affect.valence, self.affect.arousal, self.affect.dominance])
+
     def messages(self) -> list[Any]:
         return [self.affect, *self.appraisals, *self.tendencies, *self.attention, self.expression,
                 *self.expectations, self.diagnostics]
@@ -225,7 +228,8 @@ class APM:
             expectations.append(MemoryExpectation(header=self._header("expectation", now_s), target=track_id,
                                                   context=obs.identity or f"type:{obs.entity_type}", **e))
         strain = 1.0 - min(margins.values()) if margins else 0.0
-        tendencies = self.tendency_filter.update(raw_tendencies(frames + recent, novelty, p_adverse, strain), now_s)
+        tendencies = self.tendency_filter.update(
+            raw_tendencies(frames + recent, novelty, p_adverse, strain, margins.get("stability_margin")), now_s)
         return Outputs(
             affect=self._affect_message(now_s),
             appraisals=[self._frame_message(f, now_s) for f in frames + recent],

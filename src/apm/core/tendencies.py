@@ -8,7 +8,8 @@ Per target (APM design formulas):
   approach        Σ relevance·max(d,0)·likelihood                           (beneficial)
   orient          Σ relevance·(1 − expectedness) over recent observed outcomes, plus novelty of a new entity
   explore         novelty · (1 − expected adverse probability)
-  seek_assistance only for "self": strain · (1 − mean controllability of adverse frames)
+  seek_assistance only for "self": strain · (1 − control), control = mean controllability of adverse frames,
+                  or the stability margin when there are none (a fallen robot keeps asking)
 Each Σ is a noisy-OR; outputs are exponentially smoothed with TAU_S so they do not chatter with the input rate.
 """
 from __future__ import annotations
@@ -24,7 +25,7 @@ NAMES = ("approach", "avoid", "orient", "explore", "disengage", "seek_assistance
 
 
 def raw_tendencies(frames: list[Frame], novelty: dict[str, float], p_adverse: dict[str, float],
-                   strain: float) -> dict[str, dict[str, float]]:
+                   strain: float, stability: float | None = None) -> dict[str, dict[str, float]]:
     targets = {f.target or "self" for f in frames} | set(novelty) | {"self"}
     out = {}
     for t in targets:
@@ -41,7 +42,10 @@ def raw_tendencies(frames: list[Frame], novelty: dict[str, float], p_adverse: di
             "seek_assistance": 0.0,
         }
     self_adverse = [f for f in frames if f.desirability < 0]
-    control = sum(f.controllability for f in self_adverse) / len(self_adverse) if self_adverse else 1.0
+    if self_adverse:
+        control = sum(f.controllability for f in self_adverse) / len(self_adverse)
+    else:  # no live adverse appraisal: the body's own stability margin is the best evidence of control left
+        control = stability if stability is not None else 1.0
     out["self"]["seek_assistance"] = min(1.0, max(0.0, strain * (1.0 - control)))
     return out
 

@@ -54,3 +54,15 @@ def test_diagnostics_report_stale_inputs():
     assert apm.step(1.5).diagnostics.health == "ok"
     late = apm.step(10.0).diagnostics
     assert late.health == "stale_inputs" and late.input_age_s["self_state"] == 9.0
+
+
+def test_a_robot_that_stays_down_keeps_seeking_assistance():
+    robot = Robot()
+    apm = robot.apm()
+    apm.ingest(robot.self_state(0.1, stability=0.9))
+    apm.ingest(robot.outcome(0.1, kind="stability_loss", target=None, oid="fall"))
+    for i in range(200):  # 20 s after the outcome frame expired, margin still zero
+        t = 0.2 + 0.1 * i
+        apm.ingest(robot.self_state(t, stability=0.0))
+        out = apm.step(t)
+    assert next(x for x in out.tendencies if x.target == "self").seek_assistance > 0.9
