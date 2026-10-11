@@ -85,3 +85,7 @@ hashes `e4_eval.py` records.
 - Stage 2's first VM lost NERVA partition T to a race (parallel workers each cloning MuJoCo Menagerie on first import);
   the NERVA arm is rerun in full on a second VM with a single-process warm-up import (`G/cloud/f_e1_stage2_nerva.sh`).
   No NERVA model had been trained or evaluated on X.
+- (E1 analysis) `apm.learning.evaluation.auroc` averaged tied ranks with a loop over every unique value (quadratic);
+  on wheeled X (≈ 300k samples per arm) the committed analysis did not finish in 45 min. The tie averaging was
+  vectorised with identical results (regression test against the original implementation, exact equality on
+  heavily tied data). AUROC is a secondary E1 metric; no primary statistic is affected.
