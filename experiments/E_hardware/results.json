@@ -1,0 +1,29 @@
+{
+ "machine": {
+  "platform": "Windows-11",
+  "machine": "AMD64",
+  "logical_cpus": 12,
+  "python": "3.12.4"
+ },
+ "note": "development PC, not an embedded board",
+ "runtime": {
+  "step_ms_median": 0.3176000027451664,
+  "step_ms_p99": 0.7345360048930152,
+  "step_ms_max": 1.3132999883964658,
+  "ingest_messages_per_s": 107146.91236219768,
+  "messages_per_tick": 18.025,
+  "heap_mb_after_300s": 0.170243,
+  "heap_peak_mb": 0.177339,
+  "saved_state_kb": 75.913,
+  "entity_records": 51,
+  "episodes": 150
+ },
+ "gru": {
+  "parameters": 17857,
+  "state_kb": 74.573,
+  "infer_ms_median_1thread": 0.5172999808564782,
+  "infer_ms_p99_1thread": 1.795027989137452,
+  "train_samples_per_s_1thread": 3403.4647038232956,
+  "torch": "2.14.1+cpu"
+ }
+}
