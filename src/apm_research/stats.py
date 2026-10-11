@@ -81,3 +81,46 @@ def paired_lifetimes(a: dict[str, np.ndarray], b: dict[str, np.ndarray], n_boot:
     out["p_collision_not_lower"] = float(np.mean(col[1:] >= 0))
     out["p_completion_not_higher"] = float(np.mean(comp[1:] <= 0))
     return out
+
+
+def _seed_draws(n_seeds: int, n_boot: int, rng: np.random.Generator) -> np.ndarray:
+    """[1 + n_boot, n_seeds] seed indices: row 0 = every seed once (point estimate), then resamples."""
+    if n_seeds == 1:
+        return np.zeros((n_boot + 1, 1), int)
+    return np.vstack([np.arange(n_seeds), rng.integers(0, n_seeds, size=(n_boot, n_seeds))])
+
+
+def paired_lifetimes_two_level(a: dict[str, np.ndarray], b: dict[str, np.ndarray], n_boot: int = N_BOOT,
+                               seed: int = 0) -> dict:
+    """`paired_lifetimes` for systems with several training seeds (E4): two-level bootstrap.
+
+    a, b: per-lifetime totals as arrays [seeds, lifetimes] (a deterministic system has one row), lifetimes aligned
+    across systems. Each draw resamples lifetimes (shared by both systems: paired), then each system's seeds with
+    replacement; per-lifetime totals are averaged over the resampled seeds and combined as ratios of totals.
+    """
+    rng = np.random.default_rng(seed)
+    a = {k: np.atleast_2d(np.asarray(v, float)) for k, v in a.items()}
+    b = {k: np.atleast_2d(np.asarray(v, float)) for k, v in b.items()}
+    n, sa, sb = a["collisions"].shape[1], a["collisions"].shape[0], b["collisions"].shape[0]
+    w = np.vstack([np.ones(n), _weights(n_boot, n, rng)])
+    ka = _seed_draws(sa, n_boot, rng)
+    kb = _seed_draws(sb, n_boot, rng)
+
+    def tot(d, key, k):  # [draws]: weighted total over lifetimes of the seed-averaged per-lifetime value
+        return np.einsum("bn,bn->b", w, d[key][k].mean(1))
+
+    def rate(d, k, num, den):
+        return tot(d, num, k) / np.maximum(1e-12, tot(d, den, k))
+
+    col = rate(a, ka, "collisions", "minutes") / np.maximum(1e-12, rate(b, kb, "collisions", "minutes")) - 1.0
+    comp = rate(a, ka, "goals_completed", "goals_issued") - rate(b, kb, "goals_completed", "goals_issued")
+    idle = rate(a, ka, "idle", "periods") - rate(b, kb, "idle", "periods")
+    out: dict[str, object] = {}
+    for name, draws in (("collision_rate_relative", col), ("completion_difference", comp),
+                        ("idle_difference", idle)):
+        lo, hi = np.percentile(draws[1:], [2.5, 97.5])
+        out[name] = {"estimate": float(draws[0]), "ci95": [float(lo), float(hi)], "se": float(draws[1:].std())}
+    out["p_collision_not_lower"] = float(np.mean(col[1:] >= 0))
+    out["p_completion_not_higher"] = float(np.mean(comp[1:] <= 0))
+    out["seeds"] = [int(sa), int(sb)]
+    return out

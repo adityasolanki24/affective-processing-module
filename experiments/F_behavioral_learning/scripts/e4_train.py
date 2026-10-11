@@ -87,6 +87,21 @@ def collect(net, spec, pred, lam, index: int, seed: int) -> dict:
             "reset": reset.astype(bool), "J": float(r.sum())}
 
 
+_W: dict = {}
+
+
+def _winit(predictor: str, spec: dict, lam: dict) -> None:
+    torch.set_num_threads(1)
+    _W.update(pred=EnsemblePredictor.from_dict(json.loads(Path(predictor).read_text())), spec=spec, lam=lam,
+              net=make_net(spec))
+
+
+def _wcollect(job: tuple) -> dict:
+    state, index, seed = job
+    _W["net"].load_state_dict(state)
+    return collect(_W["net"], _W["spec"], _W["pred"], _W["lam"], index, seed)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--variant", required=True)
@@ -99,6 +114,9 @@ def main() -> None:
     ap.add_argument("--predictor", default="runs/E2/predictor.json")
     ap.add_argument("--tuned", type=Path, default=HERE / "configs" / "E2_tuned.json")
     ap.add_argument("--out", type=Path, default=Path("runs/E4"))
+    ap.add_argument("--collect-workers", type=int, default=1,
+                    help="parallel rollout collection; every lifetime is seeded independently, so results do not "
+                         "depend on this")
     args = ap.parse_args()
     torch.set_num_threads(1)
     torch.manual_seed(args.seed)
@@ -115,11 +133,17 @@ def main() -> None:
     torch.save(net.state_dict(), args.out / f"{name}.pt")
     curve = [{"decisions": 0, "val_J": best["J"], "train_J": None}]
     print(name, "params", parameters(net), "init val J", round(best["J"], 2), flush=True)
+    pool = None
+    if args.collect_workers > 1:
+        from multiprocessing import Pool
+        pool = Pool(args.collect_workers, initializer=_winit, initargs=(args.predictor, spec, lam))
     while decisions < args.budget:
-        batch = []
-        for _ in range(args.batch):
-            batch.append(collect(net, spec, pred, lam, index, args.seed))
-            index += 1
+        if pool is None:
+            batch = [collect(net, spec, pred, lam, index + k, args.seed) for k in range(args.batch)]
+        else:
+            state = {k: v.detach().clone() for k, v in net.state_dict().items()}
+            batch = pool.map(_wcollect, [(state, index + k, args.seed) for k in range(args.batch)])
+        index += args.batch
         decisions += sum(len(b["a"]) for b in batch)
         stats = ppo_update(net, opt, batch)
         updates += 1
@@ -132,6 +156,8 @@ def main() -> None:
                 torch.save(net.state_dict(), args.out / f"{name}.pt")
             print(name, decisions, "val J", round(j, 2), "train J", round(curve[-1]["train_J"], 2), stats,
                   round(time.time() - start), flush=True)
+    if pool is not None:
+        pool.close()
     write_json(args.out / f"{name}.json", {"variant": args.variant, "seed": args.seed, "spec": spec,
                                            "params": parameters(net), "budget": args.budget, "lam": lam,
                                            "best": best, "curve": curve, "environment": environment(),
