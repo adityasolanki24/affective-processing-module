@@ -50,4 +50,10 @@ predictor (secondary).
 
 ## Amendment (sample size; to be filled before X)
 
-(pending stage A)
+Committed after stage A (data, training, tuning on V, closed-loop pilot on P), before any G3-X data. Validation
+selections (`configs/G3_selected.json`): best_state = **ema**, best_single = **ema** (so Q2 compares fastslow with ema).
+Pilot (G3-P, 40 lifetimes) required 159 (Q1: ema vs none) and 181 (Q2: fastslow vs ema) lifetimes for 80% power →
+**N = 200** (floor). Closed-loop X: G3-X lifetimes 0–199 × 10 episodes; controls for ema, gru and fastslow.
+Predictive X: exploration lifetimes G3-X 0–99 are generated from a disjoint seed stream (`g3_data.py` uses
+`child(seed, 500)` for the exploration policy; the closed-loop runs use the same world seeds with their own
+policies, so worlds are shared but behaviour and outcomes differ).
