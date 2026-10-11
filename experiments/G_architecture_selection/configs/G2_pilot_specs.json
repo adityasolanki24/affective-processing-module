@@ -1,0 +1,13 @@
+{
+ "note": "G2 pilot (partition P) only: programme F's tuned B1 rule (static, λc 1, λs 2) with each memory at untuned mid-range parameters. Debugging, timing and variance only.",
+ "systems": {
+  "M0_all": {"kind": "regulated", "regulator": "static", "lam_c": 1.0, "lam_s": 2.0, "memory": {"model": "M0", "evidence": "all"}},
+  "M0_exp": {"kind": "regulated", "regulator": "static", "lam_c": 1.0, "lam_s": 2.0, "memory": {"model": "M0", "evidence": "exposed"}},
+  "M1": {"kind": "regulated", "regulator": "static", "lam_c": 1.0, "lam_s": 2.0, "memory": {"model": "M1", "params": {"gamma": 0.85}, "evidence": "exposed"}},
+  "M2": {"kind": "regulated", "regulator": "static", "lam_c": 1.0, "lam_s": 2.0, "memory": {"model": "M2", "params": {"window": 10}, "evidence": "exposed"}},
+  "M3": {"kind": "regulated", "regulator": "static", "lam_c": 1.0, "lam_s": 2.0, "memory": {"model": "M3", "evidence": "exposed"}},
+  "M4": {"kind": "regulated", "regulator": "static", "lam_c": 1.0, "lam_s": 2.0, "memory": {"model": "M4", "params": {"hazard": 0.05}, "evidence": "exposed"}},
+  "M5": {"kind": "regulated", "regulator": "static", "lam_c": 1.0, "lam_s": 2.0, "memory": {"model": "M5", "params": {"q_low": 0.03, "q_high": 0.3, "switch": 0.05}, "evidence": "exposed"}},
+  "Oracle": {"kind": "regulated", "regulator": "static", "lam_c": 1.0, "lam_s": 2.0, "memory": {"model": "oracle"}}
+ }
+}
