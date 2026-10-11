@@ -16,3 +16,11 @@ for debugging, timing and the sizing rule of §6.
 `memory.py`, `policies.py` and `scenarios.py` for G2. G1 specs never contain `memory`, so G1 behaviour is unchanged
 (the G1 integrity tests still pass, including exact equality with programme F's B1 and B2). The G1 test runs from a
 later commit than the addendum's; its run metadata records that commit and all source hashes.
+
+## 2026-10-12 — G2 selection written from recorded validation data
+
+On the tuning VM, `g2_tune.py` finished every simulation (stage A table and stage B validation lifetimes were
+written) but crashed when writing `configs/G2_selected.json` (a NumPy boolean in the verdict). The cast was fixed and
+the identical selection rule was applied locally to the recorded outputs (`g2_tune.py --select-only`); no simulation
+was repeated. Result: no memory meets (i)–(iii) on validation (all fail S1 adaptation), so no M\* is selected; as
+preregistered, the X run evaluates all memories (secondary only).

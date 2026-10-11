@@ -53,6 +53,8 @@ def main() -> None:
     ap.add_argument("--nv", type=int, required=True)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--m6", type=Path, default=None, help="M6 weights (g2_m6_train.py output) for stage B")
+    ap.add_argument("--select-only", action="store_true",
+                    help="apply the selection rule to recorded stage-A/B outputs under --out (no simulation)")
     ap.add_argument("--out", type=Path, default=Path("runs/G2"))
     args = ap.parse_args()
     start = time.time()
@@ -66,7 +68,10 @@ def main() -> None:
              "scenario": sc, "partition": "V", "index": i}
             for m, p, cid in cfgs for sc in TUNE_SCENARIOS for i in range(args.n)]
     (args.out / "tune").mkdir(parents=True, exist_ok=True)
-    res = run_jobs(jobs, args.workers, args.out / "tune" / "lifetimes.jsonl")
+    if args.select_only:
+        res = [json.loads(x) for x in (args.out / "tune" / "lifetimes.jsonl").read_text().splitlines()]
+    else:
+        res = run_jobs(jobs, args.workers, args.out / "tune" / "lifetimes.jsonl")
     by = defaultdict(list)
     for r in res:
         by[r["config_id"]].append(r)
@@ -88,7 +93,8 @@ def main() -> None:
              for name, mem in systems.items() for sc in ("S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9")
              for i in range(args.nv)]
     (args.out / "Vsel").mkdir(parents=True, exist_ok=True)
-    run_jobs(vjobs, args.workers, args.out / "Vsel" / "lifetimes.jsonl")
+    if not args.select_only:
+        run_jobs(vjobs, args.workers, args.out / "Vsel" / "lifetimes.jsonl")
     summ = summarise(load(args.out / "Vsel" / "lifetimes.jsonl"))
     ref = summ["M0_all"]
     ref_col = np.mean([b["collision_rate"] for b in ref["behaviour"].values()])
@@ -97,11 +103,11 @@ def main() -> None:
         col = np.mean([b["collision_rate"] for b in s["behaviour"].values()])
         a1, a2 = s.get("adaptation_S1", {}).get("median"), s.get("adaptation_S2", {}).get("median")
         fb = (s.get("false_blame") or {}).get("estimate")
-        ok = {"i": a1 is not None and a2 is not None and a1 <= 6 and a2 <= 6,
-              "ii": col <= 1.10 * ref_col, "iii": fb is not None and abs(fb) < 0.03}
-        verdict[name] = {"criteria": ok, "all": all(ok.values()), "state_size": s["state_size"],
-                         "brier": s["brier"]["brier"], "collision_rate_mean": col, "adaptation": [a1, a2],
-                         "false_blame": fb}
+        ok = {"i": bool(a1 is not None and a2 is not None and a1 <= 6 and a2 <= 6),
+              "ii": bool(col <= 1.10 * ref_col), "iii": bool(fb is not None and abs(fb) < 0.03)}
+        verdict[name] = {"criteria": ok, "all": all(ok.values()), "state_size": int(s["state_size"]),
+                         "brier": float(s["brier"]["brier"]), "collision_rate_mean": float(col),
+                         "adaptation": [a1, a2], "false_blame": fb}
     passing = [n for n, v in verdict.items() if v["all"] and n != "M0_all"]
     star = min(passing, key=lambda n: (verdict[n]["state_size"], verdict[n]["brier"])) if passing else None
     write_json(HERE / "results" / "G2" / "tuning_table.json", {"table": table, "chosen": chosen,
