@@ -76,3 +76,12 @@ hashes `e4_eval.py` records.
   evaluation risked its 75-min hard cap. The E4 evaluation therefore runs on a third VM (`cloud/e4eval.sh`, same
   N, models and code); the second VM is stopped after E3 and E3 retention. Any partial E4 evaluation it may have
   started is discarded without inspection.
+
+## 2026-10-12 — E1 completion (run from programme G; `prereg/E1_ADDENDUM.md`)
+
+- E1's datasets P/T/V were regenerated on cloud VMs with the committed scripts and seeds: wheeled and NERVA dataset
+  SHA-256 hashes and all 760 NERVA trial files are identical to F's manifests. NERVA experience is generated in a
+  separate venv pinned to Open Duck's inference lock (numpy 2.5.3, jax), so the APM environment keeps its pins.
+- Stage 2's first VM lost NERVA partition T to a race (parallel workers each cloning MuJoCo Menagerie on first import);
+  the NERVA arm is rerun in full on a second VM with a single-process warm-up import (`G/cloud/f_e1_stage2_nerva.sh`).
+  No NERVA model had been trained or evaluated on X.
