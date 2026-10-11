@@ -9,3 +9,10 @@ The G1 pilot (partition P, 40 lifetimes, pilot specs `configs/G1_pilot_specs.jso
 about 10 minutes before the commit that freezes `MASTER_PREREGISTRATION.md`. No pilot output had been inspected
 when the preregistration was committed (the runner had written only partial base lifetimes). Pilot data are used only
 for debugging, timing and the sizing rule of §6.
+
+## 2026-10-12 — code added after the G1 addendum commit (behaviour-neutral for G1)
+
+`scripts/g_common.py` gained an optional `memory` field (G2 belief memories) and `src/apm_select/` gained
+`memory.py`, `policies.py` and `scenarios.py` for G2. G1 specs never contain `memory`, so G1 behaviour is unchanged
+(the G1 integrity tests still pass, including exact equality with programme F's B1 and B2). The G1 test runs from a
+later commit than the addendum's; its run metadata records that commit and all source hashes.
