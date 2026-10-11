@@ -65,6 +65,7 @@ class Paired:
 
 METRICS = {
     "collision_rate": ("collisions", "minutes"),
+    "avoidable_collision_rate": ("avoidable_collisions", "minutes"),
     "severe_rate": ("severe", "minutes"),
     "completion": ("goals_completed", "goals_issued"),
     "idle_fraction": ("idle", "periods"),
@@ -109,9 +110,9 @@ def p_beyond(entry: dict, threshold: float, direction: str) -> float:
     return float(np.mean(d >= threshold)) if direction == "below" else float(np.mean(d <= threshold))
 
 
-def e2_rule(c: dict, p_a: float, p_b: float, alpha: float = 0.025) -> dict:
+def e2_rule(c: dict, p_a: float, p_b: float, alpha: float = 0.025, metric: str = "collision_rate") -> dict:
     """Programme F's superiority rule (MASTER_PREREGISTRATION §2 E2), on a `compare_systems` result."""
-    col, comp, idle = c["collision_rate"]["rel"], c["completion"]["abs"], c["idle_fraction"]["abs"]
+    col, comp, idle = c[metric]["rel"], c["completion"]["abs"], c["idle_fraction"]["abs"]
     a = col["estimate"] <= -0.10 and p_a < alpha and comp["ci95"][0] >= -0.03
     b = comp["estimate"] >= 0.05 and p_b < alpha and col["ci95"][1] <= 0.05
     no_freeze = idle["estimate"] <= 0.05
@@ -119,10 +120,11 @@ def e2_rule(c: dict, p_a: float, p_b: float, alpha: float = 0.025) -> dict:
             "beats": bool((a or b) and no_freeze)}
 
 
-def non_inferior(c: dict, collision_margin: float, completion_margin: float, alpha_bound: str = "upper95_1s") -> dict:
+def non_inferior(c: dict, collision_margin: float, completion_margin: float, alpha_bound: str = "upper95_1s",
+                 metric: str = "collision_rate") -> dict:
     """A is non-inferior to B iff the one-sided 95% upper bound of the relative collision-rate difference is below
     `collision_margin` AND the one-sided 95% lower bound of the completion difference is above −completion_margin."""
-    col, comp = c["collision_rate"]["rel"], c["completion"]["abs"]
+    col, comp = c[metric]["rel"], c["completion"]["abs"]
     ok_col = col[alpha_bound] < collision_margin
     ok_comp = comp["lower95_1s"] > -completion_margin
     p = max(p_beyond(col, collision_margin, "below"), p_beyond(comp, -completion_margin, "above"))

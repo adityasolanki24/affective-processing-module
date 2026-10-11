@@ -26,7 +26,7 @@ from g45_train import _W, make_learner  # noqa: E402
 from g_common import RESULT_KEYS, make_policy  # noqa: E402
 
 from apm_research.harness import run_lifetime  # noqa: E402
-from apm_select.instrument import Instrumented  # noqa: E402
+from apm_select.instrument import Instrumented, collision_split  # noqa: E402
 from apm_select.provenance import confirmatory_lock, environment, write_json  # noqa: E402
 from apm_select.variations import CONDITIONS, lifetime, patched, wrap  # noqa: E402
 
@@ -48,7 +48,8 @@ def job(j: dict) -> dict:
     with patched(cond):
         r = run_lifetime(lt, pol)
     return {"label": label, "seed": seed, "index": j["index"], "condition": cond,
-            "result": {k: float(r[k]) for k in RESULT_KEYS} | {k: float(v) for k, v in pol.stats.items()},
+            "result": {k: float(r[k]) for k in RESULT_KEYS} | {k: float(v) for k, v in pol.stats.items()}
+            | collision_split(r),
             "actions": r["actions"]}
 
 
@@ -61,16 +62,18 @@ def main() -> None:
     ap.add_argument("--conditions", default=",".join(CONDITIONS))
     ap.add_argument("--predictor", default="runs/E2/predictor.json")
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--first", type=int, default=0)
+    ap.add_argument("--addendum", default="G6_ADDENDUM.md")
     ap.add_argument("--out", type=Path, default=Path("runs/G6"))
     args = ap.parse_args()
-    provenance = confirmatory_lock(HERE / "prereg" / "G6_ADDENDUM.md") if args.partition in ("X", "S") \
+    provenance = confirmatory_lock(HERE / "prereg" / args.addendum) if args.partition in ("X", "S") \
         else environment()
     start = time.time()
     cfg = json.loads(args.systems.read_text())
     models = sorted(f.stem for f in args.models.glob("*_s?.pt") if f.stem.rsplit("_s", 1)[0] in cfg["models"])
     jobs = []
     for cond in args.conditions.split(","):
-        for i in range(args.n):
+        for i in range(args.first, args.first + args.n):
             jobs += [{"condition": cond, "partition": args.partition, "index": i, "spec": s, "label": k}
                      for k, s in cfg["rules"].items()]
             jobs += [{"condition": cond, "partition": args.partition, "index": i, "model": m} for m in models]

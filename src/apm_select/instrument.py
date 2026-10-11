@@ -88,3 +88,13 @@ class Instrumented:
         self.stats["person_encounters"] += len(self.encountered)
         self.stats["close_encounters"] += len(self.close)
         self.policy.end_episode(t)
+
+
+SPAWN_T = 0.051  # contacts at the first simulation step: the frozen testbed can spawn the robot overlapping a person
+
+
+def collision_split(result: dict) -> dict:
+    """From `run_lifetime` output: collisions at the first step of an episode (spawn overlaps, policy-independent)
+    and the remaining, avoidable ones (testbed defect D8, programme G DEVIATIONS 2026-10-12)."""
+    spawn = sum(1 for e in result["episodes"] for c in e["collision_log"] if c[0] <= SPAWN_T)
+    return {"spawn_collisions": float(spawn), "avoidable_collisions": float(result["collisions"] - spawn)}

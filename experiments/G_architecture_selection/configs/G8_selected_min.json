@@ -1,0 +1,21 @@
+{
+ "rule": "per variant max mean J on G8-V (equal K)",
+ "systems": {
+  "A0_min": {
+   "predictor": "single",
+   "lam_s": 2.300233,
+   "kind": "regulated",
+   "params": {},
+   "lam_c": 4.460059,
+   "regulator": "static"
+  }
+ },
+ "validation": {
+  "A0_min": {
+   "config_id": "A0_min:22",
+   "J_mean": 48.56666666666667,
+   "collision_rate": 0.0833333333333351,
+   "completion": 0.6105050505050506
+  }
+ }
+}

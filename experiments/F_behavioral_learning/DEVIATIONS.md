@@ -89,3 +89,11 @@ hashes `e4_eval.py` records.
   on wheeled X (≈ 300k samples per arm) the committed analysis did not finish in 45 min. The tie averaging was
   vectorised with identical results (regression test against the original implementation, exact equality on
   heavily tied data). AUROC is a secondary E1 metric; no primary statistic is affected.
+
+## 2026-10-12 — testbed defect D8 found in programme G (affects the reading of E2/E3/E4/E7 collision rates)
+
+The robot can spawn overlapping a pedestrian; the contact is reported at t = 0.05 s, is never severe and is the same
+for every policy (common random numbers). In E2-X it accounts for 183 collisions per system (58% of B1's, 78% of
+B2's). F's confirmatory results stand as run; exploratory re-analysis of E2-X on avoidable collisions (contacts after
+the first step), from the committed raw logs: B2 vs B1 −60.6% (vs −25.4% on all collisions). Directions are
+unchanged; effect sizes were diluted. See `../G_architecture_selection/DEVIATIONS.md`.

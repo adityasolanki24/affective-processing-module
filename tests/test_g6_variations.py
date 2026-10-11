@@ -58,3 +58,19 @@ def test_every_condition_builds_a_world():
         lt = lifetime(c, np.random.SeedSequence(3), 1)
         with patched(c):
             assert lt.world(0) is not None
+
+
+def test_collision_split_separates_spawn_overlaps():
+    """Testbed defect D8: the robot can spawn overlapping a person; that contact is reported at the first step and is
+    the same for every policy. `collision_split` separates it from avoidable collisions."""
+    from apm_research.policies import B0
+    from apm_select.instrument import collision_split
+    hits = 0
+    for idx in range(40):
+        lt = lifetime("nominal", np.random.SeedSequence(idx), 2)
+        r = run_lifetime(lt, B0())
+        s = collision_split(r)
+        assert s["spawn_collisions"] + s["avoidable_collisions"] == r["collisions"]
+        assert s["spawn_collisions"] == sum(c[0] <= 0.051 for e in r["episodes"] for c in e["collision_log"])
+        hits += s["spawn_collisions"] > 0
+    assert hits > 0  # the defect occurs in ordinary worlds

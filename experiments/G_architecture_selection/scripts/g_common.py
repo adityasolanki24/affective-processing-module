@@ -30,7 +30,7 @@ import seeds as S  # noqa: E402
 from apm_research.harness import Lifetime, run_lifetime  # noqa: E402
 from apm_research.policies import B0  # noqa: E402
 from apm_research.predictor import EnsemblePredictor  # noqa: E402
-from apm_select.instrument import Instrumented  # noqa: E402
+from apm_select.instrument import Instrumented, collision_split  # noqa: E402
 from apm_select.minimal import HeuristicPredictor, NoMemory, SingleMember  # noqa: E402
 from apm_select.policies import MemoryRegulated  # noqa: E402
 from apm_select.regulators import B2Variant, Regulated, make_regulator  # noqa: E402
@@ -128,7 +128,8 @@ def run_job(job: dict) -> dict:
     r = run_lifetime(lt, policy)
     out = {"label": spec.get("label", spec["kind"]), "index": job["index"], "partition": job["partition"],
            "condition": cond, "config_id": spec.get("config_id"),
-           "totals": {k: float(r[k]) for k in RESULT_KEYS} | {k: float(v) for k, v in policy.stats.items()},
+           "totals": {k: float(r[k]) for k in RESULT_KEYS} | {k: float(v) for k, v in policy.stats.items()}
+           | collision_split(r),
            "actions": r["actions"]}
     if job.get("keep_readouts") and hasattr(inner, "readouts"):
         out["readouts"] = [list(map(float, x)) for x in inner.readouts]

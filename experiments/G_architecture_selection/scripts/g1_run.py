@@ -38,6 +38,7 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", type=Path, default=Path("runs/G1"))
     ap.add_argument("--experiment", default="G1")
+    ap.add_argument("--first", type=int, default=0, help="first lifetime index (G9 re-tests use fresh indices)")
     ap.add_argument("--addendum", default="G1_ADDENDUM.md")
     args = ap.parse_args()
     provenance = (confirmatory_lock(HERE / "prereg" / args.addendum) if args.partition in ("X", "S")
@@ -52,7 +53,7 @@ def main() -> None:
     all_results = []
     for cond in args.conditions.split(","):
         jobs = [{"spec": {**spec, "label": name}, "experiment": args.experiment, "partition": args.partition,
-                 "index": i,
+                 "index": args.first + i,
                  "n_episodes": EPISODES, "condition": cond, "keep_readouts": name in controls}
                 for name, spec in systems.items() for i in range(args.n)]
         jobs.sort(key=lambda j: j["spec"]["kind"] != "b2v")
@@ -61,9 +62,10 @@ def main() -> None:
         cjobs = []
         for name in controls:
             shift = DECISIONS_PER_EPISODE
-            for i in range(args.n):
+            for k in range(args.n):
+                i = args.first + k
                 own = traces[(name, i)]
-                for suffix, trace in (("shuffled", traces[(name, (i + 1) % args.n)]),
+                for suffix, trace in (("shuffled", traces[(name, args.first + (k + 1) % args.n)]),
                                       ("shifted", own[shift:] + own[:shift])):
                     cjobs.append({"spec": {**systems[name], "label": f"{name}_{suffix}", "trace": trace},
                                   "experiment": args.experiment, "partition": args.partition, "index": i,

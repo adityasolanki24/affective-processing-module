@@ -24,7 +24,7 @@ from g45_train import _W, VAL_EPISODES, _winit, arch_net, make_learner  # noqa: 
 from g_common import RESULT_KEYS, init, make_policy  # noqa: E402
 
 from apm_research.harness import Lifetime, run_lifetime  # noqa: E402
-from apm_select.instrument import Instrumented  # noqa: E402
+from apm_select.instrument import Instrumented, collision_split  # noqa: E402
 from apm_select.provenance import confirmatory_lock, environment, sha256, write_json  # noqa: E402
 
 EPISODES = VAL_EPISODES
@@ -56,7 +56,8 @@ def job(j: dict) -> dict:
     pol = Instrumented(inner)
     r = run_lifetime(lt, pol)
     return {"label": label, "seed": seed, "index": j["index"], "partition": j["partition"],
-            "result": {k: float(r[k]) for k in RESULT_KEYS} | {k: float(v) for k, v in pol.stats.items()},
+            "result": {k: float(r[k]) for k in RESULT_KEYS} | {k: float(v) for k, v in pol.stats.items()}
+            | collision_split(r),
             "actions": r["actions"]}
 
 
@@ -67,17 +68,21 @@ def main() -> None:
     ap.add_argument("--models", type=Path, default=Path("runs/G45/models"))
     ap.add_argument("--predictor", default="runs/E2/predictor.json")
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--first", type=int, default=0)
+    ap.add_argument("--addendum", default="G45_ADDENDUM.md")
+    ap.add_argument("--only", default="", help="comma list of model cells to evaluate (default: all)")
     ap.add_argument("--out", type=Path, default=Path("runs/G45"))
     args = ap.parse_args()
-    provenance = confirmatory_lock(HERE / "prereg" / "G45_ADDENDUM.md") if args.partition in ("X", "S") \
+    provenance = confirmatory_lock(HERE / "prereg" / args.addendum) if args.partition in ("X", "S") \
         else environment()
     start = time.time()
     g1 = json.loads((HERE / "configs" / "G1_selected.json").read_text())
     refs = {"A0": g1["systems"][g1["best_simple"]], "A1": g1["systems"]["R6"]}
-    models = sorted(f.stem for f in args.models.glob("*_s?.pt"))
-    jobs = [{"partition": args.partition, "index": i, "spec": s, "label": k} for i in range(args.n)
-            for k, s in refs.items()]
-    jobs += [{"partition": args.partition, "index": i, "model": m} for i in range(args.n) for m in models]
+    models = sorted(f.stem for f in args.models.glob("*_s?.pt")
+                    if not args.only or f.stem.rsplit("_s", 1)[0] in args.only.split(","))
+    idx = range(args.first, args.first + args.n)
+    jobs = [{"partition": args.partition, "index": i, "spec": s, "label": k} for i in idx for k, s in refs.items()]
+    jobs += [{"partition": args.partition, "index": i, "model": m} for i in idx for m in models]
     jobs.sort(key=lambda j: j.get("label") != "A1")  # slowest first
     out_dir = args.out / f"eval_{args.partition}"
     out_dir.mkdir(parents=True, exist_ok=True)

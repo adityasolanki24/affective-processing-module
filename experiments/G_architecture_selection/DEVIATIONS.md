@@ -24,3 +24,21 @@ written) but crashed when writing `configs/G2_selected.json` (a NumPy boolean in
 the identical selection rule was applied locally to the recorded outputs (`g2_tune.py --select-only`); no simulation
 was repeated. Result: no memory meets (i)–(iii) on validation (all fail S1 adaptation), so no M\* is selected; as
 preregistered, the X run evaluates all memories (secondary only).
+
+## 2026-10-12 — validity problem found after confirmatory runs: unavoidable spawn collisions (testbed defect D8)
+
+While checking an anomaly in G6 (identical collision counts for all systems under `speed_limit_0.6`), collision
+logs showed that the frozen testbed places the robot after the pedestrians and checks its clearance only against
+obstacles (`WheeledCtrlWorld._free_point`), so the robot can **spawn overlapping a person**. The contact is reported
+at the first step (t = 0.05 s), is never severe (the robot is stationary), and is identical for every policy under
+common random numbers. It is common: 67–97% of all collisions of the rule-based systems in a 40-lifetime check (G0-P)
+and 51–78% in programme F's E2 test (183 spawn collisions per system in E2-X).
+
+Consequences: severe-collision results and all non-collision metrics are unaffected. Collision-*rate* comparisons
+are diluted toward "no difference" by a constant, policy-independent component — conservative for superiority tests,
+**anti-conservative for non-inferiority tests** (G1 P2, G8 removals, G6 eligibility, G5's GRU test). As required by
+§7, the confirmatory results are kept and reported unchanged; nothing is silently re-run. A separate, preregistered
+validity re-test (G9, `prereg/G9_ADDENDUM.md`) repeats the primary families with the same frozen selections and
+models on fresh lifetimes using **avoidable collisions** (contacts after the first step); runners now record
+`spawn_collisions` and `avoidable_collisions` (`apm_select.instrument.collision_split`, tested). The testbed itself is
+not modified (F and G depend on it); a fixed testbed is recommended for any future programme.

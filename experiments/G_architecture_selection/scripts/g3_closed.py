@@ -21,7 +21,7 @@ sys.path.insert(0, str(HERE / "scripts"))
 from g_common import RESULT_KEYS, init, lifetime_for, make_policy  # noqa: E402
 
 from apm_research.harness import run_lifetime  # noqa: E402
-from apm_select.instrument import Instrumented  # noqa: E402
+from apm_select.instrument import Instrumented, collision_split  # noqa: E402
 from apm_select.provenance import confirmatory_lock, environment, write_json  # noqa: E402
 from apm_select.stateful import KINDS, StatefulPredictor, StatefulRule  # noqa: E402
 from apm_select.tuning import lhs  # noqa: E402
@@ -53,7 +53,8 @@ def run_job(job: dict) -> dict:
     r = run_lifetime(lt, pol)
     out = {"label": spec["label"], "config_id": spec.get("config_id"), "index": job["index"],
            "partition": job["partition"], "condition": "nominal",
-           "totals": {k: float(r[k]) for k in RESULT_KEYS} | {k: float(v) for k, v in pol.stats.items()},
+           "totals": {k: float(r[k]) for k in RESULT_KEYS} | {k: float(v) for k, v in pol.stats.items()}
+           | collision_split(r),
            "actions": r["actions"]}
     if job.get("keep_z"):
         out["z"] = np.stack(inner.z_log).round(5).tolist()
@@ -109,7 +110,7 @@ def tune(args) -> None:
 
 
 def test(args) -> None:
-    provenance = confirmatory_lock(HERE / "prereg" / "G3_ADDENDUM.md") if args.partition in ("X", "S") \
+    provenance = confirmatory_lock(HERE / "prereg" / args.addendum) if args.partition in ("X", "S") \
         else environment()
     start = time.time()
     sel = json.loads((HERE / "configs" / "G3_selected.json").read_text())
@@ -118,19 +119,22 @@ def test(args) -> None:
                for k, v in sel["selected"].items()}
     systems["A0_R2"] = {**g1["systems"][g1["best_simple"]], "label": "A0_R2"}
     controls = sorted({sel["best_state"], "gru", "fastslow"})
+    if args.no_controls:
+        controls = []
+    idx = list(range(args.first, args.first + args.n))
     jobs = [{"spec": s, "partition": args.partition, "index": i, "keep_z": s.get("predictor") in controls}
-            for s in systems.values() for i in range(args.n)]
+            for s in systems.values() for i in idx]
     out_dir = args.out / args.partition
     out_dir.mkdir(parents=True, exist_ok=True)
     res = run_jobs(jobs, args.workers, args.models, out_dir / "lifetimes_base.jsonl")
     z = {(r["label"], r["index"]): r["z"] for r in res if "z" in r}
     cjobs = []
     for k in controls:
-        for i in range(args.n):
+        for j, i in enumerate(idx):
             cjobs.append({"spec": {**systems[k], "label": f"{k}_reset", "control": "reset"},
                           "partition": args.partition, "index": i})
             cjobs.append({"spec": {**systems[k], "label": f"{k}_shuffled"}, "partition": args.partition,
-                          "index": i, "shuffle": z[(k, (i + 1) % args.n)]})
+                          "index": i, "shuffle": z[(k, idx[(j + 1) % len(idx)])]})
     cres = run_jobs(cjobs, args.workers, args.models, out_dir / "lifetimes_controls.jsonl")
     with open(out_dir / "lifetimes.jsonl", "w", encoding="utf-8") as fh:
         for r in res + cres:
@@ -151,6 +155,9 @@ def main() -> None:
     ap.add_argument("--partition", default="X")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", type=Path, default=Path("runs/G3"))
+    ap.add_argument("--first", type=int, default=0)
+    ap.add_argument("--no-controls", action="store_true")
+    ap.add_argument("--addendum", default="G3_ADDENDUM.md")
     args = ap.parse_args()
     (tune if args.mode == "tune" else test)(args)
 
