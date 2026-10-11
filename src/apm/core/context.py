@@ -40,16 +40,19 @@ class Context:
     hypotheses: dict[str, OutcomeHypothesis] = field(default_factory=dict)
 
     # -------------------------------------------------- updates
-    def observe_entity(self, obs: EntityObservation) -> None:
+    def observe_entity(self, obs: EntityObservation) -> Track | None:
+        """Returns the track evicted to make room (its encounter has ended), if any."""
         t = obs.header.stamp_s
         track = self.tracks.get(obs.track_id)
+        evicted = None
         if track is None:
             if len(self.tracks) >= MAX_ENTITIES:
                 oldest = min(self.tracks, key=lambda k: self.tracks[k].last_seen_s)
-                del self.tracks[oldest]
+                evicted = self.tracks.pop(oldest)
             self.tracks[obs.track_id] = Track(obs, t, t)
         else:
             track.observation, track.last_seen_s = obs, t
+        return evicted
 
     def observe_self(self, state: SelfState) -> None:
         self.self_state = state

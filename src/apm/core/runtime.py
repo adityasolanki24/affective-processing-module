@@ -123,11 +123,17 @@ class APM:
         if isinstance(message, SelfState):
             self.last_self_state_s = h.stamp_s
         if isinstance(message, Reset):
-            self.context = Context(profile=self.profile)  # a restarted sender's context is no longer valid
+            # A restarted sender's context is no longer valid; its open encounters end now (v0.2 fix D1: they were
+            # left open forever, so their evidence was never credited and reused track ids merged encounters).
+            for track_id in list(self.entities.encounters):
+                self.entities.end(track_id, h.stamp_s)
+            self.context = Context(profile=self.profile)
         elif isinstance(message, EmbodimentProfile):
             return self._reject("profile_change_requires_new_apm") if message != self.profile else None
         elif isinstance(message, EntityObservation):
-            self.context.observe_entity(message)
+            evicted = self.context.observe_entity(message)
+            if evicted is not None:  # v0.2 fix D2: an evicted track's encounter ends like an expired one
+                self.entities.end(evicted.observation.track_id, h.stamp_s)
             self.entities.track(message.track_id, message.identity, message.identity_confidence,
                                 message.entity_type, h.stamp_s)
         elif isinstance(message, SelfState):
