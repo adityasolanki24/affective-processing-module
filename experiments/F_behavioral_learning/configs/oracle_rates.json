@@ -1,0 +1,37 @@
+{
+ "environment": {
+  "python": "3.13.16",
+  "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "cpus": 4,
+  "commit": "b8bff59830e2bb15e966c52f533286723236a3aa",
+  "dirty": true,
+  "start_utc": "2026-10-11T08:09:25Z",
+  "numpy": "2.5.3",
+  "torch": "2.14.1+cu130",
+  "mujoco": "3.3.0",
+  "onnxruntime": "1.21.0"
+ },
+ "partition": "T",
+ "indices": [
+  200,
+  259
+ ],
+ "episodes": 10,
+ "rates_by_disposition": {
+  "careful": 0.02367431078293182,
+  "careless": 0.2692321221280104
+ },
+ "detail": {
+  "careful": {
+   "mean": 0.02367431078293182,
+   "sd": 0.027315316384706925,
+   "identities": 208
+  },
+  "careless": {
+   "mean": 0.2692321221280104,
+   "sd": 0.13291652604984072,
+   "identities": 152
+  }
+ }
+}

@@ -33,7 +33,7 @@ def system_specs(tuned: dict, oracle_rates: dict | None) -> dict[str, dict]:
              "B2_noMemoryFrames": {"system": "B2", **lam2, "memory_frames": False},
              "B2_noPersistence": {"system": "B2", **lam2, "persistent": False}}
     if oracle_rates is not None:
-        specs["Oracle"] = {"system": "B1", **lam1, "oracle_rates": oracle_rates}
+        specs["Oracle"] = {"system": "B1", **lam1, "oracle_by_disposition": oracle_rates}
     for k, v in specs.items():
         v["label"] = k
     return specs
@@ -54,7 +54,7 @@ def main() -> None:
                   if args.partition in ("X", "S") else environment())
     start = time.time()
     tuned = json.loads(args.tuned.read_text())
-    oracle = json.loads((HERE / "configs" / "oracle_rates.json").read_text())["rates"] \
+    oracle = json.loads((HERE / "configs" / "oracle_rates.json").read_text())["rates_by_disposition"] \
         if (HERE / "configs" / "oracle_rates.json").exists() else None
     specs = system_specs(tuned, oracle)
     wanted = args.systems.split(",")

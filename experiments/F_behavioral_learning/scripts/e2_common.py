@@ -43,8 +43,12 @@ def lifetime_for(experiment: str, partition: str, index: int, n_episodes: int, *
 
 
 def _job(job: dict) -> dict:
-    policy = make_policy(job["spec"])
+    spec = job["spec"]
     lt = lifetime_for(job["experiment"], job["partition"], job["index"], job["n_episodes"])
+    if "oracle_by_disposition" in spec:  # Oracle: this lifetime's identities → true rate of their disposition
+        rates = spec["oracle_by_disposition"]
+        spec = {**spec, "oracle_rates": {i.name: rates[i.disposition] for i in lt.population()}}
+    policy = make_policy(spec)
     result = run_lifetime(lt, policy)
     result["episodes"] = [{k: v for k, v in e.items() if k != "collision_log"} | {"collision_log": e["collision_log"]}
                           for e in result["episodes"]]
