@@ -37,8 +37,10 @@ def main() -> None:
     ap.add_argument("--no-controls", action="store_true")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", type=Path, default=Path("runs/G1"))
+    ap.add_argument("--experiment", default="G1")
+    ap.add_argument("--addendum", default="G1_ADDENDUM.md")
     args = ap.parse_args()
-    provenance = (confirmatory_lock(HERE / "prereg" / "G1_ADDENDUM.md") if args.partition in ("X", "S")
+    provenance = (confirmatory_lock(HERE / "prereg" / args.addendum) if args.partition in ("X", "S")
                   else environment())
     assert sha256(Path("runs/E2/predictor.json")) == PREDICTOR_SHA256, "frozen predictor changed"
     start = time.time()
@@ -49,7 +51,8 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     all_results = []
     for cond in args.conditions.split(","):
-        jobs = [{"spec": {**spec, "label": name}, "experiment": "G1", "partition": args.partition, "index": i,
+        jobs = [{"spec": {**spec, "label": name}, "experiment": args.experiment, "partition": args.partition,
+                 "index": i,
                  "n_episodes": EPISODES, "condition": cond, "keep_readouts": name in controls}
                 for name, spec in systems.items() for i in range(args.n)]
         jobs.sort(key=lambda j: j["spec"]["kind"] != "b2v")
@@ -63,7 +66,7 @@ def main() -> None:
                 for suffix, trace in (("shuffled", traces[(name, (i + 1) % args.n)]),
                                       ("shifted", own[shift:] + own[:shift])):
                     cjobs.append({"spec": {**systems[name], "label": f"{name}_{suffix}", "trace": trace},
-                                  "experiment": "G1", "partition": args.partition, "index": i,
+                                  "experiment": args.experiment, "partition": args.partition, "index": i,
                                   "n_episodes": EPISODES, "condition": cond})
         cres = run_jobs(cjobs, args.workers, out_dir / f"lifetimes_{cond}_controls.jsonl") if cjobs else []
         all_results += [{k: v for k, v in r.items() if k != "readouts"} for r in res + cres]
