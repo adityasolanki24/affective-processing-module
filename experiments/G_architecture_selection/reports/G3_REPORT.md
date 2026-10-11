@@ -1,5 +1,7 @@
 # G3 — What persistent internal state is needed? (2026-10-12)
 
+> **G9 correction (governs):** on avoidable collisions Q1 still fails (EMA state +95%) and Q2 holds; the fast+slow predictor now beats the stateless one (−37.8% [−61.8, −3.7], −1.0 pp completion; secondary). See `G9_REPORT.md`.
+
 Preregistered in `prereg/G3_ADDENDUM.md` (amendment N = 200). Six consequence-predictor kinds trained on identical
 G3-T exploration data (5 seeds each), equal λ tuning (K = 16) on G3-V, closed-loop test on G3-X (200 lifetimes ×
 10 episodes; commit `bb6409f`, lock passed; `results/G3/g3_X.json`) and predictive test on 100 exploration lifetimes

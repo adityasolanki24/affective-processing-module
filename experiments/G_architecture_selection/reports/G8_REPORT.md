@@ -1,5 +1,7 @@
 # G8 — Minimising A0 (2026-10-12)
 
+> **G9 correction (governs):** on avoidable collisions **no component is removable**: removing the regulator +11% [−19, +51] and the ensemble +42% [0, +103] are not non-inferior; memory (+224%) and the learned predictor (+1382%) are needed; A0_min +164%. The "removable" conclusions below are withdrawn. See `G9_REPORT.md`.
+
 Preregistered in `prereg/G8_ADDENDUM.md`. Every variant retuned with the same budget (K = 48 λ draws on G8-V).
 Stage 1 on G8-X (280 lifetimes × 10 episodes; commit `99318e9`, lock passed; `results/G8/g8_X.json`); stage 2 on
 G8-S (280; commit `b84f37d`, lock passed; the run metadata's "dirty" flag only reflects untracked files written by

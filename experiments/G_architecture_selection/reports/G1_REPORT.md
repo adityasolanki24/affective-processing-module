@@ -1,5 +1,7 @@
 # G1 — Is PAD necessary, or is simple persistent risk regulation sufficient? (2026-10-12)
 
+> **G9 correction (governs):** on avoidable collisions (testbed defect D8 removed), P1 fails more strongly (PAD +98.8% vs R1), P2 holds (EMA −73% vs PAD), and **P3 now holds: the EMA regulator beats the static penalty by −46.9% [−62.2, −27.2]** (p_Holm 0.0004). The conclusion "persistence is not needed" below is withdrawn; see `G9_REPORT.md`.
+
 Confirmatory run once on partition X (N = 280 lifetimes × 10 episodes, 10 systems + 4 negative controls; commit
 `f3806f0`, lock passed, clean tree; `results/G1/g1_X.json`), plus the shift conditions on partition S (4 × 100,
 selected systems unchanged; `results/G1/g1_S.json`). Equal tuning budgets (48 configurations or 1,440 lifetime

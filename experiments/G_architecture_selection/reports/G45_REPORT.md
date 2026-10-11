@@ -1,5 +1,7 @@
 # G4 + G5 — Architecture tournament and training methods (2026-10-12)
 
+> **G9 correction (governs):** on avoidable collisions the neural candidates have +44% to +87% more collisions than A0 (A3 BC→PPO +87% [+13, +232]); BC→PPO vs PPO −45%. All decisions unchanged. See `G9_REPORT.md`.
+
 Preregistered in `prereg/G45_ADDENDUM.md` (with the A5 amendment). 45 networks (A2/A3 × PPO, BC, BC→PPO, DAgger and
 A4 × PPO; 5 seeds each; ≈ 15k parameters each), all interactions counted; test on G4-X (400 lifetimes × 5 episodes;
 commit `39fedb0`, lock passed, all 45 checkpoint hashes verified; `results/G45/g45_X.json`). Shortlist by validation

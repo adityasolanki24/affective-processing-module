@@ -1,5 +1,7 @@
 # G6 — Out-of-distribution robustness (2026-10-12)
 
+> **G9 correction (governs):** with avoidable collisions the eligibility test is underpowered (A0: 5 avoidable collisions in 150 nominal lifetimes) and no system is eligible; A0_mem is better than A0 in 11/13 conditions and never worse (significantly under fast pedestrians, slow actuation and identity uncertainty). See `G9_REPORT.md`.
+
 Preregistered in `prereg/G6_ADDENDUM.md`; run once (commit `39fedb0`, lock passed; 14 conditions × 150 lifetimes ×
 5 episodes × 20 systems = 42,000 lifetimes; `results/G6/g6_X.json`). Systems: A0, R1, A0_mem (A0 + G2b memory design,
 A0's penalty unchanged), A1 (APM v0.1), B0, and the validation-selected neural cells A2 BC→PPO, A3 BC→PPO, A4 PPO
