@@ -46,3 +46,11 @@ Retraining it locally would very likely not reproduce the hash and would be a re
 3. Run E2 confirmatory (partition X) exactly as the addendum specifies; analyse with `scripts/e2_analyze.py --partition X`.
 4. Continue with E3, E4 and E7 per the master preregistration, with an addendum committed before each confirmatory run.
 5. Final report per §5 (GO / PIVOT / REDESIGN / STOP).
+
+## Compute authorization (given by the user in chat, 2026-10-11)
+
+- Paid cloud approved with a **hard ceiling of US$10 total** for the remaining programme-F compute.
+- Plan: one large CPU VM (≈ 60–90 vCPU), about 20–30 min of compute, ≤ 1 h total including setup, with a hard
+  `--max-run-duration` and auto-delete. Use the user's local `gcloud` login (no service-account keys).
+- Check regional vCPU quota first; if it doesn't allow a large VM, use the largest permitted machine or run locally.
+- Stop and report rather than exceed the ceiling. Tear down and audit afterwards.
