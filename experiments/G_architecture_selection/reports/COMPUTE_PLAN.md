@@ -51,3 +51,9 @@ reconciled with console billing.
 
 **US$30 total for programme G**, released phase by phase (1: US$6 cap, 2: US$5, 3: US$14, 4–5: US$5 — any unused
 amount rolls forward), stopping and reporting before any phase would exceed its cap.
+
+## Approval (2026-10-12)
+
+The user approved in chat: **US$30 total for programme G** with the per-phase caps above, and completion of F's E1 on
+a parallel VM within the Phase-1 cap. Phase-1 hard caps: tuning VM n2d-highcpu-96 ≤ 40 min (≈ US$1.95), test VM
+n2d-highcpu-96 ≤ 40 min (≈ US$1.95), E1 VM n2d-highcpu-64 ≤ 55 min (≈ US$1.75); total ≤ US$5.65 + NAT.
