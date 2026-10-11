@@ -63,7 +63,7 @@ Validation again selected no M\* (no candidate met criterion (i) with both media
 
 **Findings.** Revision needs *both* ingredients: evidence-free decay toward the prior (without it, probing alone does
 nothing: M1 + probing = M1) and *targeted* information gathering (random probing at a similar probe count is
-clearly worse). The combination halves the time to revise a risky→safe person (RMST 7.1 vs 10.7 episodes) without a
+clearly worse). The combination cuts the time to revise a risky→safe person by a third (RMST 7.1 vs 10.7 episodes) without a
 safety cost (collisions still −10% vs F's memory; probes are budgeted SLOW approaches under the unchanged safety
 supervisor). It still falls short of the preregistered ≤ 6-episode criterion in S2 (safe→risky: median 8), so G2's
 answer remains "no memory met the adaptation criterion"; the best-supported memory design is **exposure-gated
