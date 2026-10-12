@@ -885,7 +885,293 @@
    }
   }
  },
- "physical": null,
+ "physical": {
+  "M_id": {
+   "n": 60,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "history_classification": 0.9833333333333333,
+   "feature_difference_risky_minus_safe": {
+    "progress_speed": {
+     "mean": -0.006863964730361371,
+     "ci": [
+      -0.008295890908696353,
+      -0.005392441679136246
+     ],
+     "n": 30
+    },
+    "pauses_per_m": {
+     "mean": -0.4885624314500107,
+     "ci": [
+      -1.4249300992938152,
+      0.4129105506760534
+     ],
+     "n": 30
+    },
+    "final_distance": {
+     "mean": 0.19476523702829826,
+     "ci": [
+      0.1789770152567594,
+      0.209149882928592
+     ],
+     "n": 30
+    },
+    "face_elev_rest": {
+     "mean": -0.20424243296577282,
+     "ci": [
+      -0.21911767806893906,
+      -0.18654947683895198
+     ],
+     "n": 30
+    },
+    "face_yaw_rest_std": {
+     "mean": 0.04628950491197909,
+     "ci": [
+      0.039225992737095254,
+      0.05306940981208212
+     ],
+     "n": 30
+    },
+    "straightness": {
+     "mean": -0.028500176227085134,
+     "ci": [
+      -0.05580923863910287,
+      -0.0023365058745004447
+     ],
+     "n": 30
+    }
+   }
+  },
+  "S0_none": {
+   "n": 60,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "history_classification": 0.5,
+   "feature_difference_risky_minus_safe": {
+    "progress_speed": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "pauses_per_m": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "final_distance": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "face_elev_rest": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "face_yaw_rest_std": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "straightness": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   }
+  },
+  "S1_fixed": {
+   "n": 60,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "history_classification": 0.5,
+   "feature_difference_risky_minus_safe": {
+    "progress_speed": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "pauses_per_m": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "final_distance": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "face_elev_rest": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "face_yaw_rest_std": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "straightness": {
+     "mean": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   }
+  },
+  "S4_pad": {
+   "n": 60,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "history_classification": 1.0,
+   "feature_difference_risky_minus_safe": {
+    "progress_speed": {
+     "mean": -0.006555676891575901,
+     "ci": [
+      -0.008021266258510152,
+      -0.005220244015873902
+     ],
+     "n": 30
+    },
+    "pauses_per_m": {
+     "mean": 1.4460299960503264,
+     "ci": [
+      0.8129965179757059,
+      2.1218708779724698
+     ],
+     "n": 30
+    },
+    "final_distance": {
+     "mean": 0.046917617204372236,
+     "ci": [
+      0.03991241187713504,
+      0.05399229180823375
+     ],
+     "n": 30
+    },
+    "face_elev_rest": {
+     "mean": -0.06055999074227126,
+     "ci": [
+      -0.06965404552697296,
+      -0.05210729212548566
+     ],
+     "n": 30
+    },
+    "face_yaw_rest_std": {
+     "mean": 0.07108177704887604,
+     "ci": [
+      0.0633595252912271,
+      0.07897143359102857
+     ],
+     "n": 30
+    },
+    "straightness": {
+     "mean": -0.05598673096281889,
+     "ci": [
+      -0.07619887822662258,
+      -0.035867785658690504
+     ],
+     "n": 30
+    }
+   }
+  },
+  "S6_fastslow": {
+   "n": 60,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "history_classification": 0.95,
+   "feature_difference_risky_minus_safe": {
+    "progress_speed": {
+     "mean": -0.004758649173287386,
+     "ci": [
+      -0.006532930130239478,
+      -0.0029717058263317303
+     ],
+     "n": 30
+    },
+    "pauses_per_m": {
+     "mean": -0.14758494961123073,
+     "ci": [
+      -1.127200092485818,
+      0.8188811179301648
+     ],
+     "n": 30
+    },
+    "final_distance": {
+     "mean": 0.07380594156737678,
+     "ci": [
+      0.06304896708107939,
+      0.08497382406572133
+     ],
+     "n": 30
+    },
+    "face_elev_rest": {
+     "mean": -0.09931420853587061,
+     "ci": [
+      -0.11316466595811124,
+      -0.0856622983916596
+     ],
+     "n": 30
+    },
+    "face_yaw_rest_std": {
+     "mean": 0.053404487172684756,
+     "ci": [
+      0.033921032188617424,
+      0.07213633594153322
+     ],
+     "n": 30
+    },
+    "straightness": {
+     "mean": -0.029468266151864198,
+     "ci": [
+      -0.05271601517616734,
+      -0.004709627922642078
+     ],
+     "n": 30
+    }
+   }
+  }
+ },
  "H4_gate": {
   "per_system": {
    "M_ctx": {
@@ -901,7 +1187,7 @@
     "E1_ge_0.50": true,
     "shuffled_null": false,
     "reset_zero": true,
-    "physical": false,
+    "physical": true,
     "supports_claim_C": false
    },
    "M_id_cp": {
@@ -949,7 +1235,7 @@
     "E1_ge_0.50": false,
     "shuffled_null": false,
     "reset_zero": true,
-    "physical": false,
+    "physical": true,
     "supports_claim_C": false
    },
    "S5_gru": {
@@ -965,7 +1251,7 @@
     "E1_ge_0.50": true,
     "shuffled_null": false,
     "reset_zero": true,
-    "physical": false,
+    "physical": true,
     "supports_claim_C": false
    },
    "S7_gru_mem": {

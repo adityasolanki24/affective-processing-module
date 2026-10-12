@@ -55,13 +55,15 @@ def main() -> None:
     ap.add_argument("--histories", default=",".join(HISTORIES))
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--workers", type=int, default=3)
+    ap.add_argument("--index-offset", type=int, default=0, help="fresh lifetime indices (H4b: 1000)")
+    ap.add_argument("--addendum", default="H34_ADDENDUM.md")
     a = ap.parse_args()
     from apm_express.provenance import confirmatory_lock, environment, nerva_state
-    lock = (confirmatory_lock(HERE / "prereg" / "H34_ADDENDUM.md") if a.partition in ("X", "S")
+    lock = (confirmatory_lock(HERE / "prereg" / a.addendum) if a.partition in ("X", "S")
             else {**environment(), **nerva_state(), "partition": a.partition})
     jobs, keys = [], []
     for h in a.histories.split(","):
-        for i in range(a.lifetimes):
+        for i in range(a.index_offset, a.index_offset + a.lifetimes):
             for e in lifetime_plan(a.partition, h, i):
                 jobs.append(e)
                 keys.append((h, i))
