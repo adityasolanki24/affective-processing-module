@@ -5,7 +5,7 @@ Scene:
 - one fixed free camera (azimuth 120°, elevation −20°) looking at the midpoint of start and target;
 - 480 × 360 px, 25 fps, H.264 through the system ffmpeg.
 
-Each clip runs from the start until 3 s after arrival (at most 45 s). File names are opaque hashes; the
+Each clip runs from the start until 5 s after arrival (at most 45 s). File names are opaque hashes; the
 style-to-file key goes into a separate manifest, which is never shown to participants.
 
 The closed loop is identical to `apm_express.episode.run_episode` (same adapter, monitor and fallback), with a frame
@@ -39,7 +39,7 @@ from apm_express.styles import DESIGNED, NEUTRAL, with_tempo  # noqa: E402
 
 W, H, FPS = 480, 360, 25
 MAX_S = 45.0
-TAIL_S = 3.0
+TAIL_S = 5.0
 
 
 def ball_extender(spec) -> None:
@@ -73,7 +73,7 @@ def render_clip(intent: ExpressionIntent, target: tuple[float, float], seed: int
     cam = mujoco.MjvCamera()
     cam.type = mujoco.mjtCamera.mjCAMERA_FREE
     cam.lookat[:] = [ox + target[0] / 2, oy + target[1] / 2, 0.15]
-    cam.distance, cam.azimuth, cam.elevation = 2.2, 120.0, -20.0
+    cam.distance, cam.azimuth, cam.elevation = 1.8, 120.0, -20.0
     ff = subprocess.Popen(
         [
             "ffmpeg",
