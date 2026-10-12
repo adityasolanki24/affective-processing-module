@@ -31,6 +31,16 @@ _R, _C = RELAXED.as_array(), CAUTIOUS.as_array()
 _DIR = _C - _R
 
 
+def load_json(path: Path) -> dict:
+    """Read `path`, or its gzip copy `path.gz` (large evaluation files are committed compressed)."""
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    import gzip
+
+    with gzip.open(str(path) + ".gz", "rt", encoding="utf-8") as f:
+        return json.load(f)
+
+
 def kappa_e(intent: dict) -> float:
     return float(np.dot(ExpressionIntent(**intent).as_array() - _R, _DIR) / np.dot(_DIR, _DIR))
 
@@ -53,7 +63,7 @@ def _rank(x):
 
 def spearman(a, b) -> float:
     a, b = np.asarray(a, float), np.asarray(b, float)
-    if np.std(a) == 0 or np.std(b) == 0:
+    if np.std(a) < 1e-12 or np.std(b) < 1e-12:  # constant output (S0, S1): no rank information
         return 0.0
     return float(np.corrcoef(_rank(a), _rank(b))[0, 1])
 
@@ -166,7 +176,7 @@ def physical(root: Path) -> dict | None:
 
 
 def analyze(root: Path) -> dict:
-    ev = json.loads((root / "X" / "states_eval.json").read_text(encoding="utf-8"))
+    ev = load_json(root / "X" / "states_eval.json")
     rows = ev["rows"]
     systems = sorted({r["system"] for r in rows})
     base = {s: [r for r in rows if r["system"] == s and r["control"] == "none"] for s in systems}

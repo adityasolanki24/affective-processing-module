@@ -81,7 +81,9 @@ def main() -> None:
 
     lock = confirmatory_lock(HERE / "prereg" / "H34_ADDENDUM.md")
     iface = json.loads(a.interface.read_text(encoding="utf-8"))["interface"]
-    ev = json.loads((a.root / "X" / "states_eval.json").read_text(encoding="utf-8"))
+    from h34_analyze import load_json
+
+    ev = load_json(a.root / "X" / "states_eval.json")
     jobs = []
     for row in ev["rows"]:
         if row["control"] != "none" or row["history"] not in HISTORIES or row["system"] not in a.systems.split(","):

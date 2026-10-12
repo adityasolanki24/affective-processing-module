@@ -31,3 +31,10 @@ consequence. Entries are never deleted.
   with a unit test.
 - **Effect.** H0's stored nominal features are the uncorrected ones. H0 criterion (c) compares probes with each
   other and its direction is unaffected. Every later experiment uses the corrected features.
+
+## 2026-10-13: Spearman helper returned NaN for constant expression (analysis-code fix)
+
+- **What happened.** `h34_analyze.spearman` tested `std == 0`. S0's constant intent has std ≈ 1e-17, so it returned
+  NaN, and the H3 non-inferiority bootstrap could not select a system.
+- **Fix.** The test is now `std < 1e-12`, and constant output counts as having no rank information (ρ = 0).
+- **Effect.** No other value changed.
