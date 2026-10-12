@@ -106,3 +106,8 @@ Written as a removable layer, with 11 unit tests:
 ### H7 and addenda
 - **H7:** wheeled distinctness 1.00; median cross-body ρ 0.71; biped→wheeled transfer 0.79. Gaze and pause counting correspond poorly.
 - **H5 and H6 addenda and scripts written** before their data.
+
+### H2 stimuli
+- **72 anonymised clips rendered** (`videos/h1/`): 0 falls, all arrive, ≤ 45 s.
+- Hash-named; the style key is in `MANIFEST_KEY_DO_NOT_SHOW.json` (researchers only).
+- **No participants recruited.**
