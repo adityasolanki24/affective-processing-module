@@ -181,10 +181,12 @@ def main() -> None:
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--workers", type=int, default=3)
     ap.add_argument("--push", type=float, default=0.15, help="push magnitude: the configuration's validated m*")
+    ap.add_argument("--index-offset", type=int, default=0, help="fresh seed indices for re-tests (H1b: 600,000)")
+    ap.add_argument("--addendum", default="H1_ADDENDUM.md")
     a = ap.parse_args()
     from apm_express.provenance import confirmatory_lock, environment, nerva_state
     if a.partition in ("X", "S"):
-        lock = confirmatory_lock(HERE / "prereg" / "H1_ADDENDUM.md")
+        lock = confirmatory_lock(HERE / "prereg" / a.addendum)
     else:
         lock = {**environment(), **nerva_state(), "partition": a.partition, "exploratory": a.partition == "P"}
     adm = json.loads(a.interface.read_text(encoding="utf-8"))
@@ -193,6 +195,8 @@ def main() -> None:
         raise SystemExit(f"no admitted {a.config} interface")
     tempos = json.loads(a.tempos.read_text(encoding="utf-8"))["tempos"] if a.tempos else None
     trials = build(a.arm, a.partition, a.seeds, tempos, a.push)
+    if a.index_offset:
+        trials = [Trial(**{**asdict(t), "index": t.index + a.index_offset}) for t in trials]
     start = time.time()
     with Pool(a.workers, initializer=_init) as pool:
         rows = pool.map(run_trial, [(t, iface) for t in trials], chunksize=1)

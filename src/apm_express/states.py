@@ -2,8 +2,8 @@
 
 Every model observes only what the robot measures after each encounter:
 - identity tag, kind, zone;
-- the observed outcome `y` (perturbed or not, from measured tilt);
-- `tilt` (peak tilt above baseline, in degrees).
+- the observed outcome `y` (perturbed or not: measured peak base speed ≥ 0.04 m/s, H3/H4 addendum);
+- `magnitude` (measured peak base speed / 0.1 m/s).
 
 It never sees the world's hidden jolt probability or history label, except `OracleLookup`, which is the explicitly
 labelled human-designed history-to-style control.
@@ -39,7 +39,7 @@ from apm_express.styles import DESIGNED
 from apm_select.memory import ChangePoint, Cumulative
 
 BASE = 0.05  # prior expectation of being perturbed by an unfamiliar entity
-TILT_SCALE = 10.0  # deg: tilt normalisation for PAD dominance/arousal
+MAG_SCALE = 1.0  # magnitude normalisation for PAD dominance (magnitude = peak speed / 0.1 m/s)
 
 
 @dataclass(frozen=True)
@@ -47,8 +47,8 @@ class Obs:
     identity: str
     kind: str
     zone: str
-    y: float  # observed: 1 if the encounter perturbed the robot (measured tilt above threshold)
-    tilt: float  # observed peak tilt above baseline [deg]
+    y: float  # observed: 1 if the encounter perturbed the robot (measured disturbance above threshold)
+    magnitude: float  # observed disturbance size (peak base speed / 0.1 m/s)
 
 
 @dataclass(frozen=True)
@@ -148,10 +148,10 @@ class PADState(StateModel):
 
     def observe(self, ob: Obs) -> None:
         surprise = abs(ob.y - self.expect)
-        tilt = min(1.0, ob.tilt / TILT_SCALE)
+        size = min(1.0, ob.magnitude / MAG_SCALE)
         self.P += self.alpha * ((1.0 - 2.0 * ob.y) - self.P)
         self.A += self.alpha * ((2.0 * max(ob.y, surprise) - 1.0) - self.A)
-        self.D += self.alpha * ((1.0 - 2.0 * tilt) - self.D)
+        self.D += self.alpha * ((1.0 - 2.0 * size) - self.D)
         self.expect += self.alpha * (ob.y - self.expect)
 
     def readout(self, probe: Probe) -> Readout:

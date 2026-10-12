@@ -27,7 +27,7 @@ from apm_express.states import BASE, EntityMemory, Obs, Probe, Readout, StateMod
 KINDS = ("A", "B", "C", "D")
 ZONES = ("plain", "marked")
 CODE = 8
-X_DIM = CODE + len(KINDS) + len(ZONES) + 2  # + y + tilt/10
+X_DIM = CODE + len(KINDS) + len(ZONES) + 2  # + y + magnitude
 Q_DIM = CODE + len(KINDS) + len(ZONES)
 MEM_DIM = 3
 
@@ -41,7 +41,7 @@ def query_vec(code: np.ndarray, kind: str, zone: str) -> np.ndarray:
 
 
 def event_vec(code: np.ndarray, ob: Obs) -> np.ndarray:
-    return np.concatenate([query_vec(code, ob.kind, ob.zone), [ob.y, min(ob.tilt, 30.0) / 10.0]]).astype(np.float32)
+    return np.concatenate([query_vec(code, ob.kind, ob.zone), [ob.y, min(ob.magnitude, 3.0)]]).astype(np.float32)
 
 
 class Net(nn.Module):

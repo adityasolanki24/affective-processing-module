@@ -1,0 +1,1175 @@
+{
+ "core_safety": {
+  "assertive": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.06542194472252708,
+   "sparc": -4.764313002037146,
+   "power": 3.2233461589326273,
+   "head_while_moving_max": 1.3877787807814457e-17
+  },
+  "cautious": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.030999403028271054,
+   "sparc": -5.919880006178917,
+   "power": 2.4445163449449194,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "curious": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.030084842282931373,
+   "sparc": -6.00393955479714,
+   "power": 4.35873100778704,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "energetic": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.04717498546596615,
+   "sparc": -4.816335682860119,
+   "power": 3.6695110974786247,
+   "head_while_moving_max": 0.004999999999999907
+  },
+  "hesitant": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.028686860374269187,
+   "sparc": -6.000498422958624,
+   "power": 3.5796590690384518,
+   "head_while_moving_max": 1.3877787807814457e-17
+  },
+  "neutral": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.06525398095497639,
+   "sparc": -4.493266687904906,
+   "power": 2.460161833835234,
+   "head_while_moving_max": 0.0
+  },
+  "relaxed": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.03773963245225041,
+   "sparc": -5.637123786118937,
+   "power": 3.2324823353687244,
+   "head_while_moving_max": 0.0040361369476054135
+  }
+ },
+ "core_classification": {
+  "all": {
+   "balanced_accuracy": 1.0,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 1.0,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 40
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "curious": 40
+    },
+    "energetic": {
+     "energetic": 40
+    },
+    "hesitant": {
+     "hesitant": 40
+    },
+    "neutral": {
+     "neutral": 40
+    },
+    "relaxed": {
+     "relaxed": 40
+    }
+   },
+   "n": 280
+  },
+  "non_speed": {
+   "balanced_accuracy": 1.0,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 1.0,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 40
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "curious": 40
+    },
+    "energetic": {
+     "energetic": 40
+    },
+    "hesitant": {
+     "hesitant": 40
+    },
+    "neutral": {
+     "neutral": 40
+    },
+    "relaxed": {
+     "relaxed": 40
+    }
+   },
+   "n": 280
+  },
+  "non_speed_non_posture": {
+   "balanced_accuracy": 0.9857142857142858,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 0.975,
+    "energetic": 0.925,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 40
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "curious": 39,
+     "energetic": 1
+    },
+    "energetic": {
+     "energetic": 37,
+     "neutral": 1,
+     "curious": 1,
+     "assertive": 1
+    },
+    "hesitant": {
+     "hesitant": 40
+    },
+    "neutral": {
+     "neutral": 40
+    },
+    "relaxed": {
+     "relaxed": 40
+    }
+   },
+   "n": 280
+  },
+  "temporal": {
+   "balanced_accuracy": 0.7535714285714287,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 0.725,
+    "cautious": 0.725,
+    "curious": 0.7,
+    "energetic": 0.55,
+    "hesitant": 0.95,
+    "neutral": 0.775,
+    "relaxed": 0.85
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 29,
+     "neutral": 11
+    },
+    "cautious": {
+     "cautious": 29,
+     "energetic": 1,
+     "relaxed": 3,
+     "curious": 7
+    },
+    "curious": {
+     "cautious": 9,
+     "curious": 28,
+     "energetic": 2,
+     "relaxed": 1
+    },
+    "energetic": {
+     "assertive": 16,
+     "energetic": 22,
+     "curious": 2
+    },
+    "hesitant": {
+     "hesitant": 38,
+     "energetic": 1,
+     "cautious": 1
+    },
+    "neutral": {
+     "neutral": 31,
+     "assertive": 9
+    },
+    "relaxed": {
+     "relaxed": 34,
+     "curious": 2,
+     "cautious": 4
+    }
+   },
+   "n": 280
+  },
+  "posture": {
+   "balanced_accuracy": 0.9964285714285713,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 1.0,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 0.975
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 40
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "curious": 40
+    },
+    "energetic": {
+     "energetic": 40
+    },
+    "hesitant": {
+     "hesitant": 40
+    },
+    "neutral": {
+     "neutral": 40
+    },
+    "relaxed": {
+     "relaxed": 39,
+     "neutral": 1
+    }
+   },
+   "n": 280
+  },
+  "acceleration": {
+   "balanced_accuracy": 0.5035714285714287,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 0.6,
+    "cautious": 0.3,
+    "curious": 0.2,
+    "energetic": 0.7,
+    "hesitant": 0.475,
+    "neutral": 0.45,
+    "relaxed": 0.8
+   },
+   "confusion": {
+    "assertive": {
+     "neutral": 10,
+     "energetic": 6,
+     "assertive": 24
+    },
+    "cautious": {
+     "hesitant": 9,
+     "curious": 8,
+     "cautious": 12,
+     "relaxed": 4,
+     "energetic": 7
+    },
+    "curious": {
+     "hesitant": 14,
+     "cautious": 9,
+     "curious": 8,
+     "relaxed": 2,
+     "energetic": 7
+    },
+    "energetic": {
+     "assertive": 7,
+     "energetic": 28,
+     "neutral": 4,
+     "cautious": 1
+    },
+    "hesitant": {
+     "cautious": 8,
+     "hesitant": 19,
+     "relaxed": 7,
+     "energetic": 1,
+     "curious": 5
+    },
+    "neutral": {
+     "neutral": 18,
+     "energetic": 6,
+     "assertive": 16
+    },
+    "relaxed": {
+     "relaxed": 32,
+     "cautious": 3,
+     "hesitant": 3,
+     "energetic": 2
+    }
+   },
+   "n": 280
+  },
+  "spatial": {
+   "balanced_accuracy": 0.975,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 0.975,
+    "energetic": 0.85,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 40
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "curious": 39,
+     "energetic": 1
+    },
+    "energetic": {
+     "energetic": 34,
+     "curious": 3,
+     "relaxed": 3
+    },
+    "hesitant": {
+     "hesitant": 40
+    },
+    "neutral": {
+     "neutral": 40
+    },
+    "relaxed": {
+     "relaxed": 40
+    }
+   },
+   "n": 280
+  }
+ },
+ "matched_safety": {
+  "assertive": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.029462162451131008,
+   "sparc": -7.09449783323528,
+   "power": 4.228454583940173,
+   "head_while_moving_max": 1.3877787807814457e-17
+  },
+  "cautious": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.030796862114802603,
+   "sparc": -6.030386527747234,
+   "power": 2.3821198747913943,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "curious": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.029514831337001824,
+   "sparc": -6.1876306966129375,
+   "power": 4.1645826962860575,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "energetic": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.029716369626530792,
+   "sparc": -6.226489382304564,
+   "power": 3.795779667616658,
+   "head_while_moving_max": 0.004999999999999907
+  },
+  "hesitant": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.029306772210583986,
+   "sparc": -5.919137048649621,
+   "power": 3.5780892999515688,
+   "head_while_moving_max": 1.3877787807814457e-17
+  },
+  "relaxed": {
+   "n": 40,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.029847242709949807,
+   "sparc": -6.744139054307752,
+   "power": 3.1476868715448116,
+   "head_while_moving_max": 0.004835753951748713
+  }
+ },
+ "matched_classification": {
+  "all": {
+   "balanced_accuracy": 1.0,
+   "chance": 0.16666666666666666,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 1.0,
+    "hesitant": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 40
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "curious": 40
+    },
+    "energetic": {
+     "energetic": 40
+    },
+    "hesitant": {
+     "hesitant": 40
+    },
+    "relaxed": {
+     "relaxed": 40
+    }
+   },
+   "n": 240
+  },
+  "non_speed": {
+   "balanced_accuracy": 1.0,
+   "chance": 0.16666666666666666,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 1.0,
+    "hesitant": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 40
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "curious": 40
+    },
+    "energetic": {
+     "energetic": 40
+    },
+    "hesitant": {
+     "hesitant": 40
+    },
+    "relaxed": {
+     "relaxed": 40
+    }
+   },
+   "n": 240
+  },
+  "non_speed_non_posture": {
+   "balanced_accuracy": 0.9333333333333332,
+   "chance": 0.16666666666666666,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 0.8,
+    "energetic": 0.85,
+    "hesitant": 0.975,
+    "relaxed": 0.975
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 40
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "energetic": 8,
+     "curious": 32
+    },
+    "energetic": {
+     "energetic": 34,
+     "curious": 5,
+     "relaxed": 1
+    },
+    "hesitant": {
+     "hesitant": 39,
+     "relaxed": 1
+    },
+    "relaxed": {
+     "relaxed": 39,
+     "energetic": 1
+    }
+   },
+   "n": 240
+  },
+  "temporal": {
+   "balanced_accuracy": 0.6083333333333334,
+   "chance": 0.16666666666666666,
+   "recall": {
+    "assertive": 0.8,
+    "cautious": 0.575,
+    "curious": 0.475,
+    "energetic": 0.275,
+    "hesitant": 0.85,
+    "relaxed": 0.675
+   },
+   "confusion": {
+    "assertive": {
+     "relaxed": 8,
+     "assertive": 32
+    },
+    "cautious": {
+     "cautious": 23,
+     "relaxed": 8,
+     "curious": 4,
+     "energetic": 3,
+     "assertive": 1,
+     "hesitant": 1
+    },
+    "curious": {
+     "energetic": 13,
+     "curious": 19,
+     "cautious": 4,
+     "relaxed": 4
+    },
+    "energetic": {
+     "cautious": 3,
+     "energetic": 11,
+     "relaxed": 9,
+     "curious": 17
+    },
+    "hesitant": {
+     "hesitant": 34,
+     "energetic": 1,
+     "cautious": 3,
+     "relaxed": 1,
+     "assertive": 1
+    },
+    "relaxed": {
+     "relaxed": 27,
+     "energetic": 8,
+     "cautious": 2,
+     "assertive": 3
+    }
+   },
+   "n": 240
+  },
+  "posture": {
+   "balanced_accuracy": 0.9958333333333332,
+   "chance": 0.16666666666666666,
+   "recall": {
+    "assertive": 0.975,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 1.0,
+    "hesitant": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 39,
+     "energetic": 1
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "curious": 40
+    },
+    "energetic": {
+     "energetic": 40
+    },
+    "hesitant": {
+     "hesitant": 40
+    },
+    "relaxed": {
+     "relaxed": 40
+    }
+   },
+   "n": 240
+  },
+  "acceleration": {
+   "balanced_accuracy": 0.4124999999999999,
+   "chance": 0.16666666666666666,
+   "recall": {
+    "assertive": 0.8,
+    "cautious": 0.325,
+    "curious": 0.3,
+    "energetic": 0.075,
+    "hesitant": 0.55,
+    "relaxed": 0.425
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 32,
+     "relaxed": 3,
+     "hesitant": 5
+    },
+    "cautious": {
+     "curious": 10,
+     "relaxed": 7,
+     "hesitant": 7,
+     "cautious": 13,
+     "energetic": 3
+    },
+    "curious": {
+     "curious": 12,
+     "hesitant": 7,
+     "cautious": 9,
+     "relaxed": 7,
+     "energetic": 5
+    },
+    "energetic": {
+     "energetic": 3,
+     "cautious": 14,
+     "hesitant": 5,
+     "curious": 8,
+     "relaxed": 10
+    },
+    "hesitant": {
+     "hesitant": 22,
+     "assertive": 6,
+     "cautious": 2,
+     "curious": 4,
+     "energetic": 2,
+     "relaxed": 4
+    },
+    "relaxed": {
+     "hesitant": 10,
+     "relaxed": 17,
+     "cautious": 6,
+     "energetic": 2,
+     "curious": 2,
+     "assertive": 3
+    }
+   },
+   "n": 240
+  },
+  "spatial": {
+   "balanced_accuracy": 0.9249999999999999,
+   "chance": 0.16666666666666666,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 0.875,
+    "energetic": 0.725,
+    "hesitant": 1.0,
+    "relaxed": 0.95
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 40
+    },
+    "cautious": {
+     "cautious": 40
+    },
+    "curious": {
+     "energetic": 5,
+     "curious": 35
+    },
+    "energetic": {
+     "relaxed": 5,
+     "energetic": 29,
+     "curious": 6
+    },
+    "hesitant": {
+     "hesitant": 40
+    },
+    "relaxed": {
+     "relaxed": 38,
+     "energetic": 2
+    }
+   },
+   "n": 240
+  }
+ },
+ "matched_speed_spread": {
+  "assertive": -0.010474817091781441,
+  "cautious": 0.03435281329729323,
+  "curious": -0.008705863811066306,
+  "energetic": -0.0019369372891264725,
+  "hesitant": -0.01569380115157304,
+  "relaxed": 0.0024586060462539194
+ },
+ "push_safety": {
+  "assertive": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.06534288320917023,
+   "sparc": -4.788309572118189,
+   "power": 3.247659970163536,
+   "head_while_moving_max": 0.0
+  },
+  "cautious": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.02955464769194819,
+   "sparc": -5.997263872653584,
+   "power": 2.4548238828537223,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "curious": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.030941462280853763,
+   "sparc": -5.876688233628204,
+   "power": 4.3673780607888855,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "energetic": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.04799897495023874,
+   "sparc": -4.617419619606955,
+   "power": 3.598447625116388,
+   "head_while_moving_max": 0.004999999999999907
+  },
+  "hesitant": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.029320693806096795,
+   "sparc": -5.994990840768171,
+   "power": 3.5866289517928536,
+   "head_while_moving_max": 1.3877787807814457e-17
+  },
+  "neutral": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.06653854207555451,
+   "sparc": -4.434070214123991,
+   "power": 2.4038071818080926,
+   "head_while_moving_max": 0.0
+  },
+  "relaxed": {
+   "n": 16,
+   "falls": 1,
+   "trips": 1,
+   "arrival": 0.9375,
+   "progress_speed": 0.03370947006905729,
+   "sparc": -5.39314574593587,
+   "power": 3.1946135644159543,
+   "head_while_moving_max": 0.0008663720268902511
+  }
+ },
+ "push_transfer_non_speed": {
+  "balanced_accuracy": 0.9821428571428571,
+  "chance": 0.14285714285714285,
+  "recall": {
+   "assertive": 0.9375,
+   "cautious": 1.0,
+   "curious": 1.0,
+   "energetic": 1.0,
+   "hesitant": 1.0,
+   "neutral": 1.0,
+   "relaxed": 0.9375
+  },
+  "confusion": {
+   "assertive": {
+    "assertive": 15,
+    "energetic": 1
+   },
+   "cautious": {
+    "cautious": 16
+   },
+   "curious": {
+    "curious": 16
+   },
+   "energetic": {
+    "energetic": 16
+   },
+   "hesitant": {
+    "hesitant": 16
+   },
+   "neutral": {
+    "neutral": 16
+   },
+   "relaxed": {
+    "relaxed": 15,
+    "hesitant": 1
+   }
+  },
+  "n": 112
+ },
+ "switch_safety": {
+  "assertive->cautious": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.052214258204227704,
+   "sparc": -4.708034060985745,
+   "power": 2.182365751035455,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "cautious->assertive": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.050436814016604686,
+   "sparc": -4.358459867948534,
+   "power": 3.424764351123189,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "curious->relaxed": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.034726202951584365,
+   "sparc": -5.305819229614498,
+   "power": 3.5729326123732665,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "energetic->hesitant": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.031106830801956482,
+   "sparc": -5.617539890825577,
+   "power": 3.5001036358069264,
+   "head_while_moving_max": 0.004999999999999907
+  },
+  "hesitant->energetic": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.04755375693918726,
+   "sparc": -4.453892305225498,
+   "power": 3.2205114431948347,
+   "head_while_moving_max": 0.004999999999999907
+  },
+  "relaxed->curious": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.030455063577352094,
+   "sparc": -6.402321169220638,
+   "power": 3.906358660100617,
+   "head_while_moving_max": 0.004999999999999963
+  }
+ },
+ "shift_safety": {
+  "assertive": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.05749873987552655,
+   "sparc": -5.156316387269776,
+   "power": 4.550772376865554,
+   "head_while_moving_max": 0.0
+  },
+  "cautious": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.026542019871044455,
+   "sparc": -6.528502310700814,
+   "power": 3.973790884438246,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "curious": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.028289937360429344,
+   "sparc": -6.833336144629249,
+   "power": 5.813182805126496,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "energetic": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.04190748162455858,
+   "sparc": -5.258427385363179,
+   "power": 4.9106048421583,
+   "head_while_moving_max": 0.004999999999999907
+  },
+  "hesitant": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.02880384847698504,
+   "sparc": -6.14110213828368,
+   "power": 5.2176475728547285,
+   "head_while_moving_max": 1.3877787807814457e-17
+  },
+  "neutral": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.05385208418470638,
+   "sparc": -4.944760788795859,
+   "power": 3.8510925544367236,
+   "head_while_moving_max": 0.0
+  },
+  "relaxed": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.03452666670333278,
+   "sparc": -6.216337520557351,
+   "power": 4.668798623341952,
+   "head_while_moving_max": 0.0035410196624966923
+  }
+ },
+ "shift_transfer_non_speed": {
+  "balanced_accuracy": 0.9821428571428571,
+  "chance": 0.14285714285714285,
+  "recall": {
+   "assertive": 0.875,
+   "cautious": 1.0,
+   "curious": 1.0,
+   "energetic": 1.0,
+   "hesitant": 1.0,
+   "neutral": 1.0,
+   "relaxed": 1.0
+  },
+  "confusion": {
+   "assertive": {
+    "assertive": 7,
+    "energetic": 1
+   },
+   "cautious": {
+    "cautious": 8
+   },
+   "curious": {
+    "curious": 8
+   },
+   "energetic": {
+    "energetic": 8
+   },
+   "hesitant": {
+    "hesitant": 8
+   },
+   "neutral": {
+    "neutral": 8
+   },
+   "relaxed": {
+    "relaxed": 8
+   }
+  },
+  "n": 56
+ },
+ "secondary_safety": {
+  "assertive": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.06445548276603191,
+   "sparc": -4.906493791283783,
+   "power": 3.7332890645166055,
+   "head_while_moving_max": 0.004790806546603146
+  },
+  "cautious": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.031096865934680123,
+   "sparc": -5.6359382200604,
+   "power": 2.945154311345416,
+   "head_while_moving_max": 0.004806980255479723
+  },
+  "curious": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.03169352520219354,
+   "sparc": -5.777151585840841,
+   "power": 5.306002962818496,
+   "head_while_moving_max": 0.004012110322683574
+  },
+  "energetic": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.04509507430541472,
+   "sparc": -4.701811486303368,
+   "power": 4.514563712800048,
+   "head_while_moving_max": 0.004899429157131777
+  },
+  "hesitant": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.029854746874354066,
+   "sparc": -5.737421712538278,
+   "power": 4.424944550253173,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "neutral": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.06601046651538073,
+   "sparc": -4.623648199150389,
+   "power": 2.9196433262493127,
+   "head_while_moving_max": 0.0
+  },
+  "relaxed": {
+   "n": 16,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.03849920005061328,
+   "sparc": -5.538924881757291,
+   "power": 3.903773002983123,
+   "head_while_moving_max": 0.0027836608040562316
+  }
+ },
+ "secondary_classification_non_speed": {
+  "balanced_accuracy": 1.0,
+  "chance": 0.14285714285714285,
+  "recall": {
+   "assertive": 1.0,
+   "cautious": 1.0,
+   "curious": 1.0,
+   "energetic": 1.0,
+   "hesitant": 1.0,
+   "neutral": 1.0,
+   "relaxed": 1.0
+  },
+  "confusion": {
+   "assertive": {
+    "assertive": 16
+   },
+   "cautious": {
+    "cautious": 16
+   },
+   "curious": {
+    "curious": 16
+   },
+   "energetic": {
+    "energetic": 16
+   },
+   "hesitant": {
+    "hesitant": 16
+   },
+   "neutral": {
+    "neutral": 16
+   },
+   "relaxed": {
+    "relaxed": 16
+   }
+  },
+  "n": 112
+ },
+ "gate": {
+  "G1_safety": false,
+  "G2_task": true,
+  "G3_distinct": true,
+  "G4_matched": true,
+  "matched_speed_ok": true,
+  "G5_perturbation": true,
+  "passes": false,
+  "repertoire": [
+   "cautious",
+   "assertive",
+   "curious",
+   "hesitant",
+   "relaxed",
+   "energetic"
+  ]
+ },
+ "x1_vs_x2": {
+  "x1": {
+   "n": 240,
+   "falls": 0,
+   "arrival": 1.0,
+   "sparc": -5.5236817424918145,
+   "power": 3.418041002258398,
+   "diversity_non_speed": 6.040393849132874
+  },
+  "x2": {
+   "n": 80,
+   "falls": 0,
+   "arrival": 1.0,
+   "sparc": -5.9535863410205465,
+   "power": 3.5384353928265297,
+   "diversity_non_speed": 6.199348293863976
+  },
+  "x3_pca_on_x2": {
+   "components_for_90pct": 10,
+   "explained": [
+    0.229,
+    0.383,
+    0.511,
+    0.617,
+    0.694,
+    0.753,
+    0.81,
+    0.853
+   ]
+  }
+ }
+}

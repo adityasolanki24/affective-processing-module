@@ -78,3 +78,21 @@ Written as a removable layer, with 11 unit tests:
 - **Exposure cost:** at 0.30 m/s, slow_pausing fell 8/40 vs neutral approach 0/40.
 - **Arrival:** 100% for every probe.
 - **H1 may start.**
+
+### H1 confirmatory run (commit `e68087a`, 976 trials)
+- **Gate FAILS on G1:** 1 fall in 112 push trials at 0.15 m/s. The push came from behind 0.2 s before a forward
+  burst, while the robot was still rocking after stopping.
+- **G2–G5 pass:**
+  - distinctness 1.00 non-speed and 0.99 non-speed-non-posture;
+  - matched speed (±3.4%) 1.00;
+  - push transfer 0.98;
+  - shift transfer 0.98.
+- **X1 vs X2:** equally safe; random intents about as diverse.
+- **PCA:** 10 components for 90% of the variance.
+- **Stop-transition pilot (P, 480 trials):** 0.15 m/s pushes 0.4 s after a stop topple the robot (2/16);
+  ≤ 0.125 m/s no falls.
+- **H1b addendum written:** transition tolerance m** on X, push re-test on fresh seeds; fail definitively if
+  m** < 0.10.
+- **H3/H4 design:** the observed outcome is peak base speed ≥ 0.04 m/s. Pilot: 672 encounters, perfect separation
+  from jolts. Measured tilt does not separate them at 0.15 m/s.
+- **H3/H4 addendum drafted;** to be run only if H1b passes.
