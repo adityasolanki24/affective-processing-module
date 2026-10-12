@@ -96,3 +96,9 @@ Written as a removable layer, with 11 unit tests:
 - **H3/H4 design:** the observed outcome is peak base speed ≥ 0.04 m/s. Pilot: 672 encounters, perfect separation
   from jolts. Measured tilt does not separate them at 0.15 m/s.
 - **H3/H4 addendum drafted;** to be run only if H1b passes.
+
+### H1b (commit `766057c`)
+- **Transition push tolerance:** m** = 0.10 m/s.
+- **Push-arm re-test at 0.10:** 0/168 falls.
+- **H1 passes.**
+- **H3/H4 experience generation started:** T, V, X.
