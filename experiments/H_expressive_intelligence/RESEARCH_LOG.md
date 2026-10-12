@@ -111,3 +111,12 @@ Written as a removable layer, with 11 unit tests:
 - **72 anonymised clips rendered** (`videos/h1/`): 0 falls, all arrive, ≤ 45 s.
 - Hash-named; the style key is in `MANIFEST_KEY_DO_NOT_SHOW.json` (researchers only).
 - **No participants recruited.**
+
+### H3/H4/H4b/H6 (2026-10-13)
+- **Experience generated:** 27k + 2.9k encounters.
+- **Learned states:** S5–S7 trained (world prediction).
+- **H4 gate fails** on the mis-specified within-lifetime shuffle control.
+- **H4b (pooled shuffle, fresh streams) passes** for M_id, S5, S6, S7.
+- **Physical most-important test:** history recovered from motion at 100% for M_id, 0 falls.
+- **H6:** revisable dispositions from global states.
+- **H5 training running.**
