@@ -1,0 +1,95 @@
+{
+ "a_reproduction": true,
+ "b_dwell_admitted": true,
+ "c_channel_families": {
+  "fractions": {
+   "temporal (pauses)": 1.0,
+   "spatial: path": 1.0,
+   "spatial: proximity": 1.0,
+   "spatial: orientation": 1.0,
+   "posture: head scanning": 1.0,
+   "posture: head elevation": 1.0
+  },
+  "families": {
+   "temporal": true,
+   "spatial": true,
+   "posture": true
+  },
+  "pass": true
+ },
+ "d_standing_push_and_fallback": {
+  "rest_push": {
+   "falls_by_magnitude": {
+    "0.1": 0,
+    "0.15": 0,
+    "0.2": 5,
+    "0.25": 13,
+    "0.3": 15
+   },
+   "n_by_magnitude": {
+    "0.1": 40,
+    "0.15": 40,
+    "0.2": 40,
+    "0.25": 40,
+    "0.3": 40
+   },
+   "push_star": 0.15
+  },
+  "rest_push_secondary": {
+   "falls_by_magnitude": {
+    "0.1": 0,
+    "0.15": 5,
+    "0.2": 14,
+    "0.25": 15,
+    "0.3": 15
+   },
+   "n_by_magnitude": {
+    "0.1": 40,
+    "0.15": 40,
+    "0.2": 40,
+    "0.25": 40,
+    "0.3": 40
+   },
+   "push_star": 0.1
+  },
+  "falls_at_push_star_enforced": 0,
+  "n_push_star": 40,
+  "falls_0.3_expressive_enforced": 8,
+  "falls_0.3_expressive_shadow": 8,
+  "falls_0.3_neutral_probe_enforced": 0,
+  "n_0.3_each": 40,
+  "discordant_enforced_only": 0,
+  "discordant_shadow_only": 0,
+  "fallback_always_neutral": true,
+  "pass": true
+ },
+ "e_nominal": {
+  "falls": 0,
+  "trips": 0,
+  "n": 100,
+  "arrival_rate": {
+   "neutral": 1.0,
+   "slow_pausing": 1.0,
+   "indirect_scanning": 1.0,
+   "averted_lean_back": 1.0,
+   "lean_forward_close": 1.0
+  },
+  "head_while_moving_max": 0.004486643118120734,
+  "pass": true
+ },
+ "secondary_e1_prime": {
+  "nominal": {
+   "falls": 0,
+   "trips": 0,
+   "arrival_rate": {
+    "neutral": 1.0,
+    "slow_pausing": 1.0,
+    "indirect_scanning": 1.0,
+    "averted_lean_back": 1.0,
+    "lean_forward_close": 1.0
+   }
+  },
+  "admitted_for_h1": true
+ },
+ "gate_passes": true
+}

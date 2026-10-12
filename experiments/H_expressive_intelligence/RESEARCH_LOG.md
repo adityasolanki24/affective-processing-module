@@ -71,3 +71,10 @@ Written as a removable layer, with 11 unit tests:
 - **Spatial-feature sway bug fixed.**
 - **H2 protocol drafted** (pending ethics).
 - **Power simulation run** (design only).
+
+### H0b confirmatory run (fresh X indices, commit `64590af`)
+- **Gate PASSES.**
+- **Standing push tolerance:** m* = 0.15 m/s for the neutral controller, 0.10 for E1′.
+- **Exposure cost:** at 0.30 m/s, slow_pausing fell 8/40 vs neutral approach 0/40.
+- **Arrival:** 100% for every probe.
+- **H1 may start.**

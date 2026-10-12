@@ -5,7 +5,7 @@ Arms:
 - X1: six designed styles.
 - X1m: the same styles speed-matched (tempo calibrated on V).
 - X2: random intents.
-- push: X0/X1 with a 0.30 m/s push.
+- push: X0/X1 with a push at the configuration's standing-validated magnitude m* (H0b).
 - switch: within-episode style transitions.
 
 Every trial approaches a target in one of 8 geometries and records motion features (`apm_express.features`),
@@ -110,7 +110,7 @@ def run_trial(job: tuple[Trial, dict]) -> dict:
     return out
 
 
-def build(arm: str, partition: str, n_seeds: int, tempos: dict | None = None) -> list[Trial]:
+def build(arm: str, partition: str, n_seeds: int, tempos: dict | None = None, push_mag: float = 0.15) -> list[Trial]:
     styles = {"neutral": NEUTRAL, **DESIGNED}
     geoms = SHIFT_GEOMETRIES if partition == "S" else GEOMETRIES
     out: list[Trial] = []
@@ -145,7 +145,7 @@ def build(arm: str, partition: str, n_seeds: int, tempos: dict | None = None) ->
             for g in range(len(geoms)):
                 for _ in range(n_seeds):
                     add(style=name, geometry=g, intent=it.as_dict(),
-                        push=(float(rng.uniform(4.0, 10.0)), 0.30, float(rng.uniform(-math.pi, math.pi))))
+                        push=(float(rng.uniform(4.0, 10.0)), push_mag, float(rng.uniform(-math.pi, math.pi))))
     elif arm == "switch":
         for a_name, b_name in SWITCH_PAIRS:
             for g in range(0, len(geoms), 2):
@@ -180,6 +180,7 @@ def main() -> None:
     ap.add_argument("--config", choices=["primary", "secondary"], default="primary")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--workers", type=int, default=3)
+    ap.add_argument("--push", type=float, default=0.15, help="push magnitude: the configuration's validated m*")
     a = ap.parse_args()
     from apm_express.provenance import confirmatory_lock, environment, nerva_state
     if a.partition in ("X", "S"):
@@ -191,7 +192,7 @@ def main() -> None:
     if iface is None:
         raise SystemExit(f"no admitted {a.config} interface")
     tempos = json.loads(a.tempos.read_text(encoding="utf-8"))["tempos"] if a.tempos else None
-    trials = build(a.arm, a.partition, a.seeds, tempos)
+    trials = build(a.arm, a.partition, a.seeds, tempos, a.push)
     start = time.time()
     with Pool(a.workers, initializer=_init) as pool:
         rows = pool.map(run_trial, [(t, iface) for t in trials], chunksize=1)
