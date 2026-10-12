@@ -4,9 +4,9 @@
   "platform": "Windows-11-10.0.26100-SP0",
   "machine": "AMD64",
   "cpus": 12,
-  "commit": "587e2215beb402caa6cf6d146fe4ae51370c5824",
+  "commit": "dd9ada48a690ea6be2d699c260faa3bf7e7f92f9",
   "dirty": false,
-  "start_utc": "2026-10-12T13:21:58Z",
+  "start_utc": "2026-10-12T13:23:28Z",
   "numpy": "2.5.4",
   "torch": "2.14.1+cpu",
   "mujoco": null,
@@ -96,7 +96,7 @@
    "experiments/H_expressive_intelligence/scripts/h34_states.py": "d15ee65fd40df80b83fa4ed87608f87876ee4d12e6498723e3e934a3b26149af",
    "experiments/H_expressive_intelligence/scripts/h4b.py": "624fb409b94341c0d9583f07e227f60596a56f72e40b38a52c3d9231f2e2f18c",
    "experiments/H_expressive_intelligence/scripts/h5_mapping.py": "0180c2cdbecf53a8a5d410e480ade8133494dcc9bb72ce24df5213aedadfebef",
-   "experiments/H_expressive_intelligence/scripts/h6_dispositions.py": "89d6af99584a428dd54ed77d81b08e4f4ff800e378941ee7f952e0889b393623",
+   "experiments/H_expressive_intelligence/scripts/h6_dispositions.py": "b0deb3079a4cec2b7107a02ad1291429e84ecdbc0da4410b4ac62c77eb45c995",
    "experiments/H_expressive_intelligence/scripts/h7_embodiment.py": "6b65aef6909e9aca436fcb228a2f69b16aae59dbe371e0fd5845d31578e9d6e3",
    "experiments/H_expressive_intelligence/seeds.py": "b7c8c7fde7a9f99d532fe4eb858cc71b3a6011b4596c020d60467d2dcf2ac782"
   }
@@ -119,7 +119,7 @@
     ],
     "n": 30
    },
-   "icc_stable_worlds": 1.0,
+   "icc_stable_worlds": NaN,
    "revision_km_median": Infinity,
    "revised_fraction": 0.0,
    "acquisition_km_median": 4.0,
@@ -252,7 +252,7 @@
     ],
     "n": 30
    },
-   "icc_stable_worlds": 0.0,
+   "icc_stable_worlds": NaN,
    "revision_km_median": 4.0,
    "revised_fraction": 1.0,
    "acquisition_km_median": 4.0,
