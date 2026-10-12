@@ -102,3 +102,7 @@ Written as a removable layer, with 11 unit tests:
 - **Push-arm re-test at 0.10:** 0/168 falls.
 - **H1 passes.**
 - **H3/H4 experience generation started:** T, V, X.
+
+### H7 and addenda
+- **H7:** wheeled distinctness 1.00; median cross-body ρ 0.71; biped→wheeled transfer 0.79. Gaze and pause counting correspond poorly.
+- **H5 and H6 addenda and scripts written** before their data.
