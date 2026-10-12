@@ -64,7 +64,9 @@ def main() -> None:
     by = {(s["history"], s["index"]): s["obs"] for s in xs}
     n = 1 + max(i for _, i in by)
     tuning = json.loads((a.root / "tuning.json").read_text(encoding="utf-8"))
-    learned = json.loads((a.root / "learned.json").read_text(encoding="utf-8"))
+    learned = {}
+    for f in sorted(a.root.glob("learned_*.json")):
+        learned.update(json.loads(f.read_text(encoding="utf-8")))
     systems = {"S0_none": lambda: make("S0_none"), "S1_fixed": lambda: make("S1_fixed")}
     for fam in TUNE_GRID:
         systems[fam] = lambda fam=fam: make(fam, tuning[fam]["selected"])

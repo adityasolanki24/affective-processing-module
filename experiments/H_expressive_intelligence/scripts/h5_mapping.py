@@ -200,6 +200,7 @@ def main() -> None:
     from apm_express.provenance import confirmatory_lock
 
     lock = confirmatory_lock(HERE / "prereg" / "H5_ADDENDUM.md")
+    torch.set_num_threads(1)
     rng = np.random.default_rng(0)
     T = load_streams(a.root / "T" / "experience.json", THRESHOLD)
     V = load_streams(a.root / "V" / "experience.json", THRESHOLD)

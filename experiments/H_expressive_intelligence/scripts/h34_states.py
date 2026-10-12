@@ -115,8 +115,10 @@ def tune(root: Path, threshold: float) -> dict:
     return out
 
 
-def train_learned(root: Path, threshold: float, seeds: int) -> dict:
+def train_learned(root: Path, threshold: float, seeds: int, kinds=("gru", "fastslow", "gru_mem")) -> dict:
     import torch
+
+    torch.set_num_threads(1)  # tiny recurrent steps: threading overhead dominates; one process per family instead
 
     from apm_express.states_learned import lifetime_tensors, train
 
@@ -126,7 +128,7 @@ def train_learned(root: Path, threshold: float, seeds: int) -> dict:
     tt = [lifetime_tensors(s["obs"], rng) for s in t]
     vt = [lifetime_tensors(s["obs"], rng) for s in v]
     summary = {}
-    for kind in ("gru", "fastslow", "gru_mem"):
+    for kind in kinds:
         trials = []
         for cfg in LEARNED_GRID:  # equal budget: 8 configurations, seed 0, selected by V loss
             _, info = train(kind, tt, vt, seed=0, **cfg)
@@ -221,6 +223,7 @@ def main() -> None:
     ap.add_argument("--threshold", type=float, required=True, help="outcome threshold, peak speed m/s (0.04)")
     ap.add_argument("--partition", default="X")
     ap.add_argument("--seeds", type=int, default=5)
+    ap.add_argument("--kinds", default="gru,fastslow,gru_mem", help="train these learned families (one per process)")
     a = ap.parse_args()
     start = time.time()
     if a.mode == "tune":
@@ -228,11 +231,14 @@ def main() -> None:
         (a.root / "tuning.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
     elif a.mode == "train":
         (a.root / "models").mkdir(parents=True, exist_ok=True)
-        res = train_learned(a.root, a.threshold, a.seeds)
-        (a.root / "learned.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
+        kinds = tuple(a.kinds.split(","))
+        res = train_learned(a.root, a.threshold, a.seeds, kinds)
+        (a.root / f"learned_{'_'.join(kinds)}.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
     else:
         tuning = json.loads((a.root / "tuning.json").read_text(encoding="utf-8"))
-        learned = json.loads((a.root / "learned.json").read_text(encoding="utf-8"))
+        learned = {}
+        for f in sorted(a.root.glob("learned_*.json")):
+            learned.update(json.loads(f.read_text(encoding="utf-8")))
         systems = {n: (lambda h, n=n: make(n)) for n in ("S0_none", "S1_fixed")}
         for fam in TUNE_GRID:
             systems[fam] = lambda h, fam=fam: make(fam, tuning[fam]["selected"])
