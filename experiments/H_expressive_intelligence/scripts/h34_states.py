@@ -235,6 +235,12 @@ def main() -> None:
         res = train_learned(a.root, a.threshold, a.seeds, kinds)
         (a.root / f"learned_{'_'.join(kinds)}.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
     else:
+        from apm_express.provenance import confirmatory_lock
+
+        lock = confirmatory_lock(Path(__file__).resolve().parents[1] / "prereg" / "H34_ADDENDUM.md")
+        import torch
+
+        torch.set_num_threads(1)
         tuning = json.loads((a.root / "tuning.json").read_text(encoding="utf-8"))
         learned = {}
         for f in sorted(a.root.glob("learned_*.json")):
@@ -248,6 +254,7 @@ def main() -> None:
         systems["oracle_lookup"] = lambda h: OracleLookup(history=h)
         res = evaluate(a.root, a.partition, a.threshold, systems, ("shuffled_outcomes", "random_identity"))
         res["base"] = BASE
+        res["lock"] = lock
         (a.root / a.partition / "states_eval.json").write_text(json.dumps(res), encoding="utf-8")
     print(json.dumps({"mode": a.mode, "wall_s": round(time.time() - start, 1)}))
 
