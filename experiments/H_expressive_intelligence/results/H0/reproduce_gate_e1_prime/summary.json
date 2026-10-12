@@ -1,0 +1,68 @@
+{
+ "conditions": {
+  "no_latency": {
+   "criteria": {
+    "stability": true,
+    "steady_5_of_5": true,
+    "transitions": true,
+    "pushes": true
+   },
+   "all_pass": true,
+   "steady_passes_of_5": {
+    "rest": 5,
+    "forward": 5,
+    "backward": 5,
+    "left": 5,
+    "right": 5,
+    "turn_left": 5,
+    "turn_right": 5
+   },
+   "transition_phase_failures": [],
+   "push_recovered_of_5": {
+    "forward_0": 5,
+    "forward_90": 5,
+    "forward_180": 5,
+    "forward_270": 5,
+    "backward_0": 5,
+    "backward_90": 5,
+    "backward_180": 5,
+    "backward_270": 5
+   },
+   "falls": 0,
+   "shadow_interventions": 0
+  },
+  "latency": {
+   "criteria": {
+    "stability": true,
+    "steady_5_of_5": true,
+    "transitions": true,
+    "pushes": true
+   },
+   "all_pass": true,
+   "steady_passes_of_5": {
+    "rest": 5,
+    "forward": 5,
+    "backward": 5,
+    "left": 5,
+    "right": 5,
+    "turn_left": 5,
+    "turn_right": 5
+   },
+   "transition_phase_failures": [],
+   "push_recovered_of_5": {
+    "forward_0": 5,
+    "forward_90": 5,
+    "forward_180": 5,
+    "forward_270": 5,
+    "backward_0": 5,
+    "backward_90": 5,
+    "backward_180": 5,
+    "backward_270": 5
+   },
+   "falls": 0,
+   "shadow_interventions": 0
+  }
+ },
+ "gate_passes": true,
+ "wall_seconds": 531.7
+}
