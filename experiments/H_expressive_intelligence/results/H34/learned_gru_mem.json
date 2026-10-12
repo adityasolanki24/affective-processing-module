@@ -1,0 +1,84 @@
+{
+ "gru_mem": {
+  "trials": [
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.001,
+     "epochs": 40
+    },
+    "val_loss": 0.40637433528900146,
+    "params": 2753
+   },
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.001,
+     "epochs": 80
+    },
+    "val_loss": 0.40637433528900146,
+    "params": 2753
+   },
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.003,
+     "epochs": 40
+    },
+    "val_loss": 0.40663206577301025,
+    "params": 2753
+   },
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.003,
+     "epochs": 80
+    },
+    "val_loss": 0.40663206577301025,
+    "params": 2753
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.001,
+     "epochs": 40
+    },
+    "val_loss": 0.4078485667705536,
+    "params": 6433
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.001,
+     "epochs": 80
+    },
+    "val_loss": 0.4078485667705536,
+    "params": 6433
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.003,
+     "epochs": 40
+    },
+    "val_loss": 0.40756577253341675,
+    "params": 6433
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.003,
+     "epochs": 80
+    },
+    "val_loss": 0.40756577253341675,
+    "params": 6433
+   }
+  ],
+  "selected": {
+   "hidden": 16,
+   "lr": 0.001,
+   "epochs": 40
+  },
+  "params": 2753
+ }
+}

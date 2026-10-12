@@ -1,0 +1,84 @@
+{
+ "fastslow": {
+  "trials": [
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.001,
+     "epochs": 40
+    },
+    "val_loss": 0.4775863587856293,
+    "params": 2273
+   },
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.001,
+     "epochs": 80
+    },
+    "val_loss": 0.4775863587856293,
+    "params": 2273
+   },
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.003,
+     "epochs": 40
+    },
+    "val_loss": 0.47270673513412476,
+    "params": 2273
+   },
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.003,
+     "epochs": 80
+    },
+    "val_loss": 0.4331938922405243,
+    "params": 2273
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.001,
+     "epochs": 40
+    },
+    "val_loss": 0.4722607135772705,
+    "params": 4801
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.001,
+     "epochs": 80
+    },
+    "val_loss": 0.4700957238674164,
+    "params": 4801
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.003,
+     "epochs": 40
+    },
+    "val_loss": 0.45087483525276184,
+    "params": 4801
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.003,
+     "epochs": 80
+    },
+    "val_loss": 0.4471259117126465,
+    "params": 4801
+   }
+  ],
+  "selected": {
+   "hidden": 16,
+   "lr": 0.003,
+   "epochs": 80
+  },
+  "params": 2273
+ }
+}

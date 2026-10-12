@@ -1,0 +1,84 @@
+{
+ "gru": {
+  "trials": [
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.001,
+     "epochs": 40
+    },
+    "val_loss": 0.4726402163505554,
+    "params": 2657
+   },
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.001,
+     "epochs": 80
+    },
+    "val_loss": 0.47260582447052,
+    "params": 2657
+   },
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.003,
+     "epochs": 40
+    },
+    "val_loss": 0.46165481209754944,
+    "params": 2657
+   },
+   {
+    "cfg": {
+     "hidden": 16,
+     "lr": 0.003,
+     "epochs": 80
+    },
+    "val_loss": 0.45090049505233765,
+    "params": 2657
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.001,
+     "epochs": 40
+    },
+    "val_loss": 0.47246652841567993,
+    "params": 6337
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.001,
+     "epochs": 80
+    },
+    "val_loss": 0.4722500145435333,
+    "params": 6337
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.003,
+     "epochs": 40
+    },
+    "val_loss": 0.4643833339214325,
+    "params": 6337
+   },
+   {
+    "cfg": {
+     "hidden": 32,
+     "lr": 0.003,
+     "epochs": 80
+    },
+    "val_loss": 0.4643833339214325,
+    "params": 6337
+   }
+  ],
+  "selected": {
+   "hidden": 16,
+   "lr": 0.003,
+   "epochs": 80
+  },
+  "params": 2657
+ }
+}
