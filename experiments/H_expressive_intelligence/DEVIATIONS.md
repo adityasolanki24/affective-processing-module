@@ -38,3 +38,9 @@ consequence. Entries are never deleted.
   NaN, and the H3 non-inferiority bootstrap could not select a system.
 - **Fix.** The test is now `std < 1e-12`, and constant output counts as having no rank information (ρ = 0).
 - **Effect.** No other value changed.
+
+## 2026-10-13: H6 ICC for constant expression
+
+- **What happened.** `h6_dispositions.icc1` was guarded by `std > 0`. Constant output (S0, std ≈ 1e-17) gave ICC = 1.0 instead of "undefined".
+- **Fix.** The guard is now `std > 1e-12`, returning NaN.
+- **Effect.** No disposition verdict changes. S0 and S1 fail either way.

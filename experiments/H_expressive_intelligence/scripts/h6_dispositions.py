@@ -107,7 +107,7 @@ def main() -> None:
         out["systems"][name] = {
             "world_effect_k48": _mean_ci(diff48),
             "world_effect_k96": _mean_ci(diff96),
-            "icc_stable_worlds": icc1(rep) if np.std(rep) > 0 else 0.0,
+            "icc_stable_worlds": icc1(rep) if np.std(rep) > 1e-12 else float("nan"),
             "revision_km_median": km(np.array([t for t, _ in rev]), np.array([e for _, e in rev]), 48.0)[0],
             "revised_fraction": float(np.mean([e for _, e in rev])),
             "acquisition_km_median": km(np.array([t for t, _ in acq]), np.array([e for _, e in acq]), 48.0)[0],
