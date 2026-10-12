@@ -63,13 +63,27 @@ def _segments(mask: np.ndarray) -> list[tuple[int, int]]:
     return out
 
 
+GAIT_STEPS = 27
+
+
+def _gait_average(v: np.ndarray, n: int = GAIT_STEPS) -> np.ndarray:
+    """Centred moving average with edge padding (same length)."""
+    v = np.asarray(v, dtype=float)
+    if len(v) < n:
+        return v
+    pad = np.pad(v, (n // 2, n - 1 - n // 2), mode="edge")
+    return np.convolve(pad, np.ones(n) / n, mode="valid")
+
+
 def _wrap(a):
     return (np.asarray(a) + np.pi) % (2 * np.pi) - np.pi
 
 
 def episode_features(arrays: dict, target, start=(0.0, 0.0), dt: float = 0.02, smooth_n: int = 25) -> dict:
     t = arrays["t"]
-    x, y, yaw = arrays["x"], arrays["y"], arrays["yaw"]
+    # positions averaged over one gait period (27 steps = 0.54 s) so that step-to-step sway does not count as path
+    x, y = _gait_average(arrays["x"]), _gait_average(arrays["y"])
+    yaw = arrays["yaw"]
     cmd = arrays["command"].astype(int)
     tx, ty = float(target[0]), float(target[1])
     dist = np.hypot(tx - x, ty - y)

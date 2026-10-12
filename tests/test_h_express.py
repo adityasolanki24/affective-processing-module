@@ -153,3 +153,31 @@ def test_h_seed_partitions_are_disjoint_from_earlier_programmes():
                 old = np.random.SeedSequence(entropy, spawn_key=(e, p, 0))
                 assert mod.fingerprint(old) not in states
     assert 0 <= mod.sim_seed("H0", "X", 0) < 2**31
+
+
+def test_features_ignore_gait_sway():
+    from apm_express.features import episode_features
+
+    t = np.arange(1, 1501) * 0.02
+    x = np.minimum(0.07 * t, 0.8)
+    y = 0.012 * np.sin(2 * np.pi * t / 0.54)  # lateral sway at the gait frequency
+    n = len(t)
+    arrays = {"t": t, "x": x, "y": y, "yaw": np.zeros(n), "pitch": np.zeros(n), "tilt": np.zeros(n),
+              "vx_world": np.gradient(x, 0.02), "vy_world": np.gradient(y, 0.02),
+              "command": np.where(x < 0.8, 1, 0), "power": np.zeros(n), "tau_sq": np.zeros(n)}
+    f = episode_features(arrays, (1.2, 0.0))
+    assert f["straightness"] > 0.95 and f["max_lateral_dev"] < 0.008 and f["retreat_m"] < 0.01
+
+
+def test_progress_guarantee_prevents_stalling():
+    """Even the slowest, most hesitant intent keeps average progress near the 0.025 m/s floor (H0b)."""
+    from apm_express.adapter import V_MIN_PROGRESS
+
+    for seed in range(3):
+        ctrl = KinematicBiped(tau=0.8)
+        ad = BipedExpressionAdapter(BipedChannels(min_dwell_s=0.4), seed=seed)
+        intent = ExpressionIntent(tempo=0.0, hesitation=1.0, scanning=1.0, proximity=0.0)
+        r = run_episode(ctrl, ad, SafetyMonitor(), EpisodeSpec(60.0, (1.4, 0.0), [(0.0, intent)]))
+        d = np.hypot(1.4 - r["arrays"]["x"], r["arrays"]["y"])
+        k = int(np.argmax(d <= D_FAR + 0.15))
+        assert d[k] <= D_FAR + 0.15 and r["arrays"]["t"][k] <= (1.4 - D_FAR) / (0.8 * V_MIN_PROGRESS) + 8

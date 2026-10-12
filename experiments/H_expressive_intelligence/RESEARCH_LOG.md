@@ -53,3 +53,21 @@ Written as a removable layer, with 11 unit tests:
   - This matches NERVA's RQ1c on the upstream policy.
   - **Design response:** a head channel used only while resting, with the head returned to neutral before any
     locomotion command, plus controller-level rate limits on head and pitch changes.
+
+### H0 confirmatory run and outcome (later the same day)
+- **H0 confirmatory run on X** (commit `2ecad67`, 1,240 trials).
+- **Gate FAILS** on (d) standing pushes and (e) slow-probe arrival. Passes on (a) reproduction, (b) dwell 0.4 s and
+  (c) channels.
+- **Head box admitted:** ±0.4 × ±0.4 rad at rest. Face-down 0.4 with yaw −0.8 falls.
+- **E1′:** 2/40 falls at 0.4 s dwell; its pitch changes were safe in 160/160 trials.
+- **E1′ style evaluation reproduced:** 378/378 trials identical.
+- **Diagnosis:**
+  - all 0.30 m/s falls happened while standing during expressive pauses, pushed from behind;
+  - a standing-push sweep (P) shows the neutral controller falls from ≥ 0.20 m/s backward pushes at rest — never
+    covered by NERVA's gate;
+  - the adapter had no progress guarantee.
+- **Fixes, under H0b (`prereg/H0b_ADDENDUM.md`):** progress guarantee, minimum burst, push requirement at the
+  standing-validated magnitude.
+- **Spatial-feature sway bug fixed.**
+- **H2 protocol drafted** (pending ethics).
+- **Power simulation run** (design only).

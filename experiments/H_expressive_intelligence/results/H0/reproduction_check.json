@@ -1,0 +1,33 @@
+{
+ "gate_turn_translation": {
+  "trials_identical": 160,
+  "n_trials": [
+   160,
+   160
+  ],
+  "summary_identical": true,
+  "ours_passes": true,
+  "identical": true
+ },
+ "gate_e1_prime": {
+  "trials_identical": 160,
+  "n_trials": [
+   160,
+   160
+  ],
+  "summary_identical": true,
+  "ours_passes": true,
+  "identical": true
+ },
+ "e1prime_style": {
+  "trials_identical": 378,
+  "n_trials": [
+   378,
+   378
+  ],
+  "summary_identical": true,
+  "ours_passes": null,
+  "identical": true
+ },
+ "all_reproduced": true
+}

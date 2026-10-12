@@ -182,7 +182,7 @@ def run_trial(trial: Trial) -> dict:
                    head_yaw_joint_mean=float(a["head_joints"][mask, 2].mean()),
                    head_pitch_joint_mean=float(a["head_joints"][mask, 1].mean()),
                    mean_pitch=float(a["pitch"][mask].mean()))
-    elif trial.suite == "fallback":
+    elif trial.suite in ("fallback", "fallback_b"):
         ch, limits = interface(p["channels"])
         ctrl = _controller(trial, seed, head=ch.head)
         push_k = int(round(p["push_t"] / DT))
@@ -302,6 +302,17 @@ def trials_for(suite: str, partition: str, n_seeds: int, channels: dict | None =
                             policy=channels["policy"], index=int(round(push * 10)) * 1000 + deg + s * 100_000,
                             seconds=20.0, params={"push": push, "push_deg": deg, "push_t": 6.0, "enforce": enforce,
                                                   "probe": "slow_pausing", "channels": channels})
+    elif suite == "fallback_b":
+        m_star = channels["push_star"]
+        cells = [(m_star, "slow_pausing", True), (0.3, "slow_pausing", True), (0.3, "slow_pausing", False),
+                 (0.3, "neutral", True)]
+        for push, probe, enforce in cells:
+            for deg in range(0, 360, 45):
+                for s in range(n_seeds):
+                    add(name=f"push{push}_{probe}_{deg}_{'enf' if enforce else 'shadow'}_{s}",
+                        policy=channels["policy"], index=int(round(push * 100)) * 1000 + deg + s * 100_000,
+                        seconds=20.0, params={"push": push, "push_deg": deg, "push_t": 6.0, "enforce": enforce,
+                                              "probe": probe, "channels": channels})
     elif suite == "nominal":
         if given:  # the admitted primary interface, and the admitted secondary (E1') one if any
             configs = [channels] + ([secondary] if secondary else [])
@@ -329,22 +340,30 @@ def _init():
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--partition", required=True, choices=["P", "X"])
-    ap.add_argument("--suite", required=True, choices=["switching", "pitch", "head", "fallback", "nominal"])
+    ap.add_argument("--suite", required=True,
+                    choices=["switching", "pitch", "head", "fallback", "nominal", "fallback_b"])
     ap.add_argument("--seeds", type=int, default=3)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--workers", type=int, default=3)
     ap.add_argument("--channels", type=Path, help="admitted-interface JSON (fallback and nominal suites on X)")
+    ap.add_argument("--index-offset", type=int, default=0, help="fresh seed indices (H0b: 1,000,000)")
+    ap.add_argument("--push-star", type=float, help="standing-validated push magnitude (fallback_b)")
+    ap.add_argument("--addendum", default="H0_ADDENDUM.md")
     args = ap.parse_args()
     from apm_express.provenance import confirmatory_lock, environment, nerva_state
     if args.partition == "X":
-        lock = confirmatory_lock(HERE / "prereg" / "H0_ADDENDUM.md")
+        lock = confirmatory_lock(HERE / "prereg" / args.addendum)
     else:
         lock = {**environment(), **nerva_state(), "partition": "P", "exploratory": True}
     admitted = json.loads(args.channels.read_text(encoding="utf-8")) if args.channels else {}
     channels, secondary = admitted.get("interface"), admitted.get("secondary_interface")
-    if args.partition == "X" and args.suite in ("fallback", "nominal") and channels is None:
+    if channels is not None and args.push_star is not None:
+        channels = {**channels, "push_star": args.push_star}
+    if args.partition == "X" and args.suite in ("fallback", "nominal", "fallback_b") and channels is None:
         raise SystemExit("X fallback/nominal suites run on the admitted interface: pass --channels")
     trials = trials_for(args.suite, args.partition, args.seeds, channels, secondary)
+    if args.index_offset:
+        trials = [Trial(**{**asdict(t), "index": t.index + args.index_offset}) for t in trials]
     start = time.time()
     with Pool(args.workers, initializer=_init) as pool:
         rows = pool.map(run_trial, trials, chunksize=1)

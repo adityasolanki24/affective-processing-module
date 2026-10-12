@@ -15,7 +15,11 @@ Behaviour per intent channel (`apm_express.intent`), approaching a target:
 - **proximity**: final stopping distance, 0.6 m (proximity 0) to 0.2 m (proximity 1).
 - **directness**: below 0.95, the path goes through a lateral waypoint offset (1 − directness)·0.4 m from the
   straight line.
-- **tempo**: progress duty cycle within a 2.5 s rhythm. It is floored at 0.25 so the task stays feasible.
+- **tempo**: progress duty cycle within a 2.5 s rhythm. Forward bursts last at least 1.5 s. Tempo is floored at
+  0.25.
+- **task guarantee** (H0b): if average approach progress drops below 0.025 m/s (after 4 s), the adapter switches
+  to catch-up. In catch-up there are no new pauses, retreats or scanning stops, and tempo is 1, until progress
+  recovers to 0.03 m/s. Expression can slow the approach but cannot stall it.
 - **hesitation**: Poisson pauses at 0.25·h per second, lasting 0.8 + 1.2·h seconds. With probability h a pause is
   preceded by a short backward step, as long as cumulative backward time stays ≤ 25% of forward time. An extra
   pause is likely when the target is near.
@@ -53,6 +57,9 @@ SCAN_HZ = 0.25
 HEAD_SCAN_HZ = 0.3
 HEAD_EPS = 0.02  # rad: the head counts as returned to neutral
 RETREAT_CAP = 0.25  # cumulative backward time <= this fraction of forward time, so progress always dominates
+MIN_BURST_S = 1.5  # forward segments of the tempo rhythm last at least this long (shorter bursts barely start the gait)
+V_MIN_PROGRESS = 0.025  # m/s: average approach progress below this switches on catch-up (task guarantee, H0b)
+PROGRESS_GRACE_S = 4.0
 
 
 def wrap(angle: float) -> float:
@@ -104,6 +111,10 @@ class BipedExpressionAdapter:
         self._retreat_until = -1.0
         self._scan_pause_until = -1.0
         self._near_pause_done = False
+        self._catch_up = False
+        self._d0 = None if target is None else float(np.linalg.norm(np.asarray(target, dtype=float)
+                                                                     - np.asarray(pose[:2], dtype=float)))
+        self._t_target = t
         self._forward_s = 0.0
         self._backward_s = 0.0
         self._t0 = t
@@ -140,6 +151,9 @@ class BipedExpressionAdapter:
                 self._target = target
                 self._arrived = False
                 self._near_pause_done = False
+                self._catch_up = False
+                self._d0 = float(np.linalg.norm(target - np.asarray(pose[:2], dtype=float)))
+                self._t_target = t
                 self._plan_waypoint(np.asarray(pose[:2], dtype=float), intent)
         else:
             self._target = None
@@ -240,11 +254,18 @@ class BipedExpressionAdapter:
             return self._orient(t, pose, intent)
 
         elapsed = t - self._t0
+        since = t - self._t_target
+        if self._d0 is not None and since > PROGRESS_GRACE_S:
+            rate = (self._d0 - dist) / since
+            if rate < V_MIN_PROGRESS:
+                self._catch_up = True
+            elif rate >= 1.2 * V_MIN_PROGRESS:
+                self._catch_up = False
         if t < self._retreat_until:
             return "backward"
         if t < self._pause_until or t < self._scan_pause_until:
             return self._orient(t, pose, intent)
-        if elapsed > 1.0:
+        if elapsed > 1.0 and not self._catch_up:
             rate = 0.25 * intent.hesitation
             near = dist <= d_stop + 0.25
             if near and not self._near_pause_done:
@@ -275,13 +296,10 @@ class BipedExpressionAdapter:
         turn = self._turn_toward(error)
         if turn != "rest":
             return turn
-        tempo = max(TEMPO_FLOOR, intent.tempo)
+        tempo = 1.0 if self._catch_up else max(TEMPO_FLOOR, intent.tempo)
         if tempo < 1.0:
-            go = tempo * RHYTHM_S
-            period = RHYTHM_S
-            if go < self.channels.min_dwell_s:
-                go = self.channels.min_dwell_s
-                period = go / tempo
+            go = max(tempo * RHYTHM_S, MIN_BURST_S, self.channels.min_dwell_s)
+            period = go / tempo
             if (elapsed % period) >= go:
                 return "rest"
         return "forward"

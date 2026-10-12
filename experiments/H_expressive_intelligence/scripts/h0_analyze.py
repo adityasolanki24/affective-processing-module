@@ -265,12 +265,141 @@ def gate(x: Path) -> dict:
     return out
 
 
+def push_star(rest: dict, policy: str = PRIMARY) -> dict:
+    """Largest standing push magnitude with no fall in any direction, at it and at every smaller magnitude."""
+    by = collections.defaultdict(list)
+    for r in rest["rows"]:
+        if r["policy"] == policy:
+            by[r["magnitude"]].append(r["fell"])
+    star = 0.0
+    for m in sorted(by):
+        if any(by[m]):
+            break
+        star = m
+    return {
+        "falls_by_magnitude": {str(m): int(sum(v)) for m, v in sorted(by.items())},
+        "n_by_magnitude": {str(m): len(v) for m, v in sorted(by.items())},
+        "push_star": star,
+    }
+
+
+def gate_b(xb: Path, x: Path) -> dict:
+    """H0b gate (prereg/H0b_ADDENDUM.md): (a), (b) carried from H0; (c), (d'), (e') on the H0b runs."""
+    h0 = _load(x / "gate.json")
+    rest = push_star(_load(xb / "rest_push.json"))
+    rest_secondary = push_star(_load(xb / "rest_push.json"), SECONDARY)
+    fb = _load(xb / "fallback_b.json")["rows"]
+    nom_all = _load(xb / "nominal.json")["rows"]
+    rows = [r for r in nom_all if r["trial"]["policy"] == PRIMARY]
+    fam = {
+        "temporal (pauses)": _paired_fraction(rows, "slow_pausing", "pauses_per_m", +1),
+        "spatial: path": _paired_fraction(rows, "indirect_scanning", "straightness", -1),
+        "spatial: proximity": _paired_fraction(rows, "lean_forward_close", "final_distance", -1),
+        "spatial: orientation": _paired_fraction(rows, "averted_lean_back", "final_bearing_abs", +1),
+        "posture: head scanning": _paired_fraction(rows, "indirect_scanning", "face_yaw_rest_std", +1),
+        "posture: head elevation": _paired_fraction(
+            rows, "lean_forward_close", "face_elev_rest", +1, reference="averted_lean_back"
+        ),
+    }
+    realised = {k: v >= 0.95 for k, v in fam.items()}
+    families = {
+        "temporal": realised["temporal (pauses)"],
+        "spatial": any(v for k, v in realised.items() if k.startswith("spatial")),
+        "posture": any(v for k, v in realised.items() if k.startswith("posture")),
+    }
+    c = sum(families.values()) >= 2
+
+    def cell(push, probe, enforce):
+        return [
+            r
+            for r in fb
+            if r["trial"]["params"]["push"] == push
+            and r["trial"]["params"]["probe"] == probe
+            and r["trial"]["params"]["enforce"] == enforce
+        ]
+
+    star = rest["push_star"]
+    at_star = cell(star, "slow_pausing", True)
+    enf, sh = cell(0.3, "slow_pausing", True), cell(0.3, "slow_pausing", False)
+    pairs = {(r["trial"]["params"]["push_deg"], r["trial"]["name"].rsplit("_", 1)[1]): r for r in sh}
+    enf_only = sum(
+        r["fell"] and not pairs[(r["trial"]["params"]["push_deg"], r["trial"]["name"].rsplit("_", 1)[1])]["fell"]
+        for r in enf
+    )
+    sh_only = sum(
+        not r["fell"] and pairs[(r["trial"]["params"]["push_deg"], r["trial"]["name"].rsplit("_", 1)[1])]["fell"]
+        for r in enf
+    )
+    neutral_probe = cell(0.3, "neutral", True)
+    d = {
+        "rest_push": rest,
+        "rest_push_secondary": rest_secondary,
+        "falls_at_push_star_enforced": sum(r["fell"] for r in at_star),
+        "n_push_star": len(at_star),
+        "falls_0.3_expressive_enforced": sum(r["fell"] for r in enf),
+        "falls_0.3_expressive_shadow": sum(r["fell"] for r in sh),
+        "falls_0.3_neutral_probe_enforced": sum(r["fell"] for r in neutral_probe),
+        "n_0.3_each": len(enf),
+        "discordant_enforced_only": enf_only,
+        "discordant_shadow_only": sh_only,
+        "fallback_always_neutral": all(
+            r["nonneutral_during_fallback"] == 0 for r in fb if r["trial"]["params"]["enforce"]
+        ),
+    }
+    d_pass = (
+        star >= 0.10 and d["falls_at_push_star_enforced"] == 0 and enf_only <= sh_only and d["fallback_always_neutral"]
+    )
+    per = collections.defaultdict(list)
+    for r in rows:
+        per[r["trial"]["params"]["probe"]].append(r)
+    e_sum = {
+        "falls": sum(r["fell"] for r in rows),
+        "trips": sum(r["trips"] > 0 for r in rows),
+        "n": len(rows),
+        "arrival_rate": {k: float(np.mean([r["arrived"] for r in v])) for k, v in per.items()},
+        "head_while_moving_max": max((r["head_while_moving_max"] for r in rows), default=0.0),
+    }
+    e = (
+        e_sum["falls"] == 0
+        and e_sum["trips"] == 0
+        and all(v >= 0.95 for v in e_sum["arrival_rate"].values())
+        and e_sum["head_while_moving_max"] <= HEAD_EPS + 1e-9
+    )
+    sec_rows = [r for r in nom_all if r["trial"]["policy"] == SECONDARY]
+    sec = (
+        {
+            "falls": sum(r["fell"] for r in sec_rows),
+            "trips": sum(r["trips"] > 0 for r in sec_rows),
+            "arrival_rate": {
+                k: float(np.mean([r["arrived"] for r in sec_rows if r["trial"]["params"]["probe"] == k])) for k in per
+            },
+        }
+        if sec_rows
+        else None
+    )
+    sec_ok = bool(
+        sec and sec["falls"] == 0 and sec["trips"] == 0 and all(v >= 0.95 for v in sec["arrival_rate"].values())
+    )
+    return {
+        "a_reproduction": h0["a_reproduction"],
+        "b_dwell_admitted": h0["b_dwell_admitted"],
+        "c_channel_families": {"fractions": fam, "families": families, "pass": c},
+        "d_standing_push_and_fallback": {**d, "pass": d_pass},
+        "e_nominal": {**e_sum, "pass": e},
+        "secondary_e1_prime": {"nominal": sec, "admitted_for_h1": sec_ok},
+        "gate_passes": bool(h0["a_reproduction"] and h0["b_dwell_admitted"] and c and d_pass and e),
+    }
+
+
 def _compare(ours: Path, theirs: Path, summary: bool = True) -> dict:
     ta, tb = _load(ours / "trials.json"), _load(theirs / "trials.json")
     same = sum(json.dumps(x, sort_keys=True) == json.dumps(y, sort_keys=True) for x, y in zip(ta, tb, strict=False))
     out = {"trials_identical": same, "n_trials": [len(ta), len(tb)]}
     if summary:
         sa, sb = _load(ours / "summary.json"), _load(theirs / "summary.json")
+        timing = {"wall_seconds"}  # wall-clock run time, not a result (DEVIATIONS 2026-10-12)
+        sa = {k: v for k, v in sa.items() if k not in timing}
+        sb = {k: v for k, v in sb.items() if k not in timing}
         out["summary_identical"] = json.dumps(sa, sort_keys=True) == json.dumps(sb, sort_keys=True)
         out["ours_passes"] = sa.get("gate_passes", sa.get("passes"))
     out["identical"] = same == len(ta) == len(tb) and out.get("summary_identical", True)
@@ -293,7 +422,8 @@ def reproduce(h0: Path, nerva: Path) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("mode", choices=["admit", "gate", "reproduce"])
+    ap.add_argument("mode", choices=["admit", "gate", "reproduce", "gate_b", "push_star"])
+    ap.add_argument("--xb", type=Path, help="H0b results directory")
     ap.add_argument("--x", type=Path)
     ap.add_argument("--nerva", type=Path)
     args = ap.parse_args()
@@ -303,6 +433,12 @@ def main() -> None:
     elif args.mode == "gate":
         res = gate(args.x)
         path = args.x / "gate.json"
+    elif args.mode == "gate_b":
+        res = gate_b(args.xb, args.x)
+        path = args.xb / "gate_b.json"
+    elif args.mode == "push_star":
+        res = push_star(_load(args.xb / "rest_push.json"))
+        path = args.xb / "push_star.json"
     else:
         res = reproduce(args.x, args.nerva)
         path = args.x / "reproduction_check.json"
