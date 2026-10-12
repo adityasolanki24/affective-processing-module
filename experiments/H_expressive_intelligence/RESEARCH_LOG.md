@@ -120,3 +120,9 @@ Written as a removable layer, with 11 unit tests:
 - **Physical most-important test:** history recovered from motion at 100% for M_id, 0 falls.
 - **H6:** revisable dispositions from global states.
 - **H5 training running.**
+
+### H5, H8 and the decision (2026-10-13)
+- **H5:** learned mappings better calibrated; history effects compressed.
+- **H8 (fresh streams, 540 physical episodes):** the baseline A0 + memory + fixed lookup is retained.
+- **Final decision: B.**
+- **Cloud spend: US$0.**

@@ -13,4 +13,6 @@
 | H5 | learned expression mapping | L0–L3 (L4 not run: S6 not better; L5 not run); supervision = designer references from simulator truth | T/V/X (`prereg/H5_ADDENDUM.md`) | local | **done**: learned mappings beat L0 on calibration (L2 GRU preferred) but compress history effects; `reports/H5_REPORT.md` |
 | H6 | dispositions | 96-encounter lifetimes (joined X streams), D1 unknown-kind caution | X (`prereg/H6_ADDENDUM.md`) | local | **done**: revisable dispositions from global states (scalar EMA simplest); weak in A0 memory |
 | H7 | cross-embodiment | biped (H1) vs kinematic wheeled base, shared intent | X (`prereg/H7_ADDENDUM.md`) | local | **correspondence supported** (C1 1.00, median ρ 0.71, transfer 0.79); interpretability untested; `reports/H7_REPORT.md` |
-| H8 | integrated evaluation | A0 + memory + fixed lookup; A0 + learned mapping; gate-passing system; ablations | X | local | gated |
+| H8 | integrated evaluation | B0 = A0 + memory + fixed lookup; integrated I; A0 + learned L1; ablations; physical generalisation | X fresh (`prereg/H8_ADDENDUM.md`) | local | **done**: B0 retained; `reports/H8_REPORT.md` |
+
+**Final decision: B, experience-conditioned expressive mapping** (`reports/EXPRESSIVE_ARCHITECTURE_DECISION.md`). Claim B (human interpretability) untested.
