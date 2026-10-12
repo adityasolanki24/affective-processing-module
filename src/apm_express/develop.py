@@ -2,7 +2,7 @@
 
 A lifetime is a sequence of encounters. In each one the robot approaches an entity (an identity with a visible kind)
 in a visible floor zone, stops, and the entity either does nothing or "jolts" it. A jolt is a real horizontal push
-applied in NERVA's MuJoCo simulation, within the controller's validated robustness (0.30 m/s, NERVA's gate level).
+applied in NERVA's MuJoCo simulation at the standing-validated magnitude m* = 0.15 m/s (H0b), so it is recoverable.
 
 What the robot *observes* is the measured physical consequence: peak tilt above its pre-push baseline and base
 speed. It never observes the world's hidden jolt probability, and nothing labels the robot's state. Whether a jolt
@@ -28,7 +28,7 @@ IDENTITIES = ("A1", "A2", "B1", "B2", "C1", "C2")  # seen during lifetimes
 NOVEL = ("A3", "B3", "C3")  # held out: never encountered during a lifetime, used only in evaluation probes
 UNKNOWN_KIND = "D"  # a kind never encountered, for disposition probes ("D1")
 LOW, HIGH = 0.05, 0.85
-JOLT_SPEED = 0.30  # m/s, NERVA gate push magnitude
+JOLT_SPEED = 0.15  # m/s: the standing-validated push magnitude m* (H0b); larger pushes topple a standing robot
 N_ENCOUNTERS = 48
 
 

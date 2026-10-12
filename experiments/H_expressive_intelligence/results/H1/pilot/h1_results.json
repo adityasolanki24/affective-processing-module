@@ -1,0 +1,381 @@
+{
+ "core_safety": {
+  "assertive": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.0643361020275078,
+   "sparc": -5.00742993499901,
+   "power": 3.274589463829697,
+   "head_while_moving_max": 0.0
+  },
+  "cautious": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.03281142359385777,
+   "sparc": -5.479782983852843,
+   "power": 2.4205975294781714,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "curious": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.03063311502413893,
+   "sparc": -5.811371298633047,
+   "power": 4.351819395267897,
+   "head_while_moving_max": 0.004999999999999963
+  },
+  "energetic": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.047371366612965794,
+   "sparc": -4.617944796509076,
+   "power": 3.5581867047207334,
+   "head_while_moving_max": 0.004999999999999907
+  },
+  "hesitant": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.029915873719289117,
+   "sparc": -5.862133701976703,
+   "power": 3.4491268488712183,
+   "head_while_moving_max": 1.3877787807814457e-17
+  },
+  "neutral": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.06499563845902767,
+   "sparc": -4.602498507379726,
+   "power": 2.4885793399401637,
+   "head_while_moving_max": 0.0
+  },
+  "relaxed": {
+   "n": 8,
+   "falls": 0,
+   "trips": 0,
+   "arrival": 1.0,
+   "progress_speed": 0.03817739638821854,
+   "sparc": -5.556248921042089,
+   "power": 3.1709452223478105,
+   "head_while_moving_max": 0.0
+  }
+ },
+ "core_classification": {
+  "all": {
+   "balanced_accuracy": 0.9821428571428571,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 0.875,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 8
+    },
+    "cautious": {
+     "cautious": 8
+    },
+    "curious": {
+     "curious": 8
+    },
+    "energetic": {
+     "energetic": 7,
+     "curious": 1
+    },
+    "hesitant": {
+     "hesitant": 8
+    },
+    "neutral": {
+     "neutral": 8
+    },
+    "relaxed": {
+     "relaxed": 8
+    }
+   },
+   "n": 56
+  },
+  "non_speed": {
+   "balanced_accuracy": 1.0,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 1.0,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 8
+    },
+    "cautious": {
+     "cautious": 8
+    },
+    "curious": {
+     "curious": 8
+    },
+    "energetic": {
+     "energetic": 8
+    },
+    "hesitant": {
+     "hesitant": 8
+    },
+    "neutral": {
+     "neutral": 8
+    },
+    "relaxed": {
+     "relaxed": 8
+    }
+   },
+   "n": 56
+  },
+  "non_speed_non_posture": {
+   "balanced_accuracy": 0.9464285714285714,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 0.75,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 0.875
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 8
+    },
+    "cautious": {
+     "cautious": 8
+    },
+    "curious": {
+     "curious": 8
+    },
+    "energetic": {
+     "energetic": 6,
+     "neutral": 1,
+     "curious": 1
+    },
+    "hesitant": {
+     "hesitant": 8
+    },
+    "neutral": {
+     "neutral": 8
+    },
+    "relaxed": {
+     "relaxed": 7,
+     "energetic": 1
+    }
+   },
+   "n": 56
+  },
+  "temporal": {
+   "balanced_accuracy": 0.7142857142857143,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 0.5,
+    "cautious": 0.75,
+    "curious": 0.75,
+    "energetic": 0.75,
+    "hesitant": 0.75,
+    "neutral": 0.75,
+    "relaxed": 0.75
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 4,
+     "neutral": 4
+    },
+    "cautious": {
+     "cautious": 6,
+     "energetic": 1,
+     "curious": 1
+    },
+    "curious": {
+     "relaxed": 2,
+     "curious": 6
+    },
+    "energetic": {
+     "energetic": 6,
+     "neutral": 1,
+     "assertive": 1
+    },
+    "hesitant": {
+     "cautious": 2,
+     "hesitant": 6
+    },
+    "neutral": {
+     "neutral": 6,
+     "assertive": 2
+    },
+    "relaxed": {
+     "relaxed": 6,
+     "energetic": 1,
+     "curious": 1
+    }
+   },
+   "n": 56
+  },
+  "posture": {
+   "balanced_accuracy": 1.0,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 1.0,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 8
+    },
+    "cautious": {
+     "cautious": 8
+    },
+    "curious": {
+     "curious": 8
+    },
+    "energetic": {
+     "energetic": 8
+    },
+    "hesitant": {
+     "hesitant": 8
+    },
+    "neutral": {
+     "neutral": 8
+    },
+    "relaxed": {
+     "relaxed": 8
+    }
+   },
+   "n": 56
+  },
+  "acceleration": {
+   "balanced_accuracy": 0.4642857142857143,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 0.625,
+    "cautious": 0.125,
+    "curious": 0.5,
+    "energetic": 0.5,
+    "hesitant": 0.25,
+    "neutral": 0.5,
+    "relaxed": 0.75
+   },
+   "confusion": {
+    "assertive": {
+     "neutral": 2,
+     "assertive": 5,
+     "energetic": 1
+    },
+    "cautious": {
+     "hesitant": 2,
+     "energetic": 3,
+     "curious": 2,
+     "cautious": 1
+    },
+    "curious": {
+     "curious": 4,
+     "cautious": 1,
+     "relaxed": 2,
+     "hesitant": 1
+    },
+    "energetic": {
+     "energetic": 4,
+     "neutral": 1,
+     "assertive": 2,
+     "cautious": 1
+    },
+    "hesitant": {
+     "energetic": 1,
+     "cautious": 3,
+     "relaxed": 1,
+     "hesitant": 2,
+     "curious": 1
+    },
+    "neutral": {
+     "neutral": 4,
+     "energetic": 1,
+     "assertive": 3
+    },
+    "relaxed": {
+     "relaxed": 6,
+     "energetic": 1,
+     "curious": 1
+    }
+   },
+   "n": 56
+  },
+  "spatial": {
+   "balanced_accuracy": 0.9464285714285714,
+   "chance": 0.14285714285714285,
+   "recall": {
+    "assertive": 1.0,
+    "cautious": 1.0,
+    "curious": 1.0,
+    "energetic": 0.625,
+    "hesitant": 1.0,
+    "neutral": 1.0,
+    "relaxed": 1.0
+   },
+   "confusion": {
+    "assertive": {
+     "assertive": 8
+    },
+    "cautious": {
+     "cautious": 8
+    },
+    "curious": {
+     "curious": 8
+    },
+    "energetic": {
+     "energetic": 5,
+     "neutral": 1,
+     "relaxed": 1,
+     "curious": 1
+    },
+    "hesitant": {
+     "hesitant": 8
+    },
+    "neutral": {
+     "neutral": 8
+    },
+    "relaxed": {
+     "relaxed": 8
+    }
+   },
+   "n": 56
+  }
+ },
+ "gate": {
+  "G1_safety": true,
+  "G2_task": true,
+  "G3_distinct": true,
+  "G4_matched": false,
+  "matched_speed_ok": true,
+  "G5_perturbation": false,
+  "passes": false,
+  "repertoire": []
+ }
+}

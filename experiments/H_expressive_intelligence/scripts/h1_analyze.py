@@ -11,6 +11,7 @@ Feature sets:
 - "non_speed": drops the speed group and the cost group (cost tracks the amount of walking);
 - one set per group: temporal, posture, acceleration, spatial.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -24,8 +25,13 @@ from apm_express.features import GROUPS
 
 SHRINK = 0.1
 NON_SPEED = tuple(f for g, fs in GROUPS.items() if g not in ("speed", "cost") for f in fs)
-FEATURE_SETS = {"all": tuple(f for fs in GROUPS.values() for f in fs), "non_speed": NON_SPEED,
-                **{g: GROUPS[g] for g in ("temporal", "posture", "acceleration", "spatial")}}
+NON_SPEED_NON_POSTURE = tuple(f for g, fs in GROUPS.items() if g not in ("speed", "cost", "posture") for f in fs)
+FEATURE_SETS = {
+    "all": tuple(f for fs in GROUPS.values() for f in fs),
+    "non_speed": NON_SPEED,
+    "non_speed_non_posture": NON_SPEED_NON_POSTURE,
+    **{g: GROUPS[g] for g in ("temporal", "posture", "acceleration", "spatial")},
+}
 
 
 def _load(path: Path) -> dict | None:
@@ -76,8 +82,13 @@ def _scores(y, pred) -> dict:
     classes = sorted(set(y))
     recall = {c: float(np.mean([p == c for yy, p in zip(y, pred, strict=True) if yy == c])) for c in classes}
     conf = {c: dict(collections.Counter(p for yy, p in zip(y, pred, strict=True) if yy == c)) for c in classes}
-    return {"balanced_accuracy": float(np.mean(list(recall.values()))), "chance": 1.0 / len(classes),
-            "recall": recall, "confusion": conf, "n": len(y)}
+    return {
+        "balanced_accuracy": float(np.mean(list(recall.values()))),
+        "chance": 1.0 / len(classes),
+        "recall": recall,
+        "confusion": conf,
+        "n": len(y),
+    }
 
 
 def transfer(train_rows, test_rows, features) -> dict:
@@ -90,13 +101,19 @@ def safety_table(rows, key=lambda r: r["trial"]["style"]) -> dict:
     per = collections.defaultdict(list)
     for r in rows:
         per[key(r)].append(r)
-    return {k: {"n": len(v), "falls": sum(r["fell"] for r in v), "trips": sum(r["trips"] > 0 for r in v),
-                "arrival": float(np.mean([r["arrived"] for r in v])),
-                "progress_speed": float(np.mean([r["features"]["progress_speed"] for r in v])),
-                "sparc": float(np.mean([r["features"]["sparc"] for r in v])),
-                "power": float(np.mean([r["features"]["mean_power"] for r in v])),
-                "head_while_moving_max": float(max(r["head_while_moving_max"] for r in v))}
-            for k, v in sorted(per.items())}
+    return {
+        k: {
+            "n": len(v),
+            "falls": sum(r["fell"] for r in v),
+            "trips": sum(r["trips"] > 0 for r in v),
+            "arrival": float(np.mean([r["arrived"] for r in v])),
+            "progress_speed": float(np.mean([r["features"]["progress_speed"] for r in v])),
+            "sparc": float(np.mean([r["features"]["sparc"] for r in v])),
+            "power": float(np.mean([r["features"]["mean_power"] for r in v])),
+            "head_while_moving_max": float(max(r["head_while_moving_max"] for r in v)),
+        }
+        for k, v in sorted(per.items())
+    }
 
 
 def diversity(rows, features) -> float:
@@ -117,11 +134,46 @@ def pca_dims(rows, features, var=0.9) -> dict:
 
 
 def _arm_summary(rows) -> dict:
-    return {"n": len(rows), "falls": sum(x["fell"] for x in rows),
-            "arrival": float(np.mean([x["arrived"] for x in rows])),
-            "sparc": float(np.mean([x["features"]["sparc"] for x in rows])),
-            "power": float(np.mean([x["features"]["mean_power"] for x in rows])),
-            "diversity_non_speed": diversity(rows, NON_SPEED)}
+    return {
+        "n": len(rows),
+        "falls": sum(x["fell"] for x in rows),
+        "arrival": float(np.mean([x["arrived"] for x in rows])),
+        "sparc": float(np.mean([x["features"]["sparc"] for x in rows])),
+        "power": float(np.mean([x["features"]["mean_power"] for x in rows])),
+        "diversity_non_speed": diversity(rows, NON_SPEED),
+    }
+
+
+def h1_gate(out: dict) -> dict:
+    """prereg/H1_ADDENDUM.md gate G1-G5."""
+    designed = ("cautious", "assertive", "curious", "hesitant", "relaxed", "energetic")
+    arms = [out.get(k, {}) for k in ("core_safety", "matched_safety", "switch_safety")]
+    g1 = all(v["falls"] == 0 and v["trips"] == 0 for a in arms for v in a.values()) and all(
+        v["falls"] == 0 for v in out.get("push_safety", {}).values()
+    )
+    g2 = all(v["arrival"] >= 0.95 for k in ("core_safety", "matched_safety") for v in out.get(k, {}).values())
+    core = out["core_classification"]["non_speed"]
+    g3 = core["balanced_accuracy"] >= 0.80 and sum(core["recall"].get(s, 0) >= 0.80 for s in designed) >= 4
+    m = out.get("matched_classification", {}).get("non_speed")
+    spread_ok = all(abs(v) <= 0.15 for v in out.get("matched_speed_spread", {}).values())
+    g4 = (
+        bool(m)
+        and spread_ok
+        and m["balanced_accuracy"] >= 0.70
+        and sum(m["recall"].get(s, 0) >= 0.70 for s in designed) >= 4
+    )
+    g5 = out.get("push_transfer_non_speed", {}).get("balanced_accuracy", 0.0) >= 0.70
+    repertoire = [s for s in designed if core["recall"].get(s, 0) >= 0.80 and m and m["recall"].get(s, 0) >= 0.70]
+    return {
+        "G1_safety": g1,
+        "G2_task": g2,
+        "G3_distinct": g3,
+        "G4_matched": g4,
+        "matched_speed_ok": spread_ok,
+        "G5_perturbation": g5,
+        "passes": bool(g1 and g2 and g3 and g4 and g5),
+        "repertoire": repertoire,
+    }
 
 
 def calibrate(d: Path) -> dict:
@@ -159,14 +211,20 @@ def analyze(d: Path) -> dict:
     switch = _load(d / "switch_primary.json")
     if switch:
         out["switch_safety"] = safety_table(switch["rows"])
+    shift = _load(d.parent / "S" / "core_primary.json")
+    if shift:
+        out["shift_safety"] = safety_table(shift["rows"])
+        out["shift_transfer_non_speed"] = transfer(core, shift["rows"], NON_SPEED)
+    sec = _load(d / "core_secondary.json")
+    if sec:
+        out["secondary_safety"] = safety_table(sec["rows"])
+        out["secondary_classification_non_speed"] = classify_logo(sec["rows"], NON_SPEED)
+    out["gate"] = h1_gate(out)
     rnd = _load(d / "random_primary.json")
     if rnd:
         r = rnd["rows"]
         designed = [x for x in core if x["trial"]["style"] != "neutral"]
-        out["x1_vs_x2"] = {
-            "x1": _arm_summary(designed),
-            "x2": _arm_summary(r),
-            "x3_pca_on_x2": pca_dims(r, NON_SPEED)}
+        out["x1_vs_x2"] = {"x1": _arm_summary(designed), "x2": _arm_summary(r), "x3_pca_on_x2": pca_dims(r, NON_SPEED)}
     return out
 
 
