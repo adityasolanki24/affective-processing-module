@@ -1,0 +1,619 @@
+{
+ "calibration": {
+  "mu_pushy": 0.43060066666666663,
+  "mu_calm": 0.256928,
+  "threshold": 0.34376433333333334,
+  "source": "J5-V CL, lambda 0.02, indices 0-14"
+ },
+ "systems": {
+  "FROZEN": {
+   "q1_belief_effect": {
+    "estimate": 0.20398575000000002,
+    "ci95": [
+     0.18293275625,
+     0.22098922500000004
+    ],
+    "n": 40
+   },
+   "q1_history_auroc": 0.989375,
+   "q2_dstop_effect": {
+    "estimate": 0.0004924399674399599,
+    "ci95": [
+     -0.0003724748168498395,
+     0.0013194464794464688
+    ],
+    "n": 39
+   },
+   "q2_spearman_p_dstop": 0.036479351254745496,
+   "q2_spearman_p_caution": 0.907046012789381,
+   "risky_B_contacts_per_B1": {
+    "estimate": 1.728907203907204,
+    "ci95": [
+     1.559072039072039,
+     1.9096909340659343
+    ],
+    "n": 39
+   },
+   "risky_B_maxpush_per_B1": {
+    "estimate": 0.0501999704924705,
+    "ci95": [
+     0.046039521494708996,
+     0.054628897410459926
+    ],
+    "n": 39
+   },
+   "q4_revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 6.875,
+    "rmst_ci95": [
+     6.0,
+     7.574999999999999
+    ],
+    "items": 40,
+    "events": 7,
+    "censored": 33,
+    "lifetimes": 40
+   },
+   "q5_recovery_change_B": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     1.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 1.1750000000000003,
+    "rmst_ci95": [
+     1.0,
+     1.5249999999999997
+    ],
+    "items": 40,
+    "events": 39,
+    "censored": 1,
+    "lifetimes": 40
+   },
+   "q4_revision_late_B": {
+    "median": 3.0,
+    "median_ci95": [
+     1.0,
+     3.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 3.3249999999999993,
+    "rmst_ci95": [
+     2.55,
+     4.175000000000001
+    ],
+    "items": 40,
+    "events": 32,
+    "censored": 8,
+    "lifetimes": 40
+   },
+   "q6": {
+    "encounters": 4800,
+    "falls": 0,
+    "trips": 0,
+    "arrival_rate": 1.0,
+    "mean_t_arrive": 7.3209583333333335,
+    "contacts_per_encounter": 0.31375
+   }
+  },
+  "H_MEM": {
+   "q1_belief_effect": {
+    "estimate": 0.29798574999999994,
+    "ci95": [
+     0.257929575,
+     0.33650925624999994
+    ],
+    "n": 40
+   },
+   "q1_history_auroc": 0.921875,
+   "q2_dstop_effect": {
+    "estimate": 0.07799143264143266,
+    "ci95": [
+     0.0671824297924298,
+     0.088607062983313
+    ],
+    "n": 39
+   },
+   "q2_spearman_p_dstop": 0.9806546311766935,
+   "q2_spearman_p_caution": 0.9880273679102294,
+   "risky_B_contacts_per_B1": {
+    "estimate": 1.7876984126984128,
+    "ci95": [
+     1.6206285612535614,
+     1.9571357346357348
+    ],
+    "n": 39
+   },
+   "risky_B_maxpush_per_B1": {
+    "estimate": 0.0416138665038665,
+    "ci95": [
+     0.037384767984330484,
+     0.04597474048636549
+    ],
+    "n": 39
+   },
+   "q4_revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 6.5,
+    "rmst_ci95": [
+     5.625,
+     7.325
+    ],
+    "items": 40,
+    "events": 9,
+    "censored": 31,
+    "lifetimes": 40
+   },
+   "q5_recovery_change_B": {
+    "median": 3.0,
+    "median_ci95": [
+     1.0,
+     5.0
+    ],
+    "p_median_above_6": 0.0105,
+    "rmst": 3.9749999999999996,
+    "rmst_ci95": [
+     3.075,
+     4.924999999999999
+    ],
+    "items": 40,
+    "events": 27,
+    "censored": 13,
+    "lifetimes": 40
+   },
+   "q4_revision_late_B": {
+    "median": Infinity,
+    "median_ci95": [
+     2.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 0.8,
+    "rmst": 5.325,
+    "rmst_ci95": [
+     4.324999999999999,
+     6.299999999999999
+    ],
+    "items": 40,
+    "events": 17,
+    "censored": 23,
+    "lifetimes": 40
+   },
+   "q6": {
+    "encounters": 4800,
+    "falls": 0,
+    "trips": 0,
+    "arrival_rate": 1.0,
+    "mean_t_arrive": 15.3351375,
+    "contacts_per_encounter": 0.35625
+   }
+  },
+  "NOFEEDBACK": {
+   "q1_belief_effect": {
+    "estimate": 0.13458275,
+    "ci95": [
+     0.10613659375,
+     0.16167765
+    ],
+    "n": 40
+   },
+   "q1_history_auroc": 0.9184375,
+   "q2_dstop_effect": {
+    "estimate": 0.03662868335368336,
+    "ci95": [
+     0.029046474613349624,
+     0.043939107651607655
+    ],
+    "n": 39
+   },
+   "q2_spearman_p_dstop": 0.8032660551028913,
+   "q2_spearman_p_caution": 0.8369412915203178,
+   "risky_B_contacts_per_B1": {
+    "estimate": 1.977594627594628,
+    "ci95": [
+     1.789818884818885,
+     2.172769383394384
+    ],
+    "n": 39
+   },
+   "risky_B_maxpush_per_B1": {
+    "estimate": 0.04748961131461132,
+    "ci95": [
+     0.04319154825498575,
+     0.051967921576109084
+    ],
+    "n": 39
+   },
+   "q4_revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 7.125,
+    "rmst_ci95": [
+     6.425,
+     7.6499999999999995
+    ],
+    "items": 40,
+    "events": 5,
+    "censored": 35,
+    "lifetimes": 40
+   },
+   "q5_recovery_change_B": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     2.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 2.85,
+    "rmst_ci95": [
+     2.0749999999999997,
+     3.7750000000000004
+    ],
+    "items": 40,
+    "events": 32,
+    "censored": 8,
+    "lifetimes": 40
+   },
+   "q4_revision_late_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 8.0,
+    "rmst_ci95": [
+     8.0,
+     8.0
+    ],
+    "items": 40,
+    "events": 0,
+    "censored": 40,
+    "lifetimes": 40
+   },
+   "q6": {
+    "encounters": 4800,
+    "falls": 0,
+    "trips": 0,
+    "arrival_rate": 1.0,
+    "mean_t_arrive": 15.557675,
+    "contacts_per_encounter": 0.3389583333333333
+   }
+  },
+  "RANDHIST": {
+   "q1_belief_effect": {
+    "estimate": 0.09665575000000001,
+    "ci95": [
+     0.069675275,
+     0.12357640625000003
+    ],
+    "n": 40
+   },
+   "q1_history_auroc": 0.8675,
+   "q2_dstop_effect": {
+    "estimate": 0.02543301790801791,
+    "ci95": [
+     0.019863786121286114,
+     0.031265260225885216
+    ],
+    "n": 39
+   },
+   "q2_spearman_p_dstop": 0.65902976845719,
+   "q2_spearman_p_caution": 0.7063349975165495,
+   "risky_B_contacts_per_B1": {
+    "estimate": 2.123748473748474,
+    "ci95": [
+     1.9493640618640615,
+     2.3051320207570205
+    ],
+    "n": 39
+   },
+   "risky_B_maxpush_per_B1": {
+    "estimate": 0.050778827838827846,
+    "ci95": [
+     0.047269279660154664,
+     0.05444914942002442
+    ],
+    "n": 39
+   },
+   "q4_revision_change_B": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     4.0
+    ],
+    "p_median_above_6": 0.0165,
+    "rmst": 3.6750000000000003,
+    "rmst_ci95": [
+     2.699375,
+     4.674999999999999
+    ],
+    "items": 40,
+    "events": 26,
+    "censored": 14,
+    "lifetimes": 40
+   },
+   "q5_recovery_change_B": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     1.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 1.4000000000000001,
+    "rmst_ci95": [
+     1.0999999999999999,
+     1.8000000000000003
+    ],
+    "items": 40,
+    "events": 39,
+    "censored": 1,
+    "lifetimes": 40
+   },
+   "q4_revision_late_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 0.9995,
+    "rmst": 6.9,
+    "rmst_ci95": [
+     6.2,
+     7.525
+    ],
+    "items": 40,
+    "events": 9,
+    "censored": 31,
+    "lifetimes": 40
+   },
+   "q6": {
+    "encounters": 4800,
+    "falls": 2,
+    "trips": 2,
+    "arrival_rate": 0.9997916666666666,
+    "mean_t_arrive": 15.389089393623669,
+    "contacts_per_encounter": 0.34625
+   }
+  },
+  "CL": {
+   "q1_belief_effect": {
+    "estimate": 0.19249425,
+    "ci95": [
+     0.17271095,
+     0.20902712500000004
+    ],
+    "n": 40
+   },
+   "q1_history_auroc": 0.993125,
+   "q2_dstop_effect": {
+    "estimate": 0.0459568783068783,
+    "ci95": [
+     0.04093063186813185,
+     0.05091318477818476
+    ],
+    "n": 39
+   },
+   "q2_spearman_p_dstop": 0.8682228448282241,
+   "q2_spearman_p_caution": 0.9016735418802554,
+   "risky_B_contacts_per_B1": {
+    "estimate": 1.9551485551485552,
+    "ci95": [
+     1.7824104599104602,
+     2.1316666666666664
+    ],
+    "n": 39
+   },
+   "risky_B_maxpush_per_B1": {
+    "estimate": 0.04671462250712251,
+    "ci95": [
+     0.04305731639194139,
+     0.050497552350427355
+    ],
+    "n": 39
+   },
+   "q4_revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 0.999,
+    "rmst": 6.625,
+    "rmst_ci95": [
+     5.774374999999999,
+     7.375624999999998
+    ],
+    "items": 40,
+    "events": 9,
+    "censored": 31,
+    "lifetimes": 40
+   },
+   "q5_recovery_change_B": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     2.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 1.975,
+    "rmst_ci95": [
+     1.45,
+     2.625
+    ],
+    "items": 40,
+    "events": 37,
+    "censored": 3,
+    "lifetimes": 40
+   },
+   "q4_revision_late_B": {
+    "median": 4.0,
+    "median_ci95": [
+     2.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 0.0945,
+    "rmst": 4.675,
+    "rmst_ci95": [
+     3.75,
+     5.6
+    ],
+    "items": 40,
+    "events": 24,
+    "censored": 16,
+    "lifetimes": 40
+   },
+   "q6": {
+    "encounters": 4800,
+    "falls": 0,
+    "trips": 0,
+    "arrival_rate": 1.0,
+    "mean_t_arrive": 15.437129166666667,
+    "contacts_per_encounter": 0.3308333333333333
+   }
+  },
+  "NOMEM": {
+   "q1_belief_effect": {
+    "estimate": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "n": 40
+   },
+   "q1_history_auroc": 0.5,
+   "q2_dstop_effect": {
+    "estimate": 0.00022678062678063216,
+    "ci95": [
+     -0.0005252808302808353,
+     0.0009765130240130314
+    ],
+    "n": 39
+   },
+   "q2_spearman_p_dstop": -0.013511534063823988,
+   "q2_spearman_p_caution": 1.0,
+   "risky_B_contacts_per_B1": {
+    "estimate": 2.26539479039479,
+    "ci95": [
+     2.0837805250305252,
+     2.4640532153032155
+    ],
+    "n": 39
+   },
+   "risky_B_maxpush_per_B1": {
+    "estimate": 0.05210298636548636,
+    "ci95": [
+     0.048480909035409046,
+     0.05582399219067969
+    ],
+    "n": 39
+   },
+   "q4_revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 8.0,
+    "rmst_ci95": [
+     8.0,
+     8.0
+    ],
+    "items": 40,
+    "events": 0,
+    "censored": 40,
+    "lifetimes": 40
+   },
+   "q5_recovery_change_B": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     1.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 1.1750000000000003,
+    "rmst_ci95": [
+     1.0,
+     1.5249999999999997
+    ],
+    "items": 40,
+    "events": 39,
+    "censored": 1,
+    "lifetimes": 40
+   },
+   "q4_revision_late_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 8.0,
+    "rmst_ci95": [
+     8.0,
+     8.0
+    ],
+    "items": 40,
+    "events": 0,
+    "censored": 40,
+    "lifetimes": 40
+   },
+   "q6": {
+    "encounters": 4800,
+    "falls": 0,
+    "trips": 0,
+    "arrival_rate": 1.0,
+    "mean_t_arrive": 15.837083333333334,
+    "contacts_per_encounter": 0.35583333333333333
+   }
+  }
+ },
+ "safe_mean_d_stop_CL": 0.4370390625,
+ "q3_contacts_CL_minus_FROZEN": {
+  "estimate": 0.22624135124135122,
+  "ci95": [
+   0.018787647537647525,
+   0.4375353581603582
+  ],
+  "n": 39
+ },
+ "q3_maxpush_CL_minus_FROZEN": {
+  "estimate": -0.0034853479853479852,
+  "ci95": [
+   -0.008547114748677248,
+   0.0017727776505901518
+  ],
+  "n": 39
+ },
+ "q3_detected_CL_minus_FROZEN": {
+  "estimate": -0.05770248270248269,
+  "ci95": [
+   -0.1496164021164021,
+   0.03402676027676028
+  ],
+  "n": 39
+ },
+ "q6_arrival_time_CL_minus_FROZEN_s": {
+  "estimate": 8.116170833333333,
+  "ci95": [
+   8.066616145833333,
+   8.165560520833333
+  ],
+  "n": 160
+ }
+}
