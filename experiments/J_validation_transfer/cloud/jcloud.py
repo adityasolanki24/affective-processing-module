@@ -22,6 +22,8 @@ Subcommands:
   delete NAME               deletes the VM now
   audit                     lists programme-J VMs, disks, routers and addresses
   cleanup NAME              deletes gs://BUCKET/apm-j/NAME (after fetching)
+  nerva-inputs PATH         uploads the NERVA package, inference lock and frozen policies for NERVA jobs
+                            (cloud/nerva_env.sh builds the simulation venv on the VM once)
 
 Spend: reports/COMPUTE_LOG.md. User cap for programme J: US$40 (approved 2026-10-17).
 """
@@ -195,6 +197,25 @@ def cmd_delete(a) -> None:
     print("deleted", a.name)
 
 
+def cmd_nerva_inputs(a) -> None:
+    """Upload the NERVA package, pyproject, inference lock and the two frozen policies (read-only use)."""
+    need()
+    root = Path(a.nerva)
+    files = ["pyproject.toml", "env/open_duck_inference.lock.txt",
+             "experiments/cloud_runs/turn_translation-20261011-000711/candidate.onnx",
+             "experiments/cloud_runs/e1_prime-20261011-132718/candidate.onnx"]
+    with tempfile.TemporaryDirectory() as tmp:
+        arc = Path(tmp) / "nerva.tgz"
+        with tarfile.open(arc, "w:gz") as tar:
+            tar.add(root / "nerva", arcname="nerva",
+                    filter=lambda ti: None if "__pycache__" in ti.name or ti.name.endswith(".pyc") else ti)
+            for f in files:
+                tar.add(root / f, arcname=f)
+        sh([g(), "storage", "cp", "-q", str(arc), f"gs://{BUCKET}/apm-j/inputs/nerva.tgz"])
+    commit = sh(["git", "-C", str(root), "rev-parse", "HEAD"], capture=True)
+    print("uploaded NERVA inputs from commit", commit[:10])
+
+
 def cmd_audit(a) -> None:
     need()
     for what, args in (("VMs", ["compute", "instances", "list", "--filter=labels.apm-j=1"]),
@@ -246,6 +267,9 @@ def main() -> None:
         p.add_argument("name")
         p.set_defaults(func=f)
     sub.add_parser("audit").set_defaults(func=cmd_audit)
+    p = sub.add_parser("nerva-inputs")
+    p.add_argument("nerva", help="path to the NERVA checkout")
+    p.set_defaults(func=cmd_nerva_inputs)
     a = ap.parse_args()
     a.func(a)
 
