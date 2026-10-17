@@ -104,3 +104,67 @@ def ranking_auroc(r: dict, episode: int = -1) -> float:
 def discrimination(rows: list[dict]) -> float:
     vals = [x for x in (ranking_auroc(r) for r in rows) if not np.isnan(x)]
     return float(np.mean(vals)) if vals else float("nan")
+
+
+# ------------------------------------------------------------------ system-calibrated adaptation (primary in I)
+CAL_FROM = 10  # S3 episodes used for calibration: 10–29
+
+
+def calibration(rows_s3: list[dict]) -> dict:
+    """Where this system places truly careless and careful identities in the stable world (S3, episodes 10–29):
+    mean end-of-episode p of each group, and the midpoint threshold between them."""
+    car, caf = [], []
+    for r in rows_s3:
+        for snap, truth in zip(r["snapshots"][CAL_FROM:], r["truth"][CAL_FROM:], strict=True):
+            for k, v in snap.items():
+                (car if truth.get(k) == "careless" else caf).append(v[0])
+    mu_c, mu_f = float(np.mean(car)), float(np.mean(caf))
+    return {"mu_careless": mu_c, "mu_careful": mu_f, "threshold": (mu_c + mu_f) / 2, "gap": mu_c - mu_f}
+
+
+def adaptation_items_cal(r: dict, cal: dict) -> list[tuple[float, bool]]:
+    """As G2's adaptation, with the side of an identity defined by the system's own calibrated threshold: the
+    "careless side" is the side of the threshold where the system places careless identities in S3."""
+    sign = 1.0 if cal["gap"] >= 0 else -1.0
+    to = r["roles"]["to"]
+    items = []
+    for ident in r["roles"]["switched"]:
+        def careless_side(e, ident=ident):
+            snap = r["snapshots"][e]
+            return None if ident not in snap else sign * (snap[ident][0] - cal["threshold"]) > 0
+        def post(e):
+            c = careless_side(e)
+            return None if c is None else (c if to == "careless" else not c)
+        pre = post(SWITCH - 1)
+        if pre is None or pre:
+            continue
+        t = next((e - SWITCH + 1 for e in range(SWITCH, len(r["snapshots"])) if post(e)), None)
+        items.append((float(t), True) if t is not None else (float(HORIZON), False))
+    return items
+
+
+def adaptation_cal(rows: list[dict], cal: dict, n_boot: int = 2000) -> dict:
+    res = km_bootstrap([adaptation_items_cal(r, cal) for r in rows], HORIZON, n_boot)
+    res["established"] = sum(len(adaptation_items_cal(r, cal)) for r in rows)
+    res["switched_total"] = sum(len(r["roles"]["switched"]) for r in rows)
+    return res
+
+
+def false_blame(r: dict) -> float | None:
+    """F's E3 definition (S5): final p of the patch-affine careful identity minus the mean final p of the other
+    careful identities of the lifetime."""
+    final, affine = r["snapshots"][-1], r["roles"].get("affine")
+    others = [v[0] for k, v in final.items() if k != affine and r["truth"][-1].get(k) == "careful"]
+    if affine not in final or not others:
+        return None
+    return final[affine][0] - float(np.mean(others))
+
+
+def boot_mean(vals: list[float], n_boot: int = 10_000) -> dict:
+    v = np.asarray([x for x in vals if x is not None and not np.isnan(x)], float)
+    if len(v) == 0:
+        return {"estimate": None, "n": 0}
+    rng = np.random.default_rng(0)
+    d = np.array([v[rng.integers(0, len(v), len(v))].mean() for _ in range(n_boot)])
+    return {"estimate": float(v.mean()), "ci95": [float(np.percentile(d, 2.5)), float(np.percentile(d, 97.5))],
+            "n": int(len(v))}

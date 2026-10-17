@@ -1,26 +1,29 @@
-"""Programme I compute: capped, self-deleting spot VMs driven over IAP SSH (no external IP, no firewall changes).
+"""Programme I compute: capped, self-deleting spot VMs that run jobs from a bucket queue (`runner.sh`).
+
+No SSH: the project's organization enforces OS Login. Jobs and results travel through the bucket the VM's service
+account can write to.
 
 Deployment identifiers are local configuration, never repository content:
   APM_GCP_PROJECT          project ID
-  APM_GCP_SERVICE_ACCOUNT  service account the VM runs as
+  APM_GCP_BUCKET           bucket for the queue and results (gs://BUCKET/apm-i/NAME/...)
+  APM_GCP_SERVICE_ACCOUNT  service account the VM runs as (bucket write; may delete its own instance)
 
 Subcommands:
   up REGION                 temporary router + Cloud NAT in REGION, so private VMs can install packages
-  create NAME ZONE          spot VM (default n2d-highcpu-128, --max-hours cap, then Google deletes it); installs the
-                            Python environment (numpy only) at boot
-  push NAME                 copies the working tree's code and inputs (src/, experiments/{F configs, G scripts and
-                            configs, I}, runs/E2/predictor.json, pilot type models) to the VM; results live
-                            in ~/results on the VM and survive pushes. Pilot, T and V runs only:
-                            confirmatory runs use `push --commit` (a clean clone of HEAD), so the lock sees a
-                            clean tree
-  run NAME -- CMD           runs CMD in the VM's checkout (PYTHONPATH=src, venv active)
-  pull NAME REMOTE LOCAL    copies a results directory back
+  down REGION               deletes them (refuses while a programme-I VM exists in the region)
+  create NAME ZONE          spot VM (default n2d-highcpu-128). Google deletes it after --max-hours; it deletes
+                            itself after --idle-min minutes without a job. Waits until the runner is ready
+  submit NAME CMD [--commit] [--tag T]
+                            queues CMD, run in a fresh copy of the code with PYTHONPATH=src. Outputs must go to
+                            out/. Default: the working tree's code and inputs (pilot/T/V). --commit: a clean
+                            clone of HEAD with .git, which confirmatory runs need for the lock. Prints the job id
+  wait NAME ID              blocks until the job is done; prints exit code and log tail
+  fetch NAME ID DEST        downloads and unpacks out/ into DEST
   delete NAME               deletes the VM now
-  down REGION               deletes the router and NAT (refuses while a programme-I VM exists in the region)
-  audit                     lists everything of programme I that could cost money
+  audit                     lists programme-I VMs, disks, routers and addresses
+  cleanup NAME              deletes gs://BUCKET/apm-i/NAME (after fetching)
 
-Cost safety: spot provisioning, --max-run-duration with --instance-termination-action=DELETE (enforced by Google),
-label apm-i=1 on everything, and `audit` after each session. Budget and spend: reports/COMPUTE_LOG.md.
+Spend: reports/COMPUTE_LOG.md. User cap for programme I: US$40.
 """
 from __future__ import annotations
 
@@ -35,19 +38,15 @@ import time
 from pathlib import Path
 
 PROJECT = os.environ.get("APM_GCP_PROJECT", "").strip()
+BUCKET = os.environ.get("APM_GCP_BUCKET", "").strip()
 SERVICE_ACCOUNT = os.environ.get("APM_GCP_SERVICE_ACCOUNT", "").strip()
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 ROUTER, NAT = "apm-i-router", "apm-i-nat"
-INCLUDE = ("src", "experiments/F_behavioral_learning/configs", "experiments/G_architecture_selection/scripts",
-           "experiments/G_architecture_selection/configs", "experiments/G_architecture_selection/seeds.py",
-           "experiments/I_autonomous_revision", "runs/E2/predictor.json", "runs/I/I0/P_fit", "pyproject.toml")
-STARTUP = """#!/bin/bash
-set -e
-apt-get update -q && apt-get install -y -q python3-venv python3-pip git
-python3 -m venv /opt/venv && /opt/venv/bin/pip install -q "numpy>=2"
-touch /opt/ready
-"""
+INCLUDE = ("src", "pyproject.toml", "experiments/F_behavioral_learning/configs",
+           "experiments/G_architecture_selection/scripts", "experiments/G_architecture_selection/configs",
+           "experiments/G_architecture_selection/seeds.py", "experiments/I_autonomous_revision",
+           "runs/E2/predictor.json", "runs/I/I0/P_fit")
 
 
 def g() -> str:
@@ -58,8 +57,8 @@ def g() -> str:
 
 
 def need() -> None:
-    if not PROJECT or not SERVICE_ACCOUNT:
-        sys.exit("set APM_GCP_PROJECT and APM_GCP_SERVICE_ACCOUNT")
+    if not (PROJECT and BUCKET and SERVICE_ACCOUNT):
+        sys.exit("set APM_GCP_PROJECT, APM_GCP_BUCKET and APM_GCP_SERVICE_ACCOUNT")
 
 
 def sh(args: list[str], check: bool = True, capture: bool = False) -> str:
@@ -67,17 +66,12 @@ def sh(args: list[str], check: bool = True, capture: bool = False) -> str:
     return (r.stdout or "").strip() if capture else ""
 
 
-def zone_of(name: str) -> str:
-    z = sh([g(), "compute", "instances", "list", f"--project={PROJECT}", f"--filter=name={name}",
-            "--format=value(zone.basename())"], capture=True)
-    if not z:
-        sys.exit(f"no VM {name}")
-    return z
+def q(name: str) -> str:
+    return f"gs://{BUCKET}/apm-i/{name}"
 
 
-def ssh(name: str, command: str, check: bool = True) -> int:
-    return subprocess.run([g(), "compute", "ssh", name, f"--project={PROJECT}", f"--zone={zone_of(name)}",
-                           "--tunnel-through-iap", "--quiet", "--command", command], check=check).returncode
+def exists(uri: str) -> bool:
+    return subprocess.run([g(), "storage", "ls", uri], capture_output=True).returncode == 0
 
 
 def cmd_up(a) -> None:
@@ -109,80 +103,88 @@ def cmd_down(a) -> None:
 def cmd_create(a) -> None:
     need()
     with tempfile.TemporaryDirectory() as tmp:
-        start = Path(tmp) / "startup.sh"
-        start.write_bytes(STARTUP.encode())
+        start = Path(tmp) / "runner.sh"
+        start.write_bytes((HERE / "runner.sh").read_bytes().replace(b"\r\n", b"\n"))
         sh([g(), "compute", "instances", "create", a.name, f"--project={PROJECT}", f"--zone={a.zone}",
             f"--machine-type={a.machine}", "--provisioning-model=SPOT", "--instance-termination-action=DELETE",
             f"--max-run-duration={int(a.max_hours * 3600)}s", "--image-family=ubuntu-2404-lts-amd64",
             "--image-project=ubuntu-os-cloud", "--boot-disk-size=30GB", "--no-address",
             f"--service-account={SERVICE_ACCOUNT}", "--scopes=cloud-platform", "--labels=apm-i=1",
-            f"--metadata-from-file=startup-script={start}"])
-    print(f"created {a.name} ({a.machine}, spot, deleted by Google after {a.max_hours} h); waiting for setup")
-    for _ in range(60):
-        time.sleep(15)
-        if subprocess.run([g(), "compute", "ssh", a.name, f"--project={PROJECT}", f"--zone={a.zone}",
-                           "--tunnel-through-iap", "--quiet", "--command", "test -f /opt/ready"],
-                          capture_output=True).returncode == 0:
+            f"--metadata-from-file=startup-script={start}",
+            f"--metadata=apm-bucket={BUCKET},apm-idle-min={a.idle_min}"])
+    print(f"created {a.name} ({a.machine}, spot; hard cap {a.max_hours} h, idle delete {a.idle_min} min)")
+    for _ in range(80):
+        if exists(f"{q(a.name)}/ready"):
             print("ready")
             return
-    sys.exit("setup did not finish in 15 min; check the serial console")
+        time.sleep(15)
+    sys.exit("runner not ready after 20 min")
 
 
-def _archive(path: Path, commit: bool) -> None:
-    with tarfile.open(path, "w:gz") as tar:
+def _archive(path: Path, commit: bool, cmd: str) -> str:
+    with tempfile.TemporaryDirectory() as tmp, tarfile.open(path, "w:gz") as tar:
+        job = Path(tmp) / "job.sh"
+        job.write_bytes(f"set -e\nmkdir -p out\n{cmd}\n".encode())
         if commit:
-            with tempfile.TemporaryDirectory() as tmp:
-                clone = Path(tmp) / "repo"
-                sh(["git", "clone", "-q", "--no-hardlinks", str(REPO), str(clone)])
-                sh(["git", "-C", str(clone), "checkout", "-q", sh(["git", "-C", str(REPO), "rev-parse", "HEAD"],
-                                                                 capture=True)])
-                tar.add(clone, arcname="apm")
-                pred = REPO / "runs" / "E2" / "predictor.json"
-                tar.add(pred, arcname="apm/runs/E2/predictor.json")
-            return
-        for item in INCLUDE:
-            p = REPO / item
-            if p.exists():
-                tar.add(p, arcname=f"apm/{item}",
-                        filter=lambda ti: None if "__pycache__" in ti.name or ti.name.endswith(".pyc") else ti)
+            clone = Path(tmp) / "repo"
+            sh(["git", "clone", "-q", "--no-hardlinks", str(REPO), str(clone)])
+            sha = sh(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture=True)
+            sh(["git", "-C", str(clone), "checkout", "-q", sha])
+            tar.add(clone, arcname="apm")
+            for extra in ("runs/E2/predictor.json",):  # git-tracked inputs are already in the clone
+                if not (clone / extra).exists():
+                    tar.add(REPO / extra, arcname=f"apm/{extra}")
+            label = f"commit {sha[:10]}"
+        else:
+            for item in INCLUDE:
+                p = REPO / item
+                if p.exists():
+                    tar.add(p, arcname=f"apm/{item}",
+                            filter=lambda ti: None if "__pycache__" in ti.name or ti.name.endswith(".pyc") else ti)
+            label = "working tree"
+        tar.add(job, arcname="apm/job.sh")
+    return label
 
 
-def cmd_push(a) -> None:
+def cmd_submit(a) -> None:
     need()
+    job_id = time.strftime("%Y%m%d-%H%M%S") + (f"-{a.tag}" if a.tag else "")
     with tempfile.TemporaryDirectory() as tmp:
-        arc = Path(tmp) / "code.tgz"
-        _archive(arc, a.commit)
-        z = zone_of(a.name)
-        sh([g(), "compute", "scp", str(arc), f"{a.name}:~/code.tgz", f"--project={PROJECT}", f"--zone={z}",
-            "--tunnel-through-iap", "--quiet"])
-    ssh(a.name, "rm -rf apm && tar xzf code.tgz && rm code.tgz && mkdir -p ~/results")
-    print("pushed", "committed HEAD (clean clone)" if a.commit else "working tree")
+        arc = Path(tmp) / f"{job_id}.tgz"
+        label = _archive(arc, a.commit, a.cmd)
+        sh([g(), "storage", "cp", "-q", str(arc), f"{q(a.name)}/queue/{job_id}.tgz"])
+    print(job_id, f"({label})")
 
 
-def cmd_run(a) -> None:
+def cmd_wait(a) -> None:
     need()
-    cmd = " ".join(a.cmd)
-    sys.exit(ssh(a.name, f"cd ~/apm && source /opt/venv/bin/activate && export PYTHONPATH=src && {cmd}",
-                 check=False))
+    while not exists(f"{q(a.name)}/done/{a.id}/rc"):
+        time.sleep(15)
+    rc = sh([g(), "storage", "cat", f"{q(a.name)}/done/{a.id}/rc"], capture=True)
+    log = sh([g(), "storage", "cat", f"{q(a.name)}/done/{a.id}/log.txt"], capture=True)
+    print("\n".join(log.splitlines()[-a.lines:]))
+    print("exit code", rc)
 
 
-def cmd_pull(a) -> None:
+def cmd_fetch(a) -> None:
     need()
-    z = zone_of(a.name)
-    Path(a.local).mkdir(parents=True, exist_ok=True)
-    ssh(a.name, f"cd ~/apm && tar czf ~/out.tgz {a.remote}")
+    dest = Path(a.dest)
+    dest.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
-        sh([g(), "compute", "scp", f"{a.name}:~/out.tgz", str(Path(tmp) / "out.tgz"), f"--project={PROJECT}",
-            f"--zone={z}", "--tunnel-through-iap", "--quiet"])
-        with tarfile.open(Path(tmp) / "out.tgz") as tar:
-            tar.extractall(a.local, filter="data")
-    print(f"pulled {a.remote} -> {a.local}")
+        sh([g(), "storage", "cp", "-q", f"{q(a.name)}/done/{a.id}/out.tgz", f"{tmp}/out.tgz"])
+        with tarfile.open(f"{tmp}/out.tgz") as tar:
+            tar.extractall(dest, filter="data")
+    print(f"fetched {a.id} -> {dest}")
 
 
 def cmd_delete(a) -> None:
     need()
-    sh([g(), "compute", "instances", "delete", a.name, f"--project={PROJECT}", f"--zone={zone_of(a.name)}",
-        "--quiet"])
+    z = sh([g(), "compute", "instances", "list", f"--project={PROJECT}", f"--filter=name={a.name}",
+            "--format=value(zone.basename())"], capture=True)
+    if not z:
+        print("no such VM")
+        return
+    sh([g(), "compute", "instances", "delete", a.name, f"--project={PROJECT}", f"--zone={z}", "--quiet"])
     print("deleted", a.name)
 
 
@@ -196,9 +198,15 @@ def cmd_audit(a) -> None:
         print(f"{what}: {out.replace(chr(10), ', ') or 'none'}")
 
 
+def cmd_cleanup(a) -> None:
+    need()
+    sh([g(), "storage", "rm", "--recursive", "-q", q(a.name)], check=False)
+    print("removed", q(a.name))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    sub = ap.add_subparsers(dest="cmd_name", required=True)
+    sub = ap.add_subparsers(required=True)
     for n, f in (("up", cmd_up), ("down", cmd_down)):
         p = sub.add_parser(n)
         p.add_argument("region")
@@ -208,28 +216,30 @@ def main() -> None:
     p.add_argument("zone")
     p.add_argument("--machine", default="n2d-highcpu-128")
     p.add_argument("--max-hours", type=float, default=4.0)
+    p.add_argument("--idle-min", type=int, default=30)
     p.set_defaults(func=cmd_create)
-    p = sub.add_parser("push")
+    p = sub.add_parser("submit")
     p.add_argument("name")
+    p.add_argument("cmd")
     p.add_argument("--commit", action="store_true")
-    p.set_defaults(func=cmd_push)
-    p = sub.add_parser("run")
+    p.add_argument("--tag", default="")
+    p.set_defaults(func=cmd_submit)
+    p = sub.add_parser("wait")
     p.add_argument("name")
-    p.add_argument("cmd", nargs=argparse.REMAINDER)
-    p.set_defaults(func=cmd_run)
-    p = sub.add_parser("pull")
+    p.add_argument("id")
+    p.add_argument("--lines", type=int, default=5)
+    p.set_defaults(func=cmd_wait)
+    p = sub.add_parser("fetch")
     p.add_argument("name")
-    p.add_argument("remote")
-    p.add_argument("local")
-    p.set_defaults(func=cmd_pull)
-    for n, f in (("delete", cmd_delete),):
+    p.add_argument("id")
+    p.add_argument("dest")
+    p.set_defaults(func=cmd_fetch)
+    for n, f in (("delete", cmd_delete), ("cleanup", cmd_cleanup)):
         p = sub.add_parser(n)
         p.add_argument("name")
         p.set_defaults(func=f)
     sub.add_parser("audit").set_defaults(func=cmd_audit)
     a = ap.parse_args()
-    if getattr(a, "cmd", None) and a.cmd and a.cmd[0] == "--":
-        a.cmd = a.cmd[1:]
     a.func(a)
 
 

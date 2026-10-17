@@ -63,9 +63,11 @@ def main() -> None:
               "pi", np.round(m.pi, 3), "r", np.round(m.r, 4))
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(out, indent=1), encoding="utf-8")
-    for coding in CODINGS:  # one file per coding, the format `apm_revise.belief.TypeModel.from_dict` reads
+    for coding in CODINGS:  # one file per coding (BIC-selected K, and K = 2), as `TypeModel.from_dict` reads
         a.out.with_name(a.out.stem + f"_{coding}.json").write_text(json.dumps(out[coding]["model"], indent=1),
                                                                     encoding="utf-8")
+        a.out.with_name(a.out.stem + f"_{coding}_K2.json").write_text(json.dumps(out[coding]["all"][2], indent=1),
+                                                                       encoding="utf-8")
 
 
 if __name__ == "__main__":

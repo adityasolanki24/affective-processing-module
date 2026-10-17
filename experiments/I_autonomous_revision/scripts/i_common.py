@@ -184,4 +184,5 @@ def run_job(job: dict) -> dict:
             "state_size": inner.memory.state_size(), "probes": getattr(inner, "probes", 0),
             "voi_eligible": len(voi), "keepaways": getattr(inner, "keepaways", 0),
             "snapshots": tracker.snapshots, "truth": tracker.truth,
+            "pred_logp": [x[7] for x in getattr(inner.memory, "log", []) if len(x) > 7 and x[7] is not None],
             "encounters": tracker.encounters}

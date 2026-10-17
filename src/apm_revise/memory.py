@@ -12,6 +12,7 @@ interface, plus G's `log`, `counts` and `state_size`, so G's decision rule and i
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -33,7 +34,8 @@ class RevisionMemory:
     def __post_init__(self) -> None:
         self.open: dict[str, Encounter] = {}
         self.last_seen: dict[str, float] = {}
-        # (end time, identity, confidence, G class, reliable, p at start, outcome category or None) — evaluation only
+        # (end time, identity, confidence, G class, reliable, p at start, outcome category or None,
+        #  log predictive probability of that category before the update or None) — evaluation and tuning only
         self.log: list[tuple] = []
         self.counts = dict.fromkeys((*CLASSES, "unreliable", "censored"), 0)
         self.now = 0.0
@@ -60,6 +62,7 @@ class RevisionMemory:
         self.expire(t)
 
     def expire(self, t: float) -> None:
+        self.now = max(self.now, t)
         for track in [k for k, s in self.last_seen.items() if t - s > ENTITY_TTL_S]:
             del self.last_seen[track]
             enc = self.open.pop(track, None)
@@ -74,7 +77,11 @@ class RevisionMemory:
             self.counts["unreliable"] += 1
         if cat is None:
             self.counts["censored"] += 1
-        self.log.append((round(t, 2), enc.identity, round(enc.confidence, 3), klass, enc.reliable, enc.p_start, cat))
+        logp = None
+        if cat is not None and enc.reliable:
+            logp = round(math.log(max(1e-12, float(self.posterior(enc.identity) @ self.model.E[:, cat]))), 5)
+        self.log.append((round(t, 2), enc.identity, round(enc.confidence, 3), klass, enc.reliable, enc.p_start, cat,
+                         logp))
         if cat is None or not enc.reliable:
             return
         assert enc.identity is not None
