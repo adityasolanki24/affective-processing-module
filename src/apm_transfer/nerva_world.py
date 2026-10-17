@@ -221,7 +221,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     adapter.reset(ctrl.t, ctrl.pose(), TARGET, intent)
     pushes, t_arrive, k_arrive, fell, fallback = [], None, None, False, 0
     own = [False] * n_settle  # per frame: did the robot itself command motion?
-    prev_head = np.zeros(4)
+    prev_head: np.ndarray = np.zeros(4)
     k = n_settle
     while True:
         x, y, _ = ctrl.pose()
