@@ -24,6 +24,15 @@ Seeds are shared across systems (paired). Every encounter is a full NERVA closed
 | `RANDHIST` | each encounter's evidence credited to a random entity (history decoupled from identity) | L0 |
 | `H_MEM` | H's `EntityMemory` on the robot-observable detector | L0 |
 
+J6 systems (same loop; `--j6-model` gives the time model and price; `--gru` the GRU weights):
+
+| system | intent |
+|---|---|
+| `RANDINTENT` | a uniformly random grid intent (exploration: J6 training data); memory updated as CL |
+| `LEARNED` | `expression_map.utility_intent` from the type posterior |
+| `RESIDUAL` | L0, with its proximity adjusted by the same utility |
+| `GRU` | `expression_map.GruMapping` over the entity's own evidence history (no explicit memory used for the choice) |
+
 Per encounter, logged:
 - the entity, its type (truth) and the readout before the encounter;
 - the intent's caution and proximity;
@@ -69,11 +78,20 @@ def btype(history: str, k: int) -> str:
 
 
 def job(args: tuple) -> dict:
-    partition, index, history, system, model_path, edges_path, lam, channels = args
+    partition, index, history, system, model_path, edges_path, lam, channels, j6 = args
     os.environ.setdefault("OMP_NUM_THREADS", "1")
     from apm_express.states import EntityMemory, Probe, caution, lookup_intent
     from apm_express.styles import NEUTRAL
     from apm_revise.belief import TypeModel
+    from apm_transfer.expression_map import (
+        GRID,
+        GruMapping,
+        TimeModel,
+        gru_input,
+        residual_intent,
+        strong_prob,
+        utility_intent,
+    )
     from apm_transfer.nerva_memory import ObsX, TypeStateModel
     from apm_transfer.nerva_world import MIN_QUIET_FRAMES, closed_loop_encounter
 
@@ -87,12 +105,32 @@ def job(args: tuple) -> dict:
     mem = EntityMemory() if system == "H_MEM" else TypeStateModel(model, lam, kind_prior=False)
     prior = mem.readout(Probe("Z9", "Z", "plain"))
     shuffle = np.random.default_rng(base + 1)
+    explore = np.random.default_rng(base + 2)
+    tm = TimeModel(j6["time_coef"]) if j6.get("time_coef") else None
+    ps = strong_prob(model) if system in ("LEARNED", "RESIDUAL") else None
+    gru = GruMapping(json.loads(Path(j6["gru"]).read_text())) if system == "GRU" else None
+    hidden = {e[0]: gru.init() for e in ENTITIES} if gru else {}
     rows = []
     t0 = time.time()
     for k, (ident, kind) in enumerate(order):
         etype = btype(history, k) if ident == "B1" else "calm"
         rd = mem.readout(Probe(ident, kind, "plain"))
-        if system == "FROZEN":
+        post = (mem._at(ident) if ident in mem.b else mem._prior(kind)) if isinstance(mem, TypeStateModel) else None
+        grid_i = None
+        if system == "RANDINTENT":
+            grid_i = int(explore.integers(len(GRID)))
+            intent = GRID[grid_i]
+        elif system == "LEARNED":
+            assert tm is not None and ps is not None and post is not None
+            grid_i, intent = utility_intent(post, tm, ps, j6["price"])
+        elif system == "RESIDUAL":
+            assert tm is not None and ps is not None and post is not None
+            intent = residual_intent(post, lookup_intent(rd), tm, ps, j6["price"])
+        elif system == "GRU":
+            assert gru is not None
+            grid_i = gru.choose(hidden[ident])
+            intent = GRID[grid_i]
+        elif system == "FROZEN":
             intent = NEUTRAL
         elif system == "NOMEM":
             intent, rd = lookup_intent(prior), prior
@@ -113,7 +151,11 @@ def job(args: tuple) -> dict:
             who, wkind = (ENTITIES[int(shuffle.integers(3))] if system == "RANDHIST" else (ident, kind))
             category = cat if system == "H_MEM" else band * 8 + cat
             mem.observe(ObsX(who, wkind, "plain", float(bool(e[9])), float(e[1]), category))
+        if gru is not None:
+            hidden[ident] = gru.step(hidden[ident], gru_input(cat if observable else None, band, bool(e[9])))
         rows.append({"k": k, "entity": ident, "type": etype, "p_before": round(rd.p, 5), "u_before": round(rd.u, 4),
+                     "post": None if post is None else [round(float(v), 5) for v in post], "grid_i": grid_i,
+                     "tempo": round(intent.tempo, 3),
                      "caution": round(caution(rd), 4), "proximity": round(intent.proximity, 3),
                      "hesitation": round(intent.hesitation, 3), "d_stop": d, "band": band, "category": cat,
                      "detected": bool(e[9]), "peak_acc": e[1], "logp": logp, "quiet_frames": e[10],
@@ -136,11 +178,16 @@ def main() -> None:
     ap.add_argument("--systems", default="CL,FROZEN,NOMEM,NOFEEDBACK,RANDHIST,H_MEM")
     ap.add_argument("--histories", default="risky_B,change_B,late_B,safe")
     ap.add_argument("--channels", default=str(HERE / "configs" / "H_admitted_interface.json"))
+    ap.add_argument("--j6-model", default="", help="J6: json with time_coef and price")
+    ap.add_argument("--gru", default="", help="J6: GRU weights json")
     ap.add_argument("--workers", type=int, default=cpu_count())
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
     channels = json.loads(Path(a.channels).read_text())["interface"]
-    jobs = [(a.partition, a.first + i, h, s, a.types_model, a.edges, a.lam, channels)
+    j6 = json.loads(Path(a.j6_model).read_text()) if a.j6_model else {}
+    if a.gru:
+        j6["gru"] = a.gru
+    jobs = [(a.partition, a.first + i, h, s, a.types_model, a.edges, a.lam, channels, j6)
             for i in range(a.n) for h in a.histories.split(",") for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)
     t = time.time()

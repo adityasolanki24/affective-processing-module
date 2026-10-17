@@ -130,10 +130,10 @@ class ImuLogger:
             n_quiet = int(mask.sum())
         above = np.flatnonzero(g > gyro_thr)
         if len(above):
-            quiet = int(round(0.5 / dt))
+            settle_n = int(round(0.5 / dt))
             end = len(g)
-            for k in range(above[0], len(g) - quiet):
-                if (g[k:k + quiet] <= gyro_thr).all():
+            for k in range(above[0], len(g) - settle_n):
+                if (g[k:k + settle_n] <= gyro_thr).all():
                     end = k
                     break
             stab = (end - above[0]) * dt
