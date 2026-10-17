@@ -44,16 +44,17 @@ def expected_posterior_risk(b: np.ndarray, E: np.ndarray, w: float = 1.0) -> flo
 
 class Revising(MemoryRegulated):
     def __init__(self, predictor, lam_c: float, lam_s: float, regulator, model: TypeModel, lam: float,
-                 explore: dict | None = None, trace=None, name: str = "I"):
+                 explore: dict | None = None, trace=None, name: str = "I", confidence: str = "entropy"):
         explore = explore or {"mode": "none"}
         probe = explore if explore["mode"] in ("uncertainty", "random") else None
         super().__init__(predictor, lam_c, lam_s, regulator, {"probe": probe}, trace=trace, name=name)
-        self.type_model, self.lam, self.explore = model, lam, explore
+        self.type_model, self.lam, self.explore, self.confidence = model, lam, explore, confidence
 
     def begin_lifetime(self) -> None:
         super().begin_lifetime()
         self.memory = RevisionMemory(self.type_model, self.lam,  # type: ignore[assignment]  # ObsMemory interface
-                                     thompson=self.explore["mode"] == "thompson", seed=self.explore.get("seed", 0))
+                                     thompson=self.explore["mode"] == "thompson", seed=self.explore.get("seed", 0),
+                                     confidence=self.confidence)
         self.voi_log: list[tuple[float, float]] = []  # (value of information, utility given up) at eligible moments
 
     def decide(self, t: float) -> int:

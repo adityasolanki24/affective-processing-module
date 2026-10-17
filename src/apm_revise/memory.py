@@ -6,6 +6,8 @@ interface, plus G's `log`, `counts` and `state_size`, so G's decision rule and i
 - Evidence: `evidence.Encounter`; an encounter updates its identity's belief only if it is informative (not
   censored) and the identity is reliable (confidence ≥ 0.5).
 - Belief: `belief.TypeBelief` under the fitted `TypeModel`; unknown or unreliable people get the population prior.
+- `confidence="count"` reports F's evidence-count confidence instead of the posterior's certainty (an ablation of the
+  confidence channel the decision rule's predictor reads).
 - `thompson=True`: during each open encounter, `p_collision` answers with the collision rate of one type sampled from
   the identity's posterior, drawn once per encounter. `posterior_p` always gives the posterior mean (used for
   evaluation).
@@ -29,6 +31,7 @@ class RevisionMemory:
     lam: float = 0.0
     thompson: bool = False
     seed: int = 0
+    confidence: str = "entropy"   # "entropy" (1 − H(b)/log K) or "count" (F's n/(n + 2) over reliable evidence)
     beliefs: dict[str, TypeBelief] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -96,7 +99,12 @@ class RevisionMemory:
         return b.at(self.now) if b is not None else self.model.pi.copy()
 
     def posterior_p(self, identity: str | None) -> tuple[float, float]:
-        return readout(self.model, self.posterior(identity))
+        p, conf = readout(self.model, self.posterior(identity))
+        if self.confidence == "count":
+            b = self.beliefs.get(identity) if identity is not None else None
+            n = b.n if b is not None else 0.0
+            conf = n / (n + 2.0)
+        return p, conf
 
     def p_collision(self, identity: str | None, kind: str) -> tuple[float, float]:
         if kind != "person":

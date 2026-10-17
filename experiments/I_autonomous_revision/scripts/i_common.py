@@ -88,7 +88,8 @@ def _build(spec: dict):
         from g_common import _STATE
         return Revising(_STATE["predictor"], A0["lam_c"] * scale, A0["lam_s"],
                         make_regulator(A0["regulator"], A0["params"]), type_model(spec["type_model"]),
-                        spec.get("lam", 0.0), spec.get("explore"), name=spec.get("label", "I"))
+                        spec.get("lam", 0.0), spec.get("explore"), name=spec.get("label", "I"),
+                        confidence=spec.get("confidence", "entropy"))
     if spec["kind"] == "oracle":
         pol = make_policy({**A0, "lam_c": A0["lam_c"] * scale, "memory": {"model": "M0", "evidence": "all"}})
         base_begin = pol.begin_lifetime
