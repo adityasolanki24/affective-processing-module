@@ -1,0 +1,66 @@
+{
+ "systems": {
+  "T_A0": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M0",
+     "evidence": "all"
+    }
+   },
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+   "lam": 0.0007208233903943412
+  },
+  "T_B0": {
+   "kind": "observer",
+   "driver": {
+    "kind": "b0"
+   },
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+   "lam": 0.0007208233903943412
+  },
+  "T_cautious": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M0",
+     "evidence": "all"
+    },
+    "lam_c_scale": 2.0
+   },
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+   "lam": 0.0007208233903943412
+  },
+  "T_R1": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "static",
+    "params": {},
+    "lam_c": 2.507591,
+    "lam_s": 1.513288
+   },
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+   "lam": 0.0007208233903943412
+  }
+ },
+ "_note": "J2-T experience: four drivers, passive programme-I memory (EU-I) for logging only"
+}

@@ -3,6 +3,10 @@
 
 Systems: every spec `i_common.build` accepts, plus
 - `{"kind": "decay_only", "type_model": ..., "lam": λ, "freeze_after_s": T}`: `apm_transfer.controls.DecayOnly`;
+- `{"kind": "revising_x", "type_model": ..., "lam": λ}`: decision A's rule with `RevisionMemoryX` (conditioned or
+  unconditional codings);
+- `{"kind": "observer", "driver": <spec>, "type_model": ..., "lam": λ}`: the driver acts; a `RevisionMemoryX` learns
+  passively;
 - `"stress"`-dependent wrappers (J2), applied by `run_job` from `job["condition"]`.
 
 Encounter rows keep programme I's first 11 columns, so `i_metrics` works unchanged. They then add:
@@ -42,6 +46,20 @@ SEEDS = _seeds()
 
 
 def build(spec: dict):
+    if spec["kind"] == "b0":
+        from g_common import make_policy
+        return make_policy(spec)
+    if spec["kind"] == "revising_x":
+        from g_common import _STATE
+
+        from apm_transfer.conditioned import RevisingX
+        return RevisingX.make(_STATE["predictor"], A0["lam_c"] * spec.get("lam_c_scale", 1.0), A0["lam_s"],
+                              make_regulator(A0["regulator"], A0["params"]), type_model(spec["type_model"]),
+                              spec["lam"], name=spec.get("label", "IX"))
+    if spec["kind"] == "observer":
+        from apm_transfer.conditioned import Observer, RevisionMemoryX
+        m = type_model(spec["type_model"])
+        return Observer(build(spec["driver"]), lambda: RevisionMemoryX(m, spec["lam"]))
     if spec["kind"] == "decay_only":
         from g_common import _STATE
         return DecayOnly(_STATE["predictor"], A0["lam_c"], A0["lam_s"], make_regulator(A0["regulator"], A0["params"]),
