@@ -7,4 +7,6 @@
 | J3 | which NERVA signals carry dense evidence? | NERVA encounter world, T/V | — | information ≥ 5× binary; EM K ≥ 2 | — | **done**: gate passed on J3-T after two disclosed pilots (`prereg/J3_ADDENDUM.md`) |
 | J4 | revisable experience on NERVA | paired lifetimes | H A0, type-belief, cumulative (+ recurrent only if needed) | J4 addendum | J3 gate | **done**: fails C2, C3; recurrent baseline triggered, no rescue (`reports/J4_REPORT.md`) |
 | J5 | closed-loop expressive development | NERVA closed loop | L0 fixed mapping + memory, ablations | the six loop questions | J3 gate (run before J4: bank lost) | **done**: loop not demonstrated (Q3, Q4 fail; `reports/J5_REPORT.md`) |
-| J6 | does expression need learning? | J5 world | L0, small learned, residual, recurrent | J6 addendum | J5 (failed: exploratory, D2, D3) | running |
+| J6 | does expression need learning? | J5 world | L0, small learned, residual, recurrent | J6 addendum | J5 (failed: exploratory, D2, D3) | **done**: value mapping beats L0, recurrent adds nothing, pushy → calm still fails (`reports/J6_REPORT.md`) |
+
+**Phase 4:** decision **E**. Keep explicit memory + L0; B is the candidate for a confirmatory study (`reports/FINAL_REPORT.md`).

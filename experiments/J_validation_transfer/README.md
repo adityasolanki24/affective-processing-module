@@ -14,7 +14,11 @@ The programme does three things:
 | `reports/` | phase reports, `COMPUTE_LOG.md`, the final recommendation |
 | `seeds.py` | the only source of J world seeds |
 | `scripts/` | `j_common.py`/`j_run.py` (wheeled runner), `j1_*` (J1), and later `j2_*`, `j3_*`, … |
+| `figures/`, `videos/`, `manifests/` | behavioural plots; paired NERVA videos; raw-data hashes |
 | `cloud/` | `jcloud.py` + `runner.sh`: capped spot VMs with a bucket job queue (no SSH: the organization enforces OS Login) |
+
+**Status (2026-10-18): done.** Decision **E**: insufficient evidence to change the architecture, so the simpler
+baseline is kept. Start from `reports/FINAL_REPORT.md`; also see `figures/` and `videos/`.
 
 **Code:** `src/apm_transfer/`, a removable package. It builds on `apm_revise` and `apm_express` without changing them.
 
