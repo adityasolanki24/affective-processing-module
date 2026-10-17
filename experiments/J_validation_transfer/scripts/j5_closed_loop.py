@@ -133,8 +133,7 @@ def main() -> None:
     ap.add_argument("--lam", type=float, required=True)
     ap.add_argument("--systems", default="CL,FROZEN,NOMEM,NOFEEDBACK,RANDHIST,H_MEM")
     ap.add_argument("--histories", default="risky_B,change_B,late_B,safe")
-    ap.add_argument("--channels", default=str(HERE.parent / "H_expressive_intelligence" / "results" / "H0" / "X"
-                                              / "admitted_interface.json"))
+    ap.add_argument("--channels", default=str(HERE / "configs" / "H_admitted_interface.json"))
     ap.add_argument("--workers", type=int, default=cpu_count())
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()

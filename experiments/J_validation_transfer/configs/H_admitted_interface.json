@@ -1,0 +1,22 @@
+{
+ "interface": {
+  "policy": "neutral",
+  "min_dwell_s": 0.4,
+  "pitch": false,
+  "head": true,
+  "head_pitch_range": [
+   -0.4,
+   0.4
+  ],
+  "head_yaw_range": [
+   -0.4,
+   0.4
+  ],
+  "head_rate": 0.75,
+  "joint_margin_rad": 0.02,
+  "saturation_steps": 25
+ },
+ "_source": "experiments/H_expressive_intelligence/results/H0/X/admitted_interface.json",
+ "_source_sha256_local": "6ac796b896b805a45a40d0040c55dd7c981a90ebe30caa43b8aaa2435dc1e0a9",
+ "_note": "frozen copy of programme H's admitted interface (H0); J uses it read-only"
+}
