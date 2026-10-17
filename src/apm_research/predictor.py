@@ -26,8 +26,8 @@ class ActionPredictor:
     def __init__(self, inputs: int, hidden: int = 64, seed: int = 0):
         self.inputs, self.hidden, self.seed = inputs, hidden, seed
         self.weights: list[tuple[np.ndarray, np.ndarray]] = []
-        self.mean = np.zeros(inputs, dtype=np.float32)
-        self.scale = np.ones(inputs, dtype=np.float32)
+        self.mean: np.ndarray = np.zeros(inputs, dtype=np.float32)
+        self.scale: np.ndarray = np.ones(inputs, dtype=np.float32)
         self.history: list[dict] = []
 
     @property
@@ -120,7 +120,8 @@ class EnsemblePredictor:
 
     def predict(self, X: np.ndarray, A: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         outs = [m.predict(X, A) for m in self.members]
-        return tuple(np.mean([o[i] for o in outs], axis=0) for i in range(3))
+        pc, ps, pr = (np.mean([o[i] for o in outs], axis=0) for i in range(3))
+        return pc, ps, pr
 
     def predict_actions(self, x: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         X = np.repeat(np.asarray(x, dtype=np.float32)[None], N_ACTIONS, 0)

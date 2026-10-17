@@ -24,7 +24,19 @@
   stable expectations and tendencies in the same situation?
   - Requires multiple runs; a single anecdote is not evidence.
 
-## Status (2026-10-11)
+## Status (2026-10-17, after programmes F, G and H)
+
+| RQ | result |
+|---|---|
+| RQ1 portability | **demonstrated** in simulation (Milestone D; the H expressive layer also ran on a biped and a wheeled base) |
+| RQ2 learning | **demonstrated for consequence prediction:** G's predictor ensemble is the core of decision A. **Not demonstrated for deployment-time weight learning:** G7's promotion gate blocked every update |
+| RQ3 affect | **PAD falsified as useful:** no predictive information (F E1), harmful in closed loop under equal tuning (G1/G9: +99% avoidable collisions). An EMA risk filter does PAD's job better |
+| RQ4 transfer | **not demonstrated** (D TR2); the software architecture transfers, learned weights do not |
+| RQ5 persistent affect | persistence comes from explicit memory and a scalar filter; no recurrent latent beat them (G3, H3) |
+| RQ6 dispositions | **demonstrated in simulation** (H4b/H8): identical robots with different histories behave reliably differently (history recovered from motion 98–100%). **Revision after the world changes is slow**, because avoidance censors evidence (F E3, G2): this is the open problem |
+| RQ7 expressive legibility (added in H) | **untested** with participants; a researcher self-pilot was negative |
+
+## Status at the end of v0.1 (2026-10-11, superseded above)
 
 | RQ | result |
 |---|---|

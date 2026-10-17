@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from typing import Union
 
 import numpy as np
 import torch
@@ -90,6 +91,9 @@ class B4Net(nn.Module):
         return self.pi(h), self.value(h).squeeze(1), h
 
 
+RecurrentNet = Union["B3Net", "B4Net"]
+
+
 def parameters(net: nn.Module) -> int:
     return int(sum(p.numel() for p in net.parameters()))
 
@@ -102,7 +106,7 @@ def b4_hidden(target: int, scale: float = 1.0) -> int:
     raise ValueError(target)
 
 
-def make_net(spec: dict) -> nn.Module:
+def make_net(spec: dict) -> RecurrentNet:
     if spec["kind"] == "B3":
         return B3Net(B3Config(**spec.get("b3", {})))
     return B4Net(spec["hidden"])
@@ -113,7 +117,7 @@ class LearnedPolicy(FeaturePolicy):
     greedy at evaluation. Evaluation-only controls: `shuffle_identity` (memory inputs permuted across the tracked
     people each decision), `reset_every_decision` (history reset)."""
 
-    def __init__(self, net: nn.Module, predictor, lam_c: float, lam_s: float, sample: bool = False,
+    def __init__(self, net: RecurrentNet, predictor, lam_c: float, lam_s: float, sample: bool = False,
                  seed: int | np.random.SeedSequence = 0, persistent: bool = True, memory_features: bool = True,
                  shuffle_identity: bool = False, reset_every_decision: bool = False, name: str = "learned"):
         self.net, self.predictor, self.lam_c, self.lam_s = net, predictor, lam_c, lam_s
@@ -218,7 +222,7 @@ def gae(rewards: np.ndarray, values: np.ndarray, gamma: float = 0.99, lam: float
     return adv, adv + values
 
 
-def ppo_update(net: nn.Module, opt: torch.optim.Optimizer, batch: list[dict], epochs: int = 4, clip: float = 0.2,
+def ppo_update(net: RecurrentNet, opt: torch.optim.Optimizer, batch: list[dict], epochs: int = 4, clip: float = 0.2,
                ent: float = 0.01, vf: float = 0.5, max_norm: float = 0.5) -> dict:
     """Full-sequence recurrent PPO over lifetimes (all lifetimes in a batch have equal length)."""
     Z = torch.from_numpy(np.stack([b["z"] for b in batch]))       # [B, T, IN]
