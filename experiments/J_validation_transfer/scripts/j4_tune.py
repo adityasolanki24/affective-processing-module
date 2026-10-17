@@ -61,6 +61,7 @@ def main() -> None:
     edges = json.loads(a.edges.read_text())["acc8"]
     scores = {lam: score(lam, bank, edges, model, a.n, a.seed) for lam in GRID}
     best = max(scores, key=scores.get)
+    a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps({"grid": list(GRID), "objective": {str(k): v for k, v in scores.items()},
                                  "selected": best}, indent=1), encoding="utf-8")
     print({k: round(v, 4) for k, v in scores.items()}, "selected", best)

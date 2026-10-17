@@ -47,3 +47,19 @@ def test_histories():
     assert entity_type("late_B", "B1", "plain", 30, rng) == "pushy"
     assert entity_type("zone_B", "A1", "marked", 3, rng) == "pushy"
     assert entity_type("zone_B", "B1", "plain", 3, rng) == "calm"
+
+
+def test_gru_memory_is_per_identity_and_starts_at_its_prior():
+    from apm_transfer.nerva_memory import GruMemory
+    rng = np.random.default_rng(0)
+    H = 4
+    w = {"weight_ih": rng.normal(size=(3 * H, 13)).tolist(), "weight_hh": rng.normal(size=(3 * H, H)).tolist(),
+         "bias_ih": np.zeros(3 * H).tolist(), "bias_hh": np.zeros(3 * H).tolist(),
+         "out_w": rng.normal(size=(1, H)).tolist(), "out_b": [0.3]}
+    m = GruMemory(w)
+    prior = m.readout(Probe("B1", "B", "plain"))
+    assert abs(prior.p - 1 / (1 + np.exp(-0.3))) < 1e-9 and prior.u == 1.0
+    m.observe(ObsX("B1", "B", "plain", 1.0, 2.0, 7))
+    assert m.readout(Probe("B1", "B", "plain")).p != prior.p
+    assert m.readout(Probe("B3", "B", "plain")).p == prior.p  # no pooling: an unmet identity keeps the prior
+    assert m.readout(Probe("B1", "B", "plain")).u == 0.5

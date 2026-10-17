@@ -33,7 +33,7 @@ sys.path.insert(0, str(REPO / "src"))
 from apm.learning.evaluation import auroc  # noqa: E402
 from apm_select.survival import km_bootstrap  # noqa: E402
 
-MEMS = ("H_A0", "count", "type", "type_kind")
+MEMS_ALL = ("H_A0", "count", "type", "type_kind", "gru")  # gru: recurrent baseline, if the lifetimes have it
 SWITCH_CP, HORIZON = 4, 4  # first post-switch checkpoint index; checkpoints after the switch
 
 
@@ -56,9 +56,14 @@ def paired_diff(a: list[float], b: list[float], n_boot: int = 5000) -> dict:
     return {"estimate": float(d.mean()), "ci95": [float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5))]}
 
 
+def memories(data: dict) -> list[str]:
+    have = next(iter(data["safe"].values()))["probes"]
+    return [m for m in MEMS_ALL if m in have]
+
+
 def calibrate(data: dict) -> dict:
     out = {}
-    for m in MEMS:
+    for m in memories(data):
         mu_p = float(np.mean([end(r, m) for r in data["risky_B"].values()]))
         mu_c = float(np.mean([end(r, m) for r in data["safe"].values()]))
         out[m] = {"mu_pushy": mu_p, "mu_calm": mu_c, "threshold": (mu_p + mu_c) / 2, "gap": mu_p - mu_c}
@@ -95,7 +100,7 @@ def cmd_test(a) -> None:
     cal = json.loads(a.calibration.read_text())
     keys = sorted(set(data["risky_B"]) & set(data["safe"]))
     res: dict = {"memories": {}}
-    for m in MEMS:
+    for m in memories(data):
         c = cal[m]
         risky = [end(data["risky_B"][i], m) for i in keys]
         safe = [end(data["safe"][i], m) for i in keys]
@@ -120,6 +125,25 @@ def cmd_test(a) -> None:
                 for pa, pb in zip(cp_a, cp_b, strict=True):
                     diffs += [abs(x - y) for x, y in zip(pa, pb, strict=True)]
     res["restart_max_abs_diff"] = float(max(diffs))
+    # J4 addendum criteria
+    def caution_eff(m: str) -> np.ndarray:
+        return np.array([end(data["risky_B"][i], m, 0, 3) - end(data["safe"][i], m, 0, 3) for i in keys])
+    ref = caution_eff("H_A0")
+    crit: dict = {}
+    for m, s in res["memories"].items():
+        c = {"C1": s["history_auroc"] >= 0.90,
+             "C3": all(s[k]["median"] <= 2 for k in ("revision_change_B", "revision_late_B")),
+             "C4": res["restart_max_abs_diff"] == 0.0 if m == "type_kind" else None,
+             "C5": s["false_attribution_normalised"] is not None and s["false_attribution_normalised"] <= 0.5}
+        if m != "H_A0":
+            s["c2_caution_effect_minus_H_A0"] = d = paired_diff(list(caution_eff(m)), list(ref))
+            c["C2"] = d["ci95"][0] >= -0.05
+        crit[m] = c
+    tk = crit["type_kind"]
+    res["criteria"] = crit
+    res["J4_pass"] = bool(tk["C1"] and tk["C2"] and tk["C3"] and tk["C4"])
+    res["recurrent_triggered"] = (not all(crit["H_A0"][k] for k in ("C1", "C3"))
+                                  and not all(tk[k] for k in ("C1", "C3", "C4")))
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
     for m, s in res["memories"].items():
@@ -128,6 +152,9 @@ def cmd_test(a) -> None:
               f"{s['generalisation_B3']['estimate']:+.3f} rev change {s['revision_change_B']['median']} late "
               f"{s['revision_late_B']['median']} zone-norm {s['false_attribution_normalised']}")
     print("restart max |diff|", res["restart_max_abs_diff"])
+    for m, c in res["criteria"].items():
+        print(m, c)
+    print("J4 pass", res["J4_pass"], "recurrent baseline triggered", res["recurrent_triggered"])
 
 
 def cmd_calibrate(a) -> None:

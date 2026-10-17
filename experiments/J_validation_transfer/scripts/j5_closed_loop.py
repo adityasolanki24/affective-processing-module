@@ -32,6 +32,7 @@ J6 systems (same loop; `--j6-model` gives the time model and price; `--gru` the 
 | `LEARNED` | `expression_map.utility_intent` from the type posterior |
 | `RESIDUAL` | L0, with its proximity adjusted by the same utility |
 | `GRU` | `expression_map.GruMapping` over the entity's own evidence history (no explicit memory used for the choice) |
+| `LEARNED_V`, `RESIDUAL_V`, `GRU_V` | as above, with `--j6-model-v` (price, proximity value) and `--gru-v` (D3) |
 
 Per encounter, logged:
 - the entity, its type (truth) and the readout before the encounter;
@@ -107,8 +108,12 @@ def job(args: tuple) -> dict:
     shuffle = np.random.default_rng(base + 1)
     explore = np.random.default_rng(base + 2)
     tm = TimeModel(j6["time_coef"]) if j6.get("time_coef") else None
+    label = system
+    j6p = j6.get("v", {}) if system.endswith("_V") else j6
+    system = system.removesuffix("_V")
+    price, value = j6p.get("price", 0.0), j6p.get("value", 0.0)
     ps = strong_prob(model) if system in ("LEARNED", "RESIDUAL") else None
-    gru = GruMapping(json.loads(Path(j6["gru"]).read_text())) if system == "GRU" else None
+    gru = GruMapping(json.loads(Path(j6p["gru"]).read_text())) if system == "GRU" else None
     hidden = {e[0]: gru.init() for e in ENTITIES} if gru else {}
     rows = []
     t0 = time.time()
@@ -122,10 +127,10 @@ def job(args: tuple) -> dict:
             intent = GRID[grid_i]
         elif system == "LEARNED":
             assert tm is not None and ps is not None and post is not None
-            grid_i, intent = utility_intent(post, tm, ps, j6["price"])
+            grid_i, intent = utility_intent(post, tm, ps, price, value)
         elif system == "RESIDUAL":
             assert tm is not None and ps is not None and post is not None
-            intent = residual_intent(post, lookup_intent(rd), tm, ps, j6["price"])
+            intent = residual_intent(post, lookup_intent(rd), tm, ps, price, value)
         elif system == "GRU":
             assert gru is not None
             grid_i = gru.choose(hidden[ident])
@@ -163,7 +168,7 @@ def job(args: tuple) -> dict:
                      "contacts_dwell": truth["contacts_dwell"], "max_push": truth["max_push"],
                      "arrived": out["arrived"], "t_arrive": out["t_arrive"], "trips": out["trips"],
                      "fell": out["fell"]})
-    return {"partition": partition, "index": index, "history": history, "system": system, "rows": rows,
+    return {"partition": partition, "index": index, "history": history, "system": label, "rows": rows,
             "wall_s": round(time.time() - t0, 1)}
 
 
@@ -180,6 +185,8 @@ def main() -> None:
     ap.add_argument("--channels", default=str(HERE / "configs" / "H_admitted_interface.json"))
     ap.add_argument("--j6-model", default="", help="J6: json with time_coef and price")
     ap.add_argument("--gru", default="", help="J6: GRU weights json")
+    ap.add_argument("--j6-model-v", default="", help="J6 (D3): json with time_coef, price and proximity value")
+    ap.add_argument("--gru-v", default="", help="J6 (D3): GRU weights imitating the value mapping")
     ap.add_argument("--workers", type=int, default=cpu_count())
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
@@ -187,6 +194,9 @@ def main() -> None:
     j6 = json.loads(Path(a.j6_model).read_text()) if a.j6_model else {}
     if a.gru:
         j6["gru"] = a.gru
+    if a.j6_model_v:
+        j6["v"] = json.loads(Path(a.j6_model_v).read_text())
+        j6["v"]["gru"] = a.gru_v
     jobs = [(a.partition, a.first + i, h, s, a.types_model, a.edges, a.lam, channels, j6)
             for i in range(a.n) for h in a.histories.split(",") for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)

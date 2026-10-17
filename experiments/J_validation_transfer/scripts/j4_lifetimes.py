@@ -16,7 +16,8 @@ NERVA's own sensors:
 - `H_A0`: H's `EntityMemory` (kind pools, Beta on y);
 - `count`: a per-identity Beta on y, without pools (simple statistical baseline);
 - `type`: `TypeStateModel`, NERVA-fitted, no pooling;
-- `type_kind`: as `type`, with kind pooling.
+- `type_kind`: as `type`, with kind pooling;
+- `gru` (with `--gru`): the recurrent baseline `nerva_memory.GruMemory`, trained on V by `j4_gru.py`.
 
 **Probes** every 6 encounters: identities B1 and A1 (plain zone), B1 (marked zone), and the novel B3 (plain). Each
 gives (p, u, g) and the L0 caution.
@@ -40,7 +41,14 @@ sys.path.insert(0, str(REPO / "src"))
 from apm_express.states import BASE, EntityMemory, Probe, StateModel, caution  # noqa: E402
 from apm_revise.belief import TypeModel  # noqa: E402
 from apm_select.memory import Cumulative  # noqa: E402
-from apm_transfer.nerva_memory import HISTORIES, N_ENCOUNTERS, ObsX, TypeStateModel, lifetime_types  # noqa: E402
+from apm_transfer.nerva_memory import (  # noqa: E402
+    HISTORIES,
+    N_ENCOUNTERS,
+    GruMemory,
+    ObsX,
+    TypeStateModel,
+    lifetime_types,
+)
 
 PROBES = (("B1", "B", "plain"), ("A1", "A", "plain"), ("B1", "B", "marked"), ("B3", "B", "plain"))
 EVERY = 6
@@ -85,12 +93,14 @@ def code(ev: list, edges: list[float]) -> int:
 
 
 def run_lifetime(i: int, history: str, bank: dict, edges: list[float], model: TypeModel, lam: float,
-                 seed: int) -> dict:
+                 seed: int, gru: dict | None = None) -> dict:
     rng = np.random.default_rng([seed, i])
     seq = lifetime_types(history, np.random.default_rng([seed, i, 1]))
     mems: dict[str, StateModel] = {"H_A0": EntityMemory(), "count": CountMemory(),
                                    "type": TypeStateModel(model, lam), "type_kind": TypeStateModel(model, lam, True),
                                    "type_kind_restart": TypeStateModel(model, lam, True)}
+    if gru is not None:
+        mems["gru"] = GruMemory(gru)
     draws = rng.random(N_ENCOUNTERS)
     probes: dict[str, list] = {m: [] for m in mems}
     obs_log = []
@@ -130,16 +140,23 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=20261018)
     ap.add_argument("--histories", default=",".join(HISTORIES))
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--gru", type=Path, default=None, help="recurrent baseline weights (j4_gru.py)")
+    ap.add_argument("--addendum", default="", help="confirmatory run: committed addendum (clean tree required)")
     a = ap.parse_args()
+    if a.addendum:
+        from apm_transfer.provenance import confirmatory_lock, write_json
+        write_json(a.out.with_suffix(".meta.json"), {"provenance": confirmatory_lock(HERE / "prereg" / a.addendum),
+                                                     "args": {k: str(v) for k, v in vars(a).items()}})
     lo, hi = (int(x) for x in a.rows.split(":"))
     bank = load_bank(a.bank, (lo, hi))
     model = TypeModel.from_dict(json.loads(a.types_model.read_text()))
     edges = json.loads(a.edges.read_text())["acc8"]
+    gru = json.loads(a.gru.read_text()) if a.gru else None
     a.out.parent.mkdir(parents=True, exist_ok=True)
     with open(a.out, "w", encoding="utf-8") as fh:
         for h in a.histories.split(","):
             for i in range(a.first, a.first + a.n):
-                fh.write(json.dumps(run_lifetime(i, h, bank, edges, model, a.lam, a.seed)) + "\n")
+                fh.write(json.dumps(run_lifetime(i, h, bank, edges, model, a.lam, a.seed, gru)) + "\n")
     print("done", a.out)
 
 

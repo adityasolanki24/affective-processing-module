@@ -84,3 +84,13 @@ def test_readout_batches_match_single_calls():
     shares = ro.careful_shares([(0.0, 0.5), (0.9, 0.5)])
     assert shares == [ro.careful_share(0.0, 0.5), ro.careful_share(0.9, 0.5)]
     assert shares[0] == 0.0 and shares[1] == 1.0
+
+
+def test_utility_mapping_needs_a_proximity_value_to_depend_on_belief():
+    from apm_transfer.expression_map import GRID, TimeModel, utility_intent
+    tm = TimeModel([20.0, 10.0, -17.0, -1.5, 6.5])  # nearer is slower, faster tempo is quicker (as fitted in J6-T)
+    ps = np.array([[0.13, 0.11, 0.11], [0.61, 0.45, 0.23]])  # P(strong | type, band); band 0 = nearest
+    picks = {utility_intent(np.array([1 - b, b]), tm, ps, 10.0)[0] for b in (0.0, 0.5, 1.0)}
+    assert len(picks) == 1 and GRID[picks.pop()].proximity == 0.0  # no value: always far, for every belief
+    near = [GRID[utility_intent(np.array([1 - b, b]), tm, ps, 40.0, 5.0)[0]].proximity for b in (0.0, 1.0)]
+    assert near[0] > near[1]  # with a proximity value, a riskier belief stops further away

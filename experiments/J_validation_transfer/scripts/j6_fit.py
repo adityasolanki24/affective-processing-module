@@ -15,6 +15,10 @@
 
 The GRU sees only raw evidence, never the explicit memory. It tests whether a recurrent state can replace explicit
 memory plus mapping.
+
+3. **Value mapping (DEVIATIONS D3).** With price 10 and no proximity value, `utility_intent` chooses the same intent
+   for every belief, so the GRU's targets are constant. `J6_model_v.json` adds `--v-price` and `--v-value` (the task's
+   proximity value), and a second GRU is trained on that mapping's targets → `J6_gru_v.json`.
 """
 from __future__ import annotations
 
@@ -42,6 +46,8 @@ def main() -> None:
     ap.add_argument("--types-model", type=Path, required=True)
     ap.add_argument("--price", type=float, default=10.0)
     ap.add_argument("--out-dir", type=Path, required=True)
+    ap.add_argument("--v-price", type=float, default=40.0)
+    ap.add_argument("--v-value", type=float, default=5.0)
     a = ap.parse_args()
     lifetimes = [json.loads(x) for x in a.runs.read_text(encoding="utf-8").splitlines()]
     base = NEUTRAL.as_dict()
@@ -59,9 +65,17 @@ def main() -> None:
     for price, name in ((a.price, "J6_model.json"), (5.0, "J6_model_price5.json"), (20.0, "J6_model_price20.json")):
         (a.out_dir / name).write_text(json.dumps({"time_coef": tm.coef, "price": price, "r2": float(r2),
                                                   "encounters": len(times)}, indent=1), encoding="utf-8")
+    (a.out_dir / "J6_model_v.json").write_text(json.dumps({"time_coef": tm.coef, "price": a.v_price,
+                                                         "value": a.v_value, "r2": float(r2),
+                                                         "encounters": len(times)}, indent=1), encoding="utf-8")
     print("time model", np.round(tm.coef, 3), "R2", round(float(r2), 3), "n", len(times))
-    # GRU training data
     model = TypeModel.from_dict(json.loads(a.types_model.read_text()))
+    for price, value, name in ((a.price, 0.0, "J6_gru.json"), (a.v_price, a.v_value, "J6_gru_v.json")):
+        train_gru(lifetimes, tm, model, price, value, a.out_dir / name)
+
+
+def train_gru(lifetimes: list[dict], tm: TimeModel, model: TypeModel, price: float, value: float,
+              out_path: Path) -> None:
     ps = strong_prob(model)
     seqs: list[tuple[np.ndarray, np.ndarray]] = []
     split = []
@@ -74,7 +88,7 @@ def main() -> None:
         for rows in per.values():
             xs, ys = [np.zeros(13)], []
             for r in rows:
-                ys.append(utility_intent(np.asarray(r["post"]), tm, ps, a.price)[0])
+                ys.append(utility_intent(np.asarray(r["post"]), tm, ps, price, value)[0])
                 obs = r.get("observable", True)
                 xs.append(gru_input(r["category"] if obs else None, r["band"], r["detected"]))
             # input at step t = evidence from meetings before t (a zero vector before the first meeting)
@@ -92,7 +106,8 @@ def main() -> None:
             h = torch.zeros(1, H)
             loss = torch.zeros(())
             for t in range(len(y)):
-                h = cell(torch.tensor(x[t:t + 1], dtype=torch.float32), h)
+                if t > 0:  # as at run time: the first choice is from h = 0, then one step per earlier meeting
+                    h = cell(torch.tensor(x[t:t + 1], dtype=torch.float32), h)
                 logits = out(h)
                 loss = loss + torch.nn.functional.cross_entropy(logits, torch.tensor([int(y[t])]))
                 correct += int(logits.argmax().item() == int(y[t]))
@@ -119,9 +134,12 @@ def main() -> None:
                           "out_w": out.weight.detach().numpy().tolist(), "out_b": out.bias.detach().numpy().tolist()})
     assert best[1] is not None
     w = {**best[1], "val_accuracy": best[0], "sequences": len(seqs), "hidden": H}
-    (a.out_dir / "J6_gru.json").write_text(json.dumps(w), encoding="utf-8")
-    base_rate = float(np.mean([np.mean(y == np.bincount(np.concatenate([s[1] for s in tr])).argmax()) for _, y in va]))
-    print("GRU val accuracy", round(best[0], 3), "majority-class baseline", round(base_rate, 3), "sequences", len(seqs))
+    w["majority_baseline"] = base_rate = float(np.mean([np.mean(y == np.bincount(np.concatenate([s[1] for s in tr]))
+                                                               .argmax()) for _, y in va]))
+    w["target_classes"] = sorted({int(c) for _, y in seqs for c in y})
+    out_path.write_text(json.dumps(w), encoding="utf-8")
+    print(out_path.name, "GRU val accuracy", round(best[0], 3), "majority-class baseline", round(base_rate, 3),
+          "classes", w["target_classes"], "sequences", len(seqs))
 
 
 if __name__ == "__main__":

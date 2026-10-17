@@ -126,3 +126,35 @@ class TypeStateModel(StateModel):
     def load_state(self, s: dict) -> None:
         self.b = {k: np.asarray(v, float) for k, v in s["b"].items()}
         self.k, self.kinds, self.n, self.g = dict(s["k"]), dict(s["kinds"]), int(s["n"]), float(s["g"])
+
+
+class GruMemory(StateModel):
+    """J4's recurrent baseline: per identity, a small GRU state over that identity's own evidence (acc8 category,
+    detected). Readout p = σ(w·h + b), the predicted chance that the next meeting perturbs the robot. It is trained
+    self-supervised on V lifetimes (`j4_gru.py`: predict the identity's next detection), with no type labels, no type
+    model and no kind pooling. A new identity starts from h = 0. u = 1 / (1 + meetings); g = H's global EMA."""
+
+    name = "gru"
+
+    def __init__(self, weights: dict):
+        from apm_transfer.expression_map import GruMapping
+        self.net = GruMapping(weights)
+        self.reset()
+
+    def reset(self) -> None:
+        self.h: dict[str, np.ndarray] = {}
+        self.n: dict[str, int] = {}
+        self.g = BASE
+
+    def observe(self, ob: Obs) -> None:
+        from apm_transfer.expression_map import gru_input
+        cat = int(getattr(ob, "category", 0)) % 8
+        h = self.h.get(ob.identity, self.net.init())
+        self.h[ob.identity] = self.net.step(h, gru_input(cat, 1, bool(ob.y)))
+        self.n[ob.identity] = self.n.get(ob.identity, 0) + 1
+        self.g += 0.15 * (ob.y - self.g)
+
+    def readout(self, probe: Probe) -> Readout:
+        h = self.h.get(probe.identity, self.net.init())
+        z = float((self.net.Wo @ h + self.net.bo)[0])
+        return Readout(1.0 / (1.0 + math.exp(-z)), 1.0 / (1 + self.n.get(probe.identity, 0)), self.g)

@@ -9,8 +9,11 @@
 Nothing here uses simulator truth or any emotional label as a target.
 
 **Mappings** (all choose from the same small intent grid; other channels as in the neutral style):
-- `utility_intent(b)`: argmin over the grid of E[time | intent] + price · Σ_k b_k P(strong | k, band(intent)). This is
-  a decision-theoretic expression mapping, with the price as an explicit design value (seconds per strong push);
+- `utility_intent(b)`: argmin over the grid of E[time | intent] + price · Σ_k b_k P(strong | k, band(intent))
+  + value · max(0, d(intent) − D_TASK) / 0.1. This is a decision-theoretic expression mapping. The price (seconds per
+  strong push) and the proximity value (seconds per 0.1 m that the robot stops short of `D_TASK`, i.e. how much the
+  task needs the robot to come close) are explicit design values. With value = 0, nothing rewards approaching, and
+  stopping far and fast is optimal for every belief (J6 finding; DEVIATIONS D3);
 - `residual_intent(b, l0)`: L0's intent with only its proximity adjusted by δ ∈ {−0.3, …, +0.3}, by the same utility;
 - `GruMapping`: a small GRU (numpy inference) over the entity's own evidence history (acc8 category, distance band,
   detected) that outputs a grid intent. It is trained by `j6_train_gru.py` to imitate `utility_intent` from raw
@@ -30,6 +33,7 @@ from apm_express.styles import NEUTRAL
 from apm_revise.belief import TypeModel
 
 STRONG = 6
+D_TASK = 0.3  # m: the task's preferred stopping distance for the proximity value
 DIST_EDGES = (0.3, 0.5)
 PROXIMITY = (0.0, 0.25, 0.5, 0.75, 1.0)
 TEMPO = (0.5, 1.0)
@@ -46,7 +50,7 @@ GRID = grid()
 
 
 def band_of(proximity: float) -> int:
-    return int(np.searchsorted(DIST_EDGES, D_FAR - (D_FAR - D_NEAR) * proximity))
+    return int(np.searchsorted(DIST_EDGES, stop_distance(proximity)))
 
 
 def strong_prob(model: TypeModel, bands: int = 3, C: int = 8) -> np.ndarray:
@@ -73,23 +77,30 @@ class TimeModel:
         return cls(coef.tolist())
 
 
-def expected_cost(it: ExpressionIntent, b: np.ndarray, tm: TimeModel, ps: np.ndarray, price: float) -> float:
-    return tm.predict(it) + price * float(b @ ps[:, band_of(it.proximity)])
+def stop_distance(proximity: float) -> float:
+    return D_FAR - (D_FAR - D_NEAR) * proximity
 
 
-def utility_intent(b: np.ndarray, tm: TimeModel, ps: np.ndarray, price: float) -> tuple[int, ExpressionIntent]:
-    costs = [expected_cost(it, b, tm, ps, price) for it in GRID]
+def expected_cost(it: ExpressionIntent, b: np.ndarray, tm: TimeModel, ps: np.ndarray, price: float,
+                  value: float = 0.0) -> float:
+    shortfall = max(0.0, stop_distance(it.proximity) - D_TASK) / 0.1
+    return tm.predict(it) + price * float(b @ ps[:, band_of(it.proximity)]) + value * shortfall
+
+
+def utility_intent(b: np.ndarray, tm: TimeModel, ps: np.ndarray, price: float,
+                   value: float = 0.0) -> tuple[int, ExpressionIntent]:
+    costs = [expected_cost(it, b, tm, ps, price, value) for it in GRID]
     i = int(np.argmin(costs))
     return i, GRID[i]
 
 
 def residual_intent(b: np.ndarray, l0: ExpressionIntent, tm: TimeModel, ps: np.ndarray,
-                    price: float) -> ExpressionIntent:
+                    price: float, value: float = 0.0) -> ExpressionIntent:
     best, best_c = l0, math.inf
     base = l0.as_dict()
     for d in (-0.3, -0.15, 0.0, 0.15, 0.3):
         it = ExpressionIntent(**{**base, "proximity": float(np.clip(l0.proximity + d, 0.0, 1.0))}).sanitized()
-        c = expected_cost(it, b, tm, ps, price)
+        c = expected_cost(it, b, tm, ps, price, value)
         if c < best_c:
             best, best_c = it, c
     return best
