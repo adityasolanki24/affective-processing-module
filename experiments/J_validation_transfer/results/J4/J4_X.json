@@ -1,0 +1,446 @@
+{
+ "memories": {
+  "H_A0": {
+   "history_effect_p": {
+    "estimate": 0.35302369999999994,
+    "ci95": [
+     0.3248722425,
+     0.38069846749999986
+    ]
+   },
+   "history_effect_caution": {
+    "estimate": 0.3866213,
+    "ci95": [
+     0.357045975,
+     0.41642101875
+    ]
+   },
+   "history_auroc": 0.9416875,
+   "generalisation_B3": {
+    "estimate": 0.31166155,
+    "ci95": [
+     0.28999277875,
+     0.33376181875
+    ]
+   },
+   "revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 3.8280254777070066,
+    "rmst_ci95": [
+     3.7290322580645165,
+     3.911769330373659
+    ],
+    "items": 157,
+    "events": 24,
+    "censored": 133,
+    "lifetimes": 200,
+    "established": 157
+   },
+   "revision_late_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 3.670731707317073,
+    "rmst_ci95": [
+     3.5454545454545454,
+     3.7911460355672904
+    ],
+    "items": 164,
+    "events": 45,
+    "censored": 119,
+    "lifetimes": 200,
+    "established": 164
+   },
+   "false_attribution_zone_B": {
+    "estimate": 0.17026724999999998,
+    "ci95": [
+     0.1486868525,
+     0.19082117874999996
+    ]
+   },
+   "false_attribution_normalised": 0.48231110262568777,
+   "risky_A_specificity_B1": {
+    "estimate": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "count": {
+   "history_effect_p": {
+    "estimate": 0.2865921,
+    "ci95": [
+     0.26159449625,
+     0.31064148374999995
+    ]
+   },
+   "history_effect_caution": {
+    "estimate": 0.3212608,
+    "ci95": [
+     0.2949855025,
+     0.34728274875
+    ]
+   },
+   "history_auroc": 0.923825,
+   "generalisation_B3": {
+    "estimate": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 3.9191176470588234,
+    "rmst_ci95": [
+     3.851832151300236,
+     3.9726027397260273
+    ],
+    "items": 136,
+    "events": 11,
+    "censored": 125,
+    "lifetimes": 200,
+    "established": 136
+   },
+   "revision_late_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 3.658823529411765,
+    "rmst_ci95": [
+     3.5371221069433356,
+     3.774566473988439
+    ],
+    "items": 170,
+    "events": 48,
+    "censored": 122,
+    "lifetimes": 200,
+    "established": 170
+   },
+   "false_attribution_zone_B": {
+    "estimate": 0.13820415,
+    "ci95": [
+     0.11978861125,
+     0.15597295874999997
+    ]
+   },
+   "false_attribution_normalised": 0.4822329366371229,
+   "risky_A_specificity_B1": {
+    "estimate": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "c2_caution_effect_minus_H_A0": {
+    "estimate": -0.0653605,
+    "ci95": [
+     -0.07055900125000002,
+     -0.06013112625000001
+    ]
+   }
+  },
+  "type": {
+   "history_effect_p": {
+    "estimate": 0.24741385000000002,
+    "ci95": [
+     0.23843542625,
+     0.25580101375
+    ]
+   },
+   "history_effect_caution": {
+    "estimate": 0.28208235000000004,
+    "ci95": [
+     0.27129973625,
+     0.2925635875
+    ]
+   },
+   "history_auroc": 0.9955375,
+   "generalisation_B3": {
+    "estimate": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 3.9177215189873413,
+    "rmst_ci95": [
+     3.8499999999999996,
+     3.975
+    ],
+    "items": 158,
+    "events": 11,
+    "censored": 147,
+    "lifetimes": 200,
+    "established": 158
+   },
+   "revision_late_B": {
+    "median": 4.0,
+    "median_ci95": [
+     3.0,
+     4.0
+    ],
+    "p_median_above_6": 0.002,
+    "rmst": 2.984771573604061,
+    "rmst_ci95": [
+     2.8256030150753766,
+     3.150006476683937
+    ],
+    "items": 197,
+    "events": 120,
+    "censored": 77,
+    "lifetimes": 200,
+    "established": 197
+   },
+   "false_attribution_zone_B": {
+    "estimate": 0.16637504999999997,
+    "ci95": [
+     0.15143158,
+     0.18029960625
+    ]
+   },
+   "false_attribution_normalised": 0.6724564934420606,
+   "risky_A_specificity_B1": {
+    "estimate": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "c2_caution_effect_minus_H_A0": {
+    "estimate": -0.10453895000000003,
+    "ci95": [
+     -0.12955253499999997,
+     -0.07852987
+    ]
+   }
+  },
+  "type_kind": {
+   "history_effect_p": {
+    "estimate": 0.25021235000000003,
+    "ci95": [
+     0.24134243125,
+     0.258368555
+    ]
+   },
+   "history_effect_caution": {
+    "estimate": 0.28488084999999996,
+    "ci95": [
+     0.27420853874999995,
+     0.29532401999999996
+    ]
+   },
+   "history_auroc": 0.995825,
+   "generalisation_B3": {
+    "estimate": 0.1662819,
+    "ci95": [
+     0.16219540375000005,
+     0.17020223500000004
+    ]
+   },
+   "revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 3.907975460122699,
+    "rmst_ci95": [
+     3.833333333333333,
+     3.969140536241763
+    ],
+    "items": 163,
+    "events": 12,
+    "censored": 151,
+    "lifetimes": 200,
+    "established": 163
+   },
+   "revision_late_B": {
+    "median": 4.0,
+    "median_ci95": [
+     3.0,
+     4.0
+    ],
+    "p_median_above_6": 0.003,
+    "rmst": 3.025252525252525,
+    "rmst_ci95": [
+     2.864983040201005,
+     3.1949999999999994
+    ],
+    "items": 198,
+    "events": 118,
+    "censored": 80,
+    "lifetimes": 200,
+    "established": 198
+   },
+   "false_attribution_zone_B": {
+    "estimate": 0.1699113,
+    "ci95": [
+     0.15522297499999999,
+     0.18365708124999996
+    ]
+   },
+   "false_attribution_normalised": 0.6790683993016331,
+   "risky_A_specificity_B1": {
+    "estimate": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "c2_caution_effect_minus_H_A0": {
+    "estimate": -0.10174045,
+    "ci95": [
+     -0.12682080125,
+     -0.07601987625
+    ]
+   }
+  },
+  "gru": {
+   "history_effect_p": {
+    "estimate": 0.19805894999999998,
+    "ci95": [
+     0.1724083,
+     0.2228354775
+    ]
+   },
+   "history_effect_caution": {
+    "estimate": 0.23272864999999998,
+    "ci95": [
+     0.206332775,
+     0.2589297725
+    ]
+   },
+   "history_auroc": 0.8605875,
+   "generalisation_B3": {
+    "estimate": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "revision_change_B": {
+    "median": Infinity,
+    "median_ci95": [
+     1000000000.0,
+     1000000000.0
+    ],
+    "p_median_above_6": 0.9995,
+    "rmst": 3.587412587412587,
+    "rmst_ci95": [
+     3.4488053217485746,
+     3.719198630136986
+    ],
+    "items": 143,
+    "events": 50,
+    "censored": 93,
+    "lifetimes": 200,
+    "established": 143
+   },
+   "revision_late_B": {
+    "median": 3.0,
+    "median_ci95": [
+     2.0,
+     4.0
+    ],
+    "p_median_above_6": 0.0005,
+    "rmst": 2.8385093167701863,
+    "rmst_ci95": [
+     2.6455594120049,
+     3.029590201465201
+    ],
+    "items": 161,
+    "events": 103,
+    "censored": 58,
+    "lifetimes": 200,
+    "established": 161
+   },
+   "false_attribution_zone_B": {
+    "estimate": 0.1388073,
+    "ci95": [
+     0.11214885125,
+     0.16454837125
+    ]
+   },
+   "false_attribution_normalised": 0.7008383110180075,
+   "risky_A_specificity_B1": {
+    "estimate": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "c2_caution_effect_minus_H_A0": {
+    "estimate": -0.15389265000000002,
+    "ci95": [
+     -0.19222355250000006,
+     -0.11620035125000004
+    ]
+   }
+  }
+ },
+ "restart_max_abs_diff": 0.0,
+ "criteria": {
+  "H_A0": {
+   "C1": true,
+   "C3": false,
+   "C4": null,
+   "C5": true
+  },
+  "count": {
+   "C1": true,
+   "C3": false,
+   "C4": null,
+   "C5": true,
+   "C2": false
+  },
+  "type": {
+   "C1": true,
+   "C3": false,
+   "C4": null,
+   "C5": false,
+   "C2": false
+  },
+  "type_kind": {
+   "C1": true,
+   "C3": false,
+   "C4": true,
+   "C5": false,
+   "C2": false
+  },
+  "gru": {
+   "C1": false,
+   "C3": false,
+   "C4": null,
+   "C5": false,
+   "C2": false
+  }
+ },
+ "J4_pass": false,
+ "recurrent_triggered": true
+}
