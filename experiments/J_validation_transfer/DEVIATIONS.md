@@ -33,3 +33,30 @@ estimate of exactly 0.00 was therefore treated as missing and *failed*. The same
 - J6 is labelled **exploratory**. Its result cannot by itself adopt an architecture.
 - Any architecture it suggests needs its own preregistered confirmation.
 - The J6 addendum fixes its systems, price and metrics before J6-X data.
+
+## D3 (2026-10-18, after J6-T fitting, before any J6-X data): the learned mapping is belief-independent; a proximity value is added
+
+**Finding.** With the preregistered utility (time + price × P(strong evidence)), `utility_intent` chooses the same
+intent for every belief and every price checked (5–80): proximity 0 (stop at 0.6 m), tempo 1, no hesitation.
+- On NERVA, stopping far is both the fastest option and the one that minimises perturbation, so nothing in that
+  utility rewards approaching.
+- A decision-theoretic mapping learned from time and perturbation alone therefore **removes belief-dependence
+  entirely**.
+- The GRU trained to imitate it has constant targets, so its validation accuracy of 1.0 equals the majority baseline
+  and is meaningless.
+
+This is reported as a J6 result. The preregistered `LEARNED` system (price 10, no proximity value) still runs in J6-X.
+
+**Addition (exploratory, disclosed).**
+- A proximity value: `value` seconds per 0.1 m that the robot stops short of 0.3 m. It represents a task that needs the
+  robot to come close, such as handing something over.
+- **price 40, value 5** was chosen by inspecting the mapping only, with no outcome data, from four settings tried:
+  (10, 5), (20, 5), (40, 5), (40, 10). It was the only one whose choices span the whole proximity range across
+  beliefs: 0.3 m for b(pushy) ≤ 0.2, 0.4 m for 0.3–0.5, and 0.6 m for ≥ 0.6.
+- Systems `LEARNED_V`, `RESIDUAL_V` and `GRU_V` use it. The GRU is retrained on its targets.
+- Analyses report both utilities. Each learned system is optimal for its own utility by construction, so a utility
+  gain over L0 is expected, not a discovery. What J6 tests is what the gain costs: safety, evidence dependence and
+  revision.
+
+**Fix found during this step.** `j6_fit.py` stepped the GRU once on a zero vector before the first prediction; at run
+time the first choice is made from h = 0. Training now matches run time, and both GRUs were retrained before J6-X.

@@ -12,8 +12,9 @@ Per system:
   used, and the risky_B − safe stopping-distance effect;
 - truth for evaluation: contacts and max push per encounter.
 
-Paired comparisons (same seeds) of LEARNED, RESIDUAL and GRU against CL (L0): utility, contacts, max push, belief
-effect, stopping-distance effect.
+Paired comparisons (same seeds) of LEARNED, RESIDUAL and GRU (and their _V variants) against CL (L0): utility,
+contacts, max push, arrival time. **Loop question (J5's Q3) per system:** risky_B, B1 encounters after LATE, mean max
+push and contacts minus FROZEN's (paired).
 """
 from __future__ import annotations
 
@@ -26,7 +27,7 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from j5_analyze import boot, last_p, load, spearman  # noqa: E402
+from j5_analyze import LATE, b1, boot, last_p, load, spearman  # noqa: E402
 
 STRONG = 6
 D_TASK = 0.3
@@ -92,6 +93,17 @@ def main() -> None:
                 "time_diff_s": boot([np.mean([e["t_arrive"] for e in x if e["t_arrive"] is not None])
                                      - np.mean([e["t_arrive"] for e in y if e["t_arrive"] is not None])
                                      for x, y in pairs])}
+    res["q3_vs_FROZEN"] = {}
+    if "FROZEN" in data:
+        fr = data["FROZEN"].get("risky_B", {})
+        late = lambda r: [x for x in b1(r) if x["k"] >= LATE]  # noqa: E731
+        for s, hist in data.items():
+            if s == "FROZEN" or "risky_B" not in hist:
+                continue
+            keys = sorted(set(hist["risky_B"]) & set(fr))
+            res["q3_vs_FROZEN"][s] = {
+                f: boot([np.mean([x[f] for x in late(hist["risky_B"][i])]) - np.mean([x[f] for x in late(fr[i])])
+                         for i in keys]) for f in ("max_push", "contacts")}
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
     for s, o in res["systems"].items():
@@ -102,6 +114,10 @@ def main() -> None:
               f"falls {o['falls']} belief {(o.get('belief_effect') or {}).get('estimate')}")
     for s, o in res["vs_L0"].items():
         print(s, "vs L0:", {k: (round(v["estimate"], 4), [round(c, 4) for c in v["ci95"]]) for k, v in o.items()})
+
+    for s, o in res["q3_vs_FROZEN"].items():
+        print(s, "Q3 vs FROZEN:",
+              {k: (round(v["estimate"], 4), [round(c, 4) for c in v["ci95"]]) for k, v in o.items()})
 
 
 if __name__ == "__main__":
