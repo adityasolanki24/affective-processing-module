@@ -15,7 +15,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: pip install -e ".[dev]"
       - run: ruff check .
-      - run: mypy src/apm src/apm_research src/apm_testbeds
+      - run: mypy src
       - run: pytest -q
   learning:
     runs-on: ubuntu-latest

@@ -189,6 +189,11 @@ limitation.
 | programmes F, G, H | see each programme's `README.md` | frozen seeds in each `seeds.py`; confirmatory runs refuse to start on a dirty checkout |
 
 Raw data and logs stay local under `runs/` (ignored). Committed results are the JSON summaries in `experiments/`.
+The exception is the small F snapshot in `runs/E1` and `runs/E2`, which F's preregistration cites by hash.
+
+Confirmatory runs record the exact commit and source hashes they ran with, in each `run_meta.json`. Reproduce a
+result at that commit. Later maintenance (for example the 2026-10-17 cleanup) changes library source hashes, but not
+the behaviour the experiments used.
 
 ## Licence
 

@@ -56,8 +56,8 @@ def km_bootstrap(groups: list[list[tuple[float, bool]]], horizon: float, n_boot:
         m, r = km(np.array([x[0] for x in items]), np.array([x[1] for x in items]), horizon)
         meds.append(min(m, 1e9))
         rms.append(r)
-    meds, rms = np.array(meds), np.array(rms)
-    return {"median": med, "median_ci95": [float(np.percentile(meds, 2.5)), float(np.percentile(meds, 97.5))],
-            "p_median_above_6": float(np.mean(meds > 6)), "rmst": rmst,
-            "rmst_ci95": [float(np.percentile(rms, 2.5)), float(np.percentile(rms, 97.5))],
+    meds_a, rms_a = np.array(meds), np.array(rms)
+    return {"median": med, "median_ci95": [float(np.percentile(meds_a, 2.5)), float(np.percentile(meds_a, 97.5))],
+            "p_median_above_6": float(np.mean(meds_a > 6)), "rmst": rmst,
+            "rmst_ci95": [float(np.percentile(rms_a, 2.5)), float(np.percentile(rms_a, 97.5))],
             "items": int(len(flat)), "events": int(e.sum()), "censored": int((~e).sum()), "lifetimes": len(groups)}

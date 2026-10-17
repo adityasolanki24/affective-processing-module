@@ -60,7 +60,6 @@ class ExpressionIntent:
         return asdict(self)
 
 
-NEUTRAL_INTENT = ExpressionIntent()
 
 
 def blend(a: ExpressionIntent, b: ExpressionIntent, w: float) -> ExpressionIntent:

@@ -52,7 +52,7 @@ class Paired:
 
     def compare(self, num: str, den: str) -> dict:
         ra, rb = self.ratio("a", num, den), self.ratio("b", num, den)
-        out = {"a": float(ra[0]), "b": float(rb[0])}
+        out: dict = {"a": float(ra[0]), "b": float(rb[0])}
         for name, draws in (("rel", ra / np.maximum(1e-12, rb) - 1.0), ("abs", ra - rb)):
             d = draws[1:]
             lo, hi = np.percentile(d, [2.5, 97.5])

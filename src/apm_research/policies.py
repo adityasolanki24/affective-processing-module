@@ -136,7 +136,7 @@ class B2(B1):
         self.k_pad, self.k_t = k_pad, k_t
         self.tonic, self.memory_frames, self.persistent, self.trace = tonic, memory_frames, persistent, trace
         self.name = name
-        self.readouts: list[tuple[float, float, float, float]] = []
+        self.readouts: list[tuple[float, ...]] = []
 
     def begin_lifetime(self) -> None:
         super().begin_lifetime()

@@ -54,6 +54,7 @@ class Encounter:
     collision: bool = False
     exposed: bool = False
     avoided: bool = False
+    p_start: float | None = None  # memory's prediction when the encounter opened (logged only)
 
     def klass(self) -> str:
         return "collision" if self.collision else "exposed" if self.exposed else \
@@ -66,6 +67,8 @@ class Encounter:
 
 class Belief:
     """One identity's (or the pool's) belief about its per-trial collision probability."""
+    strength: float = PRIOR_STRENGTH  # prior strength; reset for every belief by empirical Bayes (M3)
+
     def update(self, y: float, w: float, prior: float) -> None: ...
     def p(self, prior: float) -> tuple[float, float]:
         return prior, 0.0
@@ -166,14 +169,15 @@ class HiddenState(Belief):
         self.p_high: float | None = None
         self.n = 0.0
 
-    def _init(self, prior: float) -> None:
+    def _init(self, prior: float) -> float:
         if self.p_high is None:
             lo, hi = self.q
             self.p_high = min(1.0, max(0.0, (prior - lo) / max(1e-6, hi - lo)))
+        return self.p_high
 
     def update(self, y: float, w: float, prior: float) -> None:
-        self._init(prior)
-        ph = self.p_high * (1 - self.s) + (1 - self.p_high) * self.s
+        p0 = self._init(prior)
+        ph = p0 * (1 - self.s) + (1 - p0) * self.s
         lo, hi = self.q
         l_hi = (hi if y >= 0.5 else 1 - hi) ** w
         l_lo = (lo if y >= 0.5 else 1 - lo) ** w
@@ -181,8 +185,8 @@ class HiddenState(Belief):
         self.n += w
 
     def p(self, prior: float) -> tuple[float, float]:
-        self._init(prior)
-        ph = self.p_high * (1 - self.s) + (1 - self.p_high) * self.s
+        p0 = self._init(prior)
+        ph = p0 * (1 - self.s) + (1 - p0) * self.s
         lo, hi = self.q
         return ph * hi + (1 - ph) * lo, self.n / (self.n + PRIOR_STRENGTH)
 
@@ -283,7 +287,7 @@ class BeliefMemory:
         if not enc.reliable:
             self.counts["unreliable"] += 1
         self.log.append((round(t, 2), enc.identity, round(enc.confidence, 3), klass, enc.reliable,
-                         getattr(enc, "p_start", None)))
+                         enc.p_start))
         if self.evidence == "exposed" and klass not in ("collision", "exposed"):
             return
         y = 1.0 if enc.collision else 0.0
@@ -327,7 +331,7 @@ class BeliefMemory:
         if b is None:
             return 0
         if isinstance(b, Window):
-            return 2 * b.trials.maxlen
+            return 2 * int(b.trials.maxlen or 0)
         if isinstance(b, ChangePoint):
             return 3 * ChangePoint.RMAX
         if isinstance(b, HiddenState):
@@ -336,7 +340,3 @@ class BeliefMemory:
             return int(b.h.size) + 1
         return 2
 
-
-def entropy_of(counts: dict) -> float:
-    total = sum(counts.values())
-    return -sum(c / total * math.log(c / total) for c in counts.values() if c) if total else 0.0
