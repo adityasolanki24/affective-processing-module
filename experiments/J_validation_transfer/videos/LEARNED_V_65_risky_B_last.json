@@ -1,0 +1,17 @@
+{
+ "system": "LEARNED_V",
+ "history": "risky_B",
+ "index": 65,
+ "k": 27,
+ "tag": "last",
+ "type": "pushy",
+ "p_before": 0.4226,
+ "proximity": 0.0,
+ "tempo": 1.0,
+ "hesitation": 0.0,
+ "frames": 230,
+ "d_stop": 0.596,
+ "contacts": 1,
+ "max_push": 0.0217,
+ "t_arrive": 4.22
+}

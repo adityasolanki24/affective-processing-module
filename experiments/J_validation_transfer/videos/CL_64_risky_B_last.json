@@ -1,0 +1,17 @@
+{
+ "system": "CL",
+ "history": "risky_B",
+ "index": 64,
+ "k": 29,
+ "tag": "last",
+ "type": "pushy",
+ "p_before": 0.4852,
+ "proximity": 0.252,
+ "tempo": 0.605,
+ "hesitation": 0.401,
+ "frames": 455,
+ "d_stop": 0.506,
+ "contacts": 0,
+ "max_push": 0.0,
+ "t_arrive": 13.2
+}

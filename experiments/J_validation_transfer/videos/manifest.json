@@ -1,0 +1,177 @@
+{
+ "chosen_index": {
+  "CL": 64,
+  "LEARNED_V": 65
+ },
+ "rule": "median late-B1 stopping-distance difference",
+ "lifetimes": [
+  {
+   "system": "CL",
+   "history": "risky_B",
+   "index": 64,
+   "matches_J6X_log": true
+  },
+  {
+   "system": "CL",
+   "history": "safe",
+   "index": 64,
+   "matches_J6X_log": true
+  },
+  {
+   "system": "LEARNED_V",
+   "history": "risky_B",
+   "index": 65,
+   "matches_J6X_log": true
+  },
+  {
+   "system": "LEARNED_V",
+   "history": "safe",
+   "index": 65,
+   "matches_J6X_log": true
+  }
+ ],
+ "CL_64_first": {
+  "risky_B": {
+   "system": "CL",
+   "history": "risky_B",
+   "index": 64,
+   "k": 1,
+   "tag": "first",
+   "type": "pushy",
+   "p_before": 0.3467,
+   "proximity": 0.366,
+   "tempo": 0.653,
+   "hesitation": 0.745,
+   "frames": 512,
+   "d_stop": 0.456,
+   "contacts": 2,
+   "max_push": 0.0173,
+   "t_arrive": 15.48
+  },
+  "safe": {
+   "system": "CL",
+   "history": "safe",
+   "index": 64,
+   "k": 1,
+   "tag": "first",
+   "type": "calm",
+   "p_before": 0.3467,
+   "proximity": 0.366,
+   "tempo": 0.653,
+   "hesitation": 0.745,
+   "frames": 530,
+   "d_stop": 0.461,
+   "contacts": 0,
+   "max_push": 0.0,
+   "t_arrive": 16.22
+  }
+ },
+ "CL_64_last": {
+  "risky_B": {
+   "system": "CL",
+   "history": "risky_B",
+   "index": 64,
+   "k": 29,
+   "tag": "last",
+   "type": "pushy",
+   "p_before": 0.4852,
+   "proximity": 0.252,
+   "tempo": 0.605,
+   "hesitation": 0.401,
+   "frames": 455,
+   "d_stop": 0.506,
+   "contacts": 0,
+   "max_push": 0.0,
+   "t_arrive": 13.2
+  },
+  "safe": {
+   "system": "CL",
+   "history": "safe",
+   "index": 64,
+   "k": 29,
+   "tag": "last",
+   "type": "calm",
+   "p_before": 0.2466,
+   "proximity": 0.411,
+   "tempo": 0.671,
+   "hesitation": 0.275,
+   "frames": 505,
+   "d_stop": 0.438,
+   "contacts": 0,
+   "max_push": 0.0,
+   "t_arrive": 15.22
+  }
+ },
+ "LEARNED_V_65_first": {
+  "risky_B": {
+   "system": "LEARNED_V",
+   "history": "risky_B",
+   "index": 65,
+   "k": 0,
+   "tag": "first",
+   "type": "pushy",
+   "p_before": 0.3467,
+   "proximity": 0.5,
+   "tempo": 1.0,
+   "hesitation": 0.0,
+   "frames": 305,
+   "d_stop": 0.405,
+   "contacts": 1,
+   "max_push": 0.0559,
+   "t_arrive": 7.2
+  },
+  "safe": {
+   "system": "LEARNED_V",
+   "history": "safe",
+   "index": 65,
+   "k": 0,
+   "tag": "first",
+   "type": "calm",
+   "p_before": 0.3467,
+   "proximity": 0.5,
+   "tempo": 1.0,
+   "hesitation": 0.0,
+   "frames": 304,
+   "d_stop": 0.398,
+   "contacts": 0,
+   "max_push": 0.0,
+   "t_arrive": 7.18
+  }
+ },
+ "LEARNED_V_65_last": {
+  "risky_B": {
+   "system": "LEARNED_V",
+   "history": "risky_B",
+   "index": 65,
+   "k": 27,
+   "tag": "last",
+   "type": "pushy",
+   "p_before": 0.4226,
+   "proximity": 0.0,
+   "tempo": 1.0,
+   "hesitation": 0.0,
+   "frames": 230,
+   "d_stop": 0.596,
+   "contacts": 1,
+   "max_push": 0.0217,
+   "t_arrive": 4.22
+  },
+  "safe": {
+   "system": "LEARNED_V",
+   "history": "safe",
+   "index": 65,
+   "k": 27,
+   "tag": "last",
+   "type": "calm",
+   "p_before": 0.248,
+   "proximity": 0.75,
+   "tempo": 1.0,
+   "hesitation": 0.0,
+   "frames": 343,
+   "d_stop": 0.306,
+   "contacts": 0,
+   "max_push": 0.0,
+   "t_arrive": 8.74
+  }
+ }
+}
