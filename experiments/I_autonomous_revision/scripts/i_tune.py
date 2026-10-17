@@ -107,18 +107,39 @@ def explore_mode(a, systems: dict) -> dict:
             "p_random": {"grid": ps, "results": rand_s, "selected": p_sel, "target_probes": target}}
 
 
+def random_mode(a, systems: dict) -> dict:
+    """Re-selection of p_random over [p_lo, p_hi] (DEVIATIONS.md D1), against the selected VOI's probe budget."""
+    prev = json.loads(Path(a.explore_from).read_text())
+    lam, target = prev["lam"], prev["p_random"]["target_probes"]
+    ps = grid_lin(a.p_lo, a.p_hi)
+    jobs = []
+    for p in ps:
+        s = json.loads(json.dumps(systems["KA_R_rand"]))
+        s["keep_away"]["explore"] = {**s["keep_away"]["explore"], "p_random": p}
+        jobs += [{"spec": {**s, "lam": lam, "label": f"rand:{p:.6g}"}, "scenario": sc, "experiment": "I2",
+                  "partition": "V", "index": i} for sc in ("S1", "S3", "S10") for i in range(100, 140)]
+    res = run(jobs, a.workers)
+    rand_s = {str(p): summarise(res, f"rand:{p:.6g}") for p in ps}
+    p_sel = min(ps, key=lambda p: abs(rand_s[str(p)]["probes"] - target))
+    return {"lam": lam, "p_random": {"grid": ps, "range": [a.p_lo, a.p_hi], "results": rand_s, "selected": p_sel,
+                                     "target_probes": target}}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("mode", choices=("lam", "explore"))
+    ap.add_argument("mode", choices=("lam", "explore", "random"))
     ap.add_argument("--systems", type=Path, required=True)
     ap.add_argument("--system", default="R_dense")
     ap.add_argument("--lam-from", default="")
+    ap.add_argument("--explore-from", default="")
+    ap.add_argument("--p-lo", type=float, default=0.02)
+    ap.add_argument("--p-hi", type=float, default=1.0)
     ap.add_argument("--workers", type=int, default=cpu_count())
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
     start = time.time()
     systems = json.loads(a.systems.read_text())["systems"]
-    out = lam_mode(a, systems) if a.mode == "lam" else explore_mode(a, systems)
+    out = {"lam": lam_mode, "explore": explore_mode, "random": random_mode}[a.mode](a, systems)
     out["wall_s"] = round(time.time() - start, 1)
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(out, indent=1), encoding="utf-8")
