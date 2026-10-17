@@ -126,9 +126,16 @@ def _archive(path: Path, commit: bool, cmd: str) -> str:
         job = Path(tmp) / "job.sh"
         job.write_bytes(f"set -e\nmkdir -p out\n{cmd}\n".encode())
         if commit:
+            # shallow, sparse clone of HEAD: only what runs need; `git status` stays clean for the confirmatory lock
             clone = Path(tmp) / "repo"
-            sh(["git", "clone", "-q", "--no-hardlinks", str(REPO), str(clone)])
             sha = sh(["git", "-C", str(REPO), "rev-parse", "HEAD"], capture=True)
+            branch = sh(["git", "-C", str(REPO), "rev-parse", "--abbrev-ref", "HEAD"], capture=True)
+            sh(["git", "clone", "-q", "--depth", "1", "--filter=blob:none", "--no-checkout",
+                "--upload-pack=git -c uploadpack.allowFilter=true upload-pack", "--branch", branch, REPO.as_uri(),
+                str(clone)])
+            sh(["git", "-C", str(clone), "sparse-checkout", "set", "--cone", "src", "runs",
+                "experiments/F_behavioral_learning/configs", "experiments/G_architecture_selection",
+                "experiments/I_autonomous_revision"])
             sh(["git", "-C", str(clone), "checkout", "-q", sha])
             tar.add(clone, arcname="apm")
             for extra in ("runs/E2/predictor.json",):  # git-tracked inputs are already in the clone
