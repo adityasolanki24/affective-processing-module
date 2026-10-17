@@ -135,3 +135,20 @@ Written as a removable layer, with 11 unit tests:
 - **Still no participants recruited.** Ethics determination and authorization are still pending.
 - **Open choices** are listed in `survey/README.md`. Most important: the full form takes about 40 minutes, not the
   ≈ 25 minutes the protocol estimates.
+
+### Researcher pilot of the survey (2026-10-17)
+One run of the quick form (13 clips, 13.6 min) by the researcher, who had previously seen 7 clips with their style
+labels. **Not blind and not study data.** Recorded as an instrument pilot and as the researcher's own impression.
+- **Picked the intended style for 2 of 6 designed clips** (hesitant, cautious). Chance is about 1 in 7.
+  - assertive → energetic, energetic → curious, relaxed (matched speed) → cautious, curious → neutral.
+  - Both neutral clips → energetic and curious.
+- **Instrument problems:**
+  - 34/39 seven-point answers were the midpoint; from clip 5 onward every answer was 4/4/4.
+  - 22/78 slider answers stayed exactly at the 50 starting position.
+  - The longest clip (41 s) got all-neutral answers.
+- **Researcher feedback:** differences visible "a bit but not too much"; "got a bit tired".
+- **Researcher's conclusion:** the expressive repertoire is probably less legible than the simulation metrics
+  suggest. Machine-measured distinctness (H1: 1.00) does not imply human legibility.
+- **The limiting factor is likely the motion vocabulary NERVA exposes:** 7 walking commands, and head movement only
+  at rest. Improving that is NERVA work. Claim B stays untested; this observation lowers the prior that the
+  repertoire would pass H2 as it stands.

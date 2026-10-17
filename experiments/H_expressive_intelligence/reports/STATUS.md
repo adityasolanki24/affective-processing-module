@@ -11,6 +11,10 @@
    - Ready: protocol, power simulation, 72 stimulus clips (`videos/h1/`).
    - Needs an ethics determination by the researcher's institution and the user's written authorization.
    - No participants have been contacted.
+   - A researcher self-pilot (2026-10-17, not blind; `RESEARCH_LOG.md`) found the styles hard to tell apart
+     (2/6 recognised) and exposed instrument problems: midpoint answers, slider anchoring, fatigue.
+   - Survey instrument v0.1 is in `survey/`. Before recruiting, a richer NERVA motion vocabulary is probably
+     needed, not just a better survey.
 2. **NERVA controller push robustness while standing or just stopped.** The certified envelope during expression is
    0.10 m/s. This is reported for NERVA and was not changed here.
 3. **Combination weight for dispositions in the memory-centred lookup.**
