@@ -12,3 +12,4 @@ with `jcloud.py audit` clean.
 | 2026-10-17 | NAT us-east1, us-east4 | from 12:25 | ~US$0.02/h | apm-j-2, apm-j-3 |
 | 2026-10-17 | apm-j-2 n2d-highcpu-96 spot (us-east1-b; the 128-core type was stocked out; 3 h cap) | from 12:28 | ~US$0.75/h | J2-X group B |
 | 2026-10-17 | apm-j-3 n2d-highcpu-128 spot (us-east4-a; 3 h cap) | from 12:26 | ~US$1.0/h | J2-X group C + policy group, J2 analysis |
+| 2026-10-18 | apm-j-2 n2d-highcpu-96 spot (us-east1-b), second instance | 13:08–about 13:40 | ~US$0.4 | J4 bank. **Preempted by Google (spot) and auto-deleted before finishing; output lost; re-queued on apm-j-1** |

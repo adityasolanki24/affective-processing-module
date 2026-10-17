@@ -1,0 +1,18 @@
+{
+ "grid": [
+  0.0,
+  0.02,
+  0.05,
+  0.1,
+  0.2
+ ],
+ "objective": {
+  "0.0": -2.043931511111111,
+  "0.02": -2.0354635555555554,
+  "0.05": -2.0375605833333332,
+  "0.1": -2.0394725888888887,
+  "0.2": -2.0495231888888887
+ },
+ "selected": 0.02,
+ "objective_def": "mean log predictive probability of each observable encounter's (band, acc8) category before the update, CL, J5-V 0-14 x 4 histories"
+}
