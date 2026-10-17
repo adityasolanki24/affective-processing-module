@@ -144,6 +144,97 @@ class ImuLogger:
                         bool(np.max(self.tilt[start:]) > 45.0), base_peak, energy, bool(peak > 1.5 * base_peak))
 
 
+TARGET = (0.9, 0.0)  # the entity stands at the approach target (as H's ball), 0.9 m ahead
+
+
+POST_ARRIVAL_SKIP_S = 1.0  # evidence starts 1 s after arrival, past the gait-stopping transient
+
+
+def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s: float = 5.0, settle_s: float = 2.0,
+                          max_approach_s: float = 45.0) -> tuple[Evidence, dict, dict]:
+    """J5: one encounter in which the robot's own expression shapes what happens.
+
+    The robot settles, then approaches the entity under `intent`, through H's `BipedExpressionAdapter` with the
+    admitted `channels` and H's `SafetyMonitor` (neutral fallback). It stands for `dwell_s` after arriving. The
+    entity's lunges happen throughout the approach and the dwell; each contacts only if its reach exceeds the robot's
+    *current* distance to the entity. So the stopping distance, approach timing and hesitation (exposure) change what
+    happens.
+
+    Evidence is summarised over the standing dwell from 1 s after arrival (past the gait-stopping transient) to the
+    end: 4 s, the same window length as J3's bank. The baseline is the settle period.
+
+    Returns:
+    - robot-observable evidence;
+    - outcome: arrival time, arrived, final distance, safety trips, fallback steps, fell, stopping distance — task and
+      safety measures;
+    - truth: contacts and pushes, for evaluation only.
+    """
+    from apm_express.adapter import NEUTRAL_REQUEST, BipedChannels, BipedExpressionAdapter
+    from apm_express.biped import NervaBiped
+    from apm_express.safety import MonitorLimits, SafetyMonitor
+
+    rng = np.random.default_rng(seed)
+    ch = BipedChannels(min_dwell_s=channels["min_dwell_s"], pitch=channels["pitch"],
+                       head=channels["head"], head_pitch_range=tuple(channels["head_pitch_range"]),
+                       head_yaw_range=tuple(channels["head_yaw_range"]), head_rate=channels["head_rate"],
+                       head_while_moving=False)
+    limits = MonitorLimits(joint_margin_rad=channels.get("joint_margin_rad"),
+                           saturation_steps=channels.get("saturation_steps"))
+    ctrl = NervaBiped(policy=channels["policy"], seed=int(rng.integers(2**31)), head_channel=ch.head,
+                      max_head_rate=1.5, max_pitch_rate=2.0)
+    adapter, monitor = BipedExpressionAdapter(ch, seed=int(rng.integers(2**31))), SafetyMonitor(limits)
+    log = ImuLogger(np.random.default_rng(int(rng.integers(2**31))))
+    n_settle = int(round(settle_s / ctrl.dt))
+    ctrl.apply(NEUTRAL_REQUEST)
+    for _ in range(n_settle):
+        log.read(ctrl, ctrl.advance())
+    window = max_approach_s + dwell_s
+    events = {n_settle + int(round(t / ctrl.dt)): (reach, speed) for t, reach, speed in lunges(rng, etype, window)}
+    adapter.reset(ctrl.t, ctrl.pose(), TARGET, intent)
+    pushes, t_arrive, k_arrive, fell, fallback = [], None, None, False, 0
+    k = n_settle
+    while True:
+        x, y, _ = ctrl.pose()
+        dist = math.hypot(TARGET[0] - x, TARGET[1] - y)
+        if k in events:
+            reach, speed = events[k]
+            m = impulse(reach, speed, dist)
+            if m > 0:
+                away = math.atan2(y - TARGET[1], x - TARGET[0]) + float(rng.uniform(-math.radians(20),
+                                                                                    math.radians(20)))
+                ctrl.push(m * math.cos(away), m * math.sin(away))
+                pushes.append((round(ctrl.t, 2), round(m, 4), k_arrive is not None))
+        tripped = monitor.update(ctrl.t, **ctrl.physical())
+        if tripped:
+            fallback += 1
+            adapter.notify_fallback(ctrl.t)
+            request = NEUTRAL_REQUEST
+        else:
+            request = adapter.request(ctrl.t, ctrl.pose(), TARGET, intent)
+        ctrl.apply(request)
+        row = ctrl.advance()
+        log.read(ctrl, row)
+        if row["tilt"] > 45.0 or not row["finite"]:
+            fell = True
+            break
+        if k_arrive is None and adapter._arrived:
+            k_arrive, t_arrive = k + 1, round(ctrl.t - settle_s, 2)
+        k += 1
+        if k_arrive is not None and k - k_arrive >= int(round(dwell_s / ctrl.dt)):
+            break
+        if k - n_settle >= int(round(window / ctrl.dt)):
+            break
+    skip = int(round(POST_ARRIVAL_SKIP_S / ctrl.dt))
+    start = k_arrive + skip if k_arrive is not None else max(n_settle, k - int(round((dwell_s - 1) / ctrl.dt)))
+    ev = log.summarise(start, slice(max(0, n_settle - 50), n_settle), ctrl.dt)
+    x, y, _ = ctrl.pose()
+    outcome = {"arrived": k_arrive is not None, "t_arrive": t_arrive, "final_distance": round(math.hypot(
+        TARGET[0] - x, TARGET[1] - y), 3), "trips": monitor.trips, "fallback_steps": fallback, "fell": fell}
+    truth = {"type": etype, "contacts": len(pushes), "contacts_dwell": sum(p[2] for p in pushes),
+             "max_push": max((p[1] for p in pushes), default=0.0), "pushes": pushes}
+    return ev, outcome, truth
+
+
 def standing_encounter(seed: int, etype: str, distance: float, dwell_s: float = 4.0, settle_s: float = 2.0,
                        policy: str = "neutral") -> tuple[Evidence, dict]:
     """J3/J4: the robot stands at `distance` from the entity for `dwell_s` (after settling); lunges during the dwell.
