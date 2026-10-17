@@ -1,0 +1,131 @@
+{
+ "systems": {
+  "SKA_A0": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M0",
+    "evidence": "all"
+   },
+   "keep_away": {
+    "keep_m": 3.0,
+    "kappa": 1.5,
+    "explore": {
+     "mode": "none"
+    },
+    "approach_only": false
+   }
+  },
+  "SKA_G2b": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M1t",
+    "params": {
+     "tau_s": 356.352646
+    },
+    "evidence": "exposed"
+   },
+   "keep_away": {
+    "keep_m": 3.0,
+    "kappa": 1.5,
+    "explore": {
+     "mode": "uncertainty",
+     "budget": 2,
+     "conf_max": 0.5
+    },
+    "approach_only": false
+   }
+  },
+  "SKA_R": {
+   "kind": "revising",
+   "type_model": "runs/I/I0/P_fit/pilot_dense_K2.json",
+   "lam": 0.002806229830223095,
+   "keep_away": {
+    "keep_m": 3.0,
+    "kappa": 1.5,
+    "explore": {
+     "mode": "none"
+    },
+    "approach_only": false
+   }
+  },
+  "SKA_R_voi": {
+   "kind": "revising",
+   "type_model": "runs/I/I0/P_fit/pilot_dense_K2.json",
+   "lam": 0.002806229830223095,
+   "keep_away": {
+    "keep_m": 3.0,
+    "kappa": 1.5,
+    "explore": {
+     "mode": "voi",
+     "budget": 2,
+     "nu": 0.2
+    },
+    "approach_only": false
+   }
+  },
+  "SKA_R_ts": {
+   "kind": "revising",
+   "type_model": "runs/I/I0/P_fit/pilot_dense_K2.json",
+   "lam": 0.002806229830223095,
+   "explore": {
+    "mode": "thompson",
+    "seed": 0
+   },
+   "keep_away": {
+    "keep_m": 3.0,
+    "kappa": 1.5,
+    "explore": {
+     "mode": "thompson"
+    },
+    "approach_only": false
+   }
+  },
+  "SKA_R_unc": {
+   "kind": "revising",
+   "type_model": "runs/I/I0/P_fit/pilot_dense_K2.json",
+   "lam": 0.002806229830223095,
+   "keep_away": {
+    "keep_m": 3.0,
+    "kappa": 1.5,
+    "explore": {
+     "mode": "uncertainty",
+     "budget": 2,
+     "conf_max": 0.5
+    },
+    "approach_only": false
+   }
+  },
+  "SKA_R_rand": {
+   "kind": "revising",
+   "type_model": "runs/I/I0/P_fit/pilot_dense_K2.json",
+   "lam": 0.002806229830223095,
+   "keep_away": {
+    "keep_m": 3.0,
+    "kappa": 1.5,
+    "explore": {
+     "mode": "random",
+     "budget": 2,
+     "p_random": 0.3,
+     "seed": 0
+    },
+    "approach_only": false
+   }
+  }
+ }
+}
