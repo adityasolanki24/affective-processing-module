@@ -87,11 +87,12 @@ class Evidence:
     base_peak_acc: float = 0.0
     acc_energy: float = 0.0
     detected: bool = False
+    quiet_frames: int = -1  # frames left after efference-copy gating (-1: no gating, a standing encounter)
 
     def as_list(self) -> list:
         return [round(self.peak_gyro, 5), round(self.peak_acc, 5), round(self.stab_time, 3), self.contact_changes,
                 round(self.effort_ratio, 4), round(self.tilt_peak, 3), self.fell, round(self.base_peak_acc, 5),
-                round(self.acc_energy, 6), self.detected]
+                round(self.acc_energy, 6), self.detected, self.quiet_frames]
 
 
 @dataclass
@@ -114,11 +115,19 @@ class ImuLogger:
         self.effort.append(float(row["tau_sq"]))
         self.tilt.append(float(row["tilt"]))
 
-    def summarise(self, start: int, baseline: slice, dt: float, gyro_thr: float = 0.35) -> Evidence:
+    def summarise(self, start: int, baseline: slice, dt: float, gyro_thr: float = 0.35,
+                  quiet: np.ndarray | None = None) -> Evidence:
+        """Evidence over frames start..end. `quiet` (efference-copy gate) keeps only frames the robot did not
+        move itself."""
         g = np.array(self.gyro[start:])
         acc = np.array(self.acc)
         base_acc = acc[baseline].mean(0) if len(acc[baseline]) else np.zeros(2)
         a = np.linalg.norm(acc[start:] - base_acc, axis=1)
+        n_quiet = -1
+        if quiet is not None:
+            mask = np.asarray(quiet[start:start + len(g)], bool)
+            g, a = g[mask], a[mask]
+            n_quiet = int(mask.sum())
         above = np.flatnonzero(g > gyro_thr)
         if len(above):
             quiet = int(round(0.5 / dt))
@@ -141,17 +150,20 @@ class ImuLogger:
         energy = float(np.sum(np.clip(a - base_peak, 0.0, None) ** 2)) if len(a) else 0.0
         peak = float(np.max(a)) if len(a) else 0.0
         return Evidence(float(g.max()) if len(g) else 0.0, peak, float(stab), int(changes), float(eff), tilt_peak,
-                        bool(np.max(self.tilt[start:]) > 45.0), base_peak, energy, bool(peak > 1.5 * base_peak))
+                        bool(np.max(self.tilt[start:]) > 45.0), base_peak, energy, bool(peak > 1.5 * base_peak),
+                        n_quiet)
 
 
 TARGET = (0.9, 0.0)  # the entity stands at the approach target (as H's ball), 0.9 m ahead
 
 
 POST_ARRIVAL_SKIP_S = 1.0  # evidence starts 1 s after arrival, past the gait-stopping transient
+SELF_MOTION_HOLD_S = 0.6   # efference copy: frames within 0.6 s after the robot's own commanded motion are ignored
+MIN_QUIET_FRAMES = 25      # fewer quiet frames than this (0.5 s): the encounter is unobservable (no evidence)
 
 
 def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s: float = 5.0, settle_s: float = 2.0,
-                          max_approach_s: float = 45.0) -> tuple[Evidence, dict, dict]:
+                          max_approach_s: float = 45.0, sensing_pause: bool = True) -> tuple[Evidence, dict, dict]:
     """J5: one encounter in which the robot's own expression shapes what happens.
 
     The robot settles, then approaches the entity under `intent`, through H's `BipedExpressionAdapter` with the
@@ -162,6 +174,17 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
 
     Evidence is summarised over the standing dwell from 1 s after arrival (past the gait-stopping transient) to the
     end: 4 s, the same window length as J3's bank. The baseline is the settle period.
+
+    **Efference-copy gate.** The robot knows its own commands. Frames during, and up to 0.6 s after, its own commanded
+    motion are excluded: walking or turning commands, head-offset changes, or the safety fallback. Expressive motion
+    after arrival (gaze turns, scanning, head movement) is therefore not mistaken for being pushed. The J5 pilot
+    showed that without this gate, beliefs saturate in the closed loop.
+
+    **Sensing pause** (`sensing_pause=True`, J5 protocol after pilot 2). From arrival to the end of the dwell, the
+    robot holds the neutral request (rest, head returning to neutral) instead of continuing post-arrival expression
+    (gaze turns, scanning). Head motion alone raises the IMU peak to 1.1–1.9 (still: about 0.45), so a continuously
+    scanning robot has no quiet frames and cannot sense contact at all. Expression still sets the stopping distance,
+    approach tempo, hesitation and path, i.e. everything that shapes exposure.
 
     Returns:
     - robot-observable evidence;
@@ -192,6 +215,8 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     events = {n_settle + int(round(t / ctrl.dt)): (reach, speed) for t, reach, speed in lunges(rng, etype, window)}
     adapter.reset(ctrl.t, ctrl.pose(), TARGET, intent)
     pushes, t_arrive, k_arrive, fell, fallback = [], None, None, False, 0
+    own = [False] * n_settle  # per frame: did the robot itself command motion?
+    prev_head = np.zeros(4)
     k = n_settle
     while True:
         x, y, _ = ctrl.pose()
@@ -209,9 +234,14 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
             fallback += 1
             adapter.notify_fallback(ctrl.t)
             request = NEUTRAL_REQUEST
+        elif sensing_pause and k_arrive is not None:
+            request = NEUTRAL_REQUEST  # hold still to sense (the gate still removes the head's return transient)
         else:
             request = adapter.request(ctrl.t, ctrl.pose(), TARGET, intent)
         ctrl.apply(request)
+        head = np.asarray(request.head, float)
+        own.append(bool(tripped or request.command != "rest" or np.abs(head - prev_head).max() > 1e-3))
+        prev_head = head
         row = ctrl.advance()
         log.read(ctrl, row)
         if row["tilt"] > 45.0 or not row["finite"]:
@@ -226,7 +256,10 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
             break
     skip = int(round(POST_ARRIVAL_SKIP_S / ctrl.dt))
     start = k_arrive + skip if k_arrive is not None else max(n_settle, k - int(round((dwell_s - 1) / ctrl.dt)))
-    ev = log.summarise(start, slice(max(0, n_settle - 50), n_settle), ctrl.dt)
+    hold = int(round(SELF_MOTION_HOLD_S / ctrl.dt))
+    moved = np.asarray(own, bool)
+    quiet = ~np.array([moved[max(0, j - hold):j + 1].any() for j in range(len(moved))])
+    ev = log.summarise(start, slice(max(0, n_settle - 50), n_settle), ctrl.dt, quiet=quiet)
     x, y, _ = ctrl.pose()
     outcome = {"arrived": k_arrive is not None, "t_arrive": t_arrive, "final_distance": round(math.hypot(
         TARGET[0] - x, TARGET[1] - y), 3), "trips": monitor.trips, "fallback_steps": fallback, "fell": fell}

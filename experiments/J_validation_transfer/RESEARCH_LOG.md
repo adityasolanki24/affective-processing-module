@@ -38,3 +38,25 @@
 
   The pilot-1 result stays on record. Types whose differences lie below the sensing range are, by construction, not
   learnable from experience.
+
+### 2026-10-18: J2 result, J3-T gate, J5 pilot findings
+- **J2:** not promoted (`reports/J2_REPORT.md`). D1 analysis-bug fix.
+- **J3-T gate passes:**
+  - graded acc8 carries 0.55 nats; the a-priori detector 0.001; falls 0; the self-calibrated detector 0.13;
+  - EM finds K = 2 without labels;
+  - NERVA type models fitted (J4 unconditional; J5 conditioned on stopping distance).
+- **J5 pilot 1 (no gate):** in the closed loop the robot **mistook its own expressive motion for being pushed**.
+  - After arrival, gaze turns, scanning and head motion read as high-acceleration categories even with zero contacts.
+  - Beliefs saturated at about 0.5 for everyone, and closed-loop history AUROC was 0.57.
+  - The frozen-expression robot learned the history (AUROC 1.00).
+  - Expression still changed outcomes: −0.63 contacts per encounter vs frozen.
+- **Probe:** head motion alone raises the IMU peak to 1.1–1.9 (still: about 0.45); body turns to 7–10.
+- **Fix 1, efference-copy gate:** exclude frames during, and 0.6 s after, the robot's own commanded motion.
+  - With the gate alone, L0-expressive robots had **zero** quiet frames: continuous scanning makes the robot unable
+    to feel anything.
+- **Fix 2, sensing pause:** after arrival the robot holds still for the 4 s observation window, then expression
+  resumes. Belief still sets stopping distance, tempo, hesitation and path.
+  - Expressive movement competes with perception. An expressive robot needs sensing pauses.
+  - Both fixes are pilot-stage and disclosed in the J5 addendum. Pilot-1 data are kept.
+- **With both fixes:** calm encounters read 0.34–0.54, pushy contacts 0.57–0.89, and every frame is observable.
+  - A cautious robot stopping at 0.6 m gets few contacts, even from a pushy entity: the physical avoidance trap.

@@ -75,7 +75,7 @@ def job(args: tuple) -> dict:
     from apm_express.styles import NEUTRAL
     from apm_revise.belief import TypeModel
     from apm_transfer.nerva_memory import ObsX, TypeStateModel
-    from apm_transfer.nerva_world import closed_loop_encounter
+    from apm_transfer.nerva_world import MIN_QUIET_FRAMES, closed_loop_encounter
 
     S = _seeds()
     base = int(S.world_seed("J5", partition, index).generate_state(1)[0])
@@ -104,10 +104,11 @@ def job(args: tuple) -> dict:
         band = int(np.searchsorted(DIST_EDGES, d))
         cat = int(np.searchsorted(edges, e[1], side="right"))
         logp = None
-        if isinstance(mem, TypeStateModel):  # self-supervised predictive log-probability of this evidence
+        if isinstance(mem, TypeStateModel) and e[10] >= MIN_QUIET_FRAMES:  # self-supervised predictive log-prob
             b = mem._at(ident) if ident in mem.b else mem._prior(kind)
             logp = round(float(np.log(max(1e-12, float(b @ model.E[:, band * 8 + cat])))), 5)
-        learn = system not in ("NOMEM",) and not (system == "NOFEEDBACK" and k >= FEEDBACK_UNTIL)
+        observable = e[10] >= MIN_QUIET_FRAMES  # efference-copy gate left enough quiet frames
+        learn = observable and system not in ("NOMEM",) and not (system == "NOFEEDBACK" and k >= FEEDBACK_UNTIL)
         if learn:
             who, wkind = (ENTITIES[int(shuffle.integers(3))] if system == "RANDHIST" else (ident, kind))
             category = cat if system == "H_MEM" else band * 8 + cat
@@ -115,7 +116,8 @@ def job(args: tuple) -> dict:
         rows.append({"k": k, "entity": ident, "type": etype, "p_before": round(rd.p, 5), "u_before": round(rd.u, 4),
                      "caution": round(caution(rd), 4), "proximity": round(intent.proximity, 3),
                      "hesitation": round(intent.hesitation, 3), "d_stop": d, "band": band, "category": cat,
-                     "detected": bool(e[9]), "peak_acc": e[1], "logp": logp, "contacts": truth["contacts"],
+                     "detected": bool(e[9]), "peak_acc": e[1], "logp": logp, "quiet_frames": e[10],
+                     "observable": bool(observable), "contacts": truth["contacts"],
                      "contacts_dwell": truth["contacts_dwell"], "max_push": truth["max_push"],
                      "arrived": out["arrived"], "t_arrive": out["t_arrive"], "trips": out["trips"],
                      "fell": out["fell"]})
