@@ -60,3 +60,19 @@
   - Both fixes are pilot-stage and disclosed in the J5 addendum. Pilot-1 data are kept.
 - **With both fixes:** calm encounters read 0.34–0.54, pushy contacts 0.57–0.89, and every frame is observable.
   - A cautious robot stopping at 0.6 m gets few contacts, even from a pushy entity: the physical avoidance trap.
+
+### 2026-10-18 (later): J5-X, J4 and J6
+- **J5-X:** the loop is not demonstrated with L0 (`reports/J5_REPORT.md`). J6 runs as exploratory (D2).
+- **J4:** the bank was re-run (J4bank2) after the spot loss.
+  - λ = 0.005 selected on V (flat objective).
+  - A recurrent baseline (`GruMemory`) was pre-specified and trained on V before X.
+  - J4-X fails C2 (compressed readout) and C3 (slow, asymmetric revision). C1 and C4 pass.
+  - The triggered recurrent baseline does not rescue it (`reports/J4_REPORT.md`).
+- **J6-T fitting:** the self-learned time model has R² 0.905.
+  - The decision-theoretic mapping turned out **belief-independent**: stopping far and fast minimises both time and
+    perturbation, for every belief and price (D3).
+  - A disclosed proximity value (price 40, value 5) gives a belief-dependent mapping (0.3 / 0.4 / 0.6 m).
+  - GRU training was aligned with run time (D3).
+- **Video tooling:** render hooks verified not to change the simulation (identical evidence, outcome and truth).
+  `j_videos.py` re-simulates median J6-X pairs and checks every row against the log.
+- **Cloud:** apm-j-1 reached its cap and self-deleted; the us-central1 NAT and router were removed.
