@@ -64,7 +64,7 @@ def need() -> None:
 
 
 def sh(args: list[str], check: bool = True, capture: bool = False) -> str:
-    r = subprocess.run(args, check=check, text=True, capture_output=capture)
+    r = subprocess.run(args, check=check, text=True, capture_output=capture, encoding="utf-8", errors="replace")
     return (r.stdout or "").strip() if capture else ""
 
 
