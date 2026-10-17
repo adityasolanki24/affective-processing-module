@@ -83,7 +83,7 @@ class NervaBiped:
         self.policy, self.styled, self.head_channel = policy, styled, head_channel
         # Controller-level change limits, independent of the adapter (None = unlimited; H0 measures raw steps).
         self.max_head_rate, self.max_pitch_rate = max_head_rate, max_pitch_rate
-        self._head_applied = np.zeros(4)
+        self._head_applied: np.ndarray = np.zeros(4)
         self._pitch_applied = 0.0
         if styled:
             self.sim.set_neutral_style(0.0, 0.0)

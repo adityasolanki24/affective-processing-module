@@ -63,8 +63,8 @@ class StatefulPredictor:
         if kind not in KINDS:
             raise ValueError(kind)
         self.kind, self.width, self.seed = kind, width, seed
-        self.mean = np.zeros(width, np.float32)
-        self.scale = np.ones(width, np.float32)
+        self.mean: np.ndarray = np.zeros(width, np.float32)
+        self.scale: np.ndarray = np.ones(width, np.float32)
         self.net: Any = None
         self.history: list[dict] = []
 
@@ -329,7 +329,7 @@ class StatefulRule(FeaturePolicy, _APMReadout):
         for i, m in enumerate(self.models):
             z = ((z_raw - m.mean) / m.scale).astype(np.float32)
             h = ((h_raw - m.mean) / m.scale).astype(np.float32)
-            extra = np.zeros(0, np.float32)
+            extra: np.ndarray = np.zeros(0, np.float32)
             if self.taus:
                 if self.control == "reset":
                     extra = np.zeros(m.width * len(self.taus), np.float32)
