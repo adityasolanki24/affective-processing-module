@@ -1,6 +1,22 @@
 # Research log
 
-Newest first. Measurements only from runs actually executed; hypotheses labelled.
+Newest first. Measurements only from runs actually executed; hypotheses labelled. Programmes F–H keep detailed
+logs in their own folders; this log summarises them.
+
+## 2026-10-17: programmes F, G and H merged into `main`
+- **F (v0.2):** the v0.1 PAD regulator beat B1 by 25% (E2), but memory revision failed (E3), and the learned
+  regulator B3 was not credible (E4).
+- **G (v0.3):** decision A, the simple predictive regulator. PAD is harmful under equal tuning; the earlier
+  advantage came from tuning budget. Explicit memory is essential (removing it: +224% avoidable collisions).
+  Deployment-time weight learning is blocked until there is a powered promotion gate. Cloud spend ≈ US$13.3 of
+  US$30 approved.
+- **H (v0.4):** decision B, an experience-conditioned expressive mapping. Gates H0 → H0b and H1 → H1b passed after
+  re-tests; H4 → H4b passed with a corrected control. US$0 cloud spend.
+  - H2 human study pending an ethics determination.
+  - A researcher self-pilot (not blind) found the styles hard to tell apart.
+- **Housekeeping:** CI type errors fixed (CI had been red on the research branches since programme G, because of
+  numpy stub changes and torch typing); README and docs updated; a leftover idle Cloud NAT gateway, created by
+  another tool, was deleted.
 
 ## 2026-10-11: Milestones D and E
 - **D (`ece9723` preregistration):**

@@ -6,8 +6,21 @@ through **AffectLink**, a small versioned contract of robot-relevant facts:
 - **outputs (advisory):** persistent affect, appraisal frames, per-target action tendencies, attention, expression
   intent and learned expectations.
 
-Status: **research prototype (v0.1, private).** Implemented and measured results are listed under
-[Project status](#project-status), separately from proposals.
+Status: **research prototype (private).** The v0.1 core is implemented and tested. Programmes F, G and H (v0.2–v0.4)
+then tested which parts of it earn their place; their findings are summarised under
+[What the research found](#what-the-research-found). Implemented and measured results are listed separately from
+proposals.
+
+**In one paragraph.** What works is simple:
+- a learned consequence predictor;
+- explicit, outcome-grounded memory of each entity;
+- a smoothed risk signal, combined by a transparent rule.
+
+The emotion-like layer of v0.1 (the PAD affect state) did **not** earn its place. It added no predictive information
+and made behaviour worse once baselines were tuned equally. Memory-conditioned expressive motion is mechanically
+reliable in simulation, but has not been shown to be legible to people. The main open problem is **autonomous
+revision**: a robot that avoids something it has learned is risky stops collecting the evidence that would let it
+change its mind.
 
 ## What APM is not
 
@@ -107,6 +120,25 @@ Nano-class candidates, failure behaviour, a block diagram and a bench test proce
 - **No hardware was purchased or tested.**
 - Runtime numbers are measured on a development PC; board figures are estimates.
 
+## What the research found
+
+Every programme was preregistered: criteria were fixed before confirmatory data, and negative results were kept.
+
+| programme | question | decision / result | report |
+|---|---|---|---|
+| A–E (v0.1) | build the core; portability; learning; transfer; hardware | portable across two bodies; learning mixed; **no learned transfer**; PAD adds no predictive value | `experiments/{B,C,D,E}_*` |
+| F (v0.2) | does the existing APM improve behaviour? | v0.1's PAD layer cut collisions 25% vs the B1 baseline; G later traced this to B2's 9× larger tuning budget. Memory revision too slow (E3); learned regulator B3 not credible (E4) | `experiments/F_behavioral_learning/results/CONFIRMATORY_SUMMARY.md` |
+| G (v0.3) | smallest architecture that behaves better through experience | **Decision A:** predictor ensemble + entity memory + EMA risk penalty. PAD **harmful** under equal tuning (+99% avoidable collisions); neural policies and specialised regulators not better; no validated deployment-time weight learning | `experiments/G_architecture_selection/reports/ARCHITECTURE_DECISION.md` |
+| H (v0.4) | can experience be expressed through embodied movement? | **Decision B:** memory + fixed lookup → bounded adapter on NERVA's validated controller; lived history recoverable from motion 98–100%, 0 falls. No learned or specialised model beat it. **Human legibility untested**; a researcher self-pilot found the styles hard to tell apart | `experiments/H_expressive_intelligence/reports/EXPRESSIVE_ARCHITECTURE_DECISION.md` |
+
+**Open problems, in order:**
+1. **Autonomous revision (the avoidance trap).** Avoidance censors the evidence needed to revise beliefs. No memory
+   design met the revision criterion in F (E3) or G (G2).
+2. **Deployment-time learning.** It needs a statistically powered promotion gate (G7).
+3. **Learned cross-embodiment transfer.** Not demonstrated.
+4. **Human legibility of expression.** The H2 study is ready but needs an ethics determination, and probably a
+   richer motion vocabulary from NERVA.
+
 ## Project status
 
 | area | state |
@@ -119,10 +151,13 @@ Nano-class candidates, failure behaviour, a block diagram and a bench test proce
 | second embodiment (wheeled) + portability | **measured** (Milestone D): same core unchanged |
 | cross-embodiment learned transfer | **not demonstrated** (Milestone D, TR2 failed) |
 | embedded hardware | design + PC benchmark only (Milestone E) |
+| research harnesses for F/G/H (`apm_research`, `apm_select`, `apm_express`, `apm_testbeds.wheeled_ctrl`) | implemented, tested; used by the experiment scripts |
+| decision-A regulator as a production runtime | **not yet**: it exists as research code in `apm_select`, while the v0.1 core still carries PAD |
 
-## Research results so far
+## Milestone A–E results (v0.1)
 
-All preregistered; details in `experiments/*/README.md`.
+All preregistered; details in `experiments/*/README.md`. Later programmes, above, supersede the PAD and learning
+conclusions here.
 
 | question | result |
 |---|---|
@@ -151,6 +186,7 @@ limitation.
 | Milestone C | `python examples/nerva/generate_experience.py --nerva <NERVA> --policy <candidate.onnx> --trials 600`, then `python experiments/C_learning/run_learning.py --experience runs/nerva_experience` | seeds fixed in the scripts; data seed 2026 |
 | Milestone D | `python experiments/D_portability/run_portability.py --nerva-experience runs/nerva_experience` | wheeled seeds 10,000–10,399 |
 | Milestone E | `python experiments/E_hardware/benchmark.py` | |
+| programmes F, G, H | see each programme's `README.md` | frozen seeds in each `seeds.py`; confirmatory runs refuse to start on a dirty checkout |
 
 Raw data and logs stay local under `runs/` (ignored). Committed results are the JSON summaries in `experiments/`.
 

@@ -1,0 +1,46 @@
+{
+ "environment": {
+  "python": "3.13.16",
+  "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "cpus": 4,
+  "commit": "b8bff59830e2bb15e966c52f533286723236a3aa",
+  "dirty": false,
+  "start_utc": "2026-10-11T07:59:54Z",
+  "numpy": "2.5.3",
+  "torch": "2.14.1+cu130",
+  "mujoco": "3.3.0",
+  "onnxruntime": "1.21.0"
+ },
+ "train_decisions": 87000,
+ "val_decisions": 23200,
+ "train_rates": {
+  "collision": 0.036988504230976105,
+  "slip": 0.023459769785404205,
+  "progress_mean": 0.2959612309932709
+ },
+ "val": {
+  "collision": {
+   "brier": 0.02646244503557682,
+   "auroc": 0.9368507385707102,
+   "ece": 0.006938789845573307
+  },
+  "slip": {
+   "brier": 0.01904563419520855,
+   "auroc": 0.8833506586815306,
+   "ece": 0.0019599929902654693
+  },
+  "progress_rmse": 0.1942119300365448,
+  "progress_r2": 0.6744070053100586
+ },
+ "member_epochs": [
+  25,
+  25,
+  21,
+  27,
+  24
+ ],
+ "parameters_each": 7299,
+ "wall_s": 82.9,
+ "predictor_sha256": "0735d85487ac031cccbb171745ec8e3d5daf6f111d5b3daadc3401b2ed4be314"
+}

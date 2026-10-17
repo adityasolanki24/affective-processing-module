@@ -1,0 +1,170 @@
+{
+ "rule": "max mean validation J per family (G1-V 0..N-1, 10 episodes); best_simple = argmax over R2-R5",
+ "best_simple": "R2",
+ "validation": {
+  "R1": {
+   "config_id": "R1:40",
+   "J_mean": 49.93333333333333,
+   "J_se": 3.69538647857753,
+   "collision_rate": 0.10333333333333553,
+   "completion": 0.6240571655418817
+  },
+  "R2": {
+   "config_id": "R2:10",
+   "J_mean": 50.108333333333334,
+   "J_se": 3.700413213438679,
+   "collision_rate": 0.10333333333333553,
+   "completion": 0.628968253968254
+  },
+  "R3": {
+   "config_id": "R3:5",
+   "J_mean": 49.983333333333334,
+   "J_se": 3.633752480304982,
+   "collision_rate": 0.10666666666666894,
+   "completion": 0.6229183187946075
+  },
+  "R4": {
+   "config_id": "R4:18",
+   "J_mean": 49.833333333333336,
+   "J_se": 3.683516664704679,
+   "collision_rate": 0.11666666666666914,
+   "completion": 0.628
+  },
+  "R5": {
+   "config_id": "R5:final",
+   "J_mean": 49.28333333333333,
+   "J_se": 3.6682611475661457,
+   "collision_rate": 0.12333333333333595,
+   "completion": 0.6185361972951472
+  },
+  "R6": {
+   "config_id": "R6:10",
+   "J_mean": 49.86666666666667,
+   "J_se": 3.7031893161315845,
+   "collision_rate": 0.14000000000000298,
+   "completion": 0.6286852589641434
+  },
+  "R7": {
+   "config_id": "R7:33",
+   "J_mean": 49.09166666666667,
+   "J_se": 3.852963543187776,
+   "collision_rate": 0.11666666666666914,
+   "completion": 0.6180445151033387
+  },
+  "R8": {
+   "config_id": "R8:25",
+   "J_mean": 49.608333333333334,
+   "J_se": 3.911038080833757,
+   "collision_rate": 0.11333333333333574,
+   "completion": 0.6248506571087217
+  }
+ },
+ "systems": {
+  "B0": {
+   "kind": "b0"
+  },
+  "R0": {
+   "kind": "regulated",
+   "regulator": "static",
+   "lam_c": 1.0,
+   "lam_s": 2.0
+  },
+  "R1": {
+   "kind": "regulated",
+   "regulator": "static",
+   "params": {},
+   "lam_c": 2.507591,
+   "lam_s": 1.513288,
+   "config_id": "R1:40"
+  },
+  "R2": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "config_id": "R2:10"
+  },
+  "R3": {
+   "kind": "regulated",
+   "regulator": "hysteresis",
+   "params": {
+    "tau_up": 2.951774,
+    "tau_down": 18.59798,
+    "k": 6.218624,
+    "c": 0.38764
+   },
+   "lam_c": 0.360657,
+   "lam_s": 2.661762,
+   "config_id": "R3:5"
+  },
+  "R4": {
+   "kind": "regulated",
+   "regulator": "bayes",
+   "params": {
+    "tau_f": 52.812602,
+    "z": 1.742761,
+    "k": 0.236065
+   },
+   "lam_c": 1.543699,
+   "lam_s": 1.745095,
+   "config_id": "R4:18"
+  },
+  "R5": {
+   "kind": "regulated",
+   "regulator": "learned",
+   "params": {
+    "w": [
+     0.24280987599765666,
+     -0.3340517708092281,
+     0.35617552281009196,
+     -0.457315614872924,
+     0.49332354402137846,
+     0.2569382204123129,
+     0.38472081085372095,
+     0.08893245745273497
+    ]
+   },
+   "lam_c": 1.2488114483273174,
+   "lam_s": 2.167610672601844,
+   "config_id": "R5:final"
+  },
+  "R6": {
+   "kind": "b2v",
+   "mode": "pad",
+   "lam_c": 0.167548,
+   "lam_s": 2.452224,
+   "k": 4.007308,
+   "k_t": 0.326636,
+   "tau": 1.0,
+   "c": 0.0,
+   "config_id": "R6:10"
+  },
+  "R7": {
+   "kind": "b2v",
+   "mode": "appraisal",
+   "lam_c": 2.221136,
+   "lam_s": 1.503195,
+   "k": 0.98738,
+   "k_t": 0.220434,
+   "tau": 1.0,
+   "c": 0.0,
+   "config_id": "R7:33"
+  },
+  "R8": {
+   "kind": "b2v",
+   "mode": "filter",
+   "lam_c": 1.735436,
+   "lam_s": 1.021132,
+   "k": 3.690263,
+   "k_t": 0.285519,
+   "tau": 0.745141,
+   "c": 0.005261,
+   "config_id": "R8:25"
+  }
+ }
+}

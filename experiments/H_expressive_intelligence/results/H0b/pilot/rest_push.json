@@ -1,0 +1,2422 @@
+{
+ "lock": {
+  "python": "3.12.4",
+  "platform": "Windows-11-10.0.26100-SP0",
+  "machine": "AMD64",
+  "cpus": 12,
+  "commit": "2ecad67f456d0ad7716df808df7cb33f638fe6ec",
+  "dirty": true,
+  "start_utc": "2026-10-12T06:38:57Z",
+  "numpy": "2.5.3",
+  "torch": null,
+  "mujoco": "3.3.0",
+  "onnxruntime": "1.21.0",
+  "nerva_commit": "726c8c62cc87a12ed6899b7194331abcb82faaa2",
+  "nerva_dirty": false,
+  "partition": "P",
+  "exploratory": true
+ },
+ "rows": [
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.149242598935743,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.389385589252502,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.632397553794878,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.855043735788724,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.696946841496764,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.155546776018538,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.3954702972571,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.1,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.911089341579137,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.16741348763118,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.978552269795491,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.949134481532152,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 14.09580814332429,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.901188087377848,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.639665399355371,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.941316662987429,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.714906376955387,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.15,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.727028351133121,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.705651645752447,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.545118345693881,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.37131886201786,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.8944335477639,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.94465869080182,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.71428895901291,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.027545964153315,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.746132303282883,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.2,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.0951389960936,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.6605918697402,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.42861891173968,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.69596257377856,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.2679577588537,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.52873500117082,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.903933851988,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.84941523076955,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 15.072398112029152,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.25,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.78440243238822,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.89797002760687,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.6569950669615,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.33195371589176,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.26544225809084,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.28135779674156,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.8217470478294,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.2123424632439,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.13363751519333,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.027195618480183,
+   "pre_tilt": 10.661434131386779
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.278075022770446,
+   "pre_tilt": 10.69433499916366
+  },
+  {
+   "policy": "neutral",
+   "magnitude": 0.3,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 11.333181271141697,
+   "pre_tilt": 10.728228541577957
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.43607787245616,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.496374179444281,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.429855219882453,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.487008805480988,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.439488678463372,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.469710339950451,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.774897512816942,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.990156390063103,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.792920950880417,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.44830793796266,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.67436058824451,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.325243535159434,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.674672795918166,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.980811805247217,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.690797344864334,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.442203054517577,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.47619509205371,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.436959762738008,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481121698151188,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.1,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.44017777514427,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.484416531755684,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.436718959441201,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.486720690971502,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.43868641224074,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.50244364486029,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.934672167044473,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 14.067640330373186,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.80213958905923,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.11847067288323,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.22026790732326,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.69722284082562,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.622395218523598,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.8158912705765,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 13.4023693876283,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.435997550103684,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.493388109919131,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.434549816818317,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.48184489031768,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.15,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.433320955907242,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.492831536848044,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.436417132430766,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.497723550365519,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.433507716462627,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.480331967875781,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.69641248773243,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.5072311733848,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.56129158870084,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.59126821530222,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.72366197105768,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.95023448431482,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 15.767661659122608,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.73968381005633,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 15.378957579721328,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.438619055829248,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.48322620594944,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.441454441041301,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.496815315647751,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.2,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.428045452571077,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.482717065489501,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.430839274783972,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.488197925576863,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.428793354679762,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.486927196750411,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.63722257985677,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.63241094792014,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.7702870419139,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.84698570693902,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.3011265237017,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.28214138583516,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.3118966771408,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.30483114360436,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.70489947242916,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.432174784410511,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.470483385534783,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.439326552871492,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.49645209538171,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.25,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 0,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.441946749587933,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 0,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.482041099225153,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 0,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 45,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.451438683229572,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 45,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.47829900549722,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 45,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 90,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.428975401927637,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 90,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.474410244408837,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 90,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 135,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.0756190638393,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 135,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.3256702010501,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 135,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.31180954446899,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 180,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.61487832229298,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 180,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.68883126967165,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 180,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.32199026388784,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 225,
+   "index": 2000000,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.44391808676227,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 225,
+   "index": 2000001,
+   "head": null,
+   "fell": true,
+   "max_tilt": 178.81450060268148,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 225,
+   "index": 2000002,
+   "head": null,
+   "fell": true,
+   "max_tilt": 179.63570895163568,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 270,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.415704348227068,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 270,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.46363741001988,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 270,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 315,
+   "index": 2000000,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.43083283099984,
+   "pre_tilt": 12.258504795722665
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 315,
+   "index": 2000001,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.473976491174811,
+   "pre_tilt": 12.217022318720685
+  },
+  {
+   "policy": "e1_prime",
+   "magnitude": 0.3,
+   "direction_deg": 315,
+   "index": 2000002,
+   "head": null,
+   "fell": false,
+   "max_tilt": 12.481464842048009,
+   "pre_tilt": 12.293866664953155
+  }
+ ],
+ "wall_s": 190.1
+}

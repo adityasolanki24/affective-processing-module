@@ -128,3 +128,26 @@ def test_gru_learns_a_temporal_precursor():
 
 def episode_types_ok():
     return Episode.__dataclass_fields__.keys() >= {"times", "features", "events"}
+
+
+def test_auroc_vectorised_ties_equal_reference():
+    import numpy as np
+
+    from apm.learning.evaluation import auroc
+
+    def reference(p, y):
+        p, y = np.asarray(p, dtype=float), np.asarray(y, dtype=bool)
+        pos, neg = p[y], p[~y]
+        order = np.argsort(np.concatenate([pos, neg]))
+        ranks = np.empty(len(order))
+        ranks[order] = np.arange(1, len(order) + 1)
+        values = np.concatenate([pos, neg])
+        for v in np.unique(values):
+            sel = values == v
+            ranks[sel] = ranks[sel].mean()
+        return float((ranks[:len(pos)].sum() - len(pos) * (len(pos) + 1) / 2) / (len(pos) * len(neg)))
+    rng = np.random.default_rng(0)
+    for _ in range(20):
+        p = np.round(rng.random(300), int(rng.integers(1, 4)))  # many ties
+        y = rng.random(300) < 0.3
+        assert auroc(p, y) == reference(p, y)

@@ -1,0 +1,32 @@
+{
+ "candidate": "e1_prime",
+ "gate_preregistration": "b6ec4c5",
+ "style": [
+  0.0,
+  0.0
+ ],
+ "preregistration_commit": "0c221cf",
+ "implementation_commit": "726c8c62cc87a12ed6899b7194331abcb82faaa2",
+ "policy": "experiments/cloud_runs/e1_prime-20261011-132718/candidate.onnx",
+ "policy_sha256": "f67d5cac446f5ea81f3f5ffa26ea69155c50843443f57f0439d2e53d65ee2042",
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "dt_s": 0.02,
+ "scene": "flat_terrain_backlash",
+ "conditions": [
+  "no_latency",
+  "latency"
+ ],
+ "latency_model": "applied action from 0/1/2 control steps ago, uniform, seeded stream (seed, 1)",
+ "push": {
+  "step": 400,
+  "speed_m_s": 0.3
+ },
+ "primary_safety": "shadow only",
+ "cloud_work": false
+}

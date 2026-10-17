@@ -1,0 +1,154 @@
+# Programme H research log
+
+Chronological and factual. Pilots (partition P) are exploratory. Confirmatory runs are named with their
+addendum and commit.
+
+## 2026-10-12
+
+### Setup and audit
+- Branch `research/apm-v0.4-expressive-intelligence` created from `research/apm-v0.3-architecture-selection`
+  (`5fb2dd7`).
+- Audit of APM v0.3 and NERVA (`reports/H0_AUDIT.md`).
+- **NERVA environment.** NERVA's Linux venv is unusable on Windows, so a fresh Windows venv was built outside the
+  repository, pinned to Open Duck's inference lock:
+  - mujoco 3.3.0, onnxruntime 1.21.0, numpy 2.5.3, jax 0.5.3;
+  - Open_Duck_Playground `b9be205a` (editable install), NERVA `726c8c6` (editable install; the tree stays clean).
+  - The first import cloned MuJoCo Menagerie (1.7 GB, ≈ 35 min, one-off).
+- **Benchmark.** 20 s of neutral-candidate walking takes 1.3–1.7 s on one core. Pools of 3 workers give the best
+  throughput.
+- **Cloud audit (read-only):**
+  - no instances, disks, addresses, snapshots or images;
+  - one Router + Cloud NAT gateway that programme F/G did not create, reported to the user and not touched;
+  - no programme-H spending authorization.
+
+### Gate reproductions (NERVA's own runner and protocol, unchanged)
+- Neutral turn-translation candidate and E1′ at e = 0 both pass the full neutral long motor gate:
+  - 160 trials each;
+  - no falls, all pushes recovered, both latency conditions.
+- **All 320 trial records are byte-identical to NERVA's recorded Linux results.**
+
+### E1′ style reproduction
+- E1′ style evaluation reproduction started (NERVA `e1prime_eval.py`).
+
+### `apm_express` package
+Written as a removable layer, with 11 unit tests:
+- `ExpressionIntent`;
+- `BipedExpressionAdapter`;
+- `SafetyMonitor`;
+- `NervaBiped` controller wrapper;
+- kinematic stand-in;
+- episode runner.
+
+### H0 pilots (partition P)
+- **Switching** (48 trials):
+  - random command switching every 0.2–1.0 s, monitor in shadow;
+  - 0 falls for the neutral candidate;
+  - **1 fall for E1′** (dwell 0.4 s, latency on; tilt reached 25.5° and the trip came too late in shadow mode).
+- **Head channel:**
+  - NERVA's contract rejects any non-zero head offset in `set_behaviour`, so the wrapper validates the command with
+    zero offsets and then sets offsets on the motor targets only;
+  - smoke test at rest: yaw +0.4 rad turns the face +0.45 rad, with no drift;
+  - smoke test walking forward: the neutral policy almost stops (0.005 m/s), and E1′ slows to 0.046 m/s and turns
+    (yaw RMS 0.25).
+  - This matches NERVA's RQ1c on the upstream policy.
+  - **Design response:** a head channel used only while resting, with the head returned to neutral before any
+    locomotion command, plus controller-level rate limits on head and pitch changes.
+
+### H0 confirmatory run and outcome (later the same day)
+- **H0 confirmatory run on X** (commit `2ecad67`, 1,240 trials).
+- **Gate FAILS** on (d) standing pushes and (e) slow-probe arrival. Passes on (a) reproduction, (b) dwell 0.4 s and
+  (c) channels.
+- **Head box admitted:** ±0.4 × ±0.4 rad at rest. Face-down 0.4 with yaw −0.8 falls.
+- **E1′:** 2/40 falls at 0.4 s dwell; its pitch changes were safe in 160/160 trials.
+- **E1′ style evaluation reproduced:** 378/378 trials identical.
+- **Diagnosis:**
+  - all 0.30 m/s falls happened while standing during expressive pauses, pushed from behind;
+  - a standing-push sweep (P) shows the neutral controller falls from ≥ 0.20 m/s backward pushes at rest — never
+    covered by NERVA's gate;
+  - the adapter had no progress guarantee.
+- **Fixes, under H0b (`prereg/H0b_ADDENDUM.md`):** progress guarantee, minimum burst, push requirement at the
+  standing-validated magnitude.
+- **Spatial-feature sway bug fixed.**
+- **H2 protocol drafted** (pending ethics).
+- **Power simulation run** (design only).
+
+### H0b confirmatory run (fresh X indices, commit `64590af`)
+- **Gate PASSES.**
+- **Standing push tolerance:** m* = 0.15 m/s for the neutral controller, 0.10 for E1′.
+- **Exposure cost:** at 0.30 m/s, slow_pausing fell 8/40 vs neutral approach 0/40.
+- **Arrival:** 100% for every probe.
+- **H1 may start.**
+
+### H1 confirmatory run (commit `e68087a`, 976 trials)
+- **Gate FAILS on G1:** 1 fall in 112 push trials at 0.15 m/s. The push came from behind 0.2 s before a forward
+  burst, while the robot was still rocking after stopping.
+- **G2–G5 pass:**
+  - distinctness 1.00 non-speed and 0.99 non-speed-non-posture;
+  - matched speed (±3.4%) 1.00;
+  - push transfer 0.98;
+  - shift transfer 0.98.
+- **X1 vs X2:** equally safe; random intents about as diverse.
+- **PCA:** 10 components for 90% of the variance.
+- **Stop-transition pilot (P, 480 trials):** 0.15 m/s pushes 0.4 s after a stop topple the robot (2/16);
+  ≤ 0.125 m/s no falls.
+- **H1b addendum written:** transition tolerance m** on X, push re-test on fresh seeds; fail definitively if
+  m** < 0.10.
+- **H3/H4 design:** the observed outcome is peak base speed ≥ 0.04 m/s. Pilot: 672 encounters, perfect separation
+  from jolts. Measured tilt does not separate them at 0.15 m/s.
+- **H3/H4 addendum drafted;** to be run only if H1b passes.
+
+### H1b (commit `766057c`)
+- **Transition push tolerance:** m** = 0.10 m/s.
+- **Push-arm re-test at 0.10:** 0/168 falls.
+- **H1 passes.**
+- **H3/H4 experience generation started:** T, V, X.
+
+### H7 and addenda
+- **H7:** wheeled distinctness 1.00; median cross-body ρ 0.71; biped→wheeled transfer 0.79. Gaze and pause counting correspond poorly.
+- **H5 and H6 addenda and scripts written** before their data.
+
+### H2 stimuli
+- **72 anonymised clips rendered** (`videos/h1/`): 0 falls, all arrive, ≤ 45 s.
+- Hash-named; the style key is in `MANIFEST_KEY_DO_NOT_SHOW.json` (researchers only).
+- **No participants recruited.**
+
+### H3/H4/H4b/H6 (2026-10-13)
+- **Experience generated:** 27k + 2.9k encounters.
+- **Learned states:** S5–S7 trained (world prediction).
+- **H4 gate fails** on the mis-specified within-lifetime shuffle control.
+- **H4b (pooled shuffle, fresh streams) passes** for M_id, S5, S6, S7.
+- **Physical most-important test:** history recovered from motion at 100% for M_id, 0 falls.
+- **H6:** revisable dispositions from global states.
+- **H5 training running.**
+
+### H5, H8 and the decision (2026-10-13)
+- **H5:** learned mappings better calibrated; history effects compressed.
+- **H8 (fresh streams, 540 physical episodes):** the baseline A0 + memory + fixed lookup is retained.
+- **Final decision: B.**
+- **Cloud spend: US$0.**
+
+### H2 survey instrument v0.1 (2026-10-17)
+- **Built** `survey/index.html`, a local page implementing protocol §4, plus `scripts/h2_survey_forms.py`
+  (playlists from seed partition H2/P; file names only, no style key).
+- **Intended use:** the researcher's own pilot run, as feedback on the instrument. It is not study data, it is not
+  blind (labelled clips were seen), and it is not analysed as H2.
+- **Still no participants recruited.** Ethics determination and authorization are still pending.
+- **Open choices** are listed in `survey/README.md`. Most important: the full form takes about 40 minutes, not the
+  ≈ 25 minutes the protocol estimates.
+
+### Researcher pilot of the survey (2026-10-17)
+One run of the quick form (13 clips, 13.6 min) by the researcher, who had previously seen 7 clips with their style
+labels. **Not blind and not study data.** Recorded as an instrument pilot and as the researcher's own impression.
+- **Picked the intended style for 2 of 6 designed clips** (hesitant, cautious). Chance is about 1 in 7.
+  - assertive → energetic, energetic → curious, relaxed (matched speed) → cautious, curious → neutral.
+  - Both neutral clips → energetic and curious.
+- **Instrument problems:**
+  - 34/39 seven-point answers were the midpoint; from clip 5 onward every answer was 4/4/4.
+  - 22/78 slider answers stayed exactly at the 50 starting position.
+  - The longest clip (41 s) got all-neutral answers.
+- **Researcher feedback:** differences visible "a bit but not too much"; "got a bit tired".
+- **Researcher's conclusion:** the expressive repertoire is probably less legible than the simulation metrics
+  suggest. Machine-measured distinctness (H1: 1.00) does not imply human legibility.
+- **The limiting factor is likely the motion vocabulary NERVA exposes:** 7 walking commands, and head movement only
+  at rest. Improving that is NERVA work. Claim B stays untested; this observation lowers the prior that the
+  repertoire would pass H2 as it stands.

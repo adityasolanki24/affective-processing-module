@@ -1,0 +1,62 @@
+{
+ "a_reproduction": true,
+ "b_dwell_admitted": true,
+ "c_channel_families": {
+  "fractions": {
+   "temporal (pauses)": 1.0,
+   "spatial: path": 1.0,
+   "spatial: proximity": 1.0,
+   "spatial: orientation": 1.0,
+   "posture: head scanning": 1.0,
+   "posture: head elevation": 1.0
+  },
+  "families": {
+   "temporal": true,
+   "spatial": true,
+   "posture": true
+  },
+  "pass": true
+ },
+ "d_monitor_fallback": {
+  "falls_at_0.3_enforced": 0,
+  "n_0.3": 0,
+  "falls_high_enforced": 8,
+  "falls_high_shadow": 8,
+  "n_high_pairs": 16,
+  "discordant_enforced_only": 0,
+  "discordant_shadow_only": 0,
+  "fallback_always_neutral": true,
+  "pass": true
+ },
+ "e_nominal": {
+  "falls": 2,
+  "trips": 2,
+  "n": 10,
+  "arrival_rate": {
+   "neutral": 1.0,
+   "slow_pausing": 0.5,
+   "indirect_scanning": 1.0,
+   "averted_lean_back": 0.0,
+   "lean_forward_close": 1.0
+  },
+  "head_while_moving_max": 0.004999999999999463,
+  "pass": false
+ },
+ "secondary_e1_prime": {
+  "nominal": {
+   "falls": 0,
+   "trips": 0,
+   "n": 10,
+   "arrival_rate": {
+    "neutral": 1.0,
+    "slow_pausing": 1.0,
+    "indirect_scanning": 1.0,
+    "averted_lean_back": 1.0,
+    "lean_forward_close": 1.0
+   },
+   "head_while_moving_max": 1.3877787807814457e-17
+  },
+  "admitted_for_h1": true
+ },
+ "gate_passes": false
+}

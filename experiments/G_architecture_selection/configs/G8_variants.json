@@ -1,0 +1,70 @@
+{
+ "note": "G8 variants of A0 (prereg/G8_ADDENDUM.md); lam_c/lam_s are retuned per variant with equal K",
+ "variants": {
+  "A0": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   }
+  },
+  "A0_static": {
+   "kind": "regulated",
+   "regulator": "static",
+   "params": {}
+  },
+  "A0_nomem": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "no_memory": true
+  },
+  "A0_single": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "predictor": "single"
+  },
+  "A0_heur": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "predictor": "heuristic"
+  },
+  "A0_mem": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "memory": {
+    "model": "M1t",
+    "params": {
+     "tau_s": 356.352646
+    },
+    "evidence": "exposed",
+    "probe": {
+     "mode": "uncertainty",
+     "budget": 2,
+     "conf_max": 0.5
+    }
+   }
+  }
+ }
+}

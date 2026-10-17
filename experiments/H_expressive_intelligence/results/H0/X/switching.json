@@ -1,0 +1,5858 @@
+{
+ "suite": "switching",
+ "partition": "X",
+ "lock": {
+  "python": "3.12.4",
+  "platform": "Windows-11-10.0.26100-SP0",
+  "machine": "AMD64",
+  "cpus": 12,
+  "commit": "2ecad67f456d0ad7716df808df7cb33f638fe6ec",
+  "dirty": true,
+  "start_utc": "2026-10-12T05:46:32Z",
+  "numpy": "2.5.3",
+  "torch": null,
+  "mujoco": "3.3.0",
+  "onnxruntime": "1.21.0",
+  "addendum": "experiments/H_expressive_intelligence/prereg/H0_ADDENDUM.md",
+  "addendum_sha256": "2647e0d86378ce48356af43038c5f8398b5d2e06ea8542f26c955e06f51c2afe",
+  "sources": {
+   "src/apm/__init__.py": "9a596d39ebe4ec3fc6329ad5d92f1a865b8b705bc83a0a2836b2f6b9103e42ab",
+   "src/apm/adapters/__init__.py": "c9bf9d2da4b41cf64c0412cc2ff9489e0732349f13aecbf2a589a3d7728b01a9",
+   "src/apm/adapters/base.py": "2365ab309d4968dd9c309286b294214a55f64eb2c4084e97a3cd501fcf481d15",
+   "src/apm/adapters/nerva.py": "dbbc5616e24c2ab7d2e38a9d9a6573a0858a058ffe845b43b908cc4ae0d4b45d",
+   "src/apm/adapters/wheeled.py": "fc756c84214a7b8ed95dc07422b1fc03135239ead18371a829242b3084a73cc7",
+   "src/apm/adapters/wheeled_ctrl.py": "bfe27767e6677480e7e2124eebb80692baf81df212a91093d10e0b36848c2e4c",
+   "src/apm/core/__init__.py": "20cfb62d98a58db7fa374a079a989763418edefc2e639507a55b5e32c75e3800",
+   "src/apm/core/affect.py": "943f46fc966cacd9710381ebec84b7951de0c6eeb54cd98ab5ee12be9893159a",
+   "src/apm/core/appraisal.py": "5b11ad6b8f74e14e8f23231e135fe51157ee853e051e1fda2285cf15e4c17102",
+   "src/apm/core/context.py": "e3c2f01cbb5c918bfab595797e24999c4cf4a30efbdf9b26ec00870ae7360741",
+   "src/apm/core/outcomes.py": "2faa4d20975321ac1bff7699bca533d82f1ddea420bb5ee64193bd2d0f98d8a9",
+   "src/apm/core/runtime.py": "e0ed5095d98c7cd3311d4818eb9e44899e5fa3b98928b9defcc5335f29c61f00",
+   "src/apm/core/tendencies.py": "c3be9a43b21766ca1dbb10d1e3beb074657eec212fd86718a9292d51c816f60c",
+   "src/apm/learning/__init__.py": "a4e3af8828979aed3dfa99a1e1f419cbba6b2067c33d9593eb9f10d1b1a2303a",
+   "src/apm/learning/baselines.py": "8879436188b04780d3e56ca614677941857150d5748610b1e300d67ed162783c",
+   "src/apm/learning/dataset.py": "e9c721bd082b5426cbbfc0178433bbd8796ad56de64a03928b7b7753c92f1ce0",
+   "src/apm/learning/evaluation.py": "4f4c3c1a98233f8b32fc397b025aed729f1428e1200f6dc18e249171fa6c044a",
+   "src/apm/learning/features.py": "b141492a7e4344fb78cdd9a4ff14826bf6a7357b3e04a9d3905db16ef8e49af7",
+   "src/apm/learning/predictor.py": "e1b018bdd373e0c9d0c9fffa4ae0c8edca6ca22b98c1072303755e58b604fdd6",
+   "src/apm/learning/replay.py": "eef52f4d22111de28c4890bd107d7b74ba54e5512af6f861a262a3d138e62b86",
+   "src/apm/memory/__init__.py": "62ac475ddabf697b0f8fc180649ace5ee3b732b6ebea5ddb2c7907b731ecc2a0",
+   "src/apm/memory/entities.py": "173d414ebb546054d9acd8369f9b573793676e8284fc8a8764b31fc0ba8de0d9",
+   "src/apm/memory/episodes.py": "87580bab7899d9c01ab6be9ff6647f8d869a1501d3c2db86ac73b1979f3e2aca",
+   "src/apm/protocol/__init__.py": "3cfca2a7fa01ffbc0cebebb22a2314e3265bf69481494ca9b5eb224f94e26c74",
+   "src/apm/protocol/codec.py": "14e88aa21be77a3ec0ef97e89ab6fbc3a9308b5f29ec9af4a1114f4cb1b1f58d",
+   "src/apm/protocol/messages.py": "e865d265cd144d3d8cc261b51f4dc5ef90fd05fad31e4b27342cdb611225ada7",
+   "src/apm/protocol/validation.py": "0fd57e70e7e0001ff94539bf9acb2016025ebe8c30b4687db21d6a5d5c4c57d5",
+   "src/apm_research/__init__.py": "7d6698a2157cb823a4aa032610b50d904b045f077c4a30d4c0d2fd8b8cc05845",
+   "src/apm_research/dataset.py": "71c053311345761b32c288988abbcf4ef2a691361cfa3df93a897890440aa95b",
+   "src/apm_research/features.py": "9a2f03e6e381d3467d1f068f97e9920b7780aa6ae28bacba09842d7a29886d2e",
+   "src/apm_research/harness.py": "6af5bcc7cf6f5ba6e8ecb9c2bf16b01612136283df3ac4da4c905fe64f582fbf",
+   "src/apm_research/memory.py": "138c5742b0619051867c1ebb3c152830491a73f0515842fe5be88035d2a6b95e",
+   "src/apm_research/policies.py": "44c53853ea866d1a6fffa4e8248a8e78e0e230a7aa51332716fc900ba944ddef",
+   "src/apm_research/predictor.py": "e2ffc8be28a4397df2134baf127fcffb1cd281633701f63d8cecf1395039549b",
+   "src/apm_research/provenance.py": "91441e429eb41f468442a276b276c49553b905dfd01521647aefdb5eed7fa564",
+   "src/apm_research/rl.py": "ea9fb16a3e5725fd01a3c074b02509140146573fe3892a4b7011ec787789f965",
+   "src/apm_research/stats.py": "1ba7f0afdc0adaa33eb2aa367ff54e94435d06ebaf20eb76092abe86ada4b4a9",
+   "src/apm_testbeds/__init__.py": "1d801ac1d4b636c72388a83529448a1a7272aea061461c5afe30232191fd2d72",
+   "src/apm_testbeds/wheeled.py": "986b8320e7806be6b07a4718fd31a510ad64cf6ba7391b826ee89976afaefc36",
+   "src/apm_testbeds/wheeled_ctrl.py": "2c25364a8caad451c9fca4f655533c4cbd54c5884e96b493a60eea02443c7c61",
+   "src/apm_select/__init__.py": "865398e77cd5d6d9caff665d205588a095ec0ca38fb3701db6e9eee26cdab99e",
+   "src/apm_select/instrument.py": "091386ac17dbeb2074fd3372cb34394e4d37637857da32ed6d13cc125c2c2ba0",
+   "src/apm_select/learning.py": "dd652dcc6f2df51d507cbd7ead0936f4c7f0f76581aaa81b7ca1119f3f1c4d8c",
+   "src/apm_select/memory.py": "317ca2a13c61d1744e25ae1f33130eeea9b1b7cb9bdde9719c64e4b0d079ff8a",
+   "src/apm_select/minimal.py": "8943c59607819daf7e9cb6afde9547662f1270dcd59ff8d63cf5cfc1446c556c",
+   "src/apm_select/policies.py": "c2eb32b8ff8da39dfaa2fa3fb22c17d0f666537fc30d6ad5b68ef5840657c53d",
+   "src/apm_select/provenance.py": "63681fabf1e8be5f97b1f81eaec3c9b7ff312a716c1f32bdd5f88a971c446b63",
+   "src/apm_select/regulators.py": "3a1b6d8f4d5747dfe5d92e720a71dab993305a22ff6f6b4916dcbf1c4bfa50d2",
+   "src/apm_select/scenarios.py": "07536fccd8325331af64a426626f56aadf8c74766ba0ec57e83121fa4674db63",
+   "src/apm_select/stateful.py": "3a2e5c9f31b41c8766479b3698f0712a9fe2bc570eb05e85575fb5ed825e8b34",
+   "src/apm_select/stats.py": "c20440b8ae2e948c2d290c0a2bdd95fe23c7bafde507b9ee9ec7fb5b05c56054",
+   "src/apm_select/survival.py": "4be6fd82ec44ea364dfecf1569006c1931a1fc2bce30592032b428e8113b3a70",
+   "src/apm_select/tuning.py": "e40193c26979c14b924026f8080a88846e2c696067ebe2c379916bca43d32b21",
+   "src/apm_select/variations.py": "246ab1f392f83d2c4f7fca67f9aff7c2c59deded00cd0d6df6fc081335a18cb2",
+   "src/apm_express/__init__.py": "3b4a22d434027f98188479ab491c64ab938e0309f67e54687fe61ceb84efd13f",
+   "src/apm_express/adapter.py": "bd854e0acffdf7cabe2e7250793a65d749bfe2681918b6f0bf569cbca1f4fa64",
+   "src/apm_express/biped.py": "c6d7c5cd55f75ca2bab25356ea54569fee90ba31059075c3cc98945142cabb90",
+   "src/apm_express/episode.py": "052c2c6c5918137d0c22a079d655a7b9b8a0c4ca8293a8ddbfb2624a92c65813",
+   "src/apm_express/features.py": "19c8e494ff93e1793193de975183d70d201c5ee001d12f5e21fbf90ae9fa2b4c",
+   "src/apm_express/intent.py": "1bd00dc24da62853f99503775888a44f0d8002a18d11d9d334387c420c9add82",
+   "src/apm_express/kinematic.py": "5b48324e51b277b4ef96b24a7ba883b59d084d32509e347dbbb1599fa333fcfa",
+   "src/apm_express/provenance.py": "f4a55d55386766cb36ea201d28a1a7ccc230aa73883ba4bb6bb7c5360c6e1bdf",
+   "src/apm_express/safety.py": "0fceed1f480612e37aa1353869fd0fc84d00d93cba8ecaece3b9652bf47f8b19",
+   "src/apm_express/styles.py": "464287604b80c4e76b25e94e69652f78240a2c88096b9d296efa532d2ab8a393",
+   "experiments/H_expressive_intelligence/scripts/h0_analyze.py": "1f1f2853ffa4ad16636a35ac101d81c6751c76932c26582c9192db945add42ea",
+   "experiments/H_expressive_intelligence/scripts/h0_interface.py": "39129a7f1a24729b84a63f50d6242b1dd786984624d31f8abfde96f63130f363",
+   "experiments/H_expressive_intelligence/seeds.py": "b7c8c7fde7a9f99d532fe4eb858cc71b3a6011b4596c020d60467d2dcf2ac782"
+  },
+  "nerva_commit": "726c8c62cc87a12ed6899b7194331abcb82faaa2",
+  "nerva_dirty": false
+ },
+ "n_trials": 240,
+ "wall_s": 658.7,
+ "rows": [
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_0",
+    "policy": "neutral",
+    "index": 0,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 822517264,
+   "fell": false,
+   "max_tilt": 10.512860962077008,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17654048223963942,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 17.56
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_1",
+    "policy": "neutral",
+    "index": 1,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 554771383,
+   "fell": false,
+   "max_tilt": 10.078695553785586,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1765457668664313,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 17.57
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_2",
+    "policy": "neutral",
+    "index": 2,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1553978822,
+   "fell": false,
+   "max_tilt": 10.216562312967786,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17319484802942164,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 17.53
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_3",
+    "policy": "neutral",
+    "index": 3,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1613702516,
+   "fell": false,
+   "max_tilt": 10.571335233076503,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17126533583437448,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.99
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_4",
+    "policy": "neutral",
+    "index": 4,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 929677735,
+   "fell": false,
+   "max_tilt": 10.821235166665327,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1751648293712626,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.9
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_5",
+    "policy": "neutral",
+    "index": 5,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 587583368,
+   "fell": false,
+   "max_tilt": 10.309118824739622,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17703398115927704,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.89
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_6",
+    "policy": "neutral",
+    "index": 6,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 275249623,
+   "fell": false,
+   "max_tilt": 10.521687943412555,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16381993427368263,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.53
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_7",
+    "policy": "neutral",
+    "index": 7,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1979139188,
+   "fell": false,
+   "max_tilt": 10.560582586956047,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15739325505727014,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.6
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_8",
+    "policy": "neutral",
+    "index": 8,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1953132846,
+   "fell": false,
+   "max_tilt": 10.210118183177267,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16791467750566347,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.58
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_9",
+    "policy": "neutral",
+    "index": 9,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1144207387,
+   "fell": false,
+   "max_tilt": 10.381413075903819,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1813716154782971,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 10.6
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_10",
+    "policy": "neutral",
+    "index": 10,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1930078528,
+   "fell": false,
+   "max_tilt": 10.068168967233511,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16360189581562368,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 10.55
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_11",
+    "policy": "neutral",
+    "index": 11,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1516668508,
+   "fell": false,
+   "max_tilt": 10.598014517300392,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16454482522694153,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 10.62
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_12",
+    "policy": "neutral",
+    "index": 12,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 679690784,
+   "fell": false,
+   "max_tilt": 10.910780668768794,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17499272525908,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.24
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_13",
+    "policy": "neutral",
+    "index": 13,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 239815785,
+   "fell": false,
+   "max_tilt": 10.521846274305066,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1727440412741506,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 9.22
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_14",
+    "policy": "neutral",
+    "index": 14,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1402607933,
+   "fell": false,
+   "max_tilt": 10.517333811137346,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16362545923706429,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.06
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_15",
+    "policy": "neutral",
+    "index": 15,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1515018749,
+   "fell": false,
+   "max_tilt": 10.191472083020798,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17382350843981953,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.36
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_16",
+    "policy": "neutral",
+    "index": 16,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 331000420,
+   "fell": false,
+   "max_tilt": 10.361339191489417,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1697354041061659,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.26
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_17",
+    "policy": "neutral",
+    "index": 17,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 744079210,
+   "fell": false,
+   "max_tilt": 10.304023694240971,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16786884445904754,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.35
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_18",
+    "policy": "neutral",
+    "index": 18,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1312140008,
+   "fell": false,
+   "max_tilt": 10.131536495471272,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18798154396811007,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.45
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_nolat_19",
+    "policy": "neutral",
+    "index": 19,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 478297637,
+   "fell": false,
+   "max_tilt": 9.517290588297064,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1846828282665226,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.52
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_0",
+    "policy": "neutral",
+    "index": 20,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 13089752,
+   "fell": false,
+   "max_tilt": 10.03592980571888,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17496369403592227,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.75
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_1",
+    "policy": "neutral",
+    "index": 21,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1736613797,
+   "fell": false,
+   "max_tilt": 10.418051641664414,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17369831989602497,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.68
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_2",
+    "policy": "neutral",
+    "index": 22,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 2071868722,
+   "fell": false,
+   "max_tilt": 10.638599534115446,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17396451255275314,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.55
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_3",
+    "policy": "neutral",
+    "index": 23,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 528183856,
+   "fell": false,
+   "max_tilt": 11.032544854855718,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16906442347138073,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.8
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_4",
+    "policy": "neutral",
+    "index": 24,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1106853853,
+   "fell": false,
+   "max_tilt": 10.81546899061484,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18680392089413878,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.12
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_5",
+    "policy": "neutral",
+    "index": 25,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1337525387,
+   "fell": false,
+   "max_tilt": 9.786508497231601,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17554559511541346,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.16
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_6",
+    "policy": "neutral",
+    "index": 26,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 295432410,
+   "fell": false,
+   "max_tilt": 10.493480159485241,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17959197644916047,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.09
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_7",
+    "policy": "neutral",
+    "index": 27,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1792201144,
+   "fell": false,
+   "max_tilt": 10.086796902160694,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1588373078323509,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.17
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_8",
+    "policy": "neutral",
+    "index": 28,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 128131017,
+   "fell": false,
+   "max_tilt": 9.471610401366553,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17212931923267893,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.19
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_9",
+    "policy": "neutral",
+    "index": 29,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 161655393,
+   "fell": false,
+   "max_tilt": 9.71302232305013,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16466441439471796,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.25
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_10",
+    "policy": "neutral",
+    "index": 30,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1093204377,
+   "fell": false,
+   "max_tilt": 9.404943102888266,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17038625920064954,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.55
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_11",
+    "policy": "neutral",
+    "index": 31,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1529894516,
+   "fell": false,
+   "max_tilt": 10.417498844412796,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1717942587963983,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.76
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_12",
+    "policy": "neutral",
+    "index": 32,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1863626875,
+   "fell": false,
+   "max_tilt": 9.973561664642432,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17633369055963805,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.98
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_13",
+    "policy": "neutral",
+    "index": 33,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1438783887,
+   "fell": false,
+   "max_tilt": 9.566363440510738,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18332435902271382,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 11.32
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_14",
+    "policy": "neutral",
+    "index": 34,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 511501262,
+   "fell": false,
+   "max_tilt": 10.968714638157582,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16550815515188955,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 11.14
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_15",
+    "policy": "neutral",
+    "index": 35,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 951261876,
+   "fell": false,
+   "max_tilt": 10.249423273429999,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18405441694356894,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 10.77
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_16",
+    "policy": "neutral",
+    "index": 36,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1847797268,
+   "fell": false,
+   "max_tilt": 10.578097940999204,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16262766478667984,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 9.32
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_17",
+    "policy": "neutral",
+    "index": 37,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 2073076939,
+   "fell": false,
+   "max_tilt": 10.406020453229358,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16866557516890213,
+   "max_saturated_run": 2,
+   "completed": true,
+   "wall_s": 9.41
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_18",
+    "policy": "neutral",
+    "index": 38,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 974649424,
+   "fell": false,
+   "max_tilt": 9.794489251778012,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.19327403934629273,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.48
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.4_lat_19",
+    "policy": "neutral",
+    "index": 39,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 387285640,
+   "fell": false,
+   "max_tilt": 10.076564848508493,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18789941470424498,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 11.52
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_0",
+    "policy": "neutral",
+    "index": 40,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 96306181,
+   "fell": false,
+   "max_tilt": 11.326180739891997,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18285291670359322,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 11.47
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_1",
+    "policy": "neutral",
+    "index": 41,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1993321309,
+   "fell": false,
+   "max_tilt": 11.363187031017842,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17219680305267432,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 11.46
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_2",
+    "policy": "neutral",
+    "index": 42,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 17472818,
+   "fell": false,
+   "max_tilt": 11.06463774229122,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18313088105630393,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.39
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_3",
+    "policy": "neutral",
+    "index": 43,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 959359583,
+   "fell": false,
+   "max_tilt": 10.62888810624462,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16015128777301046,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.41
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_4",
+    "policy": "neutral",
+    "index": 44,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1147872943,
+   "fell": false,
+   "max_tilt": 10.646816384223,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15133857236250348,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.35
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_5",
+    "policy": "neutral",
+    "index": 45,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1778717405,
+   "fell": false,
+   "max_tilt": 10.942140862484607,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17445711905026573,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.26
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_6",
+    "policy": "neutral",
+    "index": 46,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2013054734,
+   "fell": false,
+   "max_tilt": 10.70238464825158,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1876891958263871,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.43
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_7",
+    "policy": "neutral",
+    "index": 47,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1934251157,
+   "fell": false,
+   "max_tilt": 11.090556900830709,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17673399454165423,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.4
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_8",
+    "policy": "neutral",
+    "index": 48,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2123178643,
+   "fell": false,
+   "max_tilt": 11.10249293327431,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17810031970209,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.47
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_9",
+    "policy": "neutral",
+    "index": 49,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1714063178,
+   "fell": false,
+   "max_tilt": 10.716616978645744,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1882164446137754,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.75
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_10",
+    "policy": "neutral",
+    "index": 50,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 90481821,
+   "fell": false,
+   "max_tilt": 10.899629880549513,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18148728953501292,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.68
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_11",
+    "policy": "neutral",
+    "index": 51,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1320584083,
+   "fell": false,
+   "max_tilt": 11.05131628841892,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1550827649168698,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.11
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_12",
+    "policy": "neutral",
+    "index": 52,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 157122874,
+   "fell": false,
+   "max_tilt": 11.047764515026133,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16949534731246263,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.24
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_13",
+    "policy": "neutral",
+    "index": 53,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1995734644,
+   "fell": false,
+   "max_tilt": 10.617280282893832,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16353553645751667,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 9.34
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_14",
+    "policy": "neutral",
+    "index": 54,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1865935625,
+   "fell": false,
+   "max_tilt": 10.84257984069201,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17289841398016698,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 10.01
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_15",
+    "policy": "neutral",
+    "index": 55,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1517071764,
+   "fell": false,
+   "max_tilt": 10.923167114729047,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1784588031620678,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.8
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_16",
+    "policy": "neutral",
+    "index": 56,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1068601245,
+   "fell": false,
+   "max_tilt": 10.956997016272528,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15844642030407563,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.67
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_17",
+    "policy": "neutral",
+    "index": 57,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1765933917,
+   "fell": false,
+   "max_tilt": 11.135489236101511,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15976692716078372,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.67
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_18",
+    "policy": "neutral",
+    "index": 58,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 595778932,
+   "fell": false,
+   "max_tilt": 10.8394034364343,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18547107994940587,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 9.32
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_nolat_19",
+    "policy": "neutral",
+    "index": 59,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 881096600,
+   "fell": false,
+   "max_tilt": 10.997013194698527,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1682567527149174,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.59
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_0",
+    "policy": "neutral",
+    "index": 60,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2084955736,
+   "fell": false,
+   "max_tilt": 10.492255733042533,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17218658381484642,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.92
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_1",
+    "policy": "neutral",
+    "index": 61,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1900073542,
+   "fell": false,
+   "max_tilt": 11.285198468443225,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17493951388547885,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.98
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_2",
+    "policy": "neutral",
+    "index": 62,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 344303679,
+   "fell": false,
+   "max_tilt": 10.716185509210188,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17422950748344035,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.76
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_3",
+    "policy": "neutral",
+    "index": 63,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1952481998,
+   "fell": false,
+   "max_tilt": 11.544649145013617,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17495116372783404,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.98
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_4",
+    "policy": "neutral",
+    "index": 64,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 3264381,
+   "fell": false,
+   "max_tilt": 10.816036272253728,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17055507594319952,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.14
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_5",
+    "policy": "neutral",
+    "index": 65,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1756841714,
+   "fell": false,
+   "max_tilt": 10.933616855214305,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17834976725121215,
+   "max_saturated_run": 2,
+   "completed": true,
+   "wall_s": 8.95
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_6",
+    "policy": "neutral",
+    "index": 66,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1835188683,
+   "fell": false,
+   "max_tilt": 11.378012261065322,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17774195712887697,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.67
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_7",
+    "policy": "neutral",
+    "index": 67,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1349321825,
+   "fell": false,
+   "max_tilt": 11.034106389480609,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17383633641208984,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.74
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_8",
+    "policy": "neutral",
+    "index": 68,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 387091429,
+   "fell": false,
+   "max_tilt": 10.79109613025092,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18841577382359564,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.72
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_9",
+    "policy": "neutral",
+    "index": 69,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1636821727,
+   "fell": false,
+   "max_tilt": 10.975615049801057,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17370851250551334,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.98
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_10",
+    "policy": "neutral",
+    "index": 70,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 19208404,
+   "fell": false,
+   "max_tilt": 10.837116598037012,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1769851243420481,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.82
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_11",
+    "policy": "neutral",
+    "index": 71,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 185647594,
+   "fell": false,
+   "max_tilt": 11.185154807889065,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18316931727101315,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.82
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_12",
+    "policy": "neutral",
+    "index": 72,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 613595769,
+   "fell": false,
+   "max_tilt": 11.170615645800172,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1653931017736866,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.1
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_13",
+    "policy": "neutral",
+    "index": 73,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1032829033,
+   "fell": false,
+   "max_tilt": 10.319333477570968,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16401767625408348,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.05
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_14",
+    "policy": "neutral",
+    "index": 74,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 503572264,
+   "fell": false,
+   "max_tilt": 11.159391838452041,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.179295917597885,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.01
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_15",
+    "policy": "neutral",
+    "index": 75,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1540439289,
+   "fell": false,
+   "max_tilt": 11.241769480991547,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18442993759072707,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 11.48
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_16",
+    "policy": "neutral",
+    "index": 76,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1462762163,
+   "fell": false,
+   "max_tilt": 10.84109978293114,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17691026793943876,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 11.47
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_17",
+    "policy": "neutral",
+    "index": 77,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1290841980,
+   "fell": false,
+   "max_tilt": 10.709979064514187,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17161613771732176,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 11.62
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_18",
+    "policy": "neutral",
+    "index": 78,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1806322673,
+   "fell": false,
+   "max_tilt": 11.124241288788221,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16793341730076022,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.67
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d0.6_lat_19",
+    "policy": "neutral",
+    "index": 79,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1314289900,
+   "fell": false,
+   "max_tilt": 10.861814830063501,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17551440118636719,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.68
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_0",
+    "policy": "neutral",
+    "index": 80,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 244446143,
+   "fell": false,
+   "max_tilt": 10.723251279268881,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1574070043149755,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.44
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_1",
+    "policy": "neutral",
+    "index": 81,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 437437783,
+   "fell": false,
+   "max_tilt": 11.24858673881551,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16380289391080688,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.84
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_2",
+    "policy": "neutral",
+    "index": 82,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 2071501199,
+   "fell": false,
+   "max_tilt": 10.872416395366491,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18244104169367753,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.99
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_3",
+    "policy": "neutral",
+    "index": 83,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1760777240,
+   "fell": false,
+   "max_tilt": 10.90215570288042,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16079895421976304,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.89
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_4",
+    "policy": "neutral",
+    "index": 84,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 404978691,
+   "fell": false,
+   "max_tilt": 11.378218698318243,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18088149968475703,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.9
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_5",
+    "policy": "neutral",
+    "index": 85,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1080925468,
+   "fell": false,
+   "max_tilt": 11.227843281086193,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17415449460991506,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.83
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_6",
+    "policy": "neutral",
+    "index": 86,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 281064182,
+   "fell": false,
+   "max_tilt": 10.875299822449856,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1672667702378422,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.96
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_7",
+    "policy": "neutral",
+    "index": 87,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 900210155,
+   "fell": false,
+   "max_tilt": 11.292224941630508,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17849926221341428,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.89
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_8",
+    "policy": "neutral",
+    "index": 88,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 10861355,
+   "fell": false,
+   "max_tilt": 10.891681082196053,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17079692863845336,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.77
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_9",
+    "policy": "neutral",
+    "index": 89,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1761263290,
+   "fell": false,
+   "max_tilt": 11.302733530743522,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.19186467076365865,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.75
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_10",
+    "policy": "neutral",
+    "index": 90,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1192426342,
+   "fell": false,
+   "max_tilt": 11.255997677361744,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1741411823293718,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 10.59
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_11",
+    "policy": "neutral",
+    "index": 91,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 151105609,
+   "fell": false,
+   "max_tilt": 10.733806161688307,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17406041168505587,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 10.56
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_12",
+    "policy": "neutral",
+    "index": 92,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 586520089,
+   "fell": false,
+   "max_tilt": 10.800032393047893,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18269901290478696,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 10.67
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_13",
+    "policy": "neutral",
+    "index": 93,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1985887386,
+   "fell": false,
+   "max_tilt": 10.77345802488065,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1660830912333135,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.13
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_14",
+    "policy": "neutral",
+    "index": 94,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 2030264756,
+   "fell": false,
+   "max_tilt": 11.226548034087296,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1836246420417531,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.18
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_15",
+    "policy": "neutral",
+    "index": 95,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 737072103,
+   "fell": false,
+   "max_tilt": 10.829835009079687,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17132989824426326,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.06
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_16",
+    "policy": "neutral",
+    "index": 96,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 683365796,
+   "fell": false,
+   "max_tilt": 11.118843003564393,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18062104973913506,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.86
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_17",
+    "policy": "neutral",
+    "index": 97,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 820465174,
+   "fell": false,
+   "max_tilt": 11.071442184276211,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17774811353731396,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.83
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_18",
+    "policy": "neutral",
+    "index": 98,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 310755729,
+   "fell": false,
+   "max_tilt": 10.90218878072537,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17462744240180839,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.05
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_nolat_19",
+    "policy": "neutral",
+    "index": 99,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1562901226,
+   "fell": false,
+   "max_tilt": 11.260750458331952,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16949043814553238,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.07
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_0",
+    "policy": "neutral",
+    "index": 100,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1864075985,
+   "fell": false,
+   "max_tilt": 10.962301595471132,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18125831408305637,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 9.66
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_1",
+    "policy": "neutral",
+    "index": 101,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 789489152,
+   "fell": false,
+   "max_tilt": 11.26110186160982,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15446539484226074,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 10.07
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_2",
+    "policy": "neutral",
+    "index": 102,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1121275710,
+   "fell": false,
+   "max_tilt": 10.946083564268864,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1784814266957333,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.9
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_3",
+    "policy": "neutral",
+    "index": 103,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 157448476,
+   "fell": false,
+   "max_tilt": 11.015839590074673,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17462753243421303,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 9.84
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_4",
+    "policy": "neutral",
+    "index": 104,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 966039509,
+   "fell": false,
+   "max_tilt": 11.156757291788084,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.19159225906308652,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.6
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_5",
+    "policy": "neutral",
+    "index": 105,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 409678288,
+   "fell": false,
+   "max_tilt": 11.127212538813769,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1794405141824309,
+   "max_saturated_run": 2,
+   "completed": true,
+   "wall_s": 10.05
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_6",
+    "policy": "neutral",
+    "index": 106,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 617157768,
+   "fell": false,
+   "max_tilt": 10.971502538067792,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18507277582292708,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.95
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_7",
+    "policy": "neutral",
+    "index": 107,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 55405359,
+   "fell": false,
+   "max_tilt": 11.001423814811744,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16652324796171403,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.84
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_8",
+    "policy": "neutral",
+    "index": 108,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 800905596,
+   "fell": false,
+   "max_tilt": 11.223678280028494,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.180286868043936,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.38
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_9",
+    "policy": "neutral",
+    "index": 109,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1965500375,
+   "fell": false,
+   "max_tilt": 11.291548128109334,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1786377058119668,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.35
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_10",
+    "policy": "neutral",
+    "index": 110,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 773072871,
+   "fell": false,
+   "max_tilt": 10.902975316732325,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18901564940477988,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.31
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_11",
+    "policy": "neutral",
+    "index": 111,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1543476531,
+   "fell": false,
+   "max_tilt": 10.943975650594195,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17885631567342752,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.59
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_12",
+    "policy": "neutral",
+    "index": 112,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1132428845,
+   "fell": false,
+   "max_tilt": 11.522041970575932,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18122183583417328,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.47
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_13",
+    "policy": "neutral",
+    "index": 113,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1466721833,
+   "fell": false,
+   "max_tilt": 11.206414552361936,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1683411288880346,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.26
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_14",
+    "policy": "neutral",
+    "index": 114,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 226158930,
+   "fell": false,
+   "max_tilt": 10.664246492237288,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17142926426924787,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.46
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_15",
+    "policy": "neutral",
+    "index": 115,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1330861394,
+   "fell": false,
+   "max_tilt": 11.189161737255754,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1741231215995278,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.4
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_16",
+    "policy": "neutral",
+    "index": 116,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1667263776,
+   "fell": false,
+   "max_tilt": 11.094841993992176,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17371227287680813,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.56
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_17",
+    "policy": "neutral",
+    "index": 117,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 533814757,
+   "fell": false,
+   "max_tilt": 11.116338130651807,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17085713979453554,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.45
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_18",
+    "policy": "neutral",
+    "index": 118,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 582592150,
+   "fell": false,
+   "max_tilt": 10.81021203725559,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17301787080590025,
+   "max_saturated_run": 2,
+   "completed": true,
+   "wall_s": 6.32
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "neutral_d1.0_lat_19",
+    "policy": "neutral",
+    "index": 119,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 75868905,
+   "fell": false,
+   "max_tilt": 10.683566890124514,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18127538507566304,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.52
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_0",
+    "policy": "e1_prime",
+    "index": 120,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 750177025,
+   "fell": false,
+   "max_tilt": 13.19744339694641,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1695403875795694,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.74
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_1",
+    "policy": "e1_prime",
+    "index": 121,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 2100259039,
+   "fell": true,
+   "max_tilt": 179.8436990321418,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.4 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.00011031042068521124,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.87
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_2",
+    "policy": "e1_prime",
+    "index": 122,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1754758079,
+   "fell": false,
+   "max_tilt": 14.591282637079098,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.12005274243495512,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.76
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_3",
+    "policy": "e1_prime",
+    "index": 123,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1371783761,
+   "fell": false,
+   "max_tilt": 11.276188329236872,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14889744363461838,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.62
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_4",
+    "policy": "e1_prime",
+    "index": 124,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1317404934,
+   "fell": false,
+   "max_tilt": 11.208517168839649,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14335291855668691,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.77
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_5",
+    "policy": "e1_prime",
+    "index": 125,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1281329002,
+   "fell": false,
+   "max_tilt": 14.444456576535636,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.05364949920825812,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.93
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_6",
+    "policy": "e1_prime",
+    "index": 126,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1687543476,
+   "fell": false,
+   "max_tilt": 14.849801897518846,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16888553809374945,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.72
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_7",
+    "policy": "e1_prime",
+    "index": 127,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1526916522,
+   "fell": false,
+   "max_tilt": 13.397713661960015,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1570255299151786,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.85
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_8",
+    "policy": "e1_prime",
+    "index": 128,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 481612084,
+   "fell": false,
+   "max_tilt": 14.5722153159061,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16179116273309252,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.71
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_9",
+    "policy": "e1_prime",
+    "index": 129,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1737135989,
+   "fell": false,
+   "max_tilt": 15.41455790353491,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.13986008468317213,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.29
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_10",
+    "policy": "e1_prime",
+    "index": 130,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 105061670,
+   "fell": false,
+   "max_tilt": 13.320383950198119,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1538826860074558,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.46
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_11",
+    "policy": "e1_prime",
+    "index": 131,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1025567054,
+   "fell": false,
+   "max_tilt": 11.434510198177708,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15788548838189098,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.21
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_12",
+    "policy": "e1_prime",
+    "index": 132,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 874170722,
+   "fell": false,
+   "max_tilt": 16.137436470761177,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.08349838860242742,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.55
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_13",
+    "policy": "e1_prime",
+    "index": 133,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 990286563,
+   "fell": true,
+   "max_tilt": 179.76527033557218,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.2 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.12444933233002753,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.45
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_14",
+    "policy": "e1_prime",
+    "index": 134,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1191056705,
+   "fell": false,
+   "max_tilt": 11.458118531903727,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1612165837334757,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.5
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_15",
+    "policy": "e1_prime",
+    "index": 135,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1528973902,
+   "fell": false,
+   "max_tilt": 10.887135821692532,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15696209404666667,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.83
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_16",
+    "policy": "e1_prime",
+    "index": 136,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 493949198,
+   "fell": false,
+   "max_tilt": 12.44084869460357,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1624563190188132,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.55
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_17",
+    "policy": "e1_prime",
+    "index": 137,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 825954870,
+   "fell": false,
+   "max_tilt": 13.377996291285475,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.09644885888638188,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.68
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_18",
+    "policy": "e1_prime",
+    "index": 138,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1399388123,
+   "fell": false,
+   "max_tilt": 13.867585598654713,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1485731070194427,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.41
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_nolat_19",
+    "policy": "e1_prime",
+    "index": 139,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 911314102,
+   "fell": false,
+   "max_tilt": 15.975189000491241,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1364631138640202,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.44
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_0",
+    "policy": "e1_prime",
+    "index": 140,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 724454765,
+   "fell": false,
+   "max_tilt": 11.342029348858768,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17168806983591695,
+   "max_saturated_run": 2,
+   "completed": true,
+   "wall_s": 8.56
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_1",
+    "policy": "e1_prime",
+    "index": 141,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 54158616,
+   "fell": false,
+   "max_tilt": 14.120567767150812,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16367824405309872,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.0
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_2",
+    "policy": "e1_prime",
+    "index": 142,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 2114161617,
+   "fell": false,
+   "max_tilt": 11.503963272036332,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1627195906843349,
+   "max_saturated_run": 5,
+   "completed": true,
+   "wall_s": 7.96
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_3",
+    "policy": "e1_prime",
+    "index": 143,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 273394947,
+   "fell": false,
+   "max_tilt": 11.409839772521735,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15005516991576812,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.05
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_4",
+    "policy": "e1_prime",
+    "index": 144,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 2048905448,
+   "fell": false,
+   "max_tilt": 11.54667112274243,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16198397942503384,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.36
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_5",
+    "policy": "e1_prime",
+    "index": 145,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 508751875,
+   "fell": false,
+   "max_tilt": 13.899545527994807,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16104199169226902,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.26
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_6",
+    "policy": "e1_prime",
+    "index": 146,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1571933920,
+   "fell": false,
+   "max_tilt": 12.576019957108127,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16329544929859863,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.35
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_7",
+    "policy": "e1_prime",
+    "index": 147,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1569188486,
+   "fell": false,
+   "max_tilt": 11.66051217282846,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1603653060286359,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.23
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_8",
+    "policy": "e1_prime",
+    "index": 148,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1716977881,
+   "fell": false,
+   "max_tilt": 11.382467926391831,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17917772221747752,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.17
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_9",
+    "policy": "e1_prime",
+    "index": 149,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 101976344,
+   "fell": false,
+   "max_tilt": 15.512701796138142,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16476895020681287,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.16
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_10",
+    "policy": "e1_prime",
+    "index": 150,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 10126806,
+   "fell": false,
+   "max_tilt": 11.611628401395494,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15524638892497317,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 9.02
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_11",
+    "policy": "e1_prime",
+    "index": 151,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 143213019,
+   "fell": false,
+   "max_tilt": 12.88204349361073,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17884447909776158,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.03
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_12",
+    "policy": "e1_prime",
+    "index": 152,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 100622945,
+   "fell": false,
+   "max_tilt": 11.020115765332232,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17046268707595558,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.16
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_13",
+    "policy": "e1_prime",
+    "index": 153,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1836844417,
+   "fell": false,
+   "max_tilt": 11.430730870486386,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.18219391849309652,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.3
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_14",
+    "policy": "e1_prime",
+    "index": 154,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1578530571,
+   "fell": false,
+   "max_tilt": 11.821896624545687,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16176453881829667,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.56
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_15",
+    "policy": "e1_prime",
+    "index": 155,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1609135184,
+   "fell": false,
+   "max_tilt": 10.98813711644676,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1620475756884472,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.74
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_16",
+    "policy": "e1_prime",
+    "index": 156,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1448619804,
+   "fell": false,
+   "max_tilt": 11.444513816970497,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.147747415829176,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 9.43
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_17",
+    "policy": "e1_prime",
+    "index": 157,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 849363325,
+   "fell": false,
+   "max_tilt": 11.589393075303256,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16127418929108323,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 9.45
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_18",
+    "policy": "e1_prime",
+    "index": 158,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 1034354233,
+   "fell": false,
+   "max_tilt": 10.761969362408152,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15915456928268273,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 9.27
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.4_lat_19",
+    "policy": "e1_prime",
+    "index": 159,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.4
+    }
+   },
+   "sim_seed": 495734087,
+   "fell": false,
+   "max_tilt": 11.72696230820534,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15372283530754888,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.89
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_0",
+    "policy": "e1_prime",
+    "index": 160,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1003717399,
+   "fell": false,
+   "max_tilt": 12.39204458895582,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16133655146774145,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.52
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_1",
+    "policy": "e1_prime",
+    "index": 161,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1574340629,
+   "fell": false,
+   "max_tilt": 12.338411983272572,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14529706442881113,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 8.37
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_2",
+    "policy": "e1_prime",
+    "index": 162,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 831476290,
+   "fell": false,
+   "max_tilt": 12.234060246647626,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14603626996702607,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.89
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_3",
+    "policy": "e1_prime",
+    "index": 163,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 260554954,
+   "fell": false,
+   "max_tilt": 12.141885459168057,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14323104774942813,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.84
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_4",
+    "policy": "e1_prime",
+    "index": 164,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2048285886,
+   "fell": false,
+   "max_tilt": 12.28596680503523,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1488888847220558,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.97
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_5",
+    "policy": "e1_prime",
+    "index": 165,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1631239228,
+   "fell": false,
+   "max_tilt": 12.020233755495227,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15914402743025297,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.29
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_6",
+    "policy": "e1_prime",
+    "index": 166,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1218904730,
+   "fell": false,
+   "max_tilt": 12.53867811193655,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1643344364639951,
+   "max_saturated_run": 5,
+   "completed": true,
+   "wall_s": 7.25
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_7",
+    "policy": "e1_prime",
+    "index": 167,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 641109774,
+   "fell": false,
+   "max_tilt": 15.045228498064558,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1543321645800011,
+   "max_saturated_run": 5,
+   "completed": true,
+   "wall_s": 7.16
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_8",
+    "policy": "e1_prime",
+    "index": 168,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1415055924,
+   "fell": false,
+   "max_tilt": 12.30017169027757,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16213320259091513,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.75
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_9",
+    "policy": "e1_prime",
+    "index": 169,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1265956518,
+   "fell": false,
+   "max_tilt": 12.47105219828838,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17865487686840387,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.74
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_10",
+    "policy": "e1_prime",
+    "index": 170,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1614626172,
+   "fell": false,
+   "max_tilt": 12.540133122019245,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14028886940608026,
+   "max_saturated_run": 5,
+   "completed": true,
+   "wall_s": 6.7
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_11",
+    "policy": "e1_prime",
+    "index": 171,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2136358797,
+   "fell": false,
+   "max_tilt": 12.198423923580423,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.13713828788295124,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.17
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_12",
+    "policy": "e1_prime",
+    "index": 172,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1802319467,
+   "fell": false,
+   "max_tilt": 12.432088520844065,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15936565278971654,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.15
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_13",
+    "policy": "e1_prime",
+    "index": 173,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2116415332,
+   "fell": false,
+   "max_tilt": 12.372782958151603,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1602486365828636,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.15
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_14",
+    "policy": "e1_prime",
+    "index": 174,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 248192898,
+   "fell": false,
+   "max_tilt": 12.329164618542945,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1468159220344475,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.79
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_15",
+    "policy": "e1_prime",
+    "index": 175,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1131638491,
+   "fell": false,
+   "max_tilt": 12.303224704894493,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15683731912017962,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.83
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_16",
+    "policy": "e1_prime",
+    "index": 176,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1578609099,
+   "fell": false,
+   "max_tilt": 12.14454243631211,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.13437786565152432,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.08
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_17",
+    "policy": "e1_prime",
+    "index": 177,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1576339908,
+   "fell": false,
+   "max_tilt": 14.089876229848727,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.13259556343104117,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.4
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_18",
+    "policy": "e1_prime",
+    "index": 178,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1913204998,
+   "fell": false,
+   "max_tilt": 12.103854409012296,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16706514153105873,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.67
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_nolat_19",
+    "policy": "e1_prime",
+    "index": 179,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1228389014,
+   "fell": false,
+   "max_tilt": 12.216253976286557,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15772320966094955,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.44
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_0",
+    "policy": "e1_prime",
+    "index": 180,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 746214278,
+   "fell": false,
+   "max_tilt": 12.53708034680539,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1455291153061487,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.52
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_1",
+    "policy": "e1_prime",
+    "index": 181,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2119173455,
+   "fell": false,
+   "max_tilt": 12.315945559570903,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15211225525163946,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.59
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_2",
+    "policy": "e1_prime",
+    "index": 182,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 54865966,
+   "fell": false,
+   "max_tilt": 12.700888700433055,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16237135137034853,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.4
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_3",
+    "policy": "e1_prime",
+    "index": 183,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1708185915,
+   "fell": false,
+   "max_tilt": 12.25163322003273,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15183037062896426,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.68
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_4",
+    "policy": "e1_prime",
+    "index": 184,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1309779441,
+   "fell": false,
+   "max_tilt": 12.398933020681818,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16675144517819684,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.64
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_5",
+    "policy": "e1_prime",
+    "index": 185,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 679503037,
+   "fell": false,
+   "max_tilt": 12.406033391759784,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1629950709609302,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.42
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_6",
+    "policy": "e1_prime",
+    "index": 186,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 797715894,
+   "fell": false,
+   "max_tilt": 12.206247375740467,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16569945777825296,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.77
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_7",
+    "policy": "e1_prime",
+    "index": 187,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 679633321,
+   "fell": false,
+   "max_tilt": 12.32315665357226,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17568211254442656,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.73
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_8",
+    "policy": "e1_prime",
+    "index": 188,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1562665262,
+   "fell": false,
+   "max_tilt": 12.297484311121428,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14527164067968212,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.77
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_9",
+    "policy": "e1_prime",
+    "index": 189,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1583505179,
+   "fell": false,
+   "max_tilt": 12.210695682554318,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1692530079388359,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.16
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_10",
+    "policy": "e1_prime",
+    "index": 190,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1481270913,
+   "fell": false,
+   "max_tilt": 12.437289694741096,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14909066833848905,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.31
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_11",
+    "policy": "e1_prime",
+    "index": 191,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 618207534,
+   "fell": false,
+   "max_tilt": 12.354322227788014,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1566083551084776,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.27
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_12",
+    "policy": "e1_prime",
+    "index": 192,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 843297331,
+   "fell": false,
+   "max_tilt": 12.473395695080614,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15639342449749433,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.38
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_13",
+    "policy": "e1_prime",
+    "index": 193,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 922213231,
+   "fell": false,
+   "max_tilt": 12.189479242148932,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1522600163603668,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.37
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_14",
+    "policy": "e1_prime",
+    "index": 194,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 907499070,
+   "fell": false,
+   "max_tilt": 12.351792974059146,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15584061468212662,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.47
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_15",
+    "policy": "e1_prime",
+    "index": 195,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 729712960,
+   "fell": false,
+   "max_tilt": 12.361858781707019,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16175028562183574,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.08
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_16",
+    "policy": "e1_prime",
+    "index": 196,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 813563887,
+   "fell": false,
+   "max_tilt": 12.370447323233039,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17700940491094985,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.34
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_17",
+    "policy": "e1_prime",
+    "index": 197,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1024197208,
+   "fell": false,
+   "max_tilt": 13.697370427728972,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16424373137086373,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.28
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_18",
+    "policy": "e1_prime",
+    "index": 198,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1602775449,
+   "fell": false,
+   "max_tilt": 12.40954271277999,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15727193370374548,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.69
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d0.6_lat_19",
+    "policy": "e1_prime",
+    "index": 199,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1841361033,
+   "fell": false,
+   "max_tilt": 14.56315851934448,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15716419926964487,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.63
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_0",
+    "policy": "e1_prime",
+    "index": 200,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1797458998,
+   "fell": false,
+   "max_tilt": 12.325227594838559,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15196005811383362,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.52
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_1",
+    "policy": "e1_prime",
+    "index": 201,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1151020119,
+   "fell": false,
+   "max_tilt": 12.363951514378593,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15617299504038218,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.51
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_2",
+    "policy": "e1_prime",
+    "index": 202,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 848896469,
+   "fell": false,
+   "max_tilt": 12.46426225871392,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17033800510011693,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.74
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_3",
+    "policy": "e1_prime",
+    "index": 203,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1446480205,
+   "fell": false,
+   "max_tilt": 12.353539496831166,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15987836391818644,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.63
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_4",
+    "policy": "e1_prime",
+    "index": 204,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 210703994,
+   "fell": false,
+   "max_tilt": 12.53186327106928,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1562223957828301,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.42
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_5",
+    "policy": "e1_prime",
+    "index": 205,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 755344803,
+   "fell": false,
+   "max_tilt": 12.519809960036655,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16431070479803678,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.8
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_6",
+    "policy": "e1_prime",
+    "index": 206,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1476237760,
+   "fell": false,
+   "max_tilt": 12.532643621901254,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17544528288601008,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.76
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_7",
+    "policy": "e1_prime",
+    "index": 207,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1878053491,
+   "fell": false,
+   "max_tilt": 12.421540023544516,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14901663327566528,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.67
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_8",
+    "policy": "e1_prime",
+    "index": 208,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 2053352024,
+   "fell": false,
+   "max_tilt": 12.420875630878465,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17189456382635754,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.62
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_9",
+    "policy": "e1_prime",
+    "index": 209,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 291027620,
+   "fell": false,
+   "max_tilt": 12.350141148261674,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16672095807358722,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.62
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_10",
+    "policy": "e1_prime",
+    "index": 210,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1273717715,
+   "fell": false,
+   "max_tilt": 12.254854881112744,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16044684608570448,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.67
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_11",
+    "policy": "e1_prime",
+    "index": 211,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 516545526,
+   "fell": false,
+   "max_tilt": 12.429269284299933,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15701078618164221,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.51
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_12",
+    "policy": "e1_prime",
+    "index": 212,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 967949506,
+   "fell": false,
+   "max_tilt": 12.321870022000583,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.14923256269833957,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.59
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_13",
+    "policy": "e1_prime",
+    "index": 213,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 197681647,
+   "fell": false,
+   "max_tilt": 12.42021826303953,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15400664221245336,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.64
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_14",
+    "policy": "e1_prime",
+    "index": 214,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1455550374,
+   "fell": false,
+   "max_tilt": 12.335076106449645,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15039708153813897,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.86
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_15",
+    "policy": "e1_prime",
+    "index": 215,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 234221081,
+   "fell": false,
+   "max_tilt": 12.659319989928079,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17033598732394895,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.82
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_16",
+    "policy": "e1_prime",
+    "index": 216,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1860357688,
+   "fell": false,
+   "max_tilt": 12.496729208689159,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15950891795493682,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 8.07
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_17",
+    "policy": "e1_prime",
+    "index": 217,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 65337877,
+   "fell": false,
+   "max_tilt": 12.490913138811903,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17007288028125006,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.94
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_18",
+    "policy": "e1_prime",
+    "index": 218,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 671713902,
+   "fell": false,
+   "max_tilt": 12.557558476749994,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1574551410567704,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.79
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_nolat_19",
+    "policy": "e1_prime",
+    "index": 219,
+    "latency": false,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 8380697,
+   "fell": false,
+   "max_tilt": 12.585157694512823,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1600102651573006,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.97
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_0",
+    "policy": "e1_prime",
+    "index": 220,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 122545427,
+   "fell": false,
+   "max_tilt": 16.75268177473505,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17806152758371863,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.97
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_1",
+    "policy": "e1_prime",
+    "index": 221,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1194868385,
+   "fell": false,
+   "max_tilt": 12.402601843217838,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16603926408530167,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.98
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_2",
+    "policy": "e1_prime",
+    "index": 222,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 233065382,
+   "fell": false,
+   "max_tilt": 12.429486477761357,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1816946074643972,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.78
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_3",
+    "policy": "e1_prime",
+    "index": 223,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 2003099049,
+   "fell": false,
+   "max_tilt": 12.397589093223955,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17633811862391435,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.73
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_4",
+    "policy": "e1_prime",
+    "index": 224,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 931508976,
+   "fell": false,
+   "max_tilt": 12.61883835503155,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16094703877503863,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.64
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_5",
+    "policy": "e1_prime",
+    "index": 225,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 457364970,
+   "fell": false,
+   "max_tilt": 12.637896841951644,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15240485278938298,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.72
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_6",
+    "policy": "e1_prime",
+    "index": 226,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1479574432,
+   "fell": false,
+   "max_tilt": 12.625307539163352,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17614530724090438,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.61
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_7",
+    "policy": "e1_prime",
+    "index": 227,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1575326952,
+   "fell": false,
+   "max_tilt": 12.635677904623835,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1878012740880155,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.55
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_8",
+    "policy": "e1_prime",
+    "index": 228,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 2083995600,
+   "fell": false,
+   "max_tilt": 12.643765725501856,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.168517903977204,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.23
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_9",
+    "policy": "e1_prime",
+    "index": 229,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1063549062,
+   "fell": false,
+   "max_tilt": 12.5809698309762,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15534737158144762,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.21
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_10",
+    "policy": "e1_prime",
+    "index": 230,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1994423019,
+   "fell": false,
+   "max_tilt": 12.5784184465177,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16314823348297153,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.24
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_11",
+    "policy": "e1_prime",
+    "index": 231,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 513668843,
+   "fell": false,
+   "max_tilt": 12.316714873296283,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16314172786416575,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 6.41
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_12",
+    "policy": "e1_prime",
+    "index": 232,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1246227206,
+   "fell": false,
+   "max_tilt": 12.545747544106915,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1706211135948068,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.57
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_13",
+    "policy": "e1_prime",
+    "index": 233,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1766799896,
+   "fell": false,
+   "max_tilt": 12.434156878009363,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16775215514039088,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 6.59
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_14",
+    "policy": "e1_prime",
+    "index": 234,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1512076890,
+   "fell": false,
+   "max_tilt": 12.514991030656438,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1604258954925587,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.56
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_15",
+    "policy": "e1_prime",
+    "index": 235,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 216827180,
+   "fell": false,
+   "max_tilt": 12.283101915248567,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15988330875450307,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.84
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_16",
+    "policy": "e1_prime",
+    "index": 236,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 911793400,
+   "fell": false,
+   "max_tilt": 12.414795606110854,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.171598819040494,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.93
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_17",
+    "policy": "e1_prime",
+    "index": 237,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1584998633,
+   "fell": false,
+   "max_tilt": 12.519031042927748,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17123832936495575,
+   "max_saturated_run": 4,
+   "completed": true,
+   "wall_s": 7.92
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_18",
+    "policy": "e1_prime",
+    "index": 238,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1494902343,
+   "fell": false,
+   "max_tilt": 12.716345625463907,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15774206816078218,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.58
+  },
+  {
+   "trial": {
+    "suite": "switching",
+    "name": "e1_prime_d1.0_lat_19",
+    "policy": "e1_prime",
+    "index": 239,
+    "latency": true,
+    "seconds": 30.0,
+    "params": {
+     "partition": "X",
+     "dwell": 1.0
+    }
+   },
+   "sim_seed": 1647194621,
+   "fell": false,
+   "max_tilt": 12.319096797008523,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.17562562104043805,
+   "max_saturated_run": 3,
+   "completed": true,
+   "wall_s": 7.41
+  }
+ ]
+}

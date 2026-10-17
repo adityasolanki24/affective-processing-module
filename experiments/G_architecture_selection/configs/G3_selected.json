@@ -1,0 +1,73 @@
+{
+ "rule": "per kind max mean J on G3-V 100..; best_state = argmax over stateful kinds; best_single = argmax over ema/lds/gru",
+ "best_state": "ema",
+ "best_single": "ema",
+ "selected": {
+  "none": {
+   "kind": "stateful",
+   "predictor": "none",
+   "label": "none",
+   "config_id": "none:9",
+   "lam_c": 6.610959,
+   "lam_s": 0.325733,
+   "J_mean": 50.63333333333333,
+   "collision_rate": 0.07000000000000149,
+   "completion": 0.6416861826697893
+  },
+  "ema": {
+   "kind": "stateful",
+   "predictor": "ema",
+   "label": "ema",
+   "config_id": "ema:13",
+   "lam_c": 2.219371,
+   "lam_s": 1.869924,
+   "J_mean": 51.725,
+   "collision_rate": 0.0800000000000017,
+   "completion": 0.6393054459352802
+  },
+  "lds": {
+   "kind": "stateful",
+   "predictor": "lds",
+   "label": "lds",
+   "config_id": "lds:0",
+   "lam_c": 1.550089,
+   "lam_s": 1.675442,
+   "J_mean": 51.525,
+   "collision_rate": 0.0833333333333351,
+   "completion": 0.6331360946745562
+  },
+  "gru": {
+   "kind": "stateful",
+   "predictor": "gru",
+   "label": "gru",
+   "config_id": "gru:10",
+   "lam_c": 1.240371,
+   "lam_s": 3.550306,
+   "J_mean": 51.53333333333333,
+   "collision_rate": 0.05666666666666787,
+   "completion": 0.6289108910891089
+  },
+  "fastslow": {
+   "kind": "stateful",
+   "predictor": "fastslow",
+   "label": "fastslow",
+   "config_id": "fastslow:0",
+   "lam_c": 7.732056,
+   "lam_s": 1.016392,
+   "J_mean": 51.18333333333333,
+   "collision_rate": 0.06333333333333467,
+   "completion": 0.6386918833727344
+  },
+  "pad": {
+   "kind": "stateful",
+   "predictor": "pad",
+   "label": "pad",
+   "config_id": "pad:11",
+   "lam_c": 1.865246,
+   "lam_s": 2.611294,
+   "J_mean": 51.35,
+   "collision_rate": 0.07333333333333489,
+   "completion": 0.6259873617693523
+  }
+ }
+}

@@ -1,0 +1,289 @@
+{
+ "lock": {
+  "python": "3.12.4",
+  "platform": "Windows-11-10.0.26100-SP0",
+  "machine": "AMD64",
+  "cpus": 12,
+  "commit": "d3c4c870bdcdc97a1868465e53fd961cb743b655",
+  "dirty": false,
+  "start_utc": "2026-10-12T09:16:16Z",
+  "numpy": "2.5.4",
+  "torch": "2.14.1+cpu",
+  "mujoco": null,
+  "onnxruntime": null,
+  "addendum": "experiments/H_expressive_intelligence/prereg/H7_ADDENDUM.md",
+  "addendum_sha256": "3894cdb1fcc8f4775e35f583d9acd76ae71b67151cebfb1b172d41dc185709c1",
+  "sources": {
+   "src/apm/__init__.py": "9a596d39ebe4ec3fc6329ad5d92f1a865b8b705bc83a0a2836b2f6b9103e42ab",
+   "src/apm/adapters/__init__.py": "c9bf9d2da4b41cf64c0412cc2ff9489e0732349f13aecbf2a589a3d7728b01a9",
+   "src/apm/adapters/base.py": "2365ab309d4968dd9c309286b294214a55f64eb2c4084e97a3cd501fcf481d15",
+   "src/apm/adapters/nerva.py": "dbbc5616e24c2ab7d2e38a9d9a6573a0858a058ffe845b43b908cc4ae0d4b45d",
+   "src/apm/adapters/wheeled.py": "fc756c84214a7b8ed95dc07422b1fc03135239ead18371a829242b3084a73cc7",
+   "src/apm/adapters/wheeled_ctrl.py": "bfe27767e6677480e7e2124eebb80692baf81df212a91093d10e0b36848c2e4c",
+   "src/apm/core/__init__.py": "20cfb62d98a58db7fa374a079a989763418edefc2e639507a55b5e32c75e3800",
+   "src/apm/core/affect.py": "943f46fc966cacd9710381ebec84b7951de0c6eeb54cd98ab5ee12be9893159a",
+   "src/apm/core/appraisal.py": "5b11ad6b8f74e14e8f23231e135fe51157ee853e051e1fda2285cf15e4c17102",
+   "src/apm/core/context.py": "e3c2f01cbb5c918bfab595797e24999c4cf4a30efbdf9b26ec00870ae7360741",
+   "src/apm/core/outcomes.py": "2faa4d20975321ac1bff7699bca533d82f1ddea420bb5ee64193bd2d0f98d8a9",
+   "src/apm/core/runtime.py": "e0ed5095d98c7cd3311d4818eb9e44899e5fa3b98928b9defcc5335f29c61f00",
+   "src/apm/core/tendencies.py": "c3be9a43b21766ca1dbb10d1e3beb074657eec212fd86718a9292d51c816f60c",
+   "src/apm/learning/__init__.py": "a4e3af8828979aed3dfa99a1e1f419cbba6b2067c33d9593eb9f10d1b1a2303a",
+   "src/apm/learning/baselines.py": "8879436188b04780d3e56ca614677941857150d5748610b1e300d67ed162783c",
+   "src/apm/learning/dataset.py": "e9c721bd082b5426cbbfc0178433bbd8796ad56de64a03928b7b7753c92f1ce0",
+   "src/apm/learning/evaluation.py": "4f4c3c1a98233f8b32fc397b025aed729f1428e1200f6dc18e249171fa6c044a",
+   "src/apm/learning/features.py": "b141492a7e4344fb78cdd9a4ff14826bf6a7357b3e04a9d3905db16ef8e49af7",
+   "src/apm/learning/predictor.py": "e1b018bdd373e0c9d0c9fffa4ae0c8edca6ca22b98c1072303755e58b604fdd6",
+   "src/apm/learning/replay.py": "eef52f4d22111de28c4890bd107d7b74ba54e5512af6f861a262a3d138e62b86",
+   "src/apm/memory/__init__.py": "62ac475ddabf697b0f8fc180649ace5ee3b732b6ebea5ddb2c7907b731ecc2a0",
+   "src/apm/memory/entities.py": "173d414ebb546054d9acd8369f9b573793676e8284fc8a8764b31fc0ba8de0d9",
+   "src/apm/memory/episodes.py": "87580bab7899d9c01ab6be9ff6647f8d869a1501d3c2db86ac73b1979f3e2aca",
+   "src/apm/protocol/__init__.py": "3cfca2a7fa01ffbc0cebebb22a2314e3265bf69481494ca9b5eb224f94e26c74",
+   "src/apm/protocol/codec.py": "14e88aa21be77a3ec0ef97e89ab6fbc3a9308b5f29ec9af4a1114f4cb1b1f58d",
+   "src/apm/protocol/messages.py": "e865d265cd144d3d8cc261b51f4dc5ef90fd05fad31e4b27342cdb611225ada7",
+   "src/apm/protocol/validation.py": "0fd57e70e7e0001ff94539bf9acb2016025ebe8c30b4687db21d6a5d5c4c57d5",
+   "src/apm_research/__init__.py": "7d6698a2157cb823a4aa032610b50d904b045f077c4a30d4c0d2fd8b8cc05845",
+   "src/apm_research/dataset.py": "71c053311345761b32c288988abbcf4ef2a691361cfa3df93a897890440aa95b",
+   "src/apm_research/features.py": "9a2f03e6e381d3467d1f068f97e9920b7780aa6ae28bacba09842d7a29886d2e",
+   "src/apm_research/harness.py": "6af5bcc7cf6f5ba6e8ecb9c2bf16b01612136283df3ac4da4c905fe64f582fbf",
+   "src/apm_research/memory.py": "138c5742b0619051867c1ebb3c152830491a73f0515842fe5be88035d2a6b95e",
+   "src/apm_research/policies.py": "44c53853ea866d1a6fffa4e8248a8e78e0e230a7aa51332716fc900ba944ddef",
+   "src/apm_research/predictor.py": "e2ffc8be28a4397df2134baf127fcffb1cd281633701f63d8cecf1395039549b",
+   "src/apm_research/provenance.py": "91441e429eb41f468442a276b276c49553b905dfd01521647aefdb5eed7fa564",
+   "src/apm_research/rl.py": "ea9fb16a3e5725fd01a3c074b02509140146573fe3892a4b7011ec787789f965",
+   "src/apm_research/stats.py": "1ba7f0afdc0adaa33eb2aa367ff54e94435d06ebaf20eb76092abe86ada4b4a9",
+   "src/apm_testbeds/__init__.py": "1d801ac1d4b636c72388a83529448a1a7272aea061461c5afe30232191fd2d72",
+   "src/apm_testbeds/wheeled.py": "986b8320e7806be6b07a4718fd31a510ad64cf6ba7391b826ee89976afaefc36",
+   "src/apm_testbeds/wheeled_ctrl.py": "2c25364a8caad451c9fca4f655533c4cbd54c5884e96b493a60eea02443c7c61",
+   "src/apm_select/__init__.py": "865398e77cd5d6d9caff665d205588a095ec0ca38fb3701db6e9eee26cdab99e",
+   "src/apm_select/instrument.py": "091386ac17dbeb2074fd3372cb34394e4d37637857da32ed6d13cc125c2c2ba0",
+   "src/apm_select/learning.py": "dd652dcc6f2df51d507cbd7ead0936f4c7f0f76581aaa81b7ca1119f3f1c4d8c",
+   "src/apm_select/memory.py": "317ca2a13c61d1744e25ae1f33130eeea9b1b7cb9bdde9719c64e4b0d079ff8a",
+   "src/apm_select/minimal.py": "8943c59607819daf7e9cb6afde9547662f1270dcd59ff8d63cf5cfc1446c556c",
+   "src/apm_select/policies.py": "c2eb32b8ff8da39dfaa2fa3fb22c17d0f666537fc30d6ad5b68ef5840657c53d",
+   "src/apm_select/provenance.py": "63681fabf1e8be5f97b1f81eaec3c9b7ff312a716c1f32bdd5f88a971c446b63",
+   "src/apm_select/regulators.py": "3a1b6d8f4d5747dfe5d92e720a71dab993305a22ff6f6b4916dcbf1c4bfa50d2",
+   "src/apm_select/scenarios.py": "07536fccd8325331af64a426626f56aadf8c74766ba0ec57e83121fa4674db63",
+   "src/apm_select/stateful.py": "3a2e5c9f31b41c8766479b3698f0712a9fe2bc570eb05e85575fb5ed825e8b34",
+   "src/apm_select/stats.py": "c20440b8ae2e948c2d290c0a2bdd95fe23c7bafde507b9ee9ec7fb5b05c56054",
+   "src/apm_select/survival.py": "4be6fd82ec44ea364dfecf1569006c1931a1fc2bce30592032b428e8113b3a70",
+   "src/apm_select/tuning.py": "e40193c26979c14b924026f8080a88846e2c696067ebe2c379916bca43d32b21",
+   "src/apm_select/variations.py": "246ab1f392f83d2c4f7fca67f9aff7c2c59deded00cd0d6df6fc081335a18cb2",
+   "src/apm_express/__init__.py": "3b4a22d434027f98188479ab491c64ab938e0309f67e54687fe61ceb84efd13f",
+   "src/apm_express/adapter.py": "138c1c133409db27123055b38b838059c7ed87cdc2bfb79e6ace96a6de3f7a2e",
+   "src/apm_express/biped.py": "c6d7c5cd55f75ca2bab25356ea54569fee90ba31059075c3cc98945142cabb90",
+   "src/apm_express/develop.py": "2d1cdc53b702a6b7b15c7eb2fd1e1c63347e4a7b77ffa86bc6012956324cd2e7",
+   "src/apm_express/episode.py": "052c2c6c5918137d0c22a079d655a7b9b8a0c4ca8293a8ddbfb2624a92c65813",
+   "src/apm_express/features.py": "6d7dc3a56acfff3325893116816c5059bb72d891b6e38444741de772783e975a",
+   "src/apm_express/intent.py": "1bd00dc24da62853f99503775888a44f0d8002a18d11d9d334387c420c9add82",
+   "src/apm_express/kinematic.py": "5b48324e51b277b4ef96b24a7ba883b59d084d32509e347dbbb1599fa333fcfa",
+   "src/apm_express/provenance.py": "f4a55d55386766cb36ea201d28a1a7ccc230aa73883ba4bb6bb7c5360c6e1bdf",
+   "src/apm_express/safety.py": "0fceed1f480612e37aa1353869fd0fc84d00d93cba8ecaece3b9652bf47f8b19",
+   "src/apm_express/states.py": "0bf4a7a1e5dd272932e8aca7efb1202a527666115786d7b03c27eba994646459",
+   "src/apm_express/states_learned.py": "93c74b5a4fb0f4c04ca91211823c29490b898e7da5dfdab7b0a571f8e725df46",
+   "src/apm_express/styles.py": "464287604b80c4e76b25e94e69652f78240a2c88096b9d296efa532d2ab8a393",
+   "src/apm_express/wheeled.py": "e9aac2c1c2474119f47566f156c9eccce5e04070cf9b5c3819d5281a0a2db30b",
+   "experiments/H_expressive_intelligence/scripts/h0_analyze.py": "176e7c32a10e2aa28db1edadf82b8c3e76b34b32c06635c2aa33880d20d4c6af",
+   "experiments/H_expressive_intelligence/scripts/h0_interface.py": "63563409bab38b450f3b13fbdc43e11b072a85d6ac81e0c92e54922eabb4428c",
+   "experiments/H_expressive_intelligence/scripts/h0b_rest_push.py": "6af5631f5fba0ed25ad3b4ef0b11fd70ded5c42eff734331bad5b0666bba273d",
+   "experiments/H_expressive_intelligence/scripts/h1_analyze.py": "9b6b830fe44f76e89f5c549c27cd2e67a4dcdc1ac6a70fe616109123b0e6da72",
+   "experiments/H_expressive_intelligence/scripts/h1_repertoire.py": "376c2d00dbe96cadb20783c3b92076a89fae85ef50d1e810969c5750d1d5cdd5",
+   "experiments/H_expressive_intelligence/scripts/h1b_transition_push.py": "4ccc11750b7ef2fc8277b92e94183248cc6b22a2c024ee354cb2af683e61eb14",
+   "experiments/H_expressive_intelligence/scripts/h2_power.py": "9f7bc8a7a01044c8e15a8c10812ae1521565c4312f513d8401b6d6da0c7640b7",
+   "experiments/H_expressive_intelligence/scripts/h2_stimuli.py": "5c037ca20bf9b45fa91e92044d75cb3787f9971de7f975b296cbe14896ba3adc",
+   "experiments/H_expressive_intelligence/scripts/h34_analyze.py": "091470c166eaeaaa1a276dad4f45649bf864cefef8a5d5d768cc5283d1f9b9ec",
+   "experiments/H_expressive_intelligence/scripts/h34_experience.py": "b76b9bdf7ff6482de3a845f044f4fac0d3d1e06919595f07b7546b1702fd0305",
+   "experiments/H_expressive_intelligence/scripts/h34_probes.py": "bf6e54749b2a4b0ffbd1adb0cd4f6b535a49f162d8d7eaae48e0eaa138add06d",
+   "experiments/H_expressive_intelligence/scripts/h34_states.py": "b59efd34637c4b38c1ebb07ea3bac02d2a4dbc3b16a3061270783d7f0ea2f419",
+   "experiments/H_expressive_intelligence/scripts/h7_embodiment.py": "6b65aef6909e9aca436fcb228a2f69b16aae59dbe371e0fd5845d31578e9d6e3",
+   "experiments/H_expressive_intelligence/seeds.py": "b7c8c7fde7a9f99d532fe4eb858cc71b3a6011b4596c020d60467d2dcf2ac782"
+  }
+ },
+ "n_wheeled": 280,
+ "n_biped": 280,
+ "C1_wheeled_distinctness": {
+  "balanced_accuracy": 1.0,
+  "chance": 0.14285714285714285,
+  "recall": {
+   "assertive": 1.0,
+   "cautious": 1.0,
+   "curious": 1.0,
+   "energetic": 1.0,
+   "hesitant": 1.0,
+   "neutral": 1.0,
+   "relaxed": 1.0
+  },
+  "confusion": {
+   "assertive": {
+    "assertive": 40
+   },
+   "cautious": {
+    "cautious": 40
+   },
+   "curious": {
+    "curious": 40
+   },
+   "energetic": {
+    "energetic": 40
+   },
+   "hesitant": {
+    "hesitant": 40
+   },
+   "neutral": {
+    "neutral": 40
+   },
+   "relaxed": {
+    "relaxed": 40
+   }
+  },
+  "n": 280
+ },
+ "C2_correspondence": {
+  "progress_speed": 0.9642857142857145,
+  "pauses_per_m": 0.45454545454545453,
+  "mean_pause_s": 0.9636363636363636,
+  "switch_rate": 0.594618725379069,
+  "backward_s": 0.9999999999999999,
+  "straightness": 0.7142857142857144,
+  "max_lateral_dev": 0.6785714285714287,
+  "final_distance": 1.0,
+  "final_bearing_abs": 0.3214285714285715,
+  "body_yaw_rest_std": 0.9285714285714288,
+  "retreat_m": 0.5345224838248488
+ },
+ "C2_median": 0.7142857142857144,
+ "C3_transfer": {
+  "balanced_accuracy": 0.7892857142857144,
+  "chance": 0.14285714285714285,
+  "recall": {
+   "assertive": 1.0,
+   "cautious": 1.0,
+   "curious": 1.0,
+   "energetic": 0.55,
+   "hesitant": 0.775,
+   "neutral": 1.0,
+   "relaxed": 0.2
+  },
+  "confusion": {
+   "assertive": {
+    "assertive": 40
+   },
+   "cautious": {
+    "cautious": 40
+   },
+   "curious": {
+    "curious": 40
+   },
+   "energetic": {
+    "energetic": 22,
+    "curious": 18
+   },
+   "hesitant": {
+    "hesitant": 31,
+    "relaxed": 3,
+    "cautious": 6
+   },
+   "neutral": {
+    "neutral": 40
+   },
+   "relaxed": {
+    "neutral": 32,
+    "relaxed": 8
+   }
+  },
+  "n": 280
+ },
+ "supports_correspondence": true,
+ "wheeled_style_means": {
+  "assertive": {
+   "progress_speed": 0.18934734411168055,
+   "pauses_per_m": 0.0,
+   "mean_pause_s": 0.0,
+   "switch_rate": 0.02084028009336445,
+   "backward_s": 0.0,
+   "straightness": 0.9903211218098932,
+   "max_lateral_dev": 0.04190972386964248,
+   "final_distance": 0.1496890430243323,
+   "final_bearing_abs": 0.0010204986330455857,
+   "body_yaw_rest_std": 1.1934897514720432e-16,
+   "retreat_m": 0.0
+  },
+  "cautious": {
+   "progress_speed": 0.08494330235368916,
+   "pauses_per_m": 1.1503037829177942,
+   "mean_pause_s": 0.3465,
+   "switch_rate": 0.9653217739246415,
+   "backward_s": 0.034499999999999996,
+   "straightness": 0.9900178223831059,
+   "max_lateral_dev": 0.07932415409465472,
+   "final_distance": 0.5884663472692384,
+   "final_bearing_abs": 0.08637487026819705,
+   "body_yaw_rest_std": 0.08833227278038101,
+   "retreat_m": 2.3807469640979573e-07
+  },
+  "curious": {
+   "progress_speed": 0.09817572792212081,
+   "pauses_per_m": 0.1347186323108973,
+   "mean_pause_s": 0.11750000000000001,
+   "switch_rate": 0.9373957985995333,
+   "backward_s": 0.006,
+   "straightness": 0.9218397408422216,
+   "max_lateral_dev": 0.220947009883443,
+   "final_distance": 0.2570197633143737,
+   "final_bearing_abs": 0.42471797909626485,
+   "body_yaw_rest_std": 0.44653057496068127,
+   "retreat_m": 0.0
+  },
+  "energetic": {
+   "progress_speed": 0.15571429201418446,
+   "pauses_per_m": 0.16152383764936756,
+   "mean_pause_s": 0.12200000000000003,
+   "switch_rate": 0.9411470490163388,
+   "backward_s": 0.0,
+   "straightness": 0.9423739825358032,
+   "max_lateral_dev": 0.1990339988074871,
+   "final_distance": 0.27198035323595443,
+   "final_bearing_abs": 0.26584104261507313,
+   "body_yaw_rest_std": 0.2666352931042931,
+   "retreat_m": 0.0
+  },
+  "hesitant": {
+   "progress_speed": 0.058443753164008384,
+   "pauses_per_m": 4.024939439333461,
+   "mean_pause_s": 0.9161190476190477,
+   "switch_rate": 1.038262754251417,
+   "backward_s": 0.6529999999999999,
+   "straightness": 0.9394059570357605,
+   "max_lateral_dev": 0.062435887729823294,
+   "final_distance": 0.46420745909324007,
+   "final_bearing_abs": 0.6068397986945687,
+   "body_yaw_rest_std": 0.03387375603175443,
+   "retreat_m": 0.015349485594249696
+  },
+  "neutral": {
+   "progress_speed": 0.1867754192911567,
+   "pauses_per_m": 0.0,
+   "mean_pause_s": 0.0,
+   "switch_rate": 0.02084028009336445,
+   "backward_s": 0.0,
+   "straightness": 0.9889618677503001,
+   "max_lateral_dev": 0.04181278912582753,
+   "final_distance": 0.34976213854501564,
+   "final_bearing_abs": 0.0032794855132023625,
+   "body_yaw_rest_std": 1.1658425960736629e-16,
+   "retreat_m": 0.0
+  },
+  "relaxed": {
+   "progress_speed": 0.13577441614764357,
+   "pauses_per_m": 0.06985255886987232,
+   "mean_pause_s": 0.0405,
+   "switch_rate": 0.034594864954985,
+   "backward_s": 0.0,
+   "straightness": 0.9728913952081001,
+   "max_lateral_dev": 0.1283652566992596,
+   "final_distance": 0.33159684577224924,
+   "final_bearing_abs": 0.002534937910035684,
+   "body_yaw_rest_std": 0.0011654617679446558,
+   "retreat_m": 0.0
+  }
+ }
+}

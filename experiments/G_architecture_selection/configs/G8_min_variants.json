@@ -1,0 +1,11 @@
+{
+ "note": "G8 stage 2 (prereg/G8_ADDENDUM.md): A0_min = A0 without the persistent regulator and with a single predictor member (stage-1 removals); memory unchanged (A0_mem not superior)",
+ "variants": {
+  "A0_min": {
+   "kind": "regulated",
+   "regulator": "static",
+   "params": {},
+   "predictor": "single"
+  }
+ }
+}

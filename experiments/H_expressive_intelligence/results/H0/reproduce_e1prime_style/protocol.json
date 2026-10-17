@@ -1,0 +1,89 @@
+{
+ "preregistration_commit": "0c221cf",
+ "implementation_commit": "726c8c62cc87a12ed6899b7194331abcb82faaa2",
+ "policy_sha256": "f67d5cac446f5ea81f3f5ffa26ea69155c50843443f57f0439d2e53d65ee2042",
+ "final_checkpoint": "000079994880",
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "sweeps": {
+  "pitch": [
+   [
+    -1.0,
+    0.0
+   ],
+   [
+    -0.5,
+    0.0
+   ],
+   [
+    0.0,
+    0.0
+   ],
+   [
+    0.5,
+    0.0
+   ],
+   [
+    1.0,
+    0.0
+   ]
+  ],
+  "crouch": [
+   [
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.25
+   ],
+   [
+    0.0,
+    0.5
+   ],
+   [
+    0.0,
+    0.75
+   ],
+   [
+    0.0,
+    1.0
+   ]
+  ]
+ },
+ "trained_points": [
+  [
+   -1.0,
+   0.0
+  ],
+  [
+   1.0,
+   0.0
+  ],
+  [
+   -1.0,
+   1.0
+  ],
+  [
+   0.0,
+   1.0
+  ]
+ ],
+ "held_out_points": [
+  [
+   0.75,
+   0.75
+  ],
+  [
+   1.0,
+   1.0
+  ]
+ ],
+ "scene": "flat_terrain_backlash",
+ "observation_noise": true,
+ "joint_initial_noise": 0.02,
+ "safety_override": false
+}

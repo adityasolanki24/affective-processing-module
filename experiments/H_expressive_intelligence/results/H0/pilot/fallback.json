@@ -1,0 +1,2081 @@
+{
+ "suite": "fallback",
+ "partition": "P",
+ "lock": {
+  "python": "3.12.4",
+  "platform": "Windows-11-10.0.26100-SP0",
+  "machine": "AMD64",
+  "cpus": 12,
+  "commit": "5fb2dd76b88fddfe7cf59459fb226a7043dbbae8",
+  "dirty": true,
+  "start_utc": "2026-10-12T05:21:09Z",
+  "numpy": "2.5.3",
+  "torch": null,
+  "mujoco": "3.3.0",
+  "onnxruntime": "1.21.0",
+  "nerva_commit": "726c8c62cc87a12ed6899b7194331abcb82faaa2",
+  "nerva_dirty": false,
+  "partition": "P",
+  "exploratory": true
+ },
+ "n_trials": 64,
+ "wall_s": 149.3,
+ "rows": [
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_0_enf_0",
+    "policy": "e1_prime",
+    "index": 6000,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 0,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 408491269,
+   "fell": false,
+   "max_tilt": 12.640817873648224,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15903442772477733,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.3418486546439268,
+   "wall_s": 14.53
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_0_enf_1",
+    "policy": "e1_prime",
+    "index": 106000,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 0,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1024813791,
+   "fell": false,
+   "max_tilt": 13.31124283215676,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15900938190564368,
+   "max_saturated_run": 4,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.156595943525899,
+   "wall_s": 14.47
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_0_shadow_0",
+    "policy": "e1_prime",
+    "index": 6000,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 0,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 408491269,
+   "fell": false,
+   "max_tilt": 12.640817873648224,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15903442772477733,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.3418486546439268,
+   "wall_s": 14.49
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_0_shadow_1",
+    "policy": "e1_prime",
+    "index": 106000,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 0,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1024813791,
+   "fell": false,
+   "max_tilt": 13.31124283215676,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15900938190564368,
+   "max_saturated_run": 4,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.156595943525899,
+   "wall_s": 5.94
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_45_enf_0",
+    "policy": "e1_prime",
+    "index": 6045,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 45,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 656868469,
+   "fell": true,
+   "max_tilt": 179.34071553310258,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.4 deg"
+   ],
+   "fallback_steps": 659,
+   "min_joint_margin": 0.1116822057652277,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.18,
+   "final_distance": 1.4977218683535325,
+   "wall_s": 5.61
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_45_enf_1",
+    "policy": "e1_prime",
+    "index": 106045,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 45,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 565525199,
+   "fell": false,
+   "max_tilt": 12.463104792300625,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15838059125206155,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.20008037492225,
+   "wall_s": 5.96
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_45_shadow_0",
+    "policy": "e1_prime",
+    "index": 6045,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 45,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 656868469,
+   "fell": true,
+   "max_tilt": 179.76523536271392,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.4 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.09814327640090337,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.4583071403147039,
+   "wall_s": 6.17
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_45_shadow_1",
+    "policy": "e1_prime",
+    "index": 106045,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 45,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 565525199,
+   "fell": false,
+   "max_tilt": 12.463104792300625,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15838059125206155,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.20008037492225,
+   "wall_s": 5.74
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_90_enf_0",
+    "policy": "e1_prime",
+    "index": 6090,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 90,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 404331148,
+   "fell": false,
+   "max_tilt": 16.76698170530681,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15414339790003234,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.303876156056363,
+   "wall_s": 5.71
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_90_enf_1",
+    "policy": "e1_prime",
+    "index": 106090,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 90,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 514283667,
+   "fell": true,
+   "max_tilt": 178.68261630404288,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.3 deg"
+   ],
+   "fallback_steps": 688,
+   "min_joint_margin": 0.13160685218240387,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.76,
+   "final_distance": 1.4255775586389958,
+   "wall_s": 5.91
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_90_shadow_0",
+    "policy": "e1_prime",
+    "index": 6090,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 90,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 404331148,
+   "fell": false,
+   "max_tilt": 16.76698170530681,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15414339790003234,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.303876156056363,
+   "wall_s": 6.11
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_90_shadow_1",
+    "policy": "e1_prime",
+    "index": 106090,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 90,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 514283667,
+   "fell": true,
+   "max_tilt": 179.4896666682016,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.3 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.10624254063549055,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.4204384055561794,
+   "wall_s": 6.61
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_135_enf_0",
+    "policy": "e1_prime",
+    "index": 6135,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 135,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 967474436,
+   "fell": true,
+   "max_tilt": 178.945906312163,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.8 deg"
+   ],
+   "fallback_steps": 672,
+   "min_joint_margin": 0.0023665398808889737,
+   "max_saturated_run": 4,
+   "completed": true,
+   "fallback_s": 13.44,
+   "final_distance": 1.7455238828173967,
+   "wall_s": 8.08
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_135_enf_1",
+    "policy": "e1_prime",
+    "index": 106135,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 135,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 797660165,
+   "fell": false,
+   "max_tilt": 15.438090583487824,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15226047236526263,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.4192070646916302,
+   "wall_s": 9.09
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_135_shadow_0",
+    "policy": "e1_prime",
+    "index": 6135,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 135,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 967474436,
+   "fell": true,
+   "max_tilt": 179.08989700962982,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.8 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.03019864457321564,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.7997032787669267,
+   "wall_s": 10.75
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_135_shadow_1",
+    "policy": "e1_prime",
+    "index": 106135,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 135,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 797660165,
+   "fell": false,
+   "max_tilt": 15.438090583487824,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15226047236526263,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.4192070646916302,
+   "wall_s": 8.77
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_180_enf_0",
+    "policy": "e1_prime",
+    "index": 6180,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 180,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 517102074,
+   "fell": true,
+   "max_tilt": 179.33418510214693,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.3 deg"
+   ],
+   "fallback_steps": 678,
+   "min_joint_margin": 0.02106123214850597,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.56,
+   "final_distance": 1.8995727967279405,
+   "wall_s": 8.36
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_180_enf_1",
+    "policy": "e1_prime",
+    "index": 106180,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 180,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1881408103,
+   "fell": true,
+   "max_tilt": 179.69610858008537,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.3 deg"
+   ],
+   "fallback_steps": 670,
+   "min_joint_margin": 0.018184557585410488,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.4,
+   "final_distance": 1.7563979871711732,
+   "wall_s": 7.77
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_180_shadow_0",
+    "policy": "e1_prime",
+    "index": 6180,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 180,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 517102074,
+   "fell": true,
+   "max_tilt": 179.45914822908577,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.3 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.02106123214850597,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.8603422657896806,
+   "wall_s": 9.69
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_180_shadow_1",
+    "policy": "e1_prime",
+    "index": 106180,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 180,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1881408103,
+   "fell": true,
+   "max_tilt": 179.90238343951768,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.3 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.052882011033167586,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.8416099509430663,
+   "wall_s": 9.1
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_225_enf_0",
+    "policy": "e1_prime",
+    "index": 6225,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 225,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1520407125,
+   "fell": true,
+   "max_tilt": 178.7433414620063,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.2 deg"
+   ],
+   "fallback_steps": 680,
+   "min_joint_margin": 0.09371732942111244,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 13.6,
+   "final_distance": 1.8160473192396884,
+   "wall_s": 8.35
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_225_enf_1",
+    "policy": "e1_prime",
+    "index": 106225,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 225,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1242603225,
+   "fell": false,
+   "max_tilt": 12.513992062776886,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16298304090597526,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.2249023346502956,
+   "wall_s": 6.86
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_225_shadow_0",
+    "policy": "e1_prime",
+    "index": 6225,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 225,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1520407125,
+   "fell": true,
+   "max_tilt": 179.3120176693288,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.2 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.09965349872007834,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.8768627697959357,
+   "wall_s": 7.4
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_225_shadow_1",
+    "policy": "e1_prime",
+    "index": 106225,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 225,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1242603225,
+   "fell": false,
+   "max_tilt": 12.513992062776886,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16298304090597526,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.2249023346502956,
+   "wall_s": 6.61
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_270_enf_0",
+    "policy": "e1_prime",
+    "index": 6270,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 270,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1845850547,
+   "fell": false,
+   "max_tilt": 12.557914511822897,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16389374569814186,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.2960407453547627,
+   "wall_s": 4.8
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_270_enf_1",
+    "policy": "e1_prime",
+    "index": 106270,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 270,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 934579350,
+   "fell": false,
+   "max_tilt": 12.402471238373492,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15961119709714683,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.1626692878114353,
+   "wall_s": 4.9
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_270_shadow_0",
+    "policy": "e1_prime",
+    "index": 6270,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 270,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1845850547,
+   "fell": false,
+   "max_tilt": 12.557914511822897,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16389374569814186,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.2960407453547627,
+   "wall_s": 4.9
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_270_shadow_1",
+    "policy": "e1_prime",
+    "index": 106270,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 270,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 934579350,
+   "fell": false,
+   "max_tilt": 12.402471238373492,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15961119709714683,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.1626692878114353,
+   "wall_s": 6.07
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_315_enf_0",
+    "policy": "e1_prime",
+    "index": 6315,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 315,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1230507275,
+   "fell": false,
+   "max_tilt": 12.38357749622526,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16657657528542846,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.1345950907214741,
+   "wall_s": 6.55
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_315_enf_1",
+    "policy": "e1_prime",
+    "index": 106315,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 315,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 858213001,
+   "fell": false,
+   "max_tilt": 12.467542449193461,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1551489964810826,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.304348770642898,
+   "wall_s": 6.7
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_315_shadow_0",
+    "policy": "e1_prime",
+    "index": 6315,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 315,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1230507275,
+   "fell": false,
+   "max_tilt": 12.38357749622526,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.16657657528542846,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.1345950907214741,
+   "wall_s": 7.16
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.6_315_shadow_1",
+    "policy": "e1_prime",
+    "index": 106315,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.6,
+     "push_deg": 315,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 858213001,
+   "fell": false,
+   "max_tilt": 12.467542449193461,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1551489964810826,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.304348770642898,
+   "wall_s": 6.85
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_0_enf_0",
+    "policy": "e1_prime",
+    "index": 9000,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 0,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 926021870,
+   "fell": true,
+   "max_tilt": 179.30264916699687,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.8 deg"
+   ],
+   "fallback_steps": 685,
+   "min_joint_margin": 0.05691989463897973,
+   "max_saturated_run": 5,
+   "completed": true,
+   "fallback_s": 13.700000000000001,
+   "final_distance": 1.1392483692200324,
+   "wall_s": 6.42
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_0_enf_1",
+    "policy": "e1_prime",
+    "index": 109000,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 0,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 790630698,
+   "fell": false,
+   "max_tilt": 19.79842192199447,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.11305984730098273,
+   "max_saturated_run": 7,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 0.9752245017971699,
+   "wall_s": 6.05
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_0_shadow_0",
+    "policy": "e1_prime",
+    "index": 9000,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 0,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 926021870,
+   "fell": true,
+   "max_tilt": 178.67061801935705,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.8 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.05691989463897973,
+   "max_saturated_run": 5,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.2201302170733557,
+   "wall_s": 6.05
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_0_shadow_1",
+    "policy": "e1_prime",
+    "index": 109000,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 0,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 790630698,
+   "fell": false,
+   "max_tilt": 19.79842192199447,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.11305984730098273,
+   "max_saturated_run": 7,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 0.9752245017971699,
+   "wall_s": 5.65
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_45_enf_0",
+    "policy": "e1_prime",
+    "index": 9045,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 45,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2140271929,
+   "fell": true,
+   "max_tilt": 179.66885911796675,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.5 deg"
+   ],
+   "fallback_steps": 681,
+   "min_joint_margin": 0.05876427416506386,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.620000000000001,
+   "final_distance": 1.1277411929744088,
+   "wall_s": 5.76
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_45_enf_1",
+    "policy": "e1_prime",
+    "index": 109045,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 45,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1152794417,
+   "fell": true,
+   "max_tilt": 177.99731910172017,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.0 deg"
+   ],
+   "fallback_steps": 682,
+   "min_joint_margin": 0.0322996943073664,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 13.64,
+   "final_distance": 1.0924315631005734,
+   "wall_s": 5.9
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_45_shadow_0",
+    "policy": "e1_prime",
+    "index": 9045,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 45,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2140271929,
+   "fell": true,
+   "max_tilt": 179.34661801987426,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.5 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.060709635698145636,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.1188481333600078,
+   "wall_s": 6.76
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_45_shadow_1",
+    "policy": "e1_prime",
+    "index": 109045,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 45,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1152794417,
+   "fell": true,
+   "max_tilt": 178.4939350703662,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.0 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.031098702966610214,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.2057420288741758,
+   "wall_s": 6.25
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_90_enf_0",
+    "policy": "e1_prime",
+    "index": 9090,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 90,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 558592828,
+   "fell": true,
+   "max_tilt": 179.51425902164763,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.8 deg"
+   ],
+   "fallback_steps": 690,
+   "min_joint_margin": 0.09365548959696063,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.8,
+   "final_distance": 1.4477639908155575,
+   "wall_s": 5.29
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_90_enf_1",
+    "policy": "e1_prime",
+    "index": 109090,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 90,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2037462155,
+   "fell": true,
+   "max_tilt": 179.4006251142599,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 27.7 deg"
+   ],
+   "fallback_steps": 690,
+   "min_joint_margin": 0.13208604710248675,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.8,
+   "final_distance": 1.5232436539157541,
+   "wall_s": 5.5
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_90_shadow_0",
+    "policy": "e1_prime",
+    "index": 9090,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 90,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 558592828,
+   "fell": true,
+   "max_tilt": 179.63482383767493,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.8 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.08222540032374681,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.4143930428524858,
+   "wall_s": 5.97
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_90_shadow_1",
+    "policy": "e1_prime",
+    "index": 109090,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 90,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2037462155,
+   "fell": true,
+   "max_tilt": 179.40045417152706,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 27.7 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.09931846021118895,
+   "max_saturated_run": 4,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.4745989725746964,
+   "wall_s": 6.03
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_135_enf_0",
+    "policy": "e1_prime",
+    "index": 9135,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 135,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 679639058,
+   "fell": true,
+   "max_tilt": 179.9106611518616,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 27.1 deg"
+   ],
+   "fallback_steps": 691,
+   "min_joint_margin": -0.0038644003817678296,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.82,
+   "final_distance": 1.8299129013291995,
+   "wall_s": 4.85
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_135_enf_1",
+    "policy": "e1_prime",
+    "index": 109135,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 135,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2012260466,
+   "fell": true,
+   "max_tilt": 178.86188337327513,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.7 deg"
+   ],
+   "fallback_steps": 684,
+   "min_joint_margin": 0.008325161035110051,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 13.68,
+   "final_distance": 1.7547150696775224,
+   "wall_s": 7.02
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_135_shadow_0",
+    "policy": "e1_prime",
+    "index": 9135,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 135,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 679639058,
+   "fell": true,
+   "max_tilt": 179.6390427182996,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 27.1 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.06073971401214506,
+   "max_saturated_run": 5,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.842907734944019,
+   "wall_s": 7.26
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_135_shadow_1",
+    "policy": "e1_prime",
+    "index": 109135,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 135,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2012260466,
+   "fell": true,
+   "max_tilt": 179.5141042312103,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.7 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.022156305750600902,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.7565812366522786,
+   "wall_s": 7.0
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_180_enf_0",
+    "policy": "e1_prime",
+    "index": 9180,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 180,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1955915628,
+   "fell": true,
+   "max_tilt": 179.49581111731806,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.1 deg"
+   ],
+   "fallback_steps": 694,
+   "min_joint_margin": -0.0016705167082473604,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 13.88,
+   "final_distance": 1.8069351663577866,
+   "wall_s": 7.87
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_180_enf_1",
+    "policy": "e1_prime",
+    "index": 109180,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 180,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1449276906,
+   "fell": true,
+   "max_tilt": 179.39767865990652,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 27.1 deg"
+   ],
+   "fallback_steps": 694,
+   "min_joint_margin": -7.008055307156091e-05,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.88,
+   "final_distance": 1.7659148560517894,
+   "wall_s": 7.7
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_180_shadow_0",
+    "policy": "e1_prime",
+    "index": 9180,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 180,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1955915628,
+   "fell": true,
+   "max_tilt": 179.61923217637485,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.1 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.0018644168143380213,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.750631161450257,
+   "wall_s": 8.7
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_180_shadow_1",
+    "policy": "e1_prime",
+    "index": 109180,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 180,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1449276906,
+   "fell": true,
+   "max_tilt": 179.14676268410557,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 27.1 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.0179726599547545,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.6714969426484294,
+   "wall_s": 8.18
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_225_enf_0",
+    "policy": "e1_prime",
+    "index": 9225,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 225,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 499964430,
+   "fell": true,
+   "max_tilt": 178.9897350019771,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.4 deg"
+   ],
+   "fallback_steps": 692,
+   "min_joint_margin": 0.09709940181399301,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.84,
+   "final_distance": 1.8435635767801375,
+   "wall_s": 7.15
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_225_enf_1",
+    "policy": "e1_prime",
+    "index": 109225,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 225,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2140268556,
+   "fell": true,
+   "max_tilt": 179.59493962537843,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.5 deg"
+   ],
+   "fallback_steps": 676,
+   "min_joint_margin": 0.016343892022500972,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 13.52,
+   "final_distance": 1.7294343450511753,
+   "wall_s": 7.11
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_225_shadow_0",
+    "policy": "e1_prime",
+    "index": 9225,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 225,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 499964430,
+   "fell": true,
+   "max_tilt": 179.47539372190218,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 26.4 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1320545084063726,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.7804578133232434,
+   "wall_s": 5.25
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_225_shadow_1",
+    "policy": "e1_prime",
+    "index": 109225,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 225,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 2140268556,
+   "fell": true,
+   "max_tilt": 179.64480315278698,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.5 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.03224405996224555,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.7233594622842277,
+   "wall_s": 4.08
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_270_enf_0",
+    "policy": "e1_prime",
+    "index": 9270,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 270,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 901215039,
+   "fell": false,
+   "max_tilt": 12.46030176068548,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15650823901851846,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.1746642532612535,
+   "wall_s": 3.83
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_270_enf_1",
+    "policy": "e1_prime",
+    "index": 109270,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 270,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1477043582,
+   "fell": false,
+   "max_tilt": 13.058565735764226,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1278968082809186,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.2583161735384338,
+   "wall_s": 4.25
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_270_shadow_0",
+    "policy": "e1_prime",
+    "index": 9270,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 270,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 901215039,
+   "fell": false,
+   "max_tilt": 12.46030176068548,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.15650823901851846,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.1746642532612535,
+   "wall_s": 4.25
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_270_shadow_1",
+    "policy": "e1_prime",
+    "index": 109270,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 270,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1477043582,
+   "fell": false,
+   "max_tilt": 13.058565735764226,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1278968082809186,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.2583161735384338,
+   "wall_s": 4.22
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_315_enf_0",
+    "policy": "e1_prime",
+    "index": 9315,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 315,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 98145250,
+   "fell": true,
+   "max_tilt": 179.00638180545195,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.9 deg"
+   ],
+   "fallback_steps": 657,
+   "min_joint_margin": 0.054208997715925744,
+   "max_saturated_run": 2,
+   "completed": true,
+   "fallback_s": 13.14,
+   "final_distance": 1.2535752900536272,
+   "wall_s": 3.25
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_315_enf_1",
+    "policy": "e1_prime",
+    "index": 109315,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 315,
+     "push_t": 6.0,
+     "enforce": true,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1597572246,
+   "fell": false,
+   "max_tilt": 12.431701036904048,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1625928228506246,
+   "max_saturated_run": 4,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.0540408155901884,
+   "wall_s": 3.44
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_315_shadow_0",
+    "policy": "e1_prime",
+    "index": 9315,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 315,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 98145250,
+   "fell": true,
+   "max_tilt": 179.533192951461,
+   "trips": 1,
+   "trip_reasons": [
+    "tilt 25.9 deg"
+   ],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.054208997715925744,
+   "max_saturated_run": 3,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.1971604948003853,
+   "wall_s": 3.63
+  },
+  {
+   "trial": {
+    "suite": "fallback",
+    "name": "push0.9_315_shadow_1",
+    "policy": "e1_prime",
+    "index": 109315,
+    "latency": false,
+    "seconds": 20.0,
+    "params": {
+     "partition": "P",
+     "push": 0.9,
+     "push_deg": 315,
+     "push_t": 6.0,
+     "enforce": false,
+     "probe": "slow_pausing",
+     "dwell": 0.6
+    }
+   },
+   "sim_seed": 1597572246,
+   "fell": false,
+   "max_tilt": 12.431701036904048,
+   "trips": 0,
+   "trip_reasons": [],
+   "fallback_steps": 0,
+   "min_joint_margin": 0.1625928228506246,
+   "max_saturated_run": 4,
+   "completed": true,
+   "fallback_s": 0.0,
+   "final_distance": 1.0540408155901884,
+   "wall_s": 2.58
+  }
+ ]
+}

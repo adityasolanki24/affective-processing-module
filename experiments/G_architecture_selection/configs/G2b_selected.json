@@ -1,0 +1,242 @@
+{
+ "rule": "among M1t, M1t_probeU, M1_probeU: meets G2 (i)-(iii) on validation; ties: Brier, then probes",
+ "candidate": null,
+ "validation": {
+  "M0_all": {
+   "criteria": {
+    "i": false,
+    "ii": true,
+    "iii": true
+   },
+   "all": false,
+   "brier": 0.03902680647966142,
+   "collision_rate_mean": 0.10308641975308859,
+   "adaptation": [
+    8.0,
+    Infinity
+   ],
+   "false_blame": 0.0008737222222222219,
+   "probes": 0.0,
+   "no_evidence_share": 0.6690367523420611
+  },
+  "M1": {
+   "criteria": {
+    "i": false,
+    "ii": true,
+    "iii": true
+   },
+   "all": false,
+   "brier": 0.039517874293997925,
+   "collision_rate_mean": 0.09506172839506373,
+   "adaptation": [
+    Infinity,
+    Infinity
+   ],
+   "false_blame": -0.008710347222222223,
+   "probes": 0.0,
+   "no_evidence_share": 0.67225156024964
+  },
+  "M1t": {
+   "criteria": {
+    "i": false,
+    "ii": true,
+    "iii": true
+   },
+   "all": false,
+   "brier": 0.039627203470751125,
+   "collision_rate_mean": 0.09567901234568105,
+   "adaptation": [
+    13.0,
+    7.0
+   ],
+   "false_blame": -0.0026104027777777775,
+   "probes": 0.0,
+   "no_evidence_share": 0.6719253523159059
+  },
+  "M1t_probeU": {
+   "criteria": {
+    "i": false,
+    "ii": true,
+    "iii": true
+   },
+   "all": false,
+   "brier": 0.03813637293291766,
+   "collision_rate_mean": 0.09506172839506373,
+   "adaptation": [
+    14.0,
+    6.0
+   ],
+   "false_blame": -0.0024260416666666692,
+   "probes": 1761.0,
+   "no_evidence_share": 0.673119204664946
+  },
+  "M1_probeU": {
+   "criteria": {
+    "i": false,
+    "ii": true,
+    "iii": true
+   },
+   "all": false,
+   "brier": 0.037822853195515406,
+   "collision_rate_mean": 0.09537037037037238,
+   "adaptation": [
+    Infinity,
+    Infinity
+   ],
+   "false_blame": -0.007889611111111111,
+   "probes": 1150.0,
+   "no_evidence_share": 0.6719384585981174
+  },
+  "M1t_probeR": {
+   "criteria": {
+    "i": false,
+    "ii": true,
+    "iii": true
+   },
+   "all": false,
+   "brier": 0.03891709961465477,
+   "collision_rate_mean": 0.0941358024691378,
+   "adaptation": [
+    14.0,
+    Infinity
+   ],
+   "false_blame": -0.003137680555555553,
+   "probes": 1478.0,
+   "no_evidence_share": 0.6728855123335097
+  }
+ },
+ "systems": {
+  "M0_all": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M0",
+    "evidence": "all"
+   }
+  },
+  "M1": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M1",
+    "params": {
+     "gamma": 0.5982
+    },
+    "evidence": "exposed"
+   }
+  },
+  "M1t": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M1t",
+    "params": {
+     "tau_s": 356.352646
+    },
+    "evidence": "exposed"
+   }
+  },
+  "M1t_probeU": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M1t",
+    "params": {
+     "tau_s": 356.352646
+    },
+    "evidence": "exposed",
+    "probe": {
+     "mode": "uncertainty",
+     "budget": 2,
+     "conf_max": 0.5
+    }
+   }
+  },
+  "M1_probeU": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M1",
+    "params": {
+     "gamma": 0.5982
+    },
+    "evidence": "exposed",
+    "probe": {
+     "mode": "uncertainty",
+     "budget": 2,
+     "conf_max": 0.5
+    }
+   }
+  },
+  "M1t_probeR": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M1t",
+    "params": {
+     "tau_s": 356.352646
+    },
+    "evidence": "exposed",
+    "probe": {
+     "mode": "random",
+     "budget": 2,
+     "p_random": 0.1,
+     "seed": 0
+    }
+   }
+  }
+ },
+ "regulator": {
+  "kind": "regulated",
+  "regulator": "ema",
+  "params": {
+   "tau": 0.621595,
+   "k": 0.449887,
+   "c": 0.017277
+  },
+  "lam_c": 3.946054,
+  "lam_s": 0.993398
+ }
+}

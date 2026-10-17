@@ -1,0 +1,120 @@
+{
+ "rule": "per variant max mean J on G8-V (equal K)",
+ "systems": {
+  "A0": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.842559,
+   "lam_s": 1.770364,
+   "regulator": "ema",
+   "kind": "regulated"
+  },
+  "A0_static": {
+   "params": {},
+   "lam_c": 4.460059,
+   "lam_s": 2.300233,
+   "regulator": "static",
+   "kind": "regulated"
+  },
+  "A0_nomem": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 0.647692,
+   "lam_s": 3.888327,
+   "regulator": "ema",
+   "no_memory": true,
+   "kind": "regulated"
+  },
+  "A0_single": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 4.880455,
+   "lam_s": 2.561782,
+   "regulator": "ema",
+   "kind": "regulated",
+   "predictor": "single"
+  },
+  "A0_heur": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 1.933642,
+   "lam_s": 1.000742,
+   "regulator": "ema",
+   "kind": "regulated",
+   "predictor": "heuristic"
+  },
+  "A0_mem": {
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 1.214914,
+   "lam_s": 1.154961,
+   "regulator": "ema",
+   "kind": "regulated",
+   "memory": {
+    "model": "M1t",
+    "params": {
+     "tau_s": 356.352646
+    },
+    "evidence": "exposed",
+    "probe": {
+     "mode": "uncertainty",
+     "budget": 2,
+     "conf_max": 0.5
+    }
+   }
+  }
+ },
+ "validation": {
+  "A0": {
+   "config_id": "A0:25",
+   "J_mean": 47.25,
+   "collision_rate": 0.12000000000000255,
+   "completion": 0.6073469387755102
+  },
+  "A0_static": {
+   "config_id": "A0_static:22",
+   "J_mean": 46.44166666666667,
+   "collision_rate": 0.12000000000000255,
+   "completion": 0.5981959819598196
+  },
+  "A0_nomem": {
+   "config_id": "A0_nomem:38",
+   "J_mean": 45.725,
+   "collision_rate": 0.1500000000000032,
+   "completion": 0.5967145790554415
+  },
+  "A0_single": {
+   "config_id": "A0_single:47",
+   "J_mean": 46.958333333333336,
+   "collision_rate": 0.12666666666666934,
+   "completion": 0.6082854799015587
+  },
+  "A0_heur": {
+   "config_id": "A0_heur:2",
+   "J_mean": 37.80833333333333,
+   "collision_rate": 0.25000000000000533,
+   "completion": 0.5502958579881657
+  },
+  "A0_mem": {
+   "config_id": "A0_mem:37",
+   "J_mean": 45.99166666666667,
+   "collision_rate": 0.14000000000000298,
+   "completion": 0.6021285304952927
+  }
+ }
+}
