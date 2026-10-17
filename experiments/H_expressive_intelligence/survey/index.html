@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Robot Movement Survey</title>
+<style>
+:root {
+  --bg: #f6f5f2; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #dddbd5;
+  --accent: #2f5d8a; --accent-ink: #ffffff; --warn-bg: #fff4d6; --warn-ink: #6a4b00; --att-bg: #fde8e4; --att-ink: #7a2414;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161615; --panel: #212120; --ink: #ecebe7; --muted: #a3a29d; --line: #3a3936;
+    --accent: #7fb0e0; --accent-ink: #0d1b28; --warn-bg: #3a3014; --warn-ink: #f2d98c; --att-bg: #44201a; --att-ink: #ffc3b5;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 16px; }
+.banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: var(--radius); padding: 8px 14px; font-size: 14px; margin-bottom: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+.narrow { max-width: 720px; margin: 0 auto; }
+h1 { font-size: 26px; margin: 0 0 12px; }
+h2 { font-size: 18px; margin: 0 0 8px; }
+p { margin: 0 0 12px; }
+.muted { color: var(--muted); }
+button { font: inherit; border-radius: 8px; padding: 10px 18px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.choice-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+.choice-cards button { text-align: left; padding: 16px; }
+.choice-cards strong { display: block; font-size: 17px; }
+.progress { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+.progress > div { height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+.trial { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.stage { position: sticky; top: 16px; }
+video { width: 100%; aspect-ratio: 4 / 3; background: #000; border-radius: var(--radius); display: block; }
+.stage .row { margin-top: 8px; justify-content: space-between; }
+.att { background: var(--att-bg); color: var(--att-ink); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-weight: 600; }
+fieldset { border: 0; padding: 0; margin: 0 0 18px; }
+legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
+.locked { opacity: .4; pointer-events: none; }
+.fc { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.fc label, .lk label { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer; display: flex; gap: 8px; align-items: center; }
+.fc input:checked + span, .lk input:checked + span { font-weight: 700; color: var(--accent); }
+.sl { display: grid; grid-template-columns: 110px 1fr 36px; gap: 10px; align-items: center; margin-bottom: 6px; }
+.sl input[type=range] { width: 100%; accent-color: var(--accent); }
+.sl.untouched input[type=range] { opacity: .35; }
+.sl.untouched output { visibility: hidden; }
+.ends { display: grid; grid-template-columns: 110px 1fr 36px; font-size: 12px; color: var(--muted); }
+.ends span:nth-child(2) { display: flex; justify-content: space-between; }
+.lkq { margin-bottom: 10px; }
+.lkq .q { font-size: 15px; margin-bottom: 4px; }
+.lk { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.lk label { justify-content: center; padding: 6px 0; flex-direction: column; gap: 0; font-size: 14px; }
+.lk input { margin: 0; }
+.lkends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+textarea { width: 100%; font: inherit; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--bg); color: var(--ink); min-height: 64px; }
+.hint { font-size: 14px; color: var(--muted); min-height: 20px; }
+ul { margin: 0 0 12px; padding-left: 20px; }
+@media (max-width: 820px) {
+  .trial { grid-template-columns: 1fr; }
+  .stage { position: static; }
+  .choice-cards { grid-template-columns: 1fr; }
+  .sl, .ends { grid-template-columns: 90px 1fr 32px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="banner" id="banner">Researcher pilot of the H2 instrument. Responses are feedback on the survey and are not study data.</div>
+  <div id="app"></div>
+</div>
+<script src="forms.js"></script>
+<script>
+(function () {
+  "use strict";
+  var F = window.H2_FORMS;
+  var KEY = "h2_survey_pilot_v01";
+  var OPTIONS = ["cautious", "assertive", "curious", "hesitant", "relaxed", "energetic", "neutral / none of these"];
+  var SLIDERS = ["caution", "confidence", "curiosity", "hesitancy", "relaxedness", "energy"];
+  var LIKERT = [
+    ["naturalness", "The robot's movement looked natural."],
+    ["coherence", "The movements fit together."],
+    ["intentionality", "The robot seemed to be doing something on purpose."]
+  ];
+  var ATTENTION = "Attention check: whatever you see in this clip, choose “curious” and move the energy slider all the way to the left (0).";
+  var app = document.getElementById("app");
+  var S = null;
+
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } }
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+  function clear() { try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ } }
+  function now() { return new Date().toISOString(); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function el(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function newSession(kind) {
+    var forms = F.forms[kind];
+    var q = new URLSearchParams(location.search).get("form");
+    var idx = q !== null && forms[+q] ? +q : Math.floor(Math.random() * forms.length);
+    S = {
+      instrument: F.instrument, mode: "researcher_pilot", kind: kind, form_index: idx,
+      option_order: shuffle(OPTIONS.slice(0, 6)).concat(OPTIONS[6]), started: now(), finished: null,
+      user_agent: navigator.userAgent, screen: [screen.width, screen.height],
+      step: "instructions", training_i: 0, trial_i: 0,
+      playlist: forms[idx], trials: [], feedback: {}
+    };
+    save(); render();
+  }
+
+  function render() {
+    window.scrollTo(0, 0);
+    if (!S) return start();
+    ({ instructions: instructions, training: training, trial: trial, end: end })[S.step]();
+  }
+
+  function start() {
+    var prev = load();
+    var c = el('<div class="card narrow"><h1>How does this robot move?</h1>' +
+      '<p>You will watch short silent clips of a small two-legged robot walking up to an orange ball in a simulator, and answer a few questions about how it moved.</p>' +
+      '<p>There are no right or wrong answers. Go with your first impression.</p>' +
+      '<div class="choice-cards">' +
+      '<button data-k="quick"><strong>Quick pilot</strong><span class="muted">12 clips + 1 check, about 15 minutes</span></button>' +
+      '<button data-k="full"><strong>Full study length</strong><span class="muted">36 clips + 2 checks, about 40 minutes</span></button>' +
+      '</div><div id="resume"></div></div>');
+    c.querySelectorAll("[data-k]").forEach(function (b) { b.onclick = function () { newSession(b.dataset.k); }; });
+    if (prev && !prev.finished) {
+      var r = el('<p class="muted">You have an unfinished session (' + esc(prev.kind) + ', clip ' + (prev.trials.length + 1) + ' of ' + prev.playlist.length + '). <button id="res">Resume</button></p>');
+      c.querySelector("#resume").appendChild(r);
+      r.querySelector("#res").onclick = function () { S = prev; render(); };
+    }
+    app.replaceChildren(c);
+  }
+
+  function instructions() {
+    var c = el('<div class="card narrow"><h1>Before you start</h1>' +
+      '<ul><li>Each clip shows one walk to the ball and a few seconds after it arrives. The questions unlock once the clip has finished; you can replay it as often as you like.</li>' +
+      '<li>For each clip you will pick the word that best describes how the robot moved, move six sliders, answer three short statements, and optionally write a few words.</li>' +
+      '<li>Please watch at full attention with the video large enough to see the robot’s head.</li>' +
+      '<li>Some clips include an instruction to check attention. Please follow it.</li></ul>' +
+      '<p>First, two practice clips so you can see what the robot looks like and how it moves. No questions on these.</p>' +
+      '<div class="row"><button class="primary" id="go">Start practice</button></div></div>');
+    c.querySelector("#go").onclick = function () { S.step = "training"; save(); render(); };
+    app.replaceChildren(c);
+  }
+
+  function videoBlock(file, onEnded) {
+    var v = el('<div class="stage"><video playsinline muted preload="auto" src="' + esc(F.video_dir + file) + '"></video>' +
+      '<div class="row"><span class="hint" data-hint>Playing…</span><button data-replay disabled>Replay</button></div></div>');
+    var video = v.querySelector("video"), hint = v.querySelector("[data-hint]"), rep = v.querySelector("[data-replay]");
+    var info = { plays: 0, first_end_ms: null, t0: performance.now() };
+    function play() { info.plays++; video.currentTime = 0; var p = video.play(); if (p && p.catch) p.catch(function () { hint.textContent = "Press play to start."; video.controls = true; }); }
+    video.addEventListener("ended", function () {
+      if (info.first_end_ms === null) { info.first_end_ms = Math.round(performance.now() - info.t0); onEnded(); }
+      hint.textContent = "Clip finished."; rep.disabled = false;
+    });
+    video.addEventListener("error", function () { hint.textContent = "This clip could not be loaded (" + file + ")."; });
+    rep.onclick = function () { hint.textContent = "Playing…"; play(); };
+    setTimeout(play, 50);
+    return { node: v, info: info };
+  }
+
+  function training() {
+    var i = S.training_i, file = F.training[i];
+    var wrap = el('<div><div class="progress"><div style="width:0"></div></div><h2>Practice clip ' + (i + 1) + ' of ' + F.training.length + '</h2>' +
+      '<div class="trial"><div data-v></div><div class="card"><p>Just watch. This is the robot you will see in every clip: it walks to the ball, stops, and may move its head.</p>' +
+      '<button class="primary" data-next disabled>Next</button></div></div></div>');
+    var vb = videoBlock(file, function () { nx.disabled = false; });
+    var nx = wrap.querySelector("[data-next]");
+    wrap.querySelector("[data-v]").appendChild(vb.node);
+    nx.onclick = function () {
+      S.training_i++;
+      if (S.training_i >= F.training.length) S.step = "trial";
+      save(); render();
+    };
+    app.replaceChildren(wrap);
+  }
+
+  function trial() {
+    var i = S.trial_i, item = S.playlist[i], n = S.playlist.length;
+    var resp = { position: i, file: item.file, attention: item.attention, choice: null, sliders: {}, likert: {}, text: "" };
+    var sl = SLIDERS.map(function (s) {
+      return '<div class="sl untouched" data-s="' + s + '"><span>' + s + '</span><input type="range" min="0" max="100" step="1" value="50" aria-label="' + s + '"><output>50</output></div>';
+    }).join("");
+    var lk = LIKERT.map(function (q) {
+      var opts = ""; for (var k = 1; k <= 7; k++) opts += '<label><input type="radio" name="' + q[0] + '" value="' + k + '"><span>' + k + '</span></label>';
+      return '<div class="lkq"><div class="q">' + esc(q[1]) + '</div><div class="lk">' + opts + '</div><div class="lkends"><span>strongly disagree</span><span>strongly agree</span></div></div>';
+    }).join("");
+    var fc = S.option_order.map(function (o) { return '<label><input type="radio" name="fc" value="' + esc(o) + '"><span>' + esc(o) + '</span></label>'; }).join("");
+    var wrap = el('<div><div class="progress"><div style="width:' + (100 * i / n) + '%"></div></div>' +
+      '<h2>Clip ' + (i + 1) + ' of ' + n + '</h2>' +
+      (item.attention ? '<div class="att">' + esc(ATTENTION) + '</div>' : '') +
+      '<div class="trial"><div data-v></div><div class="card locked" data-form>' +
+      '<fieldset><legend>Which word best describes how the robot moved?</legend><div class="fc">' + fc + '</div></fieldset>' +
+      '<fieldset><legend>How much did the robot’s movement show each quality?</legend>' +
+      '<div class="ends"><span></span><span><span>not at all</span><span>very much</span></span><span></span></div>' + sl +
+      '<div class="hint">Click or drag every slider, even if you leave it in the middle.</div></fieldset>' +
+      '<fieldset><legend>How much do you agree?</legend>' + lk + '</fieldset>' +
+      '<fieldset><legend>In a few words, how would you describe this robot’s behaviour? <span class="muted">(optional)</span></legend><textarea data-t></textarea></fieldset>' +
+      '<div class="row"><button class="primary" data-next disabled>Next clip</button><span class="hint" data-miss></span></div>' +
+      '</div></div></div>');
+    var form = wrap.querySelector("[data-form]"), nx = wrap.querySelector("[data-next]"), miss = wrap.querySelector("[data-miss]");
+    var t_unlock = null;
+    var vb = videoBlock(item.file, function () { form.classList.remove("locked"); t_unlock = performance.now(); check(); });
+    wrap.querySelector("[data-v]").appendChild(vb.node);
+
+    function check() {
+      var m = [];
+      if (!resp.choice) m.push("a word");
+      var untouched = SLIDERS.filter(function (s) { return !(s in resp.sliders); }).length;
+      if (untouched) m.push(untouched + " slider" + (untouched > 1 ? "s" : ""));
+      var lkm = LIKERT.filter(function (q) { return !(q[0] in resp.likert); }).length;
+      if (lkm) m.push(lkm + " statement" + (lkm > 1 ? "s" : ""));
+      nx.disabled = m.length > 0 || t_unlock === null;
+      miss.textContent = m.length ? "Still to answer: " + m.join(", ") : "";
+    }
+    form.querySelectorAll('input[name=fc]').forEach(function (r) { r.onchange = function () { resp.choice = r.value; check(); }; });
+    form.querySelectorAll(".sl").forEach(function (row) {
+      var inp = row.querySelector("input"), out = row.querySelector("output");
+      function upd() { row.classList.remove("untouched"); resp.sliders[row.dataset.s] = +inp.value; out.textContent = inp.value; check(); }
+      inp.addEventListener("input", upd); inp.addEventListener("pointerdown", upd); inp.addEventListener("keydown", upd);
+    });
+    LIKERT.forEach(function (q) {
+      form.querySelectorAll('input[name=' + q[0] + ']').forEach(function (r) { r.onchange = function () { resp.likert[q[0]] = +r.value; check(); }; });
+    });
+    nx.onclick = function () {
+      resp.text = form.querySelector("[data-t]").value.trim();
+      resp.plays = vb.info.plays;
+      resp.watch_to_first_end_ms = vb.info.first_end_ms;
+      resp.response_ms = Math.round(performance.now() - t_unlock);
+      resp.submitted = now();
+      S.trials.push(resp); S.trial_i++;
+      if (S.trial_i >= n) S.step = "end";
+      save(); render();
+    };
+    app.replaceChildren(wrap);
+  }
+
+  function download() {
+    var blob = new Blob([JSON.stringify(S, null, 1)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "h2_pilot_" + S.kind + "_form" + S.form_index + "_" + S.started.replace(/[:.]/g, "-") + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  function end() {
+    var c = el('<div class="card narrow"><h1>Thank you</h1>' +
+      '<p><strong>About what you saw.</strong> The robot has no feelings or moods. Each clip was produced by a movement programme with different settings for speed, pauses, path, stopping distance and head movement. The words in the survey are labels the researchers are testing, and the study asks whether people read these movement differences the way they were designed.</p>' +
+      '<h2>Feedback on the survey itself</h2>' +
+      '<p class="muted">This is what makes the pilot useful. Anything that was confusing, too long, hard to see, or a question that didn’t fit.</p>' +
+      '<fieldset><legend>Were any questions or words unclear?</legend><textarea data-f="unclear"></textarea></fieldset>' +
+      '<fieldset><legend>Could you see the differences you were asked about (head, pauses, path)? Anything about the video itself?</legend><textarea data-f="video"></textarea></fieldset>' +
+      '<fieldset><legend>How did the length feel? Did you get tired or start answering on autopilot?</legend><textarea data-f="length"></textarea></fieldset>' +
+      '<fieldset><legend>Anything else?</legend><textarea data-f="other"></textarea></fieldset>' +
+      '<div class="row"><button class="primary" id="dl">Save my responses (.json)</button><button id="again">Start a new session</button></div>' +
+      '<p class="hint" id="msg"></p></div>');
+    c.querySelectorAll("[data-f]").forEach(function (t) {
+      t.value = S.feedback[t.dataset.f] || "";
+      t.oninput = function () { S.feedback[t.dataset.f] = t.value; save(); };
+    });
+    c.querySelector("#dl").onclick = function () {
+      if (!S.finished) S.finished = now();
+      save(); download();
+      c.querySelector("#msg").textContent = "Saved to your Downloads folder. Put the file in survey/pilot_responses/ (or tell Claude where it is).";
+    };
+    c.querySelector("#again").onclick = function () {
+      if (!S.finished && !confirm("You haven’t saved this session. Start a new one anyway?")) return;
+      clear(); S = null; render();
+    };
+    app.replaceChildren(c);
+  }
+
+  if (!F) { app.textContent = "forms.js is missing. Run scripts/h2_survey_forms.py."; return; }
+  render();
+})();
+</script>
+</body>
+</html>

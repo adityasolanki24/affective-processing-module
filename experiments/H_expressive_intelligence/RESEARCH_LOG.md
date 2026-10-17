@@ -126,3 +126,12 @@ Written as a removable layer, with 11 unit tests:
 - **H8 (fresh streams, 540 physical episodes):** the baseline A0 + memory + fixed lookup is retained.
 - **Final decision: B.**
 - **Cloud spend: US$0.**
+
+### H2 survey instrument v0.1 (2026-10-17)
+- **Built** `survey/index.html`, a local page implementing protocol §4, plus `scripts/h2_survey_forms.py`
+  (playlists from seed partition H2/P; file names only, no style key).
+- **Intended use:** the researcher's own pilot run, as feedback on the instrument. It is not study data, it is not
+  blind (labelled clips were seen), and it is not analysed as H2.
+- **Still no participants recruited.** Ethics determination and authorization are still pending.
+- **Open choices** are listed in `survey/README.md`. Most important: the full form takes about 40 minutes, not the
+  ≈ 25 minutes the protocol estimates.
