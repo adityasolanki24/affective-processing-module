@@ -30,6 +30,15 @@ Entity types (pilot set, fixed in the J3 addendum):
 | calm | 0.05 | 0.10–0.45 | 0.1–0.4 | rare, light |
 | gentle | 0.30 | 0.25–0.60 | 0.1–0.3 | frequent, light |
 | forceful | 0.10 | 0.30–0.80 | 0.6–1.0 | rare, strong |
+| pushy | 0.25 | 0.35–0.80 | 0.5–0.9 | frequent, moderate (added after pilot 1) |
+
+Pilot 1 showed that most contacts were below the range the IMU can sense, hence the pushy type.
+
+Evidence v2 (pilot 2), appended after the v1 fields, all robot-observable:
+- `base_peak_acc`: peak horizontal acceleration deviation during the robot's own quiet settle window. This is the
+  robot's self-calibrated noise reference.
+- `acc_energy`: Σ over the dwell of max(0, |acc deviation| − base_peak_acc)², a filtered impact energy.
+- `detected`: peak dwell acceleration deviation > 1.5 × base_peak_acc (self-calibrated detector).
 """
 from __future__ import annotations
 
@@ -46,6 +55,7 @@ TYPES: dict[str, dict] = {
     "calm": {"rate": 0.05, "reach": (0.10, 0.45), "speed": (0.1, 0.4)},
     "gentle": {"rate": 0.30, "reach": (0.25, 0.60), "speed": (0.1, 0.3)},
     "forceful": {"rate": 0.10, "reach": (0.30, 0.80), "speed": (0.6, 1.0)},
+    "pushy": {"rate": 0.25, "reach": (0.35, 0.80), "speed": (0.5, 0.9)},
 }
 
 
@@ -74,10 +84,14 @@ class Evidence:
     effort_ratio: float
     tilt_peak: float
     fell: bool
+    base_peak_acc: float = 0.0
+    acc_energy: float = 0.0
+    detected: bool = False
 
     def as_list(self) -> list:
         return [round(self.peak_gyro, 5), round(self.peak_acc, 5), round(self.stab_time, 3), self.contact_changes,
-                round(self.effort_ratio, 4), round(self.tilt_peak, 3), self.fell]
+                round(self.effort_ratio, 4), round(self.tilt_peak, 3), self.fell, round(self.base_peak_acc, 5),
+                round(self.acc_energy, 6), self.detected]
 
 
 @dataclass
@@ -122,11 +136,15 @@ class ImuLogger:
         eff = np.max(self.effort[start:]) / max(1e-9, base_eff) if len(self.effort[start:]) else 1.0
         tilt = np.array(self.tilt)
         tilt_peak = float(tilt[start:].max() - tilt[baseline].mean()) if len(tilt[baseline]) else 0.0
-        return Evidence(float(g.max()) if len(g) else 0.0, float(a.max()) if len(a) else 0.0, float(stab),
-                        int(changes), float(eff), tilt_peak, bool(np.max(self.tilt[start:]) > 45.0))
+        base_dev = np.linalg.norm(acc[baseline] - base_acc, axis=1) if len(acc[baseline]) else np.zeros(1)
+        base_peak = float(np.max(base_dev))
+        energy = float(np.sum(np.clip(a - base_peak, 0.0, None) ** 2)) if len(a) else 0.0
+        peak = float(np.max(a)) if len(a) else 0.0
+        return Evidence(float(g.max()) if len(g) else 0.0, peak, float(stab), int(changes), float(eff), tilt_peak,
+                        bool(np.max(self.tilt[start:]) > 45.0), base_peak, energy, bool(peak > 1.5 * base_peak))
 
 
-def standing_encounter(seed: int, etype: str, distance: float, dwell_s: float = 4.0, settle_s: float = 1.0,
+def standing_encounter(seed: int, etype: str, distance: float, dwell_s: float = 4.0, settle_s: float = 2.0,
                        policy: str = "neutral") -> tuple[Evidence, dict]:
     """J3/J4: the robot stands at `distance` from the entity for `dwell_s` (after settling); lunges during the dwell.
 
@@ -152,7 +170,7 @@ def standing_encounter(seed: int, etype: str, distance: float, dwell_s: float = 
                 pushes.append(round(m, 4))
         row = ctrl.advance()
         log.read(ctrl, row)
-    ev = log.summarise(n_settle, slice(max(0, n_settle - 25), n_settle), ctrl.dt)
+    ev = log.summarise(n_settle, slice(max(0, n_settle - 50), n_settle), ctrl.dt)
     truth = {"type": etype, "lunges": len(events), "contacts": len(pushes), "max_push": max(pushes, default=0.0),
              "sum_push": round(sum(pushes), 4)}
     return ev, truth

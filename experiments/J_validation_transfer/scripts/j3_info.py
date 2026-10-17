@@ -32,14 +32,16 @@ sys.path.insert(0, str(REPO / "src"))
 from apm.learning.evaluation import auroc  # noqa: E402
 from apm_revise.belief import fit_types  # noqa: E402
 
-FEATURES = {"gyro": 0, "acc": 1, "stab": 2}
+FEATURES = {"gyro": 0, "acc": 1, "stab": 2, "tilt": 5, "energy": 8}
 
 
 def coder(rows: list[dict]) -> dict:
-    ev = np.array([r["evidence"][:3] for r in rows], float)
-    edges = {f: np.quantile(ev[:, i], np.linspace(0, 1, 9)[1:-1]) for f, i in FEATURES.items()}
-    e4 = np.quantile(ev[:, 0], [0.25, 0.5, 0.75])
-    s3 = np.quantile(ev[:, 2], [1 / 3, 2 / 3])
+    v2 = len(rows[0]["evidence"]) > 7
+    feats = {f: i for f, i in FEATURES.items() if v2 or i < 7}
+    ev = {f: np.array([r["evidence"][i] for r in rows], float) for f, i in feats.items()}
+    edges = {f: np.unique(np.quantile(x, np.linspace(0, 1, 9)[1:-1])) for f, x in ev.items()}
+    e4 = np.quantile(ev["gyro"], [0.25, 0.5, 0.75])
+    s3 = np.quantile(ev["stab"], [1 / 3, 2 / 3])
 
     def code(r: dict, scheme: str) -> int:
         e = r["evidence"]
@@ -47,12 +49,16 @@ def coder(rows: list[dict]) -> dict:
             return int(bool(e[6]))
         if scheme == "binary":
             return int(e[2] > 0)
+        if scheme == "detected":
+            return int(bool(e[9]))
         if scheme == "gyro_stab":
             return int(np.searchsorted(e4, e[0], side="right")) * 3 + int(np.searchsorted(s3, e[2], side="right"))
         f = scheme[:-1]
         return int(np.searchsorted(edges[f], e[FEATURES[f]], side="right"))
-    return {"code": code, "sizes": {"fall": 2, "binary": 2, "gyro8": 8, "acc8": 8, "stab8": 8, "gyro_stab": 12},
-            "edges": {k: v.tolist() for k, v in edges.items()}}
+    sizes = {"fall": 2, "binary": 2, "gyro_stab": 12, **{f + "8": 8 for f in feats}}
+    if v2:
+        sizes["detected"] = 2
+    return {"code": code, "sizes": sizes, "edges": {k: v.tolist() for k, v in edges.items()}, "features": feats}
 
 
 def kl(p: np.ndarray, q: np.ndarray) -> float:
@@ -63,6 +69,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--rows", type=Path, required=True)
     ap.add_argument("--units", type=int, default=6)
+    ap.add_argument("--em-coding", default="gyro8")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
     rows = [json.loads(x) for x in a.rows.read_text(encoding="utf-8").splitlines()]
@@ -87,7 +94,7 @@ def main() -> None:
                 pb = np.bincount([C["code"](r, scheme) for r in rb], minlength=n) + 0.5
                 pa, pb = pa / pa.sum(), pb / pb.sum()
                 pair["kl"][scheme] = [kl(pa, pb), kl(pb, pa)]
-            for f, i in FEATURES.items():
+            for f, i in C["features"].items():
                 pair["auroc"][f] = auroc([r["evidence"][i] for r in ra + rb], [True] * len(ra) + [False] * len(rb))
             out["pairs"][f"{ta}|{tb}"] = pair
         res["by_distance"][str(d)] = out
@@ -100,15 +107,16 @@ def main() -> None:
     for (d, t), rs in by.items():
         idx = rng.permutation(len(rs))
         for k in range(0, len(idx) - a.units + 1, a.units):
-            c = np.zeros(8)
+            c = np.zeros(C["sizes"][a.em_coding])
             for i in idx[k:k + a.units]:
-                c[C["code"](rs[i], "gyro8")] += 1
+                c[C["code"](rs[i], a.em_coding)] += 1
             counts.append(c)
             enc.append(float(a.units))
             coll.append(float(sum(bool(rs[i]["evidence"][6]) for i in idx[k:k + a.units])))
             truth.append((t, d))
     counts_a = np.stack(counts)
-    fits = {K: fit_types(counts_a, np.array(enc), np.array(coll), K, "gyro8", restarts=8, seed=K) for K in (1, 2, 3, 4)}
+    fits = {K: fit_types(counts_a, np.array(enc), np.array(coll), K, a.em_coding, restarts=8, seed=K)
+            for K in (1, 2, 3, 4)}
     best = min(fits, key=lambda k: fits[k].bic())
     m = fits[best]
     L = counts_a @ np.log(m.E).T + np.log(m.pi)
@@ -125,9 +133,8 @@ def main() -> None:
         print("d", d, "contact", {k: round(v, 2) for k, v in o["contact_rate"].items()}, "falls",
               {k: round(v, 3) for k, v in o["fall_rate"].items()})
         for pname, p in o["pairs"].items():
-            print("   ", pname, f"KL gyro8 {np.mean(p['kl']['gyro8']):.3f} binary {np.mean(p['kl']['binary']):.3f} "
-                  f"fall {np.mean(p['kl']['fall']):.3f} gyro_stab {np.mean(p['kl']['gyro_stab']):.3f} | "
-                  f"AUROC gyro {p['auroc']['gyro']:.2f} stab {p['auroc']['stab']:.2f}")
+            print("   ", pname, "KL", {k: round(float(np.mean(v)), 3) for k, v in p["kl"].items()},
+                  "AUROC", {k: round(v, 2) for k, v in p["auroc"].items()})
     print("EM K*", best, "BIC", {k: round(v, 1) for k, v in res["em"]["bic"].items()})
     for k, v in sorted(res["em"]["assignment_by_true_type"].items()):
         print("   ", k, v)
