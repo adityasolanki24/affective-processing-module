@@ -162,6 +162,31 @@ def mutual_information(rows: list[dict], col: int | None, n_boot: int = 500) -> 
     return {"estimate": est, "ci95": [float(np.percentile(draws, 2.5)), float(np.percentile(draws, 97.5))]}
 
 
+def survival(res: dict, sel: str) -> dict:
+    """§3.3 survival criteria from per-condition results (also used to recompute from a saved J2_X.json)."""
+    out = {}
+    for name in ("EU_I", sel):
+        per_cond = {}
+        for cond, systems in res["closed"].items():
+            s = systems[name]
+            per_cond[cond] = {
+                "auroc_ok": bool(s["auroc_S3"].get("estimate") is not None and s["auroc_S3"]["estimate"] >= 0.70),
+                "collision_ni": bool(s["vs_A0"]["p_ni_collision"] < 0.05),
+                "completion_ni": bool(s["vs_A0"]["p_ni_completion"] < 0.05),
+                "misclass_ok": bool(s["careful_misclassification"].get("estimate") is not None
+                                    and s["careful_misclassification"]["estimate"] <= 0.20),
+                "decisive_S1_S2": bool(all(s.get(sc, {}).get("decisive", {}).get("median") is not None
+                                           and s[sc]["decisive"]["median"] <= 6 for sc in ("S1", "S2")))}
+        every = all(v["auroc_ok"] and v["collision_ni"] and v["completion_ni"] and v["misclass_ok"]
+                    for v in per_cond.values())
+        share = float(np.mean([v["decisive_S1_S2"] for v in per_cond.values()]))
+        out[name] = {"per_condition": per_cond, "every_condition_ok": every, "decisive_share": share,
+                     "promoted": bool(every and share >= 0.80),
+                     "failing": [c for c, v in per_cond.items() if not (v["auroc_ok"] and v["collision_ni"]
+                                 and v["completion_ni"] and v["misclass_ok"])]}
+    return out
+
+
 def cmd_test(a) -> None:
     closed, policy = load(a.closed), load(a.policy)
     cal = json.loads(a.calibration.read_text())
@@ -179,24 +204,7 @@ def cmd_test(a) -> None:
                                 "p_ni_collision": p_beyond(c["avoidable_collision_rate"]["rel"], NI_COLLISION, "below"),
                                 "p_ni_completion": p_beyond(c["completion"]["abs"], -NI_COMPLETION, "above")}
             res["closed"][cond][s] = out
-    for name in ("EU_I", sel):
-        per_cond = {}
-        for cond, systems in res["closed"].items():
-            s = systems[name]
-            per_cond[cond] = {
-                "auroc_ok": bool((s["auroc_S3"].get("estimate") or 0) >= 0.70),
-                "collision_ni": bool(s["vs_A0"]["p_ni_collision"] < 0.05),
-                "completion_ni": bool(s["vs_A0"]["p_ni_completion"] < 0.05),
-                "misclass_ok": bool((s["careful_misclassification"].get("estimate") or 1) <= 0.20),
-                "decisive_S1_S2": bool(all(s.get(sc, {}).get("decisive", {}).get("median") is not None
-                                           and s[sc]["decisive"]["median"] <= 6 for sc in ("S1", "S2")))}
-        every = all(v["auroc_ok"] and v["collision_ni"] and v["completion_ni"] and v["misclass_ok"]
-                    for v in per_cond.values())
-        share = float(np.mean([v["decisive_S1_S2"] for v in per_cond.values()]))
-        res["survival"][name] = {"per_condition": per_cond, "every_condition_ok": every,
-                                 "decisive_share": share, "promoted": bool(every and share >= 0.80),
-                                 "failing": [c for c, v in per_cond.items() if not (v["auroc_ok"] and v["collision_ni"]
-                                             and v["completion_ni"] and v["misclass_ok"])]}
+    res["survival"] = survival(res, sel)
     for _cond, systems in policy.items():
         for s, by_sc in systems.items():
             res["policy"][s] = per_system(by_sc, cal["policy"][s])
@@ -218,15 +226,26 @@ def cmd_test(a) -> None:
         print(g, {k: round(x["estimate"], 4) for k, x in v.items()})
 
 
+def cmd_resurvive(a) -> None:
+    """Recompute the survival block of a saved J2_X.json (D2: fix of the zero-value bug; no data re-read)."""
+    res = json.loads(a.out.read_text())
+    res["survival_original_buggy"] = res["survival"]
+    res["survival"] = survival(res, res["selected"])
+    a.out.write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
+    for name, v in res["survival"].items():
+        print(name, "promoted" if v["promoted"] else "not promoted", "failing:", v["failing"],
+              "decisive share", round(v["decisive_share"], 2))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("mode", choices=("calibrate", "test"))
-    ap.add_argument("--closed", type=Path, nargs="+", required=True)
-    ap.add_argument("--policy", type=Path, nargs="+", required=True)
+    ap.add_argument("mode", choices=("calibrate", "test", "resurvive"))
+    ap.add_argument("--closed", type=Path, nargs="+")
+    ap.add_argument("--policy", type=Path, nargs="+")
     ap.add_argument("--calibration", type=Path)
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
-    cmd_calibrate(a) if a.mode == "calibrate" else cmd_test(a)
+    {"calibrate": cmd_calibrate, "test": cmd_test, "resurvive": cmd_resurvive}[a.mode](a)
 
 
 if __name__ == "__main__":
