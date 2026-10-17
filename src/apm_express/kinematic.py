@@ -18,8 +18,8 @@ class KinematicBiped:
     def __init__(self, x: float = 0.0, y: float = 0.0, yaw: float = 0.0, tau: float = 0.3):
         self.x, self.y, self.yaw, self.tau = x, y, yaw, tau
         self.v = np.zeros(3)
-        self.cmd = np.zeros(3)
-        self.head = np.zeros(4)
+        self.cmd: np.ndarray = np.zeros(3)
+        self.head: np.ndarray = np.zeros(4)
         self.e_pitch = 0.0
         self.t = 0.0
         self.tilt = 0.0

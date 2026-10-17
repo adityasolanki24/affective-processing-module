@@ -33,7 +33,7 @@ def auroc(p, y) -> float:
         return float("nan")
     values = np.concatenate([pos, neg])
     # average ranks for ties (vectorised; identical to averaging the ordinal ranks of each tied group)
-    uniq, inverse, counts = np.unique(values, return_inverse=True, return_counts=True)
+    _, inverse, counts = np.unique(values, return_inverse=True, return_counts=True)
     first = np.concatenate([[0], np.cumsum(counts)[:-1]])  # 0-based start of each tied group in sorted order
     ranks = (first + (counts + 1) / 2.0)[inverse]
     return float((ranks[:len(pos)].sum() - len(pos) * (len(pos) + 1) / 2) / (len(pos) * len(neg)))

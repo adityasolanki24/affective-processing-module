@@ -18,15 +18,12 @@ kind / zone / phase.
 from __future__ import annotations
 
 import math
-from dataclasses import asdict, dataclass
 
 import numpy as np
 
 KINDS = ("A", "B", "C")
 ZONES = ("plain", "marked")
 IDENTITIES = ("A1", "A2", "B1", "B2", "C1", "C2")  # seen during lifetimes
-NOVEL = ("A3", "B3", "C3")  # held out: never encountered during a lifetime, used only in evaluation probes
-UNKNOWN_KIND = "D"  # a kind never encountered, for disposition probes ("D1")
 LOW, HIGH = 0.05, 0.85
 JOLT_SPEED = 0.15  # m/s: the standing-validated push magnitude m* (H0b); larger pushes topple a standing robot
 N_ENCOUNTERS = 48
@@ -58,24 +55,6 @@ def jolt_probability(history: str, identity: str, zone: str, k: int, n: int = N_
 
 
 HISTORIES = ("safe", "risky_B", "risky_A", "unpredictable", "change_B", "late_B", "zone_B")
-
-
-@dataclass(frozen=True)
-class Event:
-    k: int  # encounter index within the lifetime
-    identity: str
-    kind: str
-    zone: str
-    jolted: bool  # world draw (hidden from the robot; kept for evaluation only)
-    peak_tilt: float  # observed: max tilt above pre-push baseline over 4 s [deg]
-    peak_speed: float  # observed: max horizontal base speed over 4 s [m/s]
-    perturbed: bool  # observed outcome label: peak_tilt >= TILT_EVENT_DEG
-
-    def as_dict(self) -> dict:
-        return asdict(self)
-
-
-TILT_EVENT_DEG = 3.0  # observed outcome threshold; fixed from the H3 pilot in the addendum (default here)
 
 
 def schedule(history: str, rng: np.random.Generator, n: int = N_ENCOUNTERS) -> list[tuple[str, str, bool]]:

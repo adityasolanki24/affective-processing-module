@@ -140,8 +140,6 @@ class EpisodeLog:
     interventions: int = 0
     distance: float = 0.0
     progress: float = 0.0
-    idle_periods: int = 0
-    decision_periods: int = 0
     actions: list = field(default_factory=list)
     fallbacks: int = 0
     contact_steps: list = field(default_factory=list)  # (t, track) for every step in contact (ground truth)
@@ -186,7 +184,6 @@ class WheeledCtrlWorld:
         goal_rng = np.random.default_rng(goal_ss)
         self.goals = [self._free_point(goal_rng) for _ in range(cfg.n_goals)]
         self.t = 0.0
-        self.step_index = 0
         self.action = GO
         self.log = EpisodeLog()
         self._last_contact: dict[str, float] = {}
@@ -367,7 +364,6 @@ class WheeledCtrlWorld:
         self.log.progress += before - after
         self.energy = max(0.0, self.energy - DT * (0.002 + 0.006 * abs(self.v)))
         self.t = t_next
-        self.step_index += 1
         if after < GOAL_TOLERANCE:
             events.append(("goal_reached",))
             self.log.goals_completed += 1

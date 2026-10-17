@@ -216,7 +216,8 @@ class B2Variant(B2):
 
     def begin_lifetime(self) -> None:
         super().begin_lifetime()
-        self.s, self.t_last = 0.0, None
+        self.s = 0.0
+        self.t_last: float | None = None
 
     def observe(self, obs, t: float) -> None:
         super().observe(obs, t)

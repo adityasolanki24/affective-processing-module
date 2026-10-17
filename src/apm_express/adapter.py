@@ -104,7 +104,7 @@ class BipedExpressionAdapter:
         self._rng = np.random.default_rng(self.seed)
         self._command, self._since = "rest", t - 1e9
         self._e_pitch = 0.0
-        self._head = np.zeros(4)
+        self._head: np.ndarray = np.zeros(4)
         self._turning = False
         self._arrived = False
         self._pause_until = -1.0

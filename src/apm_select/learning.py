@@ -66,6 +66,7 @@ class Learner:
 
     def _inputs(self, t: float) -> tuple[np.ndarray, np.ndarray, int]:
         teacher_action = self.teacher.decide(t)        # computes features, predictor outputs and A0 utility
+        assert self.teacher.last_features is not None and self.teacher.last_utility is not None
         x = self.teacher.last_features.copy()
         if not self.memory_features:
             x[MEM_P], x[MEM_CONF] = 0.0, 0.0

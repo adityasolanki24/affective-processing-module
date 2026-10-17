@@ -14,7 +14,15 @@ All notable changes; the project follows docs/versioning.md.
 - H2 survey instrument (researcher pilot only).
 
 ### Fixed
-- Type errors that made CI fail on the research branches.
+- Type errors that made CI fail on the research branches. CI now type-checks every package under `src/`.
+
+### Removed (2026-10-17 cleanup)
+- Unused code:
+  - the tilt-based `Event` record and its threshold, superseded by the peak-speed outcome in H;
+  - unused constants (`NOVEL`, `UNKNOWN_KIND`, `features.ALL`, `NEUTRAL_INTENT`, `N_APM`);
+  - `entropy_of`;
+  - never-updated testbed counters (`idle_periods`, `decision_periods`, `step_index`).
+- Placeholder `.gitkeep` files in non-empty or unused folders.
 
 ### Added (v0.1)
 - AffectLink v1 schema (`proto/affectlink/v1/affectlink.proto`) and the Python reference implementation: messages,

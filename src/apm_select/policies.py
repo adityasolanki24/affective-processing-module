@@ -30,7 +30,8 @@ class MemoryRegulated(Regulated):
     def begin_lifetime(self) -> None:
         super().begin_lifetime()
         spec = self.memory_spec
-        self.memory = BeliefMemory(spec.get("model", "M0"), spec.get("params", {}), spec.get("evidence", "all"))
+        self.memory = BeliefMemory(  # type: ignore[assignment]  # same interface as ObsMemory
+            spec.get("model", "M0"), spec.get("params", {}), spec.get("evidence", "all"))
         self.probes = 0
         self.probe_log: list[tuple[int, int, int]] = []  # (episode probe index, rule action, executed action)
         self.rng = np.random.default_rng((self.probe or {}).get("seed", 0))

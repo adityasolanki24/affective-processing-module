@@ -29,7 +29,8 @@ def _with(base: list[Identity], fixed: dict[str, str]) -> list[Identity]:
 
 
 def make_lifetime(scenario: str, ss, episodes: int = EPISODES) -> tuple[Lifetime, dict]:
-    cfg, roles = WorldConfig(), {}
+    cfg = WorldConfig()
+    roles: dict = {}
     if scenario == "S1":
         def sched(e, base):
             d = "careless" if e < SWITCH else "careful"

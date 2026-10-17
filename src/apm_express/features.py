@@ -23,7 +23,6 @@ GROUPS = {
     "cost": ("mean_power", "mean_tau_sq"),
 }
 SPEED = frozenset(GROUPS["speed"])
-ALL = tuple(f for g in GROUPS.values() for f in g)
 TRANSLATING_IDX = np.array([COMMAND_NAMES.index(c) for c in sorted(TRANSLATING)])
 REST_IDX = COMMAND_NAMES.index("rest")
 BACKWARD_IDX = COMMAND_NAMES.index("backward")

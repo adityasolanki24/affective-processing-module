@@ -18,6 +18,7 @@ BCE + BCE + MSE, early stopping on validation lifetimes; serving with torch.no_g
 from __future__ import annotations
 
 import copy
+from typing import Any
 
 import numpy as np
 
@@ -62,9 +63,9 @@ class StatefulPredictor:
         if kind not in KINDS:
             raise ValueError(kind)
         self.kind, self.width, self.seed = kind, width, seed
-        self.mean = np.zeros(width, np.float32)
-        self.scale = np.ones(width, np.float32)
-        self.net = None
+        self.mean: np.ndarray = np.zeros(width, np.float32)
+        self.scale: np.ndarray = np.ones(width, np.float32)
+        self.net: Any = None
         self.history: list[dict] = []
 
     # ------------------------------------------------------------------ inputs
@@ -216,8 +217,6 @@ from apm.adapters.wheeled_ctrl import WheeledCtrlAdapter  # noqa: E402
 from apm_research.policies import AblatedAPM, Explore, FeaturePolicy  # noqa: E402
 from apm_research.predictor import HORIZON_DECISIONS  # noqa: E402
 
-N_APM = 8  # V, A, D, u (5)
-
 
 class _APMReadout:
     """The APM v0.1 core run observe-only on the policy's observation stream (as in B2); readout = (V, A, D, u)."""
@@ -252,6 +251,7 @@ class ExploreRecorder(Explore, _APMReadout):
 
     def decide(self, t: float) -> int:
         a = super().decide(t)
+        assert self.last_features is not None
         self.rows.append({"x": self.last_features.copy(), "apm": self.apm_readout(), "a": a, "t": t})
         return a
 
@@ -329,7 +329,7 @@ class StatefulRule(FeaturePolicy, _APMReadout):
         for i, m in enumerate(self.models):
             z = ((z_raw - m.mean) / m.scale).astype(np.float32)
             h = ((h_raw - m.mean) / m.scale).astype(np.float32)
-            extra = np.zeros(0, np.float32)
+            extra: np.ndarray = np.zeros(0, np.float32)
             if self.taus:
                 if self.control == "reset":
                     extra = np.zeros(m.width * len(self.taus), np.float32)
