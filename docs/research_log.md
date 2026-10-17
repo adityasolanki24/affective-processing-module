@@ -3,6 +3,20 @@
 Newest first. Measurements only from runs actually executed; hypotheses labelled. Programmes F–H keep detailed
 logs in their own folders; this log summarises them.
 
+## 2026-10-17: programme I (v0.5), autonomous revision
+- **The cause.** Revision had been slow because collisions carry about 0.005 nats per encounter. Self-observed
+  near-misses carry 1.1–1.5 nats, and EM finds person types from them without labels (K = 3). From collisions alone
+  it finds K = 1.
+- **I1** (12,000 test lifetimes): the new memory passes all criteria.
+  - revision in 2/3/2 episodes (A0: never);
+  - AUROC 1.00;
+  - avoidable collisions −56%, all with careless people;
+  - completion −0.3 pp.
+- **I2** (16,000): under outright keep-away, probing restores 8.7 pp completion in the trap world. Targeting adds only
+  0.7 pp, and probing narrowly fails efficiency non-inferiority overall. Thompson sampling freezes the robot.
+- **G2b's memory ranks people inverted** (AUROC 0.21).
+- **Compute:** first use of 128-core cloud VMs for this programme, about 18× the laptop; about US$2 of a US$40 cap.
+
 ## 2026-10-17: programmes F, G and H merged into `main`
 - **F (v0.2):** the v0.1 PAD regulator beat B1 by 25% (E2), but memory revision failed (E3), and the learned
   regulator B3 was not credible (E4).

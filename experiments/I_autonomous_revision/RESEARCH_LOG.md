@@ -24,3 +24,13 @@ Throughput on a 128-core spot VM is about 1,100 lifetimes per minute, against ab
 - **Exploratory (labelled, not in §6):** a confidence-channel ablation (R_dense with F's count-based confidence) on new
   indices X 1000–1199. Purpose: separate the effect of better beliefs from the different confidence signal the
   predictor reads.
+
+### 2026-10-17: I2-X, exploratory ablation and decision
+- **I2-X:** 16,000 lifetimes in 14 min on a second VM, in parallel with I1.
+  - P1–P3 pass.
+  - KA_R_voi narrowly fails C4 against KA_A0.
+  - Thompson sampling freezes the robot in S10.
+- **Confidence ablation:** replicates I1 (−52%). Count-based confidence still gives −42%, so beliefs carry most of the
+  gain.
+- **Decision:** `reports/AUTONOMOUS_REVISION_DECISION.md`.
+- **Cloud:** all resources deleted; about US$2 spent.

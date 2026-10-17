@@ -3,6 +3,12 @@
 All notable changes; the project follows docs/versioning.md.
 
 ## [Unreleased]
+### Added (programme I, v0.5 research code)
+- `apm_revise`: robot-observable encounter evidence (dense clearance coding), EM-learned person types with BIC,
+  change-aware type beliefs, a revising memory (drop-in for F/G memories), memory-driven keep-away with exploration
+  rules (uncertainty, random, value of information, Thompson), and the S10 one-person world.
+- Programme I scripts, preregistration, reports, and a bucket-queue runner for capped cloud spot VMs.
+
 ### Added (programmes F–H, v0.2–v0.4 research code)
 - `apm_research`: the F behavioural-learning harness (features, datasets, predictor ensemble, policies, RL, two-level
   statistics, provenance).

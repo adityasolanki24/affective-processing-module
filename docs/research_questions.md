@@ -33,8 +33,9 @@
 | RQ3 affect | **PAD falsified as useful:** no predictive information (F E1), harmful in closed loop under equal tuning (G1/G9: +99% avoidable collisions). An EMA risk filter does PAD's job better |
 | RQ4 transfer | **not demonstrated** (D TR2); the software architecture transfers, learned weights do not |
 | RQ5 persistent affect | persistence comes from explicit memory and a scalar filter; no recurrent latent beat them (G3, H3) |
-| RQ6 dispositions | **demonstrated in simulation** (H4b/H8): identical robots with different histories behave reliably differently (history recovered from motion 98–100%). **Revision after the world changes is slow**, because avoidance censors evidence (F E3, G2): this is the open problem |
+| RQ6 dispositions | **demonstrated in simulation** (H4b/H8): identical robots with different histories behave reliably differently (history recovered from motion 98–100%). Revision after the world changes was slow in F and G; programme I traced this to sparse (collision-only) evidence and solved it in simulation (RQ8) |
 | RQ7 expressive legibility (added in H) | **untested** with participants; a researcher self-pilot was negative |
+| RQ8 autonomous revision (programme I) | **demonstrated in simulation**: learned person types from self-observed near-misses, plus change-aware beliefs, revise within 2–3 episodes, halve avoidable collisions and cost 0.3 pp completion. Under outright memory-driven avoidance, probing restores efficiency. Not yet tested on a second embodiment |
 
 ## Status at the end of v0.1 (2026-10-11, superseded above)
 

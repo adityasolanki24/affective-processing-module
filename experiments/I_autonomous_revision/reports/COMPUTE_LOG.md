@@ -22,3 +22,18 @@ the billing console.
 - I1-X: 12,000 lifetimes.
 
 **Jobs on apm-i-2:** I2-X, 16,000 lifetimes.
+
+## Session totals (2026-10-17, all resources deleted at 10:31 UTC; audit clean)
+
+| resource | hours (approx.) |
+|---|---|
+| apm-i-1 (128 vCPU spot) | 0.1 (first attempt) + 1.15 |
+| apm-i-2 (128 vCPU spot) | 0.5 |
+| NAT us-central1 | 1.35 |
+| NAT us-east1 | 0.5 |
+| bucket prefix `apm-i/` | 118 MB, left in place: job archives and outputs; costs well under 1 cent per month |
+
+**Estimated spend: about US$2** (spot n2d ~US$0.8–1.2 per VM-hour, plus NAT and egress cents). That is about 5% of the
+US$40 cap. Reconcile in the billing console.
+
+**Throughput:** about 1,100 lifetimes per minute per VM, roughly 18× the laptop. 46,000+ lifetimes in total for T, V and X.

@@ -18,9 +18,15 @@ proposals.
 
 The emotion-like layer of v0.1 (the PAD affect state) did **not** earn its place. It added no predictive information
 and made behaviour worse once baselines were tuned equally. Memory-conditioned expressive motion is mechanically
-reliable in simulation, but has not been shown to be legible to people. The main open problem is **autonomous
-revision**: a robot that avoids something it has learned is risky stops collecting the evidence that would let it
-change its mind.
+reliable in simulation, but has not been shown to be legible to people.
+
+Programme I (v0.5) solved the revision problem in simulation:
+- the robot learns person *types* from self-observed near-misses, without labels, and holds change-aware beliefs
+  about them;
+- it revises its view of an individual within 2–3 episodes after a change;
+- it halves avoidable collisions.
+
+Revision had been slow mainly because collisions are too rare to learn from, not because of avoidance.
 
 ## What APM is not
 
@@ -130,10 +136,11 @@ Every programme was preregistered: criteria were fixed before confirmatory data,
 | F (v0.2) | does the existing APM improve behaviour? | v0.1's PAD layer cut collisions 25% vs the B1 baseline; G later traced this to B2's 9× larger tuning budget. Memory revision too slow (E3); learned regulator B3 not credible (E4) | `experiments/F_behavioral_learning/results/CONFIRMATORY_SUMMARY.md` |
 | G (v0.3) | smallest architecture that behaves better through experience | **Decision A:** predictor ensemble + entity memory + EMA risk penalty. PAD **harmful** under equal tuning (+99% avoidable collisions); neural policies and specialised regulators not better; no validated deployment-time weight learning | `experiments/G_architecture_selection/reports/ARCHITECTURE_DECISION.md` |
 | H (v0.4) | can experience be expressed through embodied movement? | **Decision B:** memory + fixed lookup → bounded adapter on NERVA's validated controller; lived history recoverable from motion 98–100%, 0 falls. No learned or specialised model beat it. **Human legibility untested**; a researcher self-pilot found the styles hard to tell apart | `experiments/H_expressive_intelligence/reports/EXPRESSIVE_ARCHITECTURE_DECISION.md` |
+| I (v0.5) | can the robot revise beliefs about individuals autonomously, including under self-selected avoidance? | **Revision achieved:** dense self-observed evidence (near-miss clearance) + EM-learned person types + change-aware beliefs. Revises in 2–3 episodes (A0: never); avoidable collisions −56%; completion −0.3 pp. Outright memory-driven keep-away creates a real trap; probing fixes it, but targeting adds little. G2b's memory found inverted | `experiments/I_autonomous_revision/reports/AUTONOMOUS_REVISION_DECISION.md` |
 
 **Open problems, in order:**
-1. **Autonomous revision (the avoidance trap).** Avoidance censors the evidence needed to revise beliefs. No memory
-   design met the revision criterion in F (E3) or G (G2).
+1. **Second embodiment and robustness for programme I's memory.** NERVA, with graded perturbation as the dense
+   outcome; G6's shift conditions; less separable person types.
 2. **Deployment-time learning.** It needs a statistically powered promotion gate (G7).
 3. **Learned cross-embodiment transfer.** Not demonstrated.
 4. **Human legibility of expression.** The H2 study is ready but needs an ethics determination, and probably a
@@ -153,6 +160,7 @@ Every programme was preregistered: criteria were fixed before confirmatory data,
 | embedded hardware | design + PC benchmark only (Milestone E) |
 | research harnesses for F/G/H (`apm_research`, `apm_select`, `apm_express`, `apm_testbeds.wheeled_ctrl`) | implemented, tested; used by the experiment scripts |
 | decision-A regulator as a production runtime | **not yet**: it exists as research code in `apm_select`, while the v0.1 core still carries PAD |
+| programme I revising memory (`apm_revise`) | implemented, tested; research code, not yet in the core |
 
 ## Milestone A–E results (v0.1)
 
@@ -186,7 +194,7 @@ limitation.
 | Milestone C | `python examples/nerva/generate_experience.py --nerva <NERVA> --policy <candidate.onnx> --trials 600`, then `python experiments/C_learning/run_learning.py --experience runs/nerva_experience` | seeds fixed in the scripts; data seed 2026 |
 | Milestone D | `python experiments/D_portability/run_portability.py --nerva-experience runs/nerva_experience` | wheeled seeds 10,000–10,399 |
 | Milestone E | `python experiments/E_hardware/benchmark.py` | |
-| programmes F, G, H | see each programme's `README.md` | frozen seeds in each `seeds.py`; confirmatory runs refuse to start on a dirty checkout |
+| programmes F, G, H, I | see each programme's `README.md` (I's cloud runs: `experiments/I_autonomous_revision/cloud/`) | frozen seeds in each `seeds.py`; confirmatory runs refuse to start on a dirty checkout |
 
 Raw data and logs stay local under `runs/` (ignored). Committed results are the JSON summaries in `experiments/`.
 The exception is the small F snapshot in `runs/E1` and `runs/E2`, which F's preregistration cites by hash.
