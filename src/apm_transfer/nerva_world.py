@@ -163,7 +163,8 @@ MIN_QUIET_FRAMES = 25      # fewer quiet frames than this (0.5 s): the encounter
 
 
 def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s: float = 5.0, settle_s: float = 2.0,
-                          max_approach_s: float = 45.0, sensing_pause: bool = True) -> tuple[Evidence, dict, dict]:
+                          max_approach_s: float = 45.0, sensing_pause: bool = True, scene_extender=None,
+                          frame_hook=None) -> tuple[Evidence, dict, dict]:
     """J5: one encounter in which the robot's own expression shapes what happens.
 
     The robot settles, then approaches the entity under `intent`, through H's `BipedExpressionAdapter` with the
@@ -186,6 +187,10 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     scanning robot has no quiet frames and cannot sense contact at all. Expression still sets the stopping distance,
     approach tempo, hesitation and path, i.e. everything that shapes exposure.
 
+    **Rendering only** (`j_videos.py`): `scene_extender` adds visual-only geometry; `frame_hook(ctrl, info)` is called
+    after every control step with the entity's lunge on that step (reach, contact or not), the distance and the phase.
+    Neither changes the simulation.
+
     Returns:
     - robot-observable evidence;
     - outcome: arrival time, arrived, final distance, safety trips, fallback steps, fell, stopping distance — task and
@@ -204,7 +209,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     limits = MonitorLimits(joint_margin_rad=channels.get("joint_margin_rad"),
                            saturation_steps=channels.get("saturation_steps"))
     ctrl = NervaBiped(policy=channels["policy"], seed=int(rng.integers(2**31)), head_channel=ch.head,
-                      max_head_rate=1.5, max_pitch_rate=2.0)
+                      max_head_rate=1.5, max_pitch_rate=2.0, scene_extender=scene_extender)
     adapter, monitor = BipedExpressionAdapter(ch, seed=int(rng.integers(2**31))), SafetyMonitor(limits)
     log = ImuLogger(np.random.default_rng(int(rng.integers(2**31))))
     n_settle = int(round(settle_s / ctrl.dt))
@@ -221,9 +226,11 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     while True:
         x, y, _ = ctrl.pose()
         dist = math.hypot(TARGET[0] - x, TARGET[1] - y)
+        lunge = None
         if k in events:
             reach, speed = events[k]
             m = impulse(reach, speed, dist)
+            lunge = (reach, m)
             if m > 0:
                 away = math.atan2(y - TARGET[1], x - TARGET[0]) + float(rng.uniform(-math.radians(20),
                                                                                     math.radians(20)))
@@ -244,6 +251,8 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
         prev_head = head
         row = ctrl.advance()
         log.read(ctrl, row)
+        if frame_hook is not None:
+            frame_hook(ctrl, {"lunge": lunge, "dist": dist, "arrived": k_arrive is not None, "fallback": tripped})
         if row["tilt"] > 45.0 or not row["finite"]:
             fell = True
             break

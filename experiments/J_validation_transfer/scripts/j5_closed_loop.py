@@ -58,6 +58,7 @@ HERE = Path(__file__).resolve().parents[1]
 N_ENC, SWITCH, FEEDBACK_UNTIL = 30, 15, 10
 ENTITIES = (("A1", "A"), ("B1", "B"), ("C1", "C"))
 DIST_EDGES = (0.3, 0.5)  # stopping-distance bands 0.2 / 0.4 / 0.6 m
+RENDER = None  # j_videos.py only: callable(system, history, index, k, entity, type, readout, intent) -> clip or None
 
 
 def _seeds():
@@ -141,7 +142,9 @@ def job(args: tuple) -> dict:
             intent, rd = lookup_intent(prior), prior
         else:
             intent = lookup_intent(rd)
-        ev, out, truth = closed_loop_encounter(int(enc_seeds[k]), etype, intent, channels)
+        clip = RENDER(label, history, index, k, ident, etype, rd, intent) if RENDER is not None else None
+        ev, out, truth = closed_loop_encounter(int(enc_seeds[k]), etype, intent, channels,
+                                               **(clip.kwargs() if clip is not None else {}))
         e = ev.as_list()
         d = out["final_distance"]
         band = int(np.searchsorted(DIST_EDGES, d))
@@ -168,6 +171,8 @@ def job(args: tuple) -> dict:
                      "contacts_dwell": truth["contacts_dwell"], "max_push": truth["max_push"],
                      "arrived": out["arrived"], "t_arrive": out["t_arrive"], "trips": out["trips"],
                      "fell": out["fell"]})
+        if clip is not None:
+            clip.close(rows[-1])
     return {"partition": partition, "index": index, "history": history, "system": label, "rows": rows,
             "wall_s": round(time.time() - t0, 1)}
 
