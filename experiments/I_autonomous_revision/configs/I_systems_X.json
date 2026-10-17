@@ -1,0 +1,212 @@
+{
+ "I1": {
+  "systems": {
+   "A0": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M0",
+     "evidence": "all"
+    }
+   },
+   "G2b": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M1t",
+     "params": {
+      "tau_s": 356.352646
+     },
+     "evidence": "exposed",
+     "probe": {
+      "mode": "uncertainty",
+      "budget": 2,
+      "conf_max": 0.5
+     }
+    }
+   },
+   "R_sparse": {
+    "kind": "revising",
+    "type_model": "experiments/I_autonomous_revision/configs/types_T_sparse_K2.json",
+    "lam": 0.005280525193834235
+   },
+   "R_static": {
+    "kind": "revising",
+    "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+    "lam": 0.0
+   },
+   "R_dense": {
+    "kind": "revising",
+    "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+    "lam": 0.0007208233903943412
+   },
+   "Oracle": {
+    "kind": "oracle"
+   }
+  }
+ },
+ "I2": {
+  "systems": {
+   "KA_A0": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M0",
+     "evidence": "all"
+    },
+    "keep_away": {
+     "keep_m": 3.0,
+     "kappa": 1.5,
+     "approach_only": false,
+     "explore": {
+      "mode": "none"
+     }
+    }
+   },
+   "KA_G2b": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M1t",
+     "params": {
+      "tau_s": 356.352646
+     },
+     "evidence": "exposed"
+    },
+    "keep_away": {
+     "keep_m": 3.0,
+     "kappa": 1.5,
+     "approach_only": false,
+     "explore": {
+      "mode": "uncertainty",
+      "budget": 2,
+      "conf_max": 0.5
+     }
+    }
+   },
+   "KA_R": {
+    "kind": "revising",
+    "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+    "lam": 0.0007208233903943412,
+    "keep_away": {
+     "keep_m": 3.0,
+     "kappa": 1.5,
+     "approach_only": false,
+     "explore": {
+      "mode": "none"
+     }
+    }
+   },
+   "KA_R_voi": {
+    "kind": "revising",
+    "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+    "lam": 0.0007208233903943412,
+    "keep_away": {
+     "keep_m": 3.0,
+     "kappa": 1.5,
+     "approach_only": false,
+     "explore": {
+      "mode": "voi",
+      "budget": 2,
+      "nu": 3.9390974380222037
+     }
+    }
+   },
+   "KA_R_unc": {
+    "kind": "revising",
+    "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+    "lam": 0.0007208233903943412,
+    "keep_away": {
+     "keep_m": 3.0,
+     "kappa": 1.5,
+     "approach_only": false,
+     "explore": {
+      "mode": "uncertainty",
+      "budget": 2,
+      "conf_max": 0.9136661218311579
+     }
+    }
+   },
+   "KA_R_rand": {
+    "kind": "revising",
+    "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+    "lam": 0.0007208233903943412,
+    "keep_away": {
+     "keep_m": 3.0,
+     "kappa": 1.5,
+     "approach_only": false,
+     "explore": {
+      "mode": "random",
+      "budget": 2,
+      "p_random": 0.8678295964107315,
+      "seed": 0
+     }
+    }
+   },
+   "KA_R_ts": {
+    "kind": "revising",
+    "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+    "lam": 0.0007208233903943412,
+    "explore": {
+     "mode": "thompson",
+     "seed": 0
+    },
+    "keep_away": {
+     "keep_m": 3.0,
+     "kappa": 1.5,
+     "approach_only": false,
+     "explore": {
+      "mode": "thompson"
+     }
+    }
+   },
+   "KA_Oracle": {
+    "kind": "oracle",
+    "keep_away": {
+     "keep_m": 3.0,
+     "kappa": 1.5,
+     "approach_only": false,
+     "explore": {
+      "mode": "none"
+     }
+    }
+   }
+  }
+ },
+ "tuned": {
+  "lam_dense": 0.0007208233903943412,
+  "lam_sparse": 0.005280525193834235,
+  "nu": 3.9390974380222037,
+  "conf_max": 0.9136661218311579,
+  "p_random": 0.8678295964107315,
+  "final": true
+ }
+}
