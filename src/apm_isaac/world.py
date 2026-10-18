@@ -182,6 +182,14 @@ class IsaacWorld:
         self.nerva_channels = nerva_channels
         self._eye_cam = self._make_eye()
         self.video_frames: list[np.ndarray] | None = [] if video else None
+        self.video_meta: list[dict] = []
+        self.eye_frames: list[tuple[float, np.ndarray]] | None = None  # set to [] to record the depth eye (videos)
+        self.phase = "idle"
+        # robustness checks (PROTOCOL §8), off by default: {"interrupt": (delay_s, duration_s), "perturb": m/s,
+        # "contact": m/s}
+        self.faults: dict[str, Any] = {}
+        self.fault_log: list[tuple[float, str]] = []
+        self.overlay: dict[str, Any] = {}  # set by the lifetime runner (the runtime's decision), for video overlays
         self._video_target: tuple[float, float] = tuple(next(iter(scene.stations.values())))  # type: ignore[assignment]
         self._video_eye: np.ndarray | None = None
         self._video_cam = self._make_video_cam() if video else None
@@ -210,6 +218,9 @@ class IsaacWorld:
         self.t = 0.0
         if self.video_frames is not None:
             self.video_frames.clear()
+        self.video_meta.clear()
+        if self.eye_frames is not None:
+            self.eye_frames.clear()
 
     def _free(self, x: float, y: float, r: float = 0.35) -> bool:
         """No collider between 0.06 and 1.6 m above the floor within r of (x, y) (multi-hit downward rays)."""
@@ -317,6 +328,8 @@ class IsaacWorld:
         if d is None or not np.size(d):
             return np.zeros((self.vision_cfg.height, self.vision_cfg.width))
         d = np.asarray(d, float).copy()
+        if self.eye_frames is not None:
+            self.eye_frames.append((round(self.t, 2), np.where(np.isfinite(d), d, 0.0).astype(np.float16)))
         d[~np.isfinite(d)] = 0.0
         c = self.vision_cfg  # the camera's own noise specification
         d += self.rng.normal(0.0, 1.0, d.shape) * c.depth_sigma * (1.0 + d)
@@ -349,7 +362,7 @@ class IsaacWorld:
         # fixed side-on view of the interaction axis (home -> station), wide enough for robot and person
         x, y, _ = self.robot.pose()
         sx, sy = self._video_target
-        mid = np.array([(x + sx) / 2, (y + sy) / 2, 0.55])
+        mid = np.array([(x + sx) / 2, (y + sy) / 2, 0.8])  # robot and person, head to feet
         if self._video_eye is None:
             self._video_eye = self._clear_view(mid, np.array([sx - x, sy - y]))
         eye = self._video_eye
@@ -358,6 +371,8 @@ class IsaacWorld:
         f = self._video_cam.get_rgba()
         if f is not None and np.size(f):
             self.video_frames.append(np.asarray(f[..., :3], np.uint8))
+            # per-frame metadata for overlays (what the robot sensed and decided; nothing is drawn in the scene)
+            self.video_meta.append({"t": round(self.t, 2), "phase": self.phase, **self.overlay})
 
     def _clear_view(self, mid: np.ndarray, axis: np.ndarray) -> np.ndarray:
         """A camera position looking at `mid` from the side of the interaction axis, with no collider in between
@@ -367,11 +382,11 @@ class IsaacWorld:
         u = axis / (np.linalg.norm(axis) or 1.0)
         side = np.array([-u[1], u[0]])
         best, best_d = None, -1.0
-        for dist in (3.2, 2.6, 2.0, 1.6):
+        for dist in (4.0, 3.4, 2.8, 2.2, 1.6):
             for sgn in (1.0, -1.0):
                 for back in (-0.8, 0.0, 0.8):
                     eye = np.array([mid[0] + sgn * dist * side[0] + back * u[0],
-                                    mid[1] + sgn * dist * side[1] + back * u[1], 1.6])
+                                    mid[1] + sgn * dist * side[1] + back * u[1], 1.7])
                     d = eye - mid
                     n = float(np.linalg.norm(d))
                     hit = q.raycast_closest(tuple(float(v) for v in mid), tuple(float(v) for v in d / n), n)
@@ -449,6 +464,7 @@ class IsaacWorld:
         from apm_isaac.agents import RADIUS as _R
         surf = _R - _G0
         n_settle = int(round(settle_s / DT))
+        self.phase = "settle"
         for _ in range(n_settle):
             row, _ = self.step(adapter.idle, adapter, video)
             log.read(row)
@@ -470,12 +486,33 @@ class IsaacWorld:
         hold_d: list[float] = []
         baseline = slice(max(0, n_settle - 50), n_settle)
         t_start = self.t
+        self.phase = "approach"
+        frng = np.random.default_rng(int(self.rng.integers(2**31)))  # faults' own stream (pairing unaffected)
+        next_push = t_start + settle_s + frng.uniform(1.0, 2.0)
+        contact_done = False
         while True:
             x, y, yaw = self.robot.pose()
             dist = math.hypot(sx - x, sy - y)
             if k_arrive is not None and k_arrive + skip_n <= k < k_arrive + skip_n + win_n:
                 hold_d.append(dist)
             cmd = adapter.request(self.t, self.robot.pose(), aim, intent) if k_arrive is None else adapter.idle
+            ta = self.t - t_start - settle_s  # time into the approach
+            if "interrupt" in self.faults and k_arrive is None:  # motion commands dropped (controller interruption)
+                d0, dur = self.faults["interrupt"]
+                if d0 <= ta < d0 + dur:
+                    cmd = adapter.idle
+                    if not self.fault_log or self.fault_log[-1][1] != "interrupt":
+                        self.fault_log.append((round(self.t, 2), "interrupt"))
+            if "contact" in self.faults and not contact_done and k_arrive is None and ta >= 2.0:
+                ang = frng.uniform(0, 2 * math.pi)  # an unexpected contact during the approach
+                self.robot.push(self.faults["contact"] * math.cos(ang), self.faults["contact"] * math.sin(ang))
+                self.fault_log.append((round(self.t, 2), "contact"))
+                contact_done = True
+            if "perturb" in self.faults and self.t >= next_push:  # repeated perturbations
+                ang = frng.uniform(0, 2 * math.pi)
+                self.robot.push(self.faults["perturb"] * math.cos(ang), self.faults["perturb"] * math.sin(ang))
+                self.fault_log.append((round(self.t, 2), "perturb"))
+                next_push = self.t + frng.uniform(1.0, 2.0)
             row, tripped = self.step(cmd, adapter, video)
             log.read(row)
             own.append(adapter.own_motion(cmd, tripped))
@@ -491,6 +528,7 @@ class IsaacWorld:
                 break
             if k_arrive is None and adapter.arrived:
                 k_arrive, t_arrive = k + 1, round(self.t - t_start - settle_s, 2)
+                self.phase = "sense"
             k += 1
             if k_arrive is not None and k > k_arrive + skip_n and (k - k_arrive - skip_n) % win_n == 0:
                 w0 = k_arrive + skip_n + len(win_ev) * win_n
@@ -514,12 +552,14 @@ class IsaacWorld:
         neutral = ExpressionIntent(**{**NEUTRAL.as_dict(), "proximity": 0.5}).sanitized()
         adapter.reset(self.t, self.robot.pose(), (hx, hy), neutral)
         t_back = self.t
+        self.phase = "return"
         while return_home and not fell and self.t - t_back < max_approach_s:
             row, _ = self.step(adapter.request(self.t, self.robot.pose(), (hx, hy), neutral), adapter, video)
             if self.robot.fallen(row):
                 fell = True
             if adapter.arrived:
                 break
+        self.phase = "idle"
         contacts = self.contacts[n_contacts0:]
         outcome = {"arrived": k_arrive is not None, "t_arrive": t_arrive, "final_distance": d_stop,
                    "trips": self.robot.trips - trips0, "fell": fell, "windows": [e.as_list() for e in win_ev],

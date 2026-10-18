@@ -71,11 +71,24 @@ ap.add_argument("--task-config", default=None,
                 help="JSON with this robot's task values (retry_s from its own time model)")
 ap.add_argument("--policy-dir", default=None)
 ap.add_argument("--video", action="store_true")
+ap.add_argument("--record-eye", action="store_true", help="with --video: also save the depth eye's frames")
 ap.add_argument("--walk-home", action="store_true",
                 help="continuous lifetime (videos): walk home between encounters instead of starting each encounter "
                      "from its approach point")
 ap.add_argument("--logs", type=Path, default=None)
 ap.add_argument("--out", type=Path, required=True)
+# robustness checks (PROTOCOL §8)
+ap.add_argument("--restart-at", type=int, default=None, help="save the runtime after encounter K, load it into a "
+                "fresh runtime and continue")
+ap.add_argument("--no-camera", action="store_true", help="missing sensor: IMU only")
+ap.add_argument("--camera-dropout", type=float, default=None)
+ap.add_argument("--anon-b1", action="store_true", help="identity uncertainty: B1 reaches the runtime as an "
+                "anonymous AffectLink track (identity confidence 0.3) at every meeting")
+ap.add_argument("--interrupt", type=float, nargs=2, default=None, metavar=("DELAY", "DUR"))
+ap.add_argument("--perturb", type=float, default=None, help="pushes every 1-2 s during encounters (m/s)")
+ap.add_argument("--unexpected-contact", type=float, default=None, help="one push 2 s into each approach (m/s)")
+ap.add_argument("--fault-inject", action="store_true", help="the decision layer proposes the closest, fastest "
+                "approach to B1 every time; the risk supervisor must veto it when over the cap")
 a, _ = ap.parse_known_args()
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "src"))
@@ -152,10 +165,21 @@ scene = SceneSpec(a.scene, cfg["usd"], home=tuple(cfg["home"]),
 chars = {sid: find_character(root, n) for sid, n in CHARACTERS.items() if sid in scene.stations}
 channels = json.loads((REPO / "experiments" / "J_validation_transfer" / "configs" / "H_admitted_interface.json")
                       .read_text())["interface"]
+from apm_transfer.vision import VisionCamera  # noqa: E402
+
+vcfg = VisionCamera(**({"dropout": a.camera_dropout} if a.camera_dropout is not None else {}))
 world = IsaacWorld(scene, a.robot, seed=0, video=a.video, characters={k: v for k, v in chars.items() if v},
                    physics_dt=0.005 if a.robot == "humanoid" else 0.002, policy_dir=a.policy_dir,
-                   nerva_channels=channels)
+                   nerva_channels=channels, vision_cfg=vcfg)
+if a.interrupt:
+    world.faults["interrupt"] = tuple(a.interrupt)
+if a.perturb:
+    world.faults["perturb"] = a.perturb
+if a.unexpected_contact:
+    world.faults["contact"] = a.unexpected_contact
 stations = {ident: st for ident, _, st in ENTITIES}
+if a.video and a.record_eye:
+    world.eye_frames = []
 a.out.parent.mkdir(parents=True, exist_ok=True)
 if a.logs:
     a.logs.mkdir(parents=True, exist_ok=True)
@@ -166,7 +190,10 @@ print("robot", json.dumps(getattr(world.robot, "measured", None) or {}, default=
 for index in range(a.first, a.first + a.n):
     for history in a.histories.split(","):
         for system in a.systems.split(","):
-            spec = SYSTEMS[system]
+            base_name, _, params = system.partition(":")  # "MONOTONE:lo=0.2/width=0.4": calibrated parameters
+            spec = dict(SYSTEMS[base_name])
+            if params:
+                spec["policy"] = spec["policy"].split(":")[0] + ":" + params
             base = int(S.world_seed(a.experiment, a.partition, index).generate_state(1)[0])
             rng = np.random.default_rng(base)
             order = [ENTITIES[int(i)] for i in rng.choice(3, a.n_enc, p=P_ENTITY)]
@@ -175,16 +202,52 @@ for index in range(a.first, a.first + a.n):
             log = a.logs / f"{a.robot}_{a.scene}_{system}_{history}_{a.partition}{index}.jsonl" if a.logs else None
             if log is not None and log.exists():
                 log.unlink()
-            rt = Runtime(mcfg, time_coef, task, voi, lam=0.02, seed=base + 3, camera=True, log=log,
-                         policy=spec["policy"], supervise=spec.get("supervise", True))
+            def make_rt(log_path=log, spec=spec, base=base):
+                return Runtime(mcfg, time_coef, task, voi, lam=0.02, seed=base + 3, camera=not a.no_camera,
+                               log=log_path, policy=spec["policy"], supervise=spec.get("supervise", True))
+            rt = make_rt()
+            if a.fault_inject:
+                import apm_transfer.runtime as _rtmod
+                from apm_transfer.expression_map import GRID as _G
+                closest = int(np.argmax([g.proximity + 0.01 * g.tempo for g in _G]))
+
+                def forced(*args, closest=closest, **kwargs):  # the decision layer proposes the riskiest approach
+                    return closest, 1, {}
+                _rtmod.choose = forced  # type: ignore[assignment]
             body = IsaacBody(world, edges, stations, approach_from=None if a.walk_home else APPROACH_M[a.robot])
             rows, t0 = [], time.time()
             for k, (ident, kind, _) in enumerate(order):
                 etype = btype(history, k) if ident == "B1" else "calm"
-                b_before = rt.memory.belief(ident, kind)
-                d = rt.decide(ident, kind, context=f"{a.scene}:{k}")
+                if a.restart_at is not None and k == a.restart_at:  # restart: persist, fresh runtime, load
+                    state = a.out.parent / f"state_{a.robot}_{system}_{history}_{index}.json"
+                    rt.save(state)
+                    vetoes_before = rt.safety.vetoes
+                    rt = make_rt()
+                    rt.load(state)
+                    assert rt.safety.vetoes == vetoes_before
+                rt_ident = ident
+                if a.anon_b1 and ident == "B1":  # an anonymous track at every meeting (identity confidence 0.3)
+                    from apm.protocol.messages import EntityObservation, Header
+                    track = f"t{index}-{k}"
+                    rt.ingest(EntityObservation(header=Header(source="m6", stream="entities", seq=k, stamp_s=world.t),
+                                                track_id=track, entity_type=kind, identity="B1",
+                                                identity_confidence=0.3))
+                    rt_ident = rt.identity_of(track)[0]
+                b_before = rt.memory.belief(rt_ident, kind)
+                d = rt.decide(rt_ident, kind, context=f"{a.scene}:{k}")
+                world.overlay = {"k": k, "robot": a.robot, "scene": a.scene, "system": system, "history": history,
+                                 "entity": ident, "true_type": etype, "p_risk": round(d.p_risk, 3),
+                                 "uncertainty": round(d.uncertainty, 3), "action": d.action,
+                                 "proximity": round(d.proximity, 2), "tempo": round(d.tempo, 2),
+                                 "hesitation": round(d.hesitation, 2), "windows": d.windows, "standoff": d.standoff,
+                                 "vetoed": d.vetoed, "reason": d.reason,
+                                 "last": (rows[-1]["entity"], rows[-1]["imu_cats"], rows[-1]["cam_codes"],
+                                          rows[-1]["detected"], rows[-1]["contacts"]) if rows else None}
                 tk = time.time()
                 obs, truth = body.encounter(int(base + 100 + k), etype, d)
+                if rt_ident != ident:
+                    obs = Observation(rt_ident, obs.kind, obs.band, obs.imu, obs.camera, obs.detected, obs.context,
+                                      obs.report)
                 out = body.last_out
                 mem = spec.get("memory", "learn")
                 if mem == "learn" or (mem == "frozen" and k < a.switch):
@@ -228,8 +291,12 @@ for index in range(a.first, a.first + a.n):
                   f"contacts {sum(r['contacts'] for r in rows)}, wall {rec['wall_s']} s", flush=True)
             if a.video and world.video_frames:
                 import imageio
-                vid = a.out.parent / f"{a.robot}_{a.scene}_{system}_{history}_{a.partition}{index}.mp4"
-                imageio.mimsave(vid, world.video_frames, fps=25)
+                stem = a.out.parent / f"{a.robot}_{a.scene}_{system}_{history}_{a.partition}{index}"
+                imageio.mimsave(f"{stem}.mp4", world.video_frames, fps=25)
+                Path(f"{stem}_meta.json").write_text(json.dumps({"frames": world.video_meta, "record": rec}))
+                if world.eye_frames:
+                    np.savez_compressed(f"{stem}_eye.npz", t=np.array([e[0] for e in world.eye_frames]),
+                                        depth=np.array([e[1] for e in world.eye_frames]))
 _ = (GRID, os)
 from apm_isaac import hard_exit  # noqa: E402
 
