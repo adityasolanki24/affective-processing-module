@@ -1,0 +1,17 @@
+{
+ "acc8": [
+  0.1068,
+  0.12981,
+  0.16203,
+  0.23116,
+  0.35075500000000004,
+  0.49376,
+  0.6350800000000001
+ ],
+ "source": "K5-T pooled quantiles",
+ "meta": {
+  "robot": "humanoid",
+  "lifetimes": 30,
+  "source": "M5 partition T (RANDINTENT; risky_B, safe; warehouse and home)"
+ }
+}

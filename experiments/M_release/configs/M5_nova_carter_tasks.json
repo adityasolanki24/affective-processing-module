@@ -1,0 +1,44 @@
+{
+ "note": "APM v1.0, nova_carter: K's task values; retry_s = this robot's mean predicted approach time over the intent grid (13.56 s, M5 time model, R2 0.460).",
+ "tasks": {
+  "waypoint": {
+   "d_task": null,
+   "retry_s": 13.56,
+   "price_s": 20.0,
+   "risk_cap": 0.3,
+   "min_sep": null,
+   "why": "reach a waypoint beside the entity; proximity irrelevant"
+  },
+  "inspect": {
+   "d_task": 0.4,
+   "retry_s": 13.56,
+   "price_s": 20.0,
+   "risk_cap": 0.3,
+   "min_sep": null,
+   "why": "inspect an object at the entity's location; sensing needs <= 0.4 m"
+  },
+  "handoff": {
+   "d_task": 0.3,
+   "retry_s": 13.56,
+   "price_s": 20.0,
+   "risk_cap": 0.3,
+   "min_sep": null,
+   "why": "hand over at the entity's location; reach needs <= 0.3 m"
+  },
+  "separation": {
+   "d_task": null,
+   "retry_s": 13.56,
+   "price_s": 20.0,
+   "risk_cap": 0.3,
+   "min_sep": 0.5,
+   "why": "approach but always keep >= 0.5 m from an uncertain obstacle"
+  }
+ },
+ "recovery_study_task": "handoff",
+ "voi": {
+  "horizon": 5.0,
+  "gap": 3.0,
+  "samples": 48,
+  "u_trigger": 0.6
+ }
+}

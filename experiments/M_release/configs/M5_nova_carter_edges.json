@@ -1,0 +1,17 @@
+{
+ "acc8": [
+  0.10705999999999999,
+  0.13387,
+  0.17095,
+  0.19355,
+  0.21222000000000002,
+  0.2331,
+  2.39113
+ ],
+ "source": "K5-T pooled quantiles",
+ "meta": {
+  "robot": "nova_carter",
+  "lifetimes": 37,
+  "source": "M5 partition T (RANDINTENT; risky_B, safe; warehouse and home)"
+ }
+}

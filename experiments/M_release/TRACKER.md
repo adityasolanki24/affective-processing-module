@@ -23,9 +23,9 @@ Not chosen:
 | M1 | freeze and stabilise v0.8 | clean integration test (runtime → sensors → memory → decision → bounded command → safety veto → motion → persist/restart → replay → AffectLink) passes from a clean checkout; L's open defects fixed (task-scoring artefact, falls characterised) | done (433294a) |
 | M2 | Isaac Sim infrastructure | pinned env restores on a fresh VM; headless render of a stock scene; physics/sensor smoke test | done |
 | M3 | three embodiments in Isaac | each robot imported, controller validated by a battery (stand, walk, stop, turn, pushes); MuJoCo vs Isaac characterised | gates passed (see below) |
-| M4 | perception and interaction | camera/IMU/odometry → perception → `Observation`, no simulator truth; moving agents with physical presence; ≥ 2 functional scenes | in progress |
-| M5 | integrated APM | the same runtime drives all three robots in Isaac; body-specific expressive realisation | |
-| M6 | final evaluation | `PROTOCOL.md` frozen; experiments A–F on fresh seeds; held-out scene | |
+| M4 | perception and interaction | camera/IMU/odometry → perception → `Observation`, no simulator truth; moving agents with physical presence; ≥ 2 functional scenes | done (see below) |
+| M5 | integrated APM | the same runtime drives all three robots in Isaac; body-specific expressive realisation | runtime runs on all three in 3 scenes; exploration (T) running |
+| M6 | final evaluation | `PROTOCOL.md` frozen; experiments A–F on fresh seeds; held-out scene | protocol committed (f70d9aa) before V/X data |
 | M7 | videos and packaging | 4 videos from recorded traces; trace files, seeds, commands | |
 | M8 | QA and release | checklist verified; cloud audit; docs; release report | |
 
@@ -61,3 +61,27 @@ robot by user decision on 2026-10-19; the custom robot remains only as a MuJoCo 
 **Frozen from the gates, before any experiment data:**
 - the people's lunge surface speed is capped at 0.15 m/s (NERVA's survivable repeated push);
 - the T1 velocity map.
+
+## M4 evidence
+
+- **Scenes.** Warehouse, home and hospital (held out). Each has three stations at 2.2 m from the hub and one
+  bystander walking a 3 m patrol at 1 m/s, found automatically by PhysX raycasts.
+- **People.** Stock characters, animated through Isaac's AnimationGraph (retargeted idle and walk) and moved with
+  the graph's character API. The physical body is a kinematic capsule; PhysX contacts are evaluation truth.
+- **Eyes.** A depth eye per robot is posed every frame from the PhysX link pose and is roll-free, as L's camera.
+  The eye check (person 0.8 m ahead, scripted 0.25 m lunge, true abstract reach 0.40):
+
+| robot | reach estimate |
+|---|---|
+| Nova Carter | 0.36 |
+| T1 | 0.46 |
+| NERVA | 0.33 |
+
+- **Perception.** `MotionPerception(articulated_target=True)`: only pixels moving away outside the target band count
+  as egomotion, because a person's limbs move. K/L behaviour is unchanged by default.
+- **Encounters** (experiment mode, warehouse): all three arrive and honour stand-offs; IMU and camera detect pushy
+  lunges; no falls.
+  - IMU contrast: clear on Nova Carter; weak on T1 (31 kg, 0.15 m/s contacts); dominated by gait impacts on NERVA,
+    so NERVA relies mostly on its camera.
+  - NERVA's head-mounted eye looks about 16° up when it stands, so its depth image sees no floor; the person still
+    fills the centre columns.

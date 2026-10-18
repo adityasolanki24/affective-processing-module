@@ -10,6 +10,14 @@ for j in $(seq 0 $((NPROC - 1))); do
   $ISAAC_PY experiments/M_release/isaac/m5_lifetime.py "$@" --first $F --n $M --out "$OUT/part_$j.jsonl" \
     --logs "$OUT/logs" > "$OUT/proc_$j.log" 2>&1 &
 done
-wait
+# heartbeat for the streamed job log: lifetimes completed per process, every minute
+( while sleep 60; do
+    printf "%s progress:" "$(date -u +%H:%M)"
+    for f in "$OUT"/part_*.jsonl; do [ -f "$f" ] && printf " %s=%s" "$(basename $f .jsonl)" "$(wc -l < $f)"; done
+    echo
+  done ) &
+HB=$!
+wait $(jobs -p | grep -v "^$HB$")
+kill $HB 2>/dev/null
 grep -hE "^[A-Z_]+ [a-z_A-Z]+ [A-Z][0-9]+:" "$OUT"/proc_*.log
 echo "m5_par done: $(cat $OUT/part_*.jsonl 2>/dev/null | wc -l) lifetimes"
