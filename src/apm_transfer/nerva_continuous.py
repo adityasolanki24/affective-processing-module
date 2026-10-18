@@ -78,6 +78,7 @@ class ContinuousNerva:
         self.events: dict[int, tuple[float, float]] = {}
         self.next_k: int | None = None
         self.vis: Any = None
+        self.vis_renderer: Any = None  # one depth renderer for the whole lifetime (see VisionSession)
         self.vis_j0 = 0
         self.vis_end = 0
 
@@ -204,9 +205,14 @@ class ContinuousNerva:
         self.phase = "sense"
         vis_out = None
         if self.vision and t_arrive is not None:
+            import mujoco
+
             from apm_transfer.vision import VisionSession
+            if self.vis_renderer is None:
+                self.vis_renderer = mujoco.Renderer(self.ctrl.sim.model, self.camera.height,  # type: ignore[union-attr]
+                                                    self.camera.width)  # type: ignore[union-attr]
             self.vis = VisionSession(self.camera, self.ctrl, self.events, self.ctrl.dt,  # type: ignore[arg-type]
-                                     TARGET, seed=int(self.rng.integers(2**31)))
+                                     TARGET, seed=int(self.rng.integers(2**31)), renderer=self.vis_renderer)
             self.vis_j0 = self.k + int(round(POST_ARRIVAL_SKIP_S / self.ctrl.dt))
             self.vis_end = windows * int(round(WINDOW_S / self.ctrl.dt))
         self._hold(POST_ARRIVAL_SKIP_S)

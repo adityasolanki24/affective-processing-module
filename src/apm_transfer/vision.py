@@ -220,13 +220,16 @@ class VisionSession:
     sensing-window boundary."""
 
     def __init__(self, cam: VisionCamera, robot, events: dict[int, tuple[float, float]], dt: float,
-                 target: tuple[float, float], seed: int):
+                 target: tuple[float, float], seed: int, renderer: Any = None):
+        """`renderer`: a depth renderer owned by the caller and reused across encounters. MuJoCo 3.3 destroys the
+        GL context shared by every renderer in the thread when one is closed, which blanks any video renderer."""
         import mujoco
 
         self.mj, self.cam, self.robot, self.dt, self.target = mujoco, cam, robot, dt, target
         m, _, _, _, _ = robot_view(robot)
         m.vis.global_.fovy = cam.fovy_deg
-        self.renderer = mujoco.Renderer(m, cam.height, cam.width)
+        self.owns_renderer = renderer is None
+        self.renderer = renderer if renderer is not None else mujoco.Renderer(m, cam.height, cam.width)
         self.renderer.enable_depth_rendering()
         self.mjcam = mujoco.MjvCamera()
         self.mjcam.type = mujoco.mjtCamera.mjCAMERA_FREE
@@ -331,4 +334,5 @@ class VisionSession:
         return reaches
 
     def close(self) -> None:
-        self.renderer.close()
+        if self.owns_renderer:
+            self.renderer.close()

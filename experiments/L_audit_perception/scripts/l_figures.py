@@ -26,8 +26,8 @@ def depth_frames(out: Path) -> None:
     channels = json.loads((REPO / "experiments" / "J_validation_transfer" / "configs" /
                            "H_admitted_interface.json").read_text())["interface"]
     for seed in range(1, 40):
-        _, o, _ = closed_loop_encounter(seed, "pushy", GRID[2], channels, windows=1, camera=VisionCamera(keep_frames=True),
-                                        abort_on_detect=False)
+        _, o, _ = closed_loop_encounter(seed, "pushy", GRID[2], channels, windows=1,
+                                        camera=VisionCamera(keep_frames=True), abort_on_detect=False)
         ev = o["vision"]["events"][0]
         if ev and o["vision"]["truth"][0]:
             frames = np.array(o["vision"]["frames"], np.float32)
