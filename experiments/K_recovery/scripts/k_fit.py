@@ -10,6 +10,9 @@ change, so each identity keeps one behaviour.
 - EM (`apm_transfer.conditioned.fit_conditional`) reads only these counts. K = 1–4 is chosen by BIC.
 - The rate r_k is the robot's own detector frequency per window.
 
+**Programme L** (`--edges FILE`): the body's fixed acc8 edges re-categorise the IMU peaks, and nothing else is
+refitted (vision type models share K's body configuration).
+
 **Wheeled robot** (`--robot wheeled`). Its own acc8 edges come from pooled quantiles of its own window peaks (all
 exploration lifetimes), and its own time model from least squares of its own arrival times on intent (as J6). Both
 are written next to `--out`.
@@ -67,9 +70,13 @@ def main() -> None:
     ap.add_argument("--runs", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--robot", choices=("nerva", "wheeled", "humanoid"), default="nerva")
+    ap.add_argument("--edges", type=Path, default=None,
+                    help="programme L: categorise with these fixed acc8 edges (no edge or time-model refit)")
     a = ap.parse_args()
     edges = None
-    if a.robot in ("wheeled", "humanoid"):
+    if a.edges is not None:
+        edges = json.loads(a.edges.read_text())["acc8"]
+    elif a.robot in ("wheeled", "humanoid"):
         from apm_express.intent import ExpressionIntent
         from apm_express.styles import NEUTRAL
         from apm_transfer.expression_map import TimeModel
