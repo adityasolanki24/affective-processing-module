@@ -1,0 +1,22 @@
+{
+ "robot": "nova_carter",
+ "train_lifetimes": 18,
+ "test_lifetimes": 19,
+ "train_encounters": 432,
+ "test_encounters": 456,
+ "test_contact_rate": 0.3157894736842105,
+ "log_loss": {
+  "BASE": 0.6160339576706838,
+  "MEM": 0.5148135409192276,
+  "GRU": 0.8093150226010964
+ },
+ "auc": {
+  "BASE": 0.5836004273504274,
+  "MEM": 0.7702768874643875,
+  "GRU": 0.7238470441595442
+ },
+ "gru_minus_mem_logloss_ci95": [
+  0.14304662133004492,
+  0.44215537935410637
+ ]
+}

@@ -1,0 +1,22 @@
+{
+ "robot": "humanoid",
+ "train_lifetimes": 15,
+ "test_lifetimes": 15,
+ "train_encounters": 343,
+ "test_encounters": 331,
+ "test_contact_rate": 0.33534743202416917,
+ "log_loss": {
+  "BASE": 0.6084663704279167,
+  "MEM": 0.45475246084163634,
+  "GRU": 1.127278647945017
+ },
+ "auc": {
+  "BASE": 0.6664619164619164,
+  "MEM": 0.8444103194103194,
+  "GRU": 0.7216420966420967
+ },
+ "gru_minus_mem_logloss_ci95": [
+  0.47804581134177043,
+  0.8903934363265176
+ ]
+}
