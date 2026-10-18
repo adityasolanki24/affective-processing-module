@@ -13,7 +13,12 @@ W=/work; mkdir -p $W/jobs
 exec > >(tee -a $W/runner.log) 2>&1
 echo "=== start $(date -u +%FT%TZ) nproc=$(nproc)"
 export DEBIAN_FRONTEND=noninteractive
-apt-get update -qq && apt-get install -y -qq python3-venv git >/dev/null
+# GPU images install the NVIDIA driver with apt at first boot: wait for the dpkg lock instead of failing
+for i in 1 2 3; do
+  apt-get -o DPkg::Lock::Timeout=900 update -qq && \
+    apt-get -o DPkg::Lock::Timeout=900 install -y -qq python3-venv git >/dev/null && break
+  sleep 30
+done
 python3 -m venv $W/venv && $W/venv/bin/pip install -q --upgrade pip && $W/venv/bin/pip install -q numpy==2.5.4
 $W/venv/bin/python -c "import numpy, sys; print('python', sys.version.split()[0], 'numpy', numpy.__version__)"
 git config --global --add safe.directory '*'
@@ -25,7 +30,8 @@ while true; do
     id=$(basename "$job" .tgz); d=$W/jobs/$id; mkdir -p $d
     gcloud storage cp "$job" $d/job.tgz && gcloud storage rm "$job"
     echo "=== job $id $(date -u +%FT%TZ)"
-    (cd $d && tar xzf job.tgz && cd apm && . $W/venv/bin/activate && export PYTHONPATH=src && bash job.sh) \
+    (cd $d && tar xzf job.tgz && cd apm && { . $W/venv/bin/activate 2>/dev/null || true; } \
+      && export PYTHONPATH=src && bash job.sh) \
       > $d/log.txt 2>&1
     echo $? > $d/rc
     if [ -d $d/apm/out ]; then tar czf $d/out.tgz -C $d/apm out; else tar czf $d/out.tgz -T /dev/null; fi

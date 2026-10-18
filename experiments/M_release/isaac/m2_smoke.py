@@ -17,12 +17,17 @@ import time
 import traceback
 from pathlib import Path
 
-from isaacsim import SimulationApp
+from isaaclab.app import AppLauncher
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--out", type=Path, required=True)
 a, _ = ap.parse_known_args()
-app = SimulationApp({"headless": True, "width": 960, "height": 540})
+launcher = AppLauncher({"headless": True, "enable_cameras": True})
+app = launcher.app
+from isaacsim.core.utils.extensions import enable_extension  # noqa: E402
+
+for _ext in ("isaacsim.sensors.camera", "isaacsim.sensors.physics", "isaacsim.storage.native"):
+    enable_extension(_ext)
 
 import numpy as np  # noqa: E402
 import omni.client  # noqa: E402
@@ -85,6 +90,8 @@ for name, rel in SCENES.items():
             world.step(render=True)
         rgba = cam.get_rgba()
         depth = cam.get_depth()
+        print(name, "rgba", None if rgba is None else (rgba.shape, rgba.dtype), "depth",
+              None if depth is None else depth.shape, flush=True)
         Image.fromarray(np.asarray(rgba[..., :3], np.uint8)).save(out / f"{name}_rgb.png")
         np.save(out / f"{name}_depth.npy", np.asarray(depth, np.float32))
         n_prims = sum(1 for _ in stage.Traverse())
@@ -94,7 +101,7 @@ for name, rel in SCENES.items():
                         "seconds": round(time.time() - t0, 1)}
         world.clear_instance()
     except Exception as e:  # noqa: BLE001
-        scenes[name] = {"error": repr(e), "trace": traceback.format_exc()[-1500:]}
+        scenes[name] = {"error": repr(e), "trace": traceback.format_exc()[-4000:]}
     print(name, scenes[name], flush=True)
 report["scenes"] = scenes
 

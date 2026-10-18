@@ -1,0 +1,584 @@
+{
+ "policy_rel": "experiments/cloud_runs/turn_translation-20261011-000711/candidate.onnx",
+ "policy_sha256": "610b1c59446cb9f6067238a61a641a60aa706c48f4a56dc8b07d1956d4813446",
+ "styled": false,
+ "scene": "scene_flat_terrain_backlash.xml",
+ "plain_scene": "scene_flat_terrain.xml",
+ "timestep": 0.002,
+ "decimation": 10,
+ "action_scale": 0.25,
+ "dof_vel_scale": 0.05,
+ "max_motor_velocity": 5.24,
+ "accel_x_offset": 1.3,
+ "actuators": [
+  {
+   "actuator": "left_hip_yaw",
+   "joint": "left_hip_yaw",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -0.5235987755982979,
+    0.5235987755982997
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": 0.002
+  },
+  {
+   "actuator": "left_hip_roll",
+   "joint": "left_hip_roll",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -0.4363323129985815,
+    0.43633231299858327
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": 0.053
+  },
+  {
+   "actuator": "left_hip_pitch",
+   "joint": "left_hip_pitch",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -1.2217304763960306,
+    0.5235987755982988
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": -0.63
+  },
+  {
+   "actuator": "left_knee",
+   "joint": "left_knee",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -1.5707963267948966,
+    1.5707963267948966
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": 1.368
+  },
+  {
+   "actuator": "left_ankle",
+   "joint": "left_ankle",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -1.5707963267948957,
+    1.5707963267948974
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": -0.784
+  },
+  {
+   "actuator": "neck_pitch",
+   "joint": "neck_pitch",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -0.3490658503988437,
+    1.1344640137963364
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": 0.0
+  },
+  {
+   "actuator": "head_pitch",
+   "joint": "head_pitch",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -0.7853981633974483,
+    0.7853981633974483
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": 0.0
+  },
+  {
+   "actuator": "head_yaw",
+   "joint": "head_yaw",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -2.792526803190927,
+    2.792526803190927
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": 0.0
+  },
+  {
+   "actuator": "head_roll",
+   "joint": "head_roll",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -0.523598775598218,
+    0.5235987755983796
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": 0.0
+  },
+  {
+   "actuator": "right_hip_yaw",
+   "joint": "right_hip_yaw",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -0.523598775598297,
+    0.5235987755983006
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": -0.003
+  },
+  {
+   "actuator": "right_hip_roll",
+   "joint": "right_hip_roll",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -0.4363323129985797,
+    0.43633231299858505
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": -0.065
+  },
+  {
+   "actuator": "right_hip_pitch",
+   "joint": "right_hip_pitch",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -0.5235987755982988,
+    1.2217304763960306
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": 0.635
+  },
+  {
+   "actuator": "right_knee",
+   "joint": "right_knee",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -1.5707963267948966,
+    1.5707963267948966
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": 1.379
+  },
+  {
+   "actuator": "right_ankle",
+   "joint": "right_ankle",
+   "kp": 17.11,
+   "biasprm": [
+    0.0,
+    -17.11,
+    0.0
+   ],
+   "forcerange": [
+    -3.23,
+    3.23
+   ],
+   "range": [
+    -1.5707963267948957,
+    1.5707963267948974
+   ],
+   "armature": 0.027,
+   "damping": 0.56,
+   "frictionloss": 0.068,
+   "home_ctrl": -0.796
+  }
+ ],
+ "backlash": [
+  {
+   "joint": "left_hip_yaw_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  },
+  {
+   "joint": "left_hip_roll_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  },
+  {
+   "joint": "left_hip_pitch_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  },
+  {
+   "joint": "left_knee_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  },
+  {
+   "joint": "left_ankle_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  },
+  {
+   "joint": "right_hip_yaw_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  },
+  {
+   "joint": "right_hip_roll_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  },
+  {
+   "joint": "right_hip_pitch_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  },
+  {
+   "joint": "right_knee_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  },
+  {
+   "joint": "right_ankle_backlash",
+   "range": [
+    -0.008726646259971648,
+    0.008726646259971648
+   ],
+   "armature": 0.01,
+   "damping": 0.01
+  }
+ ],
+ "home_qpos": [
+  0.0,
+  0.0,
+  0.15,
+  1.0,
+  0.0,
+  0.0,
+  0.0,
+  0.002,
+  0.0,
+  0.053,
+  0.0,
+  -0.63,
+  0.0,
+  1.368,
+  0.0,
+  -0.784,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  -0.003,
+  0.0,
+  -0.065,
+  0.0,
+  0.635,
+  0.0,
+  1.379,
+  0.0,
+  -0.796,
+  0.0
+ ],
+ "obs_noise_scale": [
+  0.1,
+  0.1,
+  0.1,
+  0.05,
+  0.05,
+  0.05,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.03,
+  0.03,
+  0.03,
+  0.05,
+  0.08,
+  0.03,
+  0.03,
+  0.03,
+  0.05,
+  0.08,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.125,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0
+ ],
+ "phase_period": 27,
+ "total_mass": 2.1071407,
+ "imu_site_body": "base",
+ "imu_site_pos": [
+  -0.08,
+  -0.0,
+  0.05
+ ],
+ "feet": [
+  "foot_assembly",
+  "foot_assembly_2"
+ ],
+ "bodies": [
+  "world",
+  "base",
+  "trunk_assembly",
+  "hip_roll_assembly",
+  "left_roll_to_pitch_assembly",
+  "knee_and_ankle_assembly",
+  "knee_and_ankle_assembly_2",
+  "foot_assembly",
+  "neck_pitch_assembly",
+  "head_pitch_to_yaw",
+  "neck_yaw_assembly",
+  "head_assembly",
+  "hip_roll_assembly_2",
+  "right_roll_to_pitch_assembly",
+  "knee_and_ankle_assembly_3",
+  "knee_and_ankle_assembly_4",
+  "foot_assembly_2",
+  "floor"
+ ],
+ "njnt": 25
+}
