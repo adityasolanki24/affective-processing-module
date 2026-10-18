@@ -176,11 +176,12 @@ def add_body_colliders(stage, root: str) -> list[str]:
         link = links.get(name)
         if link is None:
             continue
-        it = iter(Usd.PrimRange(link))
-        for q in it:
-            if q != link and q.HasAPI(UsdPhysics.RigidBodyAPI):
-                it.PruneChildren()  # links are nested: skip the child link's subtree
-                continue
+        vis = link.GetChild("visuals")  # instanceable in the converted USD: its meshes are instance proxies
+        if not vis.IsValid():
+            continue
+        if vis.IsInstanceable():
+            vis.SetInstanceable(False)
+        for q in Usd.PrimRange(vis):
             if q.IsA(UsdGeom.Mesh) and not q.HasAPI(UsdPhysics.CollisionAPI):
                 UsdPhysics.CollisionAPI.Apply(q)
                 UsdPhysics.MeshCollisionAPI.Apply(q).CreateApproximationAttr("convexHull")
