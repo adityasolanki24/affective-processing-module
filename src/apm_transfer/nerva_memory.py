@@ -226,7 +226,8 @@ class LeakyEvidenceMemory:
         self.logE = np.log(np.clip(model.E, 1e-300, None))
 
     def belief(self, identity: str, kind: str) -> np.ndarray:
-        lp = np.log(self.model.pi) + self.s.get(identity, 0.0)
+        s = self.s.get(identity)
+        lp: np.ndarray = np.log(self.model.pi) + (s if s is not None else np.zeros(len(self.model.pi)))
         lp = lp - lp.max()
         b = np.exp(lp)
         return b / b.sum()
