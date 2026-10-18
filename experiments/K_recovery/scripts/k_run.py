@@ -127,7 +127,7 @@ def job(args: tuple) -> dict:
     voi_cfg = cfg["voi"]
     nerva = cfg.get("robot", "nerva") == "nerva"
     channels = json.loads(Path(cfg["channels"]).read_text())["interface"] if nerva else None
-    mem = TypeStateModel(model, spec["lam"], kind_prior=False)
+    mem = TypeStateModel(model, spec["lam"], kind_prior=False, transition_each_meeting=cfg.get("transition_fix", False))
     camera = Camera() if spec["camera"] else None
     rows = []
     t0 = time.time()
@@ -204,6 +204,7 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=cpu_count())
     ap.add_argument("--n-enc", type=int, default=N_ENC, help="shorter lifetimes, for smoke tests only")
     ap.add_argument("--robot", choices=("nerva", "wheeled"), default="nerva")
+    ap.add_argument("--transition-fix", action="store_true", help="DEVIATIONS D1: change transition every meeting")
     ap.add_argument("--addendum", default="", help="confirmatory run: committed protocol (clean tree required)")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
@@ -213,7 +214,7 @@ def main() -> None:
     tasks = json.loads(Path(a.tasks_config).read_text())
     cfg = {"types_model": a.types_model, "edges": a.edges, "time_model": a.time_model, "channels": a.channels,
            "task": a.task, "task_spec": tasks["tasks"][a.task], "voi": tasks["voi"], "n_enc": a.n_enc,
-           "robot": a.robot}
+           "robot": a.robot, "transition_fix": a.transition_fix}
     jobs = [(a.experiment, a.partition, a.first + i, h, s, cfg) for i in range(a.n) for h in a.histories.split(",")
             for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)

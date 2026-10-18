@@ -78,8 +78,13 @@ class ObsX(Obs):
 
 class TypeStateModel(StateModel):
     def __init__(self, model: TypeModel, lam: float = 0.0, kind_prior: bool = False, alpha: float = 0.15,
-                 name: str = "M_type"):
+                 name: str = "M_type", transition_each_meeting: bool = False):
         self.model, self.lam, self.kind_prior, self.alpha, self.name = model, lam, kind_prior, alpha, name
+        # Programme K deviation D1. The change model must apply one transition per encounter *including* the one being
+        # entered (predict, then update). Without it, an identity met in consecutive encounters never relaxes, and a
+        # few decisive observations drive the belief to exactly 0 or 1, from which no evidence can revise it.
+        # False reproduces programmes J and K up to K3-X / K5-X exactly.
+        self.transition_each_meeting = transition_each_meeting
         self.reset()
 
     def reset(self) -> None:
@@ -100,7 +105,8 @@ class TypeStateModel(StateModel):
 
     def _at(self, identity: str) -> np.ndarray:
         pi = self.model.pi
-        return pi + (self.b[identity] - pi) * math.exp(-self.lam * (self.n - self.k[identity]))
+        gap = self.n - self.k[identity] + (1 if self.transition_each_meeting else 0)
+        return pi + (self.b[identity] - pi) * math.exp(-self.lam * gap)
 
     def observe(self, ob: Obs) -> None:
         cat = getattr(ob, "category", 0)

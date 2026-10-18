@@ -69,3 +69,18 @@ def test_voi_observes_from_out_of_reach_only_with_a_camera_and_within_the_risk_c
     assert seen_observe
     assert action_cost(OBSERVE, 3, np.array([0.0, 1.0]), TM, em_cam, task)[1] == 0.0  # out of reach: no risk
     assert band_of(GRID[2].proximity) == 2
+
+
+def test_change_model_transitions_every_meeting_and_never_saturates():
+    m = _model()
+    old = TypeStateModel(m, lam=0.02)                                # programmes J/K up to K3-X: no step between
+    new = TypeStateModel(m, lam=0.02, transition_each_meeting=True)  # consecutive meetings of the same identity
+    for mem in (old, new):
+        for _ in range(6):
+            mem.observe_many("E1", "E", [7, 24 + 7], 1.0)  # decisive pushy evidence, met every encounter
+    assert old.belief("E1", "E")[0] == 0.0 or old.belief("E1", "E")[0] < 1e-12  # saturated: calm is impossible
+    floor = m.pi[0] * (1 - np.exp(-0.02))
+    assert new.belief("E1", "E")[0] >= floor - 1e-12  # the change model keeps calm possible
+    for _ in range(12):
+        new.observe_many("E1", "E", [24 + 0], 0.0)  # calm camera observations from out of reach
+    assert new.belief("E1", "E")[1] < 0.5  # ... and calm evidence can revise it

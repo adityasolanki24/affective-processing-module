@@ -189,7 +189,7 @@ def lifetime(args: tuple) -> dict:
     world = ContinuousNerva(base, channels, camera=Camera() if spec["camera"] else None,
                             scene_extender=overlay.extender if overlay else None,
                             frame_hook=overlay.hook if overlay else None)
-    mem = TypeStateModel(model, spec["lam"])
+    mem = TypeStateModel(model, spec["lam"], transition_each_meeting=cfg.get("transition_fix", True))
     rng = np.random.default_rng(base + 3)
     pol = spec["policy"] if condition != "NO_INFO" else "greedy"
     rows = []
