@@ -31,6 +31,9 @@ sys.path.insert(0, str(REPO / "src"))
 from apm_isaac import ANIM_KIT_ARGS  # noqa: E402
 
 app = AppLauncher({"headless": True, "enable_cameras": True, "kit_args": ANIM_KIT_ARGS}).app
+from apm_isaac import exit_on_error  # noqa: E402
+
+exit_on_error()
 from isaacsim.core.utils.extensions import enable_extension  # noqa: E402
 
 enable_extension("isaacsim.sensors.camera")

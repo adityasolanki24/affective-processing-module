@@ -14,3 +14,15 @@ def hard_exit(code: int = 0) -> None:
     sys.stdout.flush()
     sys.stderr.flush()
     os._exit(code)
+
+
+def exit_on_error() -> None:
+    """Make an uncaught exception end the process. Kit keeps a standalone script's process alive after a
+    Python error, which turns a crash into a silent hang until the job's timeout (M6 calibration runs)."""
+    import sys
+    import traceback
+
+    def hook(etype, value, tb):
+        traceback.print_exception(etype, value, tb)
+        hard_exit(1)
+    sys.excepthook = hook

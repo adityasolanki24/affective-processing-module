@@ -95,6 +95,9 @@ sys.path.insert(0, str(REPO / "src"))
 from apm_isaac import ANIM_KIT_ARGS  # noqa: E402
 
 app = AppLauncher({"headless": True, "enable_cameras": True, "kit_args": ANIM_KIT_ARGS}).app
+from apm_isaac import exit_on_error  # noqa: E402
+
+exit_on_error()
 from isaacsim.core.utils.extensions import enable_extension  # noqa: E402
 
 enable_extension("isaacsim.sensors.camera")
@@ -199,12 +202,14 @@ for index in range(a.first, a.first + a.n):
             order = [ENTITIES[int(i)] for i in rng.choice(3, a.n_enc, p=P_ENTITY)]
             shuffle_rng = np.random.default_rng(base + 5)
             world.new_lifetime(base + 1)
-            stem = a.out.parent / f"{a.robot}_{a.scene}_{system}_{history}_{a.partition}{index}"
+            sysname = system.replace(":", "_").replace("/", "_").replace("=", "")  # file-name safe
+            stem = a.out.parent / f"{a.robot}_{a.scene}_{sysname}_{history}_{a.partition}{index}"
             if a.video:  # stream frames to disk (a lifetime is ~10^4 frames of 2.8 MB)
                 import imageio
                 world.video_writer = imageio.get_writer(f"{stem}.mp4", fps=25, codec="libx264", quality=8,
                                                         macro_block_size=8)
-            log = a.logs / f"{a.robot}_{a.scene}_{system}_{history}_{a.partition}{index}.jsonl" if a.logs else None
+            log = (a.logs / f"{a.robot}_{a.scene}_{sysname}_{history}_{a.partition}{index}.jsonl"
+                   if a.logs else None)
             if log is not None and log.exists():
                 log.unlink()
             def make_rt(log_path=log, spec=spec, base=base):
@@ -224,7 +229,7 @@ for index in range(a.first, a.first + a.n):
             for k, (ident, kind, _) in enumerate(order):
                 etype = btype(history, k) if ident == "B1" else "calm"
                 if a.restart_at is not None and k == a.restart_at:  # restart: persist, fresh runtime, load
-                    state = a.out.parent / f"state_{a.robot}_{system}_{history}_{index}.json"
+                    state = a.out.parent / f"state_{a.robot}_{sysname}_{history}_{index}.json"
                     rt.save(state)
                     vetoes_before = rt.safety.vetoes
                     rt = make_rt()

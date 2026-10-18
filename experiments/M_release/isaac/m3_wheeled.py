@@ -85,6 +85,9 @@ if a.mujoco:
 from isaaclab.app import AppLauncher  # noqa: E402
 
 app = AppLauncher({"headless": True, "enable_cameras": True}).app
+from apm_isaac import exit_on_error  # noqa: E402
+
+exit_on_error()
 from isaacsim.core.utils.extensions import enable_extension  # noqa: E402
 
 for _e in ("isaacsim.sensors.camera",):

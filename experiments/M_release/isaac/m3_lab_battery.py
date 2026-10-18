@@ -45,7 +45,10 @@ from pxr import PhysxSchema, UsdPhysics  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "src"))
+from apm_isaac import exit_on_error  # noqa: E402
 from apm_isaac.robots import LabPolicyBody  # noqa: E402
+
+exit_on_error()
 
 BODIES = {
     "t1": {"usd": get_assets_root_path() + "/Isaac/Robots/BoosterRobotics/BoosterT1/T1_locomotion.usd", "z": 0.70,

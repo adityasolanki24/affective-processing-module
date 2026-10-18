@@ -59,6 +59,8 @@ def conditions() -> dict[str, dict]:
 if a.engine == "isaac":
     from isaaclab.app import AppLauncher
     app = AppLauncher({"headless": True}).app
+    from apm_isaac import exit_on_error
+    exit_on_error()
 
 import numpy as np  # noqa: E402
 
