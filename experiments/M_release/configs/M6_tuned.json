@@ -1,0 +1,24 @@
+{
+ "nova_carter": "MONOTONE:lo=0.1/width=0.4",
+ "_tables": {
+  "nova_carter": {
+   "MONOTONE:lo=0.1/width=0.2": {
+    "lifetimes": 6,
+    "mean_cost": 22.753
+   },
+   "MONOTONE:lo=0.1/width=0.4": {
+    "lifetimes": 6,
+    "mean_cost": 22.715
+   },
+   "MONOTONE:lo=0.2/width=0.2": {
+    "lifetimes": 6,
+    "mean_cost": 23.118
+   },
+   "MONOTONE:lo=0.2/width=0.4": {
+    "lifetimes": 6,
+    "mean_cost": 25.174
+   }
+  }
+ },
+ "_rule": "PROTOCOL.md \u00a73: lowest mean realised cost on partition V (warehouse, change_B and late_B)"
+}
