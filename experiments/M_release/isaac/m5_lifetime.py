@@ -283,7 +283,7 @@ for index in range(a.first, a.first + a.n):
                     "reached_interaction": bool(task.d_task is not None and d_abs <= task.d_task + 0.05),
                     "hold_max_dist": out.get("hold_max_dist"),
                     "hold_completed": task.hold_completed(out["arrived"], out.get("hold_max_dist")),
-                    "wall_s": round(time.time() - tk, 1)})
+                    "motion": out.get("motion", {}), "wall_s": round(time.time() - tk, 1)})
                 if out["fell"]:
                     break  # a fall ends the lifetime; it is counted
             rec = {"experiment": a.experiment, "partition": a.partition, "index": index, "history": history,

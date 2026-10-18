@@ -499,9 +499,12 @@ class IsaacWorld:
         frng = np.random.default_rng(int(self.rng.integers(2**31)))  # faults' own stream (pairing unaffected)
         next_push = t_start + settle_s + frng.uniform(1.0, 2.0)
         contact_done = False
+        track: list[tuple[float, float, float, float]] = []  # (t, x, y, yaw) during the approach (measurement)
         while True:
             x, y, yaw = self.robot.pose()
             dist = math.hypot(sx - x, sy - y)
+            if k_arrive is None:
+                track.append((self.t, x, y, yaw))
             if k_arrive is not None and k_arrive + skip_n <= k < k_arrive + skip_n + win_n:
                 hold_d.append(dist)
             cmd = adapter.request(self.t, self.robot.pose(), aim, intent) if k_arrive is None else adapter.idle
@@ -576,7 +579,8 @@ class IsaacWorld:
                    "camera_reaches": cam_seen[:len(win_ev)],
                    "hold_max_dist": round(max(hold_d), 4) if len(hold_d) == win_n else None,
                    "hold_min_dist": round(min(hold_d), 4) if hold_d else None,
-                   "quiet_frames": [e.quiet_frames >= MIN_QUIET_FRAMES for e in win_ev]}
+                   "quiet_frames": [e.quiet_frames >= MIN_QUIET_FRAMES for e in win_ev],
+                   "motion": motion_features(track, (sx, sy))}
         # Truth (evaluation only). As in K/L, `contacts` counts the person's lunges that reached the robot. Contact
         # episodes (gaps > 0.5 s) and total contact time also include incidental touching (e.g. a humanoid's arm).
         times = sorted({round(c[0], 2) for c in contacts})
@@ -586,6 +590,37 @@ class IsaacWorld:
                  "contact_s": round(0.02 * len({round(c[0] / 0.02) for c in contacts}), 2),
                  "contact_impulse_max": max((c[2] for c in contacts), default=0.0), "station": station}
         return outcome, truth
+
+
+def motion_features(track: list[tuple[float, float, float, float]], target: tuple[float, float]) -> dict:
+    """Physically measured approach motion, from the robot's own pose trace (the expression actually realised)."""
+    if len(track) < 3:
+        return {}
+    a = np.asarray(track, float)
+    t, xy, yaw = a[:, 0], a[:, 1:3], np.unwrap(a[:, 3])
+    dt = np.diff(t)
+    step = np.diff(xy, axis=0)
+    seg = np.linalg.norm(step, axis=1)
+    path = float(seg.sum())
+    heading = np.stack([np.cos(yaw[:-1]), np.sin(yaw[:-1])], 1)
+    v_fwd = (step * heading).sum(1) / np.maximum(dt, 1e-9)
+    speed = seg / np.maximum(dt, 1e-9)
+    slow = speed < 0.02
+    pauses, run = 0, 0.0
+    for s_, d_ in zip(slow, dt, strict=True):
+        run = run + d_ if s_ else 0.0
+        if s_ and abs(run - 0.4) < d_ / 2 + 1e-9:  # a pause = >= 0.4 s below 0.02 m/s
+            pauses += 1
+    straight = float(np.linalg.norm(xy[-1] - xy[0]))
+    moving = speed[~slow]
+    return {"approach_s": round(float(t[-1] - t[0]), 2), "path_m": round(path, 3),
+            "straightness": round(straight / path, 3) if path > 1e-6 else None,
+            "mean_speed": round(float(moving.mean()), 4) if len(moving) else 0.0,
+            "speed_cv": round(float(moving.std() / moving.mean()), 3) if len(moving) > 1 and moving.mean() > 0
+            else None,
+            "pauses": pauses, "reverse_s": round(float(dt[v_fwd < -0.01].sum()), 2),
+            "max_yaw_rate": round(float(np.max(np.abs(np.diff(yaw) / np.maximum(dt, 1e-9)))), 3),
+            "final_dist_to_person": round(float(np.linalg.norm(xy[-1] - np.asarray(target))), 3)}
 
 
 def _look_at(eye: np.ndarray, target: np.ndarray) -> np.ndarray:
