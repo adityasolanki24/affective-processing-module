@@ -48,3 +48,16 @@ the demos. The protocol section says so itself.
   default call is unchanged; for the default target, the stand-off aim is K's exactly.
 - **The uncertainty-triggered policy's per-encounter cap check** (an A3 follow-up). It was committed with §B,
   before any L data.
+
+## LD6. §C.3's P4 refers to DT, which §C.3 did not run
+
+- **The problem.** §C.3 adopts §B.3's criteria "exactly". P4 includes "repeated-push encounters not above DT's
+  (paired upper bound ≤ +0.02)", but DT is not among §C.3's systems. That clause therefore cannot be evaluated, and
+  the analysis script scored it as failed for every system. This was found after the LC X analysis.
+- **How it is reported.** Both readings are given:
+  1. the mechanical result, in which no system meets the milestone;
+  2. P4 from the parts that can be evaluated: falls, trips and cap compliance.
+- **Effect on Q1 and Q2.** None, on either body:
+  - NERVA: every system has the same 2 falls. They come from one seed (LC4-X 24), at the first meeting with the
+    pushy entity, where every system approaches at the prior.
+  - Wheeled: DT_IMUVIS_VOI fails P2 and P3, and DT_VIS_VOI fails P3.
