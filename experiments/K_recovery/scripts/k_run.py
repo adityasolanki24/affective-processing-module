@@ -104,6 +104,8 @@ def job(args: tuple) -> dict:
     from apm_transfer.nerva_world import MIN_QUIET_FRAMES, Camera
     if cfg.get("robot", "nerva") == "wheeled":
         from apm_transfer.wheeled_world import closed_loop_encounter
+    elif cfg.get("robot", "nerva") == "humanoid":
+        from apm_transfer.humanoid_world import closed_loop_encounter
     else:
         from apm_transfer.nerva_world import closed_loop_encounter
 
@@ -203,7 +205,7 @@ def main() -> None:
     ap.add_argument("--channels", default=str(J / "configs" / "H_admitted_interface.json"))
     ap.add_argument("--workers", type=int, default=cpu_count())
     ap.add_argument("--n-enc", type=int, default=N_ENC, help="shorter lifetimes, for smoke tests only")
-    ap.add_argument("--robot", choices=("nerva", "wheeled"), default="nerva")
+    ap.add_argument("--robot", choices=("nerva", "wheeled", "humanoid"), default="nerva")
     ap.add_argument("--transition-fix", action="store_true", help="DEVIATIONS D1: change transition every meeting")
     ap.add_argument("--addendum", default="", help="confirmatory run: committed protocol (clean tree required)")
     ap.add_argument("--out", type=Path, required=True)

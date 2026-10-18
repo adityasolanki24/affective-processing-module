@@ -66,17 +66,17 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
-    ap.add_argument("--robot", choices=("nerva", "wheeled"), default="nerva")
+    ap.add_argument("--robot", choices=("nerva", "wheeled", "humanoid"), default="nerva")
     a = ap.parse_args()
     edges = None
-    if a.robot == "wheeled":
+    if a.robot in ("wheeled", "humanoid"):
         from apm_express.intent import ExpressionIntent
         from apm_express.styles import NEUTRAL
         from apm_transfer.expression_map import TimeModel
         lts = [json.loads(x) for x in a.runs.read_text(encoding="utf-8").splitlines()]
         peaks = [v for lt in lts for r in lt["rows"] for v in r["imu_peaks"]]
         edges = np.unique(np.quantile(peaks, np.linspace(0, 1, 9)[1:-1])).tolist()
-        (a.out.parent / "K_wheeled_edges.json").write_text(
+        (a.out.parent / f"K_{a.robot}_edges.json").write_text(
             json.dumps({"acc8": edges, "source": "K5-T pooled quantiles"}), encoding="utf-8")
         base = NEUTRAL.as_dict()
         rows = [r for lt in lts for r in lt["rows"] if r["t_arrive"] is not None]
@@ -86,9 +86,9 @@ def main() -> None:
         pred = np.array([tm.predict(i) for i in its])
         t = np.array([r["t_arrive"] for r in rows])
         r2 = float(1 - np.sum((t - pred) ** 2) / np.sum((t - t.mean()) ** 2))
-        (a.out.parent / "K_wheeled_time.json").write_text(json.dumps({"time_coef": tm.coef, "r2": r2,
+        (a.out.parent / f"K_{a.robot}_time.json").write_text(json.dumps({"time_coef": tm.coef, "r2": r2,
                                                                       "encounters": len(rows)}), encoding="utf-8")
-        print("wheeled edges", np.round(edges, 4), "time model", np.round(tm.coef, 2), "R2", round(r2, 3))
+        print(a.robot, "edges", np.round(edges, 4), "time model", np.round(tm.coef, 2), "R2", round(r2, 3))
     counts, enc, det, types = units(a.runs, edges)
     fits = {K: fit_conditional(counts, enc, det, K, "k_imu_cam", restarts=20) for K in (1, 2, 3, 4)}
     bics = {K: bic_conditional(m, BLOCKS) for K, m in fits.items()}

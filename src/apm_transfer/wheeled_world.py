@@ -150,6 +150,9 @@ class WheeledRobot:
         self.data.ctrl[:] = [wl, wr]
         return tripped
 
+    def fallen(self, row: dict) -> bool:
+        return math.radians(row["tilt"]) > TILT_FALL or not row["finite"]
+
     def advance(self) -> dict:
         for _ in range(SUBSTEPS):
             self.mj.mj_step(self.model, self.data)
@@ -193,12 +196,15 @@ class WheeledLogger:
 def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None = None, settle_s: float = 2.0,
                           max_approach_s: float = 45.0, windows: int = 1, camera: Camera | None = None,
                           abort_on_detect: bool = True, scene_extender=None,
-                          frame_hook=None, standoff: float = 0.0) -> tuple[Evidence, dict, dict]:
-    """Same protocol and return structure as `nerva_world.closed_loop_encounter` with `windows` set."""
+                          frame_hook=None, standoff: float = 0.0, robot_factory=None) -> tuple[Evidence, dict, dict]:
+    """Same protocol and return structure as `nerva_world.closed_loop_encounter` with `windows` set.
+
+    `robot_factory(seed, scene_extender)` may supply another (v, ω)-commanded body with the same interface
+    (`humanoid_world.HumanoidRobot`); the default is this wheeled robot."""
     from apm_express.wheeled import WheeledAdapter
 
     rng = np.random.default_rng(seed)
-    bot = WheeledRobot(int(rng.integers(2**31)), scene_extender)
+    bot = (robot_factory or WheeledRobot)(int(rng.integers(2**31)), scene_extender)
     adapter = WheeledAdapter(seed=int(rng.integers(2**31)))
     log = WheeledLogger(np.random.default_rng(int(rng.integers(2**31))))
     cam_rng = np.random.default_rng([seed, 7])
@@ -206,6 +212,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
     for _ in range(n_settle):
         bot.apply(0.0, 0.0)
         log.read(bot.advance())
+    n_settle = len(log.acc)
     horizon = max_approach_s + POST_ARRIVAL_SKIP_S + WINDOW_S * MAX_WINDOWS
     events = {n_settle + int(round(t / DT)): (reach, speed) for t, reach, speed in lunges(rng, etype, horizon)}
     aim = (TARGET[0] - standoff, TARGET[1])
@@ -248,7 +255,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
         log.read(row)
         if frame_hook is not None:
             frame_hook(bot, {"lunge": lunge, "dist": dist, "arrived": k_arrive is not None, "fallback": tripped})
-        if math.radians(row["tilt"]) > TILT_FALL or not row["finite"]:
+        if bot.fallen(row):
             fell = True
             break
         if k_arrive is None and adapter.arrived:
