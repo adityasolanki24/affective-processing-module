@@ -79,7 +79,19 @@ SYSTEMS = {
     "DT_IMUVIS_VOI": {"policy": "voi", "lam": 0.02, "camera": "vision"},
     "DT_IMUVIS": {"policy": "greedy", "lam": 0.02, "camera": "vision"},
     "RANDINTENT_VIS": {"policy": "random", "lam": 0.02, "camera": "vision"},
+    # programme L Phase E: simple controllers with IMU + vision ("E1:c=0.1/a=2" passes parameters)
+    "L0_VIS": {"policy": "L0", "lam": 0.02, "camera": "vision"},
+    "E1": {"policy": "lookup_tuned", "lam": 0.02, "camera": "vision"},
+    "E2": {"policy": "monotone", "lam": 0.02, "camera": "vision"},
 }
+
+
+def system_spec(name: str) -> dict:
+    """A system by name; "BASE:k=v/k=v" adds float parameters for parameterised controllers."""
+    if name in SYSTEMS:
+        return SYSTEMS[name]
+    base, _, args = name.partition(":")
+    return {**SYSTEMS[base], "params": {k: float(v) for k, v in (kv.split("=") for kv in args.split("/") if kv)}}
 RENDER = None  # k_demo.py only: callable(...) -> clip with kwargs()/close(row), or None
 
 
@@ -117,7 +129,7 @@ def job(args: tuple) -> dict:
     else:
         from apm_transfer.nerva_world import closed_loop_encounter
 
-    spec = SYSTEMS[system]
+    spec = system_spec(system)
     S = _seeds(cfg.get("seeds"))
     base = int(S.world_seed(experiment, partition, index).generate_state(1)[0])
     rng = np.random.default_rng(base)
@@ -157,6 +169,10 @@ def job(args: tuple) -> dict:
         standoff = 0.0
         if spec["policy"] == "L0":
             intent, w = lookup_intent(rd), 1
+        elif spec["policy"] in ("lookup_tuned", "monotone"):
+            from apm_transfer.controllers import lookup_tuned, monotone
+            ctl = lookup_tuned if spec["policy"] == "lookup_tuned" else monotone
+            intent, w = ctl(rd, **spec.get("params", {})), 1
         elif spec["policy"] == "random":
             grid_i, w = int(explore.integers(len(GRID))), int(explore.integers(1, 4))
             intent = GRID[grid_i]

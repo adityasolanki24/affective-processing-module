@@ -254,3 +254,48 @@ scenarios. J4 found that the GRU adds nothing over the type model.
   - anticipation accuracy (the belief before the meeting matches the risk);
   - excess avoidance;
   - the gap to ORACLE.
+
+---
+
+## E. Fair comparison of expression controllers (frozen 2026-10-18, before any LE data)
+
+**Question.** Is the decision-theoretic expressive controller better than a *calibrated* simple baseline?
+
+**Setting.**
+- NERVA with IMU + rendered vision.
+- Memory: M1, the fixed clock, λ 0.02.
+- Type model: the §C.2 NERVA vision model.
+- K's four tasks, with their frozen values.
+- All §B corrections apply (the cap binds E3 and E4, which have a risk model).
+- Controllers: `src/apm_transfer/controllers.py`.
+
+| id | controller | free parameters | tuning |
+|---|---|---|---|
+| E0 | H's lookup | none | none |
+| E1 | retuned lookup (offset c, gain a) | 2 | 12-point grid, includes E0 |
+| E2 | monotonic proximity rule (lo, width) | 2 | 12-point grid |
+| E3 | decision-theoretic mapping (greedy) | none (task values frozen) | none |
+| E4 | E3 + value of information | none | none |
+| E5 | learned mapping | – | run only if justified (below) |
+
+**Tuning (equal budgets).**
+- Partition T, indices 0–7; histories risky_B and safe.
+- Per task: all 12 configurations of E1 and of E2.
+- `e_controllers.py tune` picks the lowest mean cost, with ties to the simpler (earlier) entry.
+- It writes `configs/LE_tuned.json`, committed before any X run.
+
+**Test.** Partition X, indices 0–29: E0, E1\*, E2\*, E3, E4 × 4 tasks × 4 histories.
+
+**Criteria per task** (`e_controllers.py analyse`):
+- E3 or E4 "beats the calibrated simple baselines" if, against **each** of E0, E1\* and E2\*:
+  - paired task cost: upper bound < 0;
+  - contacts per encounter: upper bound ≤ +0.05.
+- **Answer:**
+  - yes: one of them beats the baselines in ≥ 3 of 4 tasks;
+  - partly: 1–2;
+  - no: 0.
+- **Recommended controller per task:**
+  - the simplest controller (E0 < E1 < E2 < E3 < E4) whose cost is at most 1 s worse than the lowest-cost
+    controller (upper bound of the paired difference ≤ 1 s);
+  - the simpler option wins when they are equivalent.
+- **E5 (learned)** is justified only if the answer is "no". It is not run in L otherwise.

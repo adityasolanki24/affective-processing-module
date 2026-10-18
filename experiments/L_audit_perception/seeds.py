@@ -10,7 +10,8 @@ PARTITIONS = {"P": 1, "T": 2, "V": 3, "X": 4, "D": 5}  # pilot, train, validatio
 EXPERIMENTS = {"LB1": 1, "LB2": 2, "LB3": 3, "LB4": 4,  # B: NERVA, wheeled, humanoid recovery; NERVA frozen tasks
                "LC1": 5, "LC2": 6, "LC3": 7,  # C: perception quality, NERVA / wheeled / humanoid
                "LC4": 8, "LC5": 9,  # C: vision type models (T) and recovery comparison (V, X), NERVA / wheeled
-               "LD": 10}  # D: stress scenarios (wheeled, IMU + vision)
+               "LD": 10,  # D: stress scenarios (wheeled, IMU + vision)
+               "LE": 11}  # E: expression-controller comparison (NERVA, IMU + vision): T tuning, X test
 
 
 def world_seed(experiment: str, partition: str, index: int) -> np.random.SeedSequence:
