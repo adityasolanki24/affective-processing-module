@@ -394,4 +394,13 @@ Cap: **US$60** (approved 2026-10-18). Costs are estimated from VM hours, since l
 
 ## Branch, commits, CI, PR
 
-See the last section, written at the end.
+- **Branch:** `research/apm-v0.8-audit`. It starts from programme K's `research/apm-v0.7-recovery` at 55f81f1 and is
+  pushed.
+- **Results commit:** 6c7a48c. Protocol freezes:
+  - ffdc691 (§B), a0e5c6d (§C), fe8ae67 (§D), 6f18eb0 (§E), 2c30c54 (§G);
+  - targets 50c0786 (LB) and 18f445d (LC); vision models eb5b2b1; tuned controllers eb5c647.
+- **CI:** green on 6c7a48c (ruff, mypy on Python 3.10 and 3.12, pytest: 156 passed). Seven intermediate pushes
+  failed CI on lint or typing; each was fixed in the next push.
+- **PR:** none opened. Nothing is merged, and nothing will be without approval.
+- **NERVA repository:** unchanged in L. The docs consolidation branch `docs/consolidation` from programme K is
+  still unmerged.
