@@ -170,6 +170,29 @@ def analyse(data: dict, r: np.ndarray, anchors: dict) -> dict:
     return out
 
 
+def criteria(res: dict, candidates: tuple[str, ...] = ("DT_VOI", "DT_CAM_VOI", "DT_CAM", "DT")) -> dict:
+    """PROTOCOL.md §4 P1-P5. The pre-named candidates are DT_VOI (IMU only) and DT_CAM_VOI (camera extension).
+    DT_CAM and DT are evaluated the same way for reference."""
+    out = {}
+    for s in candidates:
+        o = res["systems"].get(s)
+        if o is None:
+            continue
+        med = lambda k: (o.get(k) or {}).get("median")  # noqa: E731
+        le = lambda v, x: v is not None and v <= x  # noqa: E731
+        rep = [((res.get("vs_DT", {}).get(s, {}).get(h, {}) or {}).get("repeated_push_after_switch") or {})
+               for h in ("change_B", "late_B")]
+        p4_rep = s == "DT" or all(r.get("ci95", [None, None])[1] is not None and r["ci95"][1] <= 0.02 for r in rep)
+        c = {"P1_revision_pushy_to_calm": le(med("revision_pushy_to_calm"), 6),
+             "P2_behaviour_recovery": le(med("behaviour_recovery"), 8),
+             "P3_revision_calm_to_pushy": le(med("revision_calm_to_pushy"), 4),
+             "P4_safety": o["falls"] == 0 and o["trip_rate"] <= 0.01 and p4_rep,
+             "P5_task": o["arrival_rate"] >= 0.99}
+        c["recovery_milestone_met"] = all(c.values())
+        out[s] = c
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=Path, nargs="+", required=True)
@@ -181,6 +204,7 @@ def main() -> None:
     r = np.asarray(mcfg["model"]["r"], float)
     anchors = {t: float(np.asarray(v) @ r) for t, v in mcfg["oracle"].items()}
     res = analyse(load(a.runs), r, anchors)
+    res["criteria"] = criteria(res)
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
     for s, o in res["systems"].items():
@@ -192,6 +216,8 @@ def main() -> None:
               f"rep {o['repeated_push_rate_pushy_B1']} falls {o['falls']} trips {o['trip_rate']:.3f} "
               f"arr {o['arrival_rate']:.3f} task {o['task_success_all']:.2f} t {o['encounter_time_s']:.1f} "
               f"diff {(o.get('expressive_differentiation_m') or {}).get('estimate')}")
+    for s, c in res["criteria"].items():
+        print("criteria", s, c)
 
 
 if __name__ == "__main__":
