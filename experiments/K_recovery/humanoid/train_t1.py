@@ -14,10 +14,10 @@ import time
 from pathlib import Path
 
 import jax
+import mujoco
 import numpy as np
 from brax.training.agents.ppo import networks as ppo_networks
 from brax.training.agents.ppo import train as ppo
-import mujoco
 from mujoco_playground import registry, wrapper
 from mujoco_playground.config import locomotion_params
 
