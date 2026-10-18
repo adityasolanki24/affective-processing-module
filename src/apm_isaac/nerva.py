@@ -170,8 +170,8 @@ BODY_COLLIDER_LINKS = ("trunk_assembly", "head_assembly", "neck_pitch_assembly",
 def add_body_colliders(stage, root: str) -> list[str]:
     from pxr import PhysxSchema, Usd, UsdGeom, UsdPhysics
     added = []
-    prims = list(Usd.PrimRange(stage.GetPrimAtPath(root), Usd.TraverseInstanceProxies()))
-    links = {p.GetName(): p for p in prims if p.HasAPI(UsdPhysics.RigidBodyAPI)}
+    links = {p.GetName(): p for p in Usd.PrimRange(stage.GetPrimAtPath(root))
+             if p.HasAPI(UsdPhysics.RigidBodyAPI)}  # links are not instance proxies
     for name in BODY_COLLIDER_LINKS:
         link = links.get(name)
         if link is None:
@@ -186,7 +186,7 @@ def add_body_colliders(stage, root: str) -> list[str]:
                 UsdPhysics.CollisionAPI.Apply(q)
                 UsdPhysics.MeshCollisionAPI.Apply(q).CreateApproximationAttr("convexHull")
                 added.append(str(q.GetPath()))
-    for p in prims:
+    for p in Usd.PrimRange(stage.GetPrimAtPath(root)):  # fresh traversal: un-instancing expired the proxies above
         if p.HasAPI(UsdPhysics.ArticulationRootAPI):
             PhysxSchema.PhysxArticulationAPI.Apply(p).CreateEnabledSelfCollisionsAttr(False)
     return added
