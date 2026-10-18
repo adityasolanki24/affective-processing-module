@@ -12,17 +12,18 @@ happens, it is marked ⟶.
 | H (v0.4) | 2026-10-13 | can experience be expressed through embodied motion? | **Decision B:** memory → fixed lookup L0 → bounded NERVA adapter; history recoverable from motion 98–100%, 0 falls; learned/recurrent mappings not better. Human legibility untested | `experiments/H_expressive_intelligence/reports/EXPRESSIVE_ARCHITECTURE_DECISION.md` |
 | I (v0.5) | 2026-10-17 | autonomous revision under self-selected avoidance | **I1 passed:** dense near-miss evidence + EM types + change-aware belief; revises in 2–3 episodes; −56% avoidable collisions. VOI probing escapes outright keep-away traps. PR #3, **not merged** | `experiments/I_autonomous_revision/reports/AUTONOMOUS_REVISION_DECISION.md` |
 | J (v0.6) | 2026-10-18 | validate I; transfer to NERVA; close the expressive loop | J1: I1 survives frozen calibration, but **its safety gain is not caused by revision**. J2: not a universal default. J4: NERVA memory learns from IMU, but revision is slow and one-directional. J5: **loop not closed with L0**. J6 (exploratory): 5-parameter decision-theoretic mapping beats L0; GRU adds nothing. **Decision E** | `experiments/J_validation_transfer/reports/FINAL_REPORT.md` |
-| K (v0.7) | in progress | recovery from negative experience; frozen-task confirmation; continuous demonstration; second embodiment | — | `experiments/K_recovery/` |
+| K (v0.7) | 2026-10-18 | recovery from negative experience; frozen-task confirmation; continuous demonstration; other bodies | Recovery was limited by information (IMU at a safe distance) **and** by a memory defect (D1: no change step between consecutive meetings). Fixed memory + value of information + a modelled camera: **recovery in both directions on NERVA and a wheeled robot, 0 falls**. Decision-theoretic mapping **replaces L0** (4/4 frozen tasks). Continuous two-robot demo with controls | `experiments/K_recovery/REPORT.md` |
 
 ## Architecture recommendations over time
 
-Only the last row is current.
+Only the last item is current.
 
 1. v0.1: PAD affect core behind AffectLink ⟶ superseded by G (PAD harmful).
 2. G, decision A: predictor + cumulative entity memory + EMA risk ⟶ memory replaced by I's type memory.
 3. H, decision B: memory + fixed lookup + bounded adapter ⟶ J5 shows the lookup does not close the loop on NERVA.
-4. **J, decision E (current):** keep explicit type memory + L0. The decision-theoretic mapping is the candidate,
-   pending K's frozen-task confirmation.
+4. J, decision E: keep explicit type memory + L0 ⟶ superseded by K.
+5. **K (current):** explicit type memory with the D1 fix + decision-theoretic expression mapping with task values
+   fixed from requirements + non-myopic information gathering (needs a sensor that sees the entity).
 
 ## Conventions used throughout
 

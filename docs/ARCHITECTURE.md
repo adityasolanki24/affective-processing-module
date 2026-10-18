@@ -19,7 +19,8 @@ The current APM architecture, as validated by programmes G–J. For which parts 
  │ 3 regulation          readout (p, u, g) → action preferences / risk penalty                 │
  │ 4 expressive intent   ExpressionIntent: proximity, tempo, hesitation,      apm_express      │
  │                       directness, gaze, scanning, lean, head elevation                      │
- │                       mapping: L0 lookup (current) | decision-theoretic (candidate)         │
+ │                       mapping: decision-theoretic (current; L0 retired by K3b)              │
+ │ 5 information gather  non-myopic VOI; OBSERVE from beyond reach (needs a camera)  infoseek  │
  └────────────────────────────────────────────────────────────────────────────────────────────┘
    │ ExpressionIntent (bounded, abstract)
    ▼
@@ -43,7 +44,8 @@ The current APM architecture, as validated by programmes G–J. For which parts 
 | consequence predictor | predict collision/slip/progress per action | features → probabilities | supervised on the robot's own outcomes (offline) |
 | experience memory | belief over latent entity types; revisable | `observe(Obs)`, `readout(Probe) → (p, u, g)`, `state()/load_state()` | EM on unlabelled outcome counts (offline); Bayesian update online |
 | regulation | trade risk against task progress | readout + predictions → action preferences | λ tuned on validation data |
-| expressive intent | abstract movement qualities | `ExpressionIntent` (8 channels in [0, 1]) | L0: none. Decision-theoretic: 5-parameter time model from the robot's own exploration |
+| expressive intent | abstract movement qualities | `ExpressionIntent` (8 channels in [0, 1]) | decision-theoretic: 5-parameter time model from the robot's own exploration; task values and risk cap fixed from requirements |
+| information gathering | decide whether to sense longer or from farther away | `infoseek.choose` | none; uses the robot's own learned models (KG* value of information) |
 | embodiment adapter | realise intent on one body | intent → validated commands | none |
 | safety monitor | authoritative envelope | physical state → trip / neutral | none |
 
