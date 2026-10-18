@@ -241,6 +241,7 @@ class VisionSession:
         self.window_events: list[list[dict]] = []
         self._truth: list[dict] = []
         self.frame_k: list[int] = []  # control step of each perception frame (for metrics only)
+        self.last_depth: np.ndarray | None = None
 
     def _entity(self, k: int, dist: float, xy: tuple[float, float], origin: np.ndarray, front: float) -> np.ndarray:
         tx, ty = origin[0] + self.target[0], origin[1] + self.target[1]
@@ -289,6 +290,7 @@ class VisionSession:
         depth = np.asarray(r.render(), float).copy()
         depth += self.rng.normal(0.0, 1.0, depth.shape) * self.cam.depth_sigma * (1.0 + depth)
         depth[self.rng.random(depth.shape) < self.cam.dropout] = 0.0
+        self.last_depth = depth  # videos only
         return depth
 
     def in_view(self, dist: float) -> bool:

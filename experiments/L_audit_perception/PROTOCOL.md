@@ -322,3 +322,27 @@ could be tuned. It was written after the first demo runs, and nothing was change
 - F5: no executed approach exceeds the predicted-risk cap. The independent supervisor's vetoes are counted, and
   its veto of every over-cap approach is unit-tested;
 - F6: every intent is within its bounds.
+
+---
+
+## G. Continuous demonstration on the corrected runtime (frozen 2026-10-18, before any LG X data or rendering)
+
+**Design** (`g_demo.py` at this commit).
+- Two identical NERVA robots, each in one never-reset continuous simulation, with IMU + rendered vision. Decisions
+  come from the integrated runtime with all corrections.
+- Stage 1 (encounters 1–10): A meets a pushy entity, B a calm one.
+- Stage 2 (11–16): both meet a pushy entity.
+- Stage 3 (17–36): both meet a calm entity.
+- Conditions: FULL, NO_MEMORY, NO_EXPRESSION, NO_INFO (greedy).
+- Seeds: LG, X 0–9.
+- **The demo video** is the pre-declared FULL lifetime LG-D index 0, rendered whatever it shows: a third-person
+  view, the trace overlay, and the robot's own depth view. It is the paired video for the report.
+
+**Pre-registered checks:**
+- G1, matched-circumstance difference (FULL): in stage 2, A stops farther than B (paired CI > 0) and has fewer
+  contacts (CI < 0).
+- G2, revision and recovery (FULL): after the change, each robot reaches the hand-over distance (≤ 0.35 m) on 2
+  consecutive encounters in ≥ 8 of 10 seeds.
+- G3, memory-free: no stage-2 difference (the CI includes 0).
+- G4, expression-free: no protection from experience (A's stage-2 contacts not below B's: the upper bound ≥ 0).
+- G5, information seeking: NO_INFO recovers in fewer robot-seeds than FULL.

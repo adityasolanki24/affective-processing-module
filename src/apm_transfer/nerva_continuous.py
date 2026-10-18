@@ -20,6 +20,7 @@ camera codes) and, separately, the evaluation-only truth.
 from __future__ import annotations
 
 import math
+from typing import Any
 
 import numpy as np
 
@@ -69,6 +70,37 @@ class ContinuousNerva:
         self.pushes: list[tuple[float, float]] = []
         self.lunges: list[tuple[float, float, float]] = []  # (t, reach, push) for every lunge (truth)
         self.t0 = self.ctrl.t
+        # programme L Phase G: rendered vision. The entity's next lunge is drawn ahead (same Poisson process), so the
+        # visible column can start moving before the lunge peaks. Without a VisionCamera nothing here is used and the
+        # per-step draws reproduce K4 exactly.
+        self.vision = camera is not None and type(camera).__name__ == "VisionCamera"
+        self.k = 0
+        self.events: dict[int, tuple[float, float]] = {}
+        self.next_k: int | None = None
+        self.vis: Any = None
+        self.vis_j0 = 0
+        self.vis_end = 0
+
+    def _draw_next(self) -> None:
+        if self.next_k is not None:
+            self.events.pop(self.next_k, None)
+        p = TYPES[self.etype]
+        wait = float(self.entity_rng.exponential(1.0 / p["rate"]))
+        self.next_k = self.k + max(1, int(round(wait / self.ctrl.dt)))
+        self.events[self.next_k] = (float(self.entity_rng.uniform(*p["reach"])),
+                                    float(self.entity_rng.uniform(*p["speed"])))
+        for kk in [kk for kk in self.events if kk < self.k - 200]:
+            del self.events[kk]
+
+    def entity_centre(self) -> tuple[float, float, float]:
+        """Visual only: where the entity column stands now (vision mode), in world coordinates."""
+        from apm_transfer.vision import ENTITY_H, LungeAnimator
+        x, y, _ = self.ctrl.pose()
+        dist = math.hypot(TARGET[0] - x, TARGET[1] - y)
+        s = LungeAnimator(self.events, self.ctrl.dt).displacement(self.k, dist, 0.06) if self.vision else 0.0
+        ox, oy = self.ctrl._origin
+        n = dist or 1.0
+        return (ox + TARGET[0] + s * (x - TARGET[0]) / n, oy + TARGET[1] + s * (y - TARGET[1]) / n, ENTITY_H / 2)
 
     # one control step ---------------------------------------------------------------------------------------
     def _step(self, request, info: dict) -> None:
@@ -78,8 +110,19 @@ class ContinuousNerva:
         dist = math.hypot(TARGET[0] - x, TARGET[1] - y)
         lunge = None
         p = TYPES[self.etype]
-        if self.entity_rng.random() < p["rate"] * self.ctrl.dt:
-            reach, speed = float(self.entity_rng.uniform(*p["reach"])), float(self.entity_rng.uniform(*p["speed"]))
+        if self.vision:
+            if self.next_k is None:
+                self._draw_next()
+            fire = self.k == self.next_k
+        else:
+            fire = self.entity_rng.random() < p["rate"] * self.ctrl.dt
+        if fire:
+            if self.vision:
+                reach, speed = self.events[self.k]
+                self.next_k = None  # keep the fired lunge in `events` (its visible return; truth)
+                self._draw_next()
+            else:
+                reach, speed = float(self.entity_rng.uniform(*p["reach"])), float(self.entity_rng.uniform(*p["speed"]))
             m = impulse(reach, speed, dist)
             lunge = (reach, m)
             self.lunges.append((round(self.ctrl.t, 2), round(reach, 3), round(m, 4)))
@@ -88,7 +131,7 @@ class ContinuousNerva:
                 self.ctrl.push(m * math.cos(away), m * math.sin(away))
                 self.pushes.append((round(self.ctrl.t, 2), round(m, 4)))
             cam_w = info.get("cam_window")
-            if self.camera is not None and cam_w is not None:
+            if self.camera is not None and not self.vision and cam_w is not None:
                 bearing = math.atan2(TARGET[1] - y, TARGET[0] - x) - self.ctrl.pose()[2]
                 bearing = math.atan2(math.sin(bearing), math.cos(bearing))
                 if (self.camera.within_fov(bearing) and dist <= self.camera.range_m
@@ -105,6 +148,12 @@ class ContinuousNerva:
         self.prev_head = head
         row = self.ctrl.advance()
         self.log.read(self.ctrl, row)
+        if self.vis is not None:
+            from apm_transfer.vision import WARM_S
+            j = self.k - self.vis_j0
+            if -int(round(WARM_S / self.ctrl.dt)) <= j < self.vis_end:
+                self.vis.step(self.k, j, dist, self.own[-1])
+        self.k += 1
         if row["tilt"] > 45.0 or not row["finite"]:
             self.fell = True
         if self.frame_hook is not None:
@@ -139,6 +188,9 @@ class ContinuousNerva:
     # one encounter --------------------------------------------------------------------------------------------
     def encounter(self, etype: str, intent, windows: int, settle_s: float = 2.0, abort_on_detect: bool = True,
                   standoff: float = 0.0) -> dict:
+        if self.vision and etype != self.etype:
+            self.etype = etype
+            self._draw_next()  # the entity's behaviour changed: its pending lunge follows the new type
         self.etype = etype
         n_push0, n_lunge0 = len(self.pushes), len(self.lunges)
         self.phase = "home"
@@ -150,6 +202,13 @@ class ContinuousNerva:
         x, y, _ = self.ctrl.pose()
         d_stop = round(math.hypot(TARGET[0] - x, TARGET[1] - y), 3)
         self.phase = "sense"
+        vis_out = None
+        if self.vision and t_arrive is not None:
+            from apm_transfer.vision import VisionSession
+            self.vis = VisionSession(self.camera, self.ctrl, self.events, self.ctrl.dt,  # type: ignore[arg-type]
+                                     TARGET, seed=int(self.rng.integers(2**31)))
+            self.vis_j0 = self.k + int(round(POST_ARRIVAL_SKIP_S / self.ctrl.dt))
+            self.vis_end = windows * int(round(WINDOW_S / self.ctrl.dt))
         self._hold(POST_ARRIVAL_SKIP_S)
         win_ev: list = []
         cam_seen: list[list[float]] = [[] for _ in range(windows)]
@@ -159,11 +218,18 @@ class ContinuousNerva:
             self._hold(WINDOW_S, {"cam_window": w, "cam_seen": cam_seen})
             ev = self.log.summarise(k0, baseline, self.ctrl.dt, quiet=self._quiet(k0), stop=len(self.log.gyro))
             win_ev.append(ev)
+            if self.vis is not None:
+                xx, yy, _ = self.ctrl.pose()
+                cam_seen[w] = self.vis.window(math.hypot(TARGET[0] - xx, TARGET[1] - yy))
             if self.fell:
                 break
             if abort_on_detect and ev.detected and w + 1 < windows:
                 aborted = True
                 break
+        if self.vis is not None:
+            vis_out = {"events": self.vis.window_events, "truth": self.vis.window_truth}
+            self.vis.close()
+            self.vis = None
         self.phase = "return"
         t_home = self._walk(HOME_TARGET, _neutral_with_proximity(HOME_PROXIMITY))
         pushes = self.pushes[n_push0:]
@@ -173,7 +239,7 @@ class ContinuousNerva:
             "d_stop": d_stop, "windows": [e.as_list() for e in win_ev], "aborted": aborted,
             "imu_observable": [e.quiet_frames >= MIN_QUIET_FRAMES for e in win_ev],
             "camera": [camera_code(c) for c in cam_seen[:len(win_ev)]] if self.camera is not None else [],
-            "fell": self.fell, "trips": self.monitor.trips,
+            "fell": self.fell, "trips": self.monitor.trips, "vision": vis_out,
             "truth": {"type": etype, "contacts": len(pushes), "max_push": max((p[1] for p in pushes), default=0.0),
                       "lunges": len(self.lunges) - n_lunge0}}
 
