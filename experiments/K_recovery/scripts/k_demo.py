@@ -194,7 +194,7 @@ def lifetime(args: tuple) -> dict:
     pol = spec["policy"] if condition != "NO_INFO" else "greedy"
     rows = []
     other = cfg.get("other_stage1", [])
-    for k in range(N_ENC):
+    for k in range(cfg.get("n_enc", N_ENC)):
         etype = schedule(robot, k)
         b = mem.belief("E1", "E")
         rd = mem.readout(Probe("E1", "E", "plain"))
@@ -251,13 +251,14 @@ def main() -> None:
     ap.add_argument("--types-model", default=str(HERE / "configs" / "K_types.json"))
     ap.add_argument("--workers", type=int, default=cpu_count())
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--n-enc", type=int, default=N_ENC, help="shorter lifetimes, for smoke tests only")
     a = ap.parse_args()
     tasks = json.loads((HERE / "configs" / "K_tasks.json").read_text())
     cfg = {"types_model": a.types_model, "edges": str(J / "configs" / "J4_edges.json"),
            "time_model": str(J / "configs" / "J6_model.json"), "channels": str(J / "configs" /
                                                                                  "H_admitted_interface.json"),
            "task": tasks["recovery_study_task"], "task_spec": tasks["tasks"][tasks["recovery_study_task"]],
-           "voi": tasks["voi"]}
+           "voi": tasks["voi"], "n_enc": a.n_enc}
     t = time.time()
     if not a.controls:
         a.out.mkdir(parents=True, exist_ok=True)
