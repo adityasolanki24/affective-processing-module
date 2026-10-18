@@ -13,6 +13,10 @@ depends on the history. Histories (B1's physical type before / after encounter 1
 | change_B | pushy | calm |
 | late_B | calm | pushy |
 
+**Robots.** `--robot nerva` (default): the NERVA biped (`nerva_world`). `--robot wheeled`: the MuJoCo
+differential-drive robot (`wheeled_world`), with its own acc8 edges, time model and type model fitted on its own
+exploration (`k_fit.py --robot wheeled`). The APM core (memory, decision layer) is the same code.
+
 **Systems.** All share the world, the memory class (`TypeStateModel`, EM types fitted on K-T) and the seeds. Only the
 decision policy, the forgetting rate and the sensing differ:
 
@@ -25,7 +29,7 @@ decision policy, the forgetting rate and the sensing differ:
 | DT_UNC | same, w = 3 when belief entropy > 0.6 | 0.02 | IMU | entropy-triggered windows |
 | ORACLE | DT on the canonical belief of the *true current* type | – | – | evaluation reference only |
 | DT_CAM | DT | 0.02 | IMU + camera extension | none (one window) |
-| DT_CAM_VOI | DT_VOI | 0.02 | IMU + camera extension | as DT_VOI |
+| DT_CAM_VOI | DT_VOI | 0.02 | IMU + camera extension | as DT_VOI, plus OBSERVE: watch from 0.9 m, out of reach |
 | RANDINTENT | random grid intent, random windows 1–3 | 0.02 | IMU + camera | exploration data for fitting (K-T) |
 
 **Memory updates** come only from what the robot observed:
@@ -95,9 +99,13 @@ def job(args: tuple) -> dict:
     from apm_express.states import Probe, lookup_intent
     from apm_revise.belief import TypeModel
     from apm_transfer.expression_map import GRID, TimeModel, band_of
-    from apm_transfer.infoseek import Emissions, Task, choose
+    from apm_transfer.infoseek import OBSERVE, Emissions, Task, choose
     from apm_transfer.nerva_memory import TypeStateModel
-    from apm_transfer.nerva_world import MIN_QUIET_FRAMES, Camera, closed_loop_encounter
+    from apm_transfer.nerva_world import MIN_QUIET_FRAMES, Camera
+    if cfg.get("robot", "nerva") == "wheeled":
+        from apm_transfer.wheeled_world import closed_loop_encounter
+    else:
+        from apm_transfer.nerva_world import closed_loop_encounter
 
     spec = SYSTEMS[system]
     S = _seeds()
@@ -117,7 +125,8 @@ def job(args: tuple) -> dict:
     tm = TimeModel(json.loads(Path(cfg["time_model"]).read_text())["time_coef"])
     task = Task(cfg["task"], **{k: v for k, v in cfg["task_spec"].items() if k != "why"})
     voi_cfg = cfg["voi"]
-    channels = json.loads(Path(cfg["channels"]).read_text())["interface"]
+    nerva = cfg.get("robot", "nerva") == "nerva"
+    channels = json.loads(Path(cfg["channels"]).read_text())["interface"] if nerva else None
     mem = TypeStateModel(model, spec["lam"], kind_prior=False)
     camera = Camera() if spec["camera"] else None
     rows = []
@@ -128,6 +137,7 @@ def job(args: tuple) -> dict:
         rd = mem.readout(Probe(ident, kind, "plain"))
         diag: dict = {}
         grid_i = None
+        standoff = 0.0
         if spec["policy"] == "L0":
             intent, w = lookup_intent(rd), 1
         elif spec["policy"] == "random":
@@ -139,14 +149,17 @@ def job(args: tuple) -> dict:
             grid_i, w, diag = choose(pol, bb, model.pi, tm, em if spec["camera"] else em_imu, task, lam=spec["lam"],
                                      horizon=voi_cfg["horizon"], gap=voi_cfg["gap"], u_trigger=voi_cfg["u_trigger"],
                                      rng=decide_rng)
-            intent = GRID[grid_i]
+            intent = GRID[2] if grid_i == OBSERVE else GRID[grid_i]
+        standoff = diag.get("standoff", 0.0)
         clip = RENDER(system, history, index, k, ident, etype, b, rd, intent, w) if RENDER is not None else None
         ev, out, truth = closed_loop_encounter(int(enc_seeds[k]), etype, intent, channels, windows=w, camera=camera,
-                                               **(clip.kwargs() if clip is not None else {}))
+                                               standoff=standoff, **(clip.kwargs() if clip is not None else {}))
         d = out["final_distance"]
         band = int(np.searchsorted(DIST_EDGES, d))
         imu = [int(np.searchsorted(edges, e[1], side="right")) for e in out["windows"] if e[10] >= MIN_QUIET_FRAMES]
         cams = list(out.get("camera", []))
+        if standoff > 0:
+            imu = []  # out of every type's reach: IMU silence is not evidence of safety
         cats = [band * 8 + c for c in imu] + ([CAM_OFFSET + c for c in cams] if em.cam is not None else [])
         detected = any(bool(e[9]) for e in out["windows"] if e[10] >= MIN_QUIET_FRAMES)
         mem.observe_many(ident, kind, cats, float(detected))
@@ -156,18 +169,21 @@ def job(args: tuple) -> dict:
                      "u_before": round(rd.u, 4), "grid_i": grid_i, "proximity": round(intent.proximity, 3),
                      "tempo": round(intent.tempo, 3), "hesitation": round(intent.hesitation, 3),
                      "windows_planned": w, "windows_done": len(out["windows"]), "aborted": out["aborted"],
-                     "imu_cats": imu, "cam_codes": cams, "cam_reaches": out.get("camera_reaches"),
+                     "imu_cats": imu, "cam_codes": cams,
+                     "imu_peaks": [round(e[1], 5) for e in out["windows"] if e[10] >= MIN_QUIET_FRAMES],
+                     "cam_reaches": out.get("camera_reaches"),
                      "informative": len(cats), "detected": detected, "d_stop": d, "band": band,
                      "intended_band": band_of(intent.proximity), "contacts": truth["contacts"],
                      "contacts_dwell": truth["contacts_dwell"], "max_push": truth["max_push"],
                      "arrived": out["arrived"], "t_arrive": out["t_arrive"], "dwell_s": out["dwell_s"],
                      "trips": out["trips"], "fell": out["fell"], "task_success": task.p_success(d),
-                     "voi": round(diag.get("voi", 0.0), 3)})
+                     "voi": round(diag.get("voi", 0.0), 3), "standoff": standoff})
         if clip is not None:
             clip.close(rows[-1])
         if out["fell"]:
             break  # a fall ends the lifetime; it is counted
     return {"experiment": experiment, "partition": partition, "index": index, "history": history, "system": system,
+            "robot": cfg.get("robot", "nerva"),
             "task": cfg["task"], "rows": rows, "wall_s": round(time.time() - t0, 1)}
 
 
@@ -187,6 +203,7 @@ def main() -> None:
     ap.add_argument("--channels", default=str(J / "configs" / "H_admitted_interface.json"))
     ap.add_argument("--workers", type=int, default=cpu_count())
     ap.add_argument("--n-enc", type=int, default=N_ENC, help="shorter lifetimes, for smoke tests only")
+    ap.add_argument("--robot", choices=("nerva", "wheeled"), default="nerva")
     ap.add_argument("--addendum", default="", help="confirmatory run: committed protocol (clean tree required)")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
@@ -195,7 +212,8 @@ def main() -> None:
     prov = confirmatory_lock(HERE / a.addendum) if a.addendum else environment()
     tasks = json.loads(Path(a.tasks_config).read_text())
     cfg = {"types_model": a.types_model, "edges": a.edges, "time_model": a.time_model, "channels": a.channels,
-           "task": a.task, "task_spec": tasks["tasks"][a.task], "voi": tasks["voi"], "n_enc": a.n_enc}
+           "task": a.task, "task_spec": tasks["tasks"][a.task], "voi": tasks["voi"], "n_enc": a.n_enc,
+           "robot": a.robot}
     jobs = [(a.experiment, a.partition, a.first + i, h, s, cfg) for i in range(a.n) for h in a.histories.split(",")
             for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)

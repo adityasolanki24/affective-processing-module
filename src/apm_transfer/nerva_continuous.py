@@ -137,7 +137,8 @@ class ContinuousNerva:
             self._step(NEUTRAL_REQUEST, info or {})
 
     # one encounter --------------------------------------------------------------------------------------------
-    def encounter(self, etype: str, intent, windows: int, settle_s: float = 2.0, abort_on_detect: bool = True) -> dict:
+    def encounter(self, etype: str, intent, windows: int, settle_s: float = 2.0, abort_on_detect: bool = True,
+                  standoff: float = 0.0) -> dict:
         self.etype = etype
         n_push0, n_lunge0 = len(self.pushes), len(self.lunges)
         self.phase = "home"
@@ -145,7 +146,7 @@ class ContinuousNerva:
         self._hold(settle_s)
         baseline = slice(max(k_base0, len(self.log.gyro) - 50), len(self.log.gyro))
         self.phase = "approach"
-        t_arrive = self._walk(TARGET, intent)
+        t_arrive = self._walk((TARGET[0] - standoff, TARGET[1]), intent)
         x, y, _ = self.ctrl.pose()
         d_stop = round(math.hypot(TARGET[0] - x, TARGET[1] - y), 3)
         self.phase = "sense"

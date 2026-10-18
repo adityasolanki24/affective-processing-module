@@ -52,16 +52,20 @@ def test_greedy_respects_risk_cap_and_task_requirement():
     assert stop_distance(GRID[i].proximity) >= 0.5 - 1e-9
 
 
-def test_voi_values_a_camera_more_than_a_weak_far_imu():
+def test_voi_observes_from_out_of_reach_only_with_a_camera_and_within_the_risk_cap():
+    from apm_transfer.infoseek import OBSERVE, STANDOFF_M, action_cost
     model = _model()
     em_cam = Emissions.from_model(model.E, camera_block=True)
     em_imu = Emissions(em_cam.imu, None)
     task = Task("handoff", d_task=0.3, retry_s=12.6)
-    b = np.array([0.35, 0.65])  # unsure whether the entity is still pushy
-    rng = np.random.default_rng(0)
-    i_c, w_c, d_c = choose("voi", b, model.pi, TM, em_cam, task, rng=rng)
-    i_i, w_i, d_i = choose("voi", b, model.pi, TM, em_imu, task, rng=np.random.default_rng(0))
-    assert d_c["voi"] >= d_i["voi"]
-    for i, w in ((i_c, w_c), (i_i, w_i)):
-        assert cost(i, w, b, TM, em_cam, task)[1] <= task.risk_cap  # information never bypasses the safety budget
-    assert band_of(GRID[i_c].proximity) in (0, 1, 2)
+    b = np.array([0.4, 0.6])  # unsure whether the entity is still pushy
+    seen_observe = False
+    for em in (em_cam, em_imu):
+        i, w, d = choose("voi", b, model.pi, TM, em, task, rng=np.random.default_rng(0))
+        assert action_cost(i, w, b, TM, em_cam, task)[1] <= task.risk_cap  # information never bypasses safety
+        if i == OBSERVE:
+            assert em.cam is not None and d["standoff"] == STANDOFF_M  # observing out of reach needs a camera
+            seen_observe = True
+    assert seen_observe
+    assert action_cost(OBSERVE, 3, np.array([0.0, 1.0]), TM, em_cam, task)[1] == 0.0  # out of reach: no risk
+    assert band_of(GRID[2].proximity) == 2

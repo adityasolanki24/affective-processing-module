@@ -191,7 +191,7 @@ def camera_code(reaches: list[float]) -> int:
 def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s: float = 5.0, settle_s: float = 2.0,
                           max_approach_s: float = 45.0, sensing_pause: bool = True, scene_extender=None,
                           frame_hook=None, windows: int | None = None, camera: Camera | None = None,
-                          abort_on_detect: bool = True) -> tuple[Evidence, dict, dict]:
+                          abort_on_detect: bool = True, standoff: float = 0.0) -> tuple[Evidence, dict, dict]:
     """J5: one encounter in which the robot's own expression shapes what happens.
 
     The robot settles, then approaches the entity under `intent`, through H's `BipedExpressionAdapter` with the
@@ -225,6 +225,8 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
       robot's own detector fires in a window and more windows were planned, it stops observing and leaves: it never
       stays to collect repeated pushes.
     - `camera=Camera()`: the sensor extension above. Its codes per window go in `outcome["camera"]`.
+    - `standoff=s`: the robot aims at a point s metres short of the entity on the approach line, so it stops s
+      metres farther away (protected observation; with s = 0.3 and proximity 0, out of every type's reach).
 
     Returns:
     - robot-observable evidence;
@@ -263,7 +265,8 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     cam_seen: list[list[float]] = [[] for _ in range(windows or 0)]
     win_ev: list[Evidence] = []
     aborted = False
-    adapter.reset(ctrl.t, ctrl.pose(), TARGET, intent)
+    aim = (TARGET[0] - standoff, TARGET[1])
+    adapter.reset(ctrl.t, ctrl.pose(), aim, intent)
     pushes, t_arrive, k_arrive, fell, fallback = [], None, None, False, 0
     own = [False] * n_settle  # per frame: did the robot itself command motion?
     prev_head: np.ndarray = np.zeros(4)
@@ -296,7 +299,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
         elif sensing_pause and k_arrive is not None:
             request = NEUTRAL_REQUEST  # hold still to sense (the gate still removes the head's return transient)
         else:
-            request = adapter.request(ctrl.t, ctrl.pose(), TARGET, intent)
+            request = adapter.request(ctrl.t, ctrl.pose(), aim, intent)
         ctrl.apply(request)
         head = np.asarray(request.head, float)
         own.append(bool(tripped or request.command != "rest" or np.abs(head - prev_head).max() > 1e-3))

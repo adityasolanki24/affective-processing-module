@@ -20,9 +20,16 @@ none is left, the farthest, shortest option is used.
 **Policies.**
 - `greedy`: argmin over the grid of C(a, 1 | b). This is J6's decision-theoretic mapping with frozen task values.
 - `voi`: argmin over (a, w) of C(a, w | b) − VOI(a, w | b).
-  - VOI is the expected reduction in the cost of the *next* decision about this entity (H future meetings, belief
-    relaxed by the expected gap) from what w windows at band(a) would show.
+  - VOI is non-myopic (knowledge-gradient*): the largest per-meeting reduction in the expected cost of the
+    following task decisions about this entity, if the same observation were repeated for m = 1, 2, 3 or 5 meetings,
+    times H future meetings. The belief is relaxed by the expected gap.
+  - A single observation that cannot by itself flip a confident belief still has value when a few would. A myopic
+    rule gives such observations zero value, which recreates the avoidance trap.
   - It is computed by sampling from the robot's own predictive distribution: type ~ b, then categories ~ E.
+- `OBSERVE` action (only with a camera): stop at proximity 0 with a 0.3 m stand-off, i.e. 0.9 m from the entity,
+  beyond every type's reach (0.8 m).
+  - The task fails for that encounter (retry cost), and no perturbation risk is possible.
+  - Only camera codes are evidence there. IMU silence out of reach is never treated as evidence of safety.
 - `uncertain`: greedy intent, w = 3 when the belief's normalised entropy exceeds `u_trigger`.
 - Oracle (evaluation only): `greedy` on the canonical belief of the true type.
 
@@ -104,10 +111,25 @@ def best_greedy(b: np.ndarray, tm: TimeModel, em: Emissions, task: Task) -> tupl
     return best, best_c
 
 
+OBSERVE = -1
+STANDOFF_M = 0.3
+OUT_OF_REACH = 3  # pseudo-band: no IMU evidence
+
+
+def action_cost(a: int, w: int, b: np.ndarray, tm: TimeModel, em: Emissions, task: Task) -> tuple[float, float]:
+    """Cost of a grid intent (a >= 0) or of OBSERVE (a == -1) with w windows."""
+    if a != OBSERVE:
+        return cost(a, w, b, tm, em, task)
+    it = GRID[2]  # proximity 0, tempo 1, no hesitation
+    c = tm.predict(it) + WINDOW_S * (w - 1) + task.retry_s * (1.0 - task.p_success(stop_distance(0.0) + STANDOFF_M))
+    return c, 0.0
+
+
 def posterior(b: np.ndarray, imu_cats: list[int], band: int, cam_cats: list[int], em: Emissions) -> np.ndarray:
     lp = np.log(np.clip(b, 1e-300, None))
-    for c in imu_cats:
-        lp = lp + np.log(em.imu[:, band, c])
+    if band != OUT_OF_REACH:
+        for c in imu_cats:
+            lp = lp + np.log(em.imu[:, band, c])
     if em.cam is not None:
         for c in cam_cats:
             lp = lp + np.log(em.cam[:, c])
@@ -116,51 +138,61 @@ def posterior(b: np.ndarray, imu_cats: list[int], band: int, cam_cats: list[int]
     return p / p.sum()
 
 
-def voi(i: int, w: int, b: np.ndarray, pi: np.ndarray, tm: TimeModel, em: Emissions, task: Task, lam: float,
-        horizon: float, gap: float, rng: np.random.Generator, samples: int = 48) -> float:
-    """Expected reduction in the next decision's cost from observing w windows at band(i), times `horizon`."""
-    band = band_of(GRID[i].proximity)
+def improvement(n: int, band: int, b: np.ndarray, pi: np.ndarray, tm: TimeModel, em: Emissions, task: Task,
+                lam: float, gap: float, rng: np.random.Generator, samples: int = 48) -> float:
+    """Expected reduction in the next task decision's cost after n windows observed at `band`."""
     now = best_greedy(relax(b, pi, lam, gap), tm, em, task)[1]
     K = len(b)
     after = 0.0
     for _ in range(samples):
         k = int(rng.choice(K, p=b))
-        imu = [int(rng.choice(em.imu.shape[2], p=em.imu[k, band])) for _ in range(w)]
-        cam = [int(rng.choice(em.cam.shape[1], p=em.cam[k])) for _ in range(w)] if em.cam is not None else []
-        post = posterior(b, imu, band, cam, em)
-        after += best_greedy(relax(post, pi, lam, gap), tm, em, task)[1]
-    return horizon * max(0.0, now - after / samples)
+        imu = [] if band == OUT_OF_REACH else [int(rng.choice(em.imu.shape[2], p=em.imu[k, band])) for _ in range(n)]
+        cam = [int(rng.choice(em.cam.shape[1], p=em.cam[k])) for _ in range(n)] if em.cam is not None else []
+        after += best_greedy(relax(posterior(b, imu, band, cam, em), pi, lam, gap), tm, em, task)[1]
+    return max(0.0, now - after / samples)
+
+
+def voi(band: int, w: int, b: np.ndarray, pi: np.ndarray, tm: TimeModel, em: Emissions, task: Task, lam: float,
+        horizon: float, gap: float, rng: np.random.Generator, samples: int = 48) -> float:
+    """Knowledge-gradient* value of w windows at `band` per meeting (see the module docstring)."""
+    best = 0.0
+    for m in (1, 2, 3, 5):
+        if m > horizon:
+            break
+        best = max(best, improvement(m * w, band, b, pi, tm, em, task, lam, gap, rng, samples) / m)
+    return horizon * best
 
 
 def choose(policy: str, b: np.ndarray, pi: np.ndarray, tm: TimeModel, em: Emissions, task: Task, lam: float = 0.02,
            horizon: float = 5.0, gap: float = 3.0, u_trigger: float = 0.6,
            rng: np.random.Generator | None = None) -> tuple[int, int, dict]:
-    """Return (grid index, windows, diagnostics)."""
+    """Return (grid index or OBSERVE, windows, diagnostics incl. "standoff")."""
     if policy in ("greedy", "oracle"):
         i, c = best_greedy(b, tm, em, task)
-        return i, 1, {"cost": c}
+        return i, 1, {"cost": c, "standoff": 0.0}
     if policy == "uncertain":
         i, c = best_greedy(b, tm, em, task)
         h = -float(np.sum(b * np.log(np.clip(b, 1e-12, 1.0)))) / math.log(len(b))
-        w = 3 if h > u_trigger else 1
-        return i, w, {"cost": c, "entropy": h}
+        return i, (3 if h > u_trigger else 1), {"cost": c, "entropy": h, "standoff": 0.0}
     if policy == "voi":
         assert rng is not None
-        cache: dict[tuple[int, int], float] = {}  # VOI depends on the intent only through its band
+        cache: dict[tuple[int, int], float] = {}  # VOI depends on the action only through its band
+        actions = list(range(len(GRID))) + ([OBSERVE] if em.cam is not None else [])
         best = None
-        for i in range(len(GRID)):
-            band = band_of(GRID[i].proximity)
+        for a in actions:
+            band = OUT_OF_REACH if a == OBSERVE else band_of(GRID[a].proximity)
             for w in WINDOW_CHOICES:
-                c, risk = cost(i, w, b, tm, em, task)
+                c, risk = action_cost(a, w, b, tm, em, task)
                 if risk > task.risk_cap:
                     continue
                 if (band, w) not in cache:
-                    cache[(band, w)] = voi(i, w, b, pi, tm, em, task, lam, horizon, gap, rng)
+                    cache[(band, w)] = voi(band, w, b, pi, tm, em, task, lam, horizon, gap, rng)
                 v = cache[(band, w)]
-                if best is None or c - v < best[0]:
-                    best = (c - v, i, w, c, v)
+                if best is None or c - v < best[0] - 1e-9:
+                    best = (c - v, a, w, c, v)
         if best is None:
             i, c = best_greedy(b, tm, em, task)
-            return i, 1, {"cost": c, "voi": 0.0}
-        return best[1], best[2], {"cost": best[3], "voi": best[4]}
+            return i, 1, {"cost": c, "voi": 0.0, "standoff": 0.0}
+        return best[1], best[2], {"cost": best[3], "voi": best[4],
+                                  "standoff": STANDOFF_M if best[1] == OBSERVE else 0.0}
     raise ValueError(policy)

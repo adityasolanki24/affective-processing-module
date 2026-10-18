@@ -40,8 +40,15 @@ A memory architecture cannot recover information the sensors do not deliver.
   - If its own detector fires and more windows were planned, it leaves (`abort_on_detect`). It never stays to
     collect repeated pushes.
 - **Approach geometry.** Value of information may pick a closer stop, but only inside the risk cap.
-- **Value of information** (`infoseek.voi`). The expected reduction in the next decision's task cost, over H = 5
-  future meetings, from what the chosen windows and band would show. It uses only the robot's own learned models.
+- **Value of information** (`infoseek.voi`). It is **non-myopic** (knowledge-gradient*): the largest per-meeting
+  reduction in the expected cost of the next task decision if the observation were repeated for m = 1, 2, 3 or 5
+  meetings, times H = 5 future meetings. It uses only the robot's own learned models.
+  - A myopic version was rejected *before any data*. When inspected on the fitted models, it gave every observation
+    zero value once the belief was confident, which recreates the trap.
+- **Observe out of reach** (`OBSERVE`, camera only). The robot stops 0.9 m from the entity: proximity 0 plus a 0.3 m
+  stand-off, beyond every type's 0.8 m reach.
+  - The task fails for that encounter, at retry cost; no perturbation is possible.
+  - Only camera codes are used as evidence. IMU windows out of reach are discarded, never read as "safe".
 - **Camera extension** (`nerva_world.Camera`). This is a declared sensor that NERVA does not have in simulation
   today:
   - 40° field of view, 2 m range, detection probability 0.9, reach noise σ 0.05 m;
@@ -127,6 +134,19 @@ lifetimes.
 
 Expressive differentiation (risky − safe stopping distance) is reported per task. It is **not** a criterion: a larger
 difference is not better. For waypoint and separation, DT is expected to show none.
+
+## 5b. K5 second embodiment (same protocol, a physically different robot)
+
+**Robot:** the MuJoCo differential-drive robot (`wheeled_world`):
+- its own wheel controller, independent safety supervisor (shove/tilt brake) and H7 expression adapter;
+- its own acc8 edges, time model and type model (`configs/K_wheeled_*.json`), all fitted on its own K5-T
+  exploration.
+
+The memory and decision code are unchanged.
+
+**Test:** K5-X, indices 0–49, systems L0, DT, DT_VOI, DT_CAM, DT_CAM_VOI and ORACLE × 4 histories, task handoff.
+
+**Criteria:** P1–P5 as in §4, judged per candidate. Fall here means tipping over (> 60°).
 
 ## 6. Rules
 

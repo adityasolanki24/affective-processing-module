@@ -161,16 +161,17 @@ class Overlay:
 def lifetime(args: tuple) -> dict:
     robot, system, condition, seed_index, cfg, render_dir = args
     os.environ.setdefault("OMP_NUM_THREADS", "1")
+    from k_run import SYSTEMS
+
     from apm_express.intent import ExpressionIntent
     from apm_express.states import Probe
     from apm_express.styles import NEUTRAL
     from apm_revise.belief import TypeModel
     from apm_transfer.expression_map import GRID, TimeModel
-    from apm_transfer.infoseek import Emissions, Task, choose
+    from apm_transfer.infoseek import OBSERVE, Emissions, Task, choose
     from apm_transfer.nerva_continuous import ContinuousNerva
     from apm_transfer.nerva_memory import TypeStateModel
     from apm_transfer.nerva_world import MIN_QUIET_FRAMES, Camera
-    from k_run import SYSTEMS
 
     spec = SYSTEMS[system]
     S = _seeds()
@@ -203,18 +204,23 @@ def lifetime(args: tuple) -> dict:
         else:
             grid_i, w, diag = choose(pol, b, model.pi, tm, em_used, task, lam=spec["lam"],
                                      horizon=cfg["voi"]["horizon"], gap=1.0, rng=rng)
-            intent = GRID[grid_i]
+            intent = GRID[2] if grid_i == OBSERVE else GRID[grid_i]
+        standoff = diag.get("standoff", 0.0)
         if overlay:
             overlay.text = [f"encounter {k + 1}/{N_ENC}   stage {stage_of(k)}   entity now: {etype} (sim label)",
                             f"belief P(disruptive) {b[-1]:.2f}   uncertainty {rd.u:.2f}",
-                            f"intent: stop at {0.6 - 0.4 * intent.proximity:.2f} m, tempo {intent.tempo:.1f}, "
-                            f"sensing windows {w}" + (f", info value {diag.get('voi', 0):.1f}" if "voi" in diag else ""),
+                            f"intent: stop at {0.6 - 0.4 * intent.proximity + standoff:.2f} m"
+                            + (" (observe, out of reach)" if standoff else "") + f", tempo {intent.tempo:.1f}, "
+                            f"sensing windows {w}"
+                            + (f", info value {diag.get('voi', 0):.1f}" if "voi" in diag else ""),
                             f"last: stopped {rows[-1]['d_stop']:.2f} m, contacts {rows[-1]['contacts']}, "
                             f"informative obs {rows[-1]['informative']}" if rows else "last: -"]
-        out = world.encounter(etype, intent, w)
+        out = world.encounter(etype, intent, w, standoff=standoff)
         d = out["d_stop"]
         band = int(np.searchsorted((0.3, 0.5), d))
         imu = [int(np.searchsorted(edges, e[1], side="right")) for e in out["windows"] if e[10] >= MIN_QUIET_FRAMES]
+        if standoff > 0:
+            imu = []  # out of reach: IMU silence is not evidence
         cats = [band * 8 + c for c in imu] + ([CAM_OFFSET + c for c in out["camera"]] if spec["camera"] else [])
         if condition == "SHUFFLED" and k < STAGE1 and other:
             cats = other[k]
@@ -223,6 +229,7 @@ def lifetime(args: tuple) -> dict:
         rows.append({"k": k, "stage": stage_of(k), "type": etype, "b_before": [round(float(v), 4) for v in b],
                      "p_disruptive": round(float(b[-1]), 4), "u": round(rd.u, 3), "grid_i": grid_i, "windows": w,
                      "proximity": round(intent.proximity, 3), "voi": round(diag.get("voi", 0.0), 2),
+                     "standoff": standoff,
                      "d_stop": d, "t": out["t"], "t_arrive": out["t_arrive"], "aborted": out["aborted"],
                      "imu_cats": imu, "cam_codes": out["camera"], "informative": len(cats), "cats": cats,
                      "contacts": out["truth"]["contacts"], "max_push": out["truth"]["max_push"],
@@ -261,7 +268,8 @@ def main() -> None:
         if a.render:
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(a.out / "robot_A.mp4"), "-i",
                             str(a.out / "robot_B.mp4"), "-filter_complex", "[0:v][1:v]hstack=shortest=0",
-                            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "22", str(a.out / "demo_side_by_side.mp4")],
+                            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "22",
+                            str(a.out / "demo_side_by_side.mp4")],
                            check=True)
         print("done in", round(time.time() - t, 1), "s ->", a.out)
         return
