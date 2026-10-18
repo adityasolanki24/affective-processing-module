@@ -26,19 +26,21 @@ from isaaclab.app import AppLauncher
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--out", type=Path, required=True)
-ap.add_argument("--body", default="nova_carter", choices=("nova_carter", "humanoid", "wheeled_reference"))
+ap.add_argument("--body", default="nova_carter", choices=("nova_carter", "humanoid", "nerva", "wheeled_reference"))
 ap.add_argument("--scene", default="warehouse")
 ap.add_argument("--policy-dir", default=None)
 ap.add_argument("--video", action="store_true")
 ap.add_argument("--stations", type=int, default=1, help="how many stations to visit")
 a, _ = ap.parse_known_args()
-app = AppLauncher({"headless": True, "enable_cameras": True}).app
+REPO = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(REPO / "src"))
+from apm_isaac import ANIM_KIT_ARGS  # noqa: E402
+
+app = AppLauncher({"headless": True, "enable_cameras": True, "kit_args": ANIM_KIT_ARGS}).app
 from isaacsim.core.utils.extensions import enable_extension  # noqa: E402
 
 enable_extension("isaacsim.sensors.camera")
 
-REPO = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO / "src"))
 from isaacsim.storage.native import get_assets_root_path  # noqa: E402
 
 from apm_isaac.agents import find_character  # noqa: E402
@@ -55,9 +57,12 @@ print("characters", chars, flush=True)
 scene = SceneSpec(a.scene, cfg["usd"], home=tuple(cfg["home"]), stations={k: tuple(v) for k, v in stations.items()},
                   floor_z=cfg["floor_z"], scale=cfg.get("scale", 1.0))
 dt = 0.005 if a.body == "humanoid" else 0.002
+channels = json.loads((REPO / "experiments" / "J_validation_transfer" / "configs" / "H_admitted_interface.json")
+                      .read_text())["interface"]
 w = IsaacWorld(scene, a.body, seed=7, video=a.video, characters={k: v for k, v in chars.items() if v},
-               physics_dt=dt, policy_dir=a.policy_dir)
-print("robot", json.dumps(getattr(w.robot, "measured", None) or {"front": w.robot.front}), flush=True)
+               physics_dt=dt, policy_dir=a.policy_dir, nerva_channels=channels)
+print("robot", json.dumps(getattr(w.robot, "measured", None) or {"front": w.robot.front}, default=str)[:2000],
+      "animated", {k: getattr(p, "animated", False) for k, p in w.people.items()}, flush=True)
 plan = [(sid, et, gi, so) for sid in stations for et, gi, so in
         (("calm", 14, 0.0), ("pushy", 14, 0.0), ("pushy", 2, 0.3))]
 rows = []
@@ -79,4 +84,6 @@ if a.video and w.video_frames:
     import imageio
     imageio.mimsave(a.out / f"m4_{a.body}_{a.scene}.mp4", w.video_frames, fps=25)
     print("video frames", len(w.video_frames), flush=True)
-app.close()
+from apm_isaac import hard_exit  # noqa: E402
+
+hard_exit(0)

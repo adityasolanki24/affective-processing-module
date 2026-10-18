@@ -16,18 +16,25 @@ from apm_transfer.runtime import Decision, Observation, _Body
 
 
 class IsaacBody(_Body):
-    def __init__(self, world, edges: list[float], stations: dict[str, str], camera=None, video: bool = False):
+    def __init__(self, world, edges: list[float], stations: dict[str, str], camera=None, video: bool | None = None):
         super().__init__(edges, camera)
-        self.world, self.stations, self.video = world, stations, video
+        self.world, self.stations = world, stations
+        self.video = world.video_frames is not None if video is None else video
         self.name = f"{world.body_name}@isaac:{world.scene.name}"
 
     def offset(self) -> float:
         from apm_isaac.agents import GAP0, RADIUS
         return RADIUS + self.world.robot.front - GAP0
 
+    last_out: dict = {}
+
     def _run(self, seed: int, etype: str, d: Decision) -> tuple[dict, dict]:
-        return self.world.encounter(self.stations[d.identity], etype, d.intent(), d.windows, d.standoff,
-                                    video=self.video)
+        """Encounter randomness comes from the world's own per-lifetime stream (paired across systems); `seed`
+        is unused here."""
+        out, truth = self.world.encounter(self.stations[d.identity], etype, d.intent(), d.windows, d.standoff,
+                                          video=self.video)
+        self.last_out = out
+        return out, truth
 
     def _observation(self, identity: str, kind: str, out: dict, standoff: float) -> Observation:
         physical = out["final_distance"]

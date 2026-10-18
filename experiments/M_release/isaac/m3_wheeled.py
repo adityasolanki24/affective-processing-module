@@ -160,4 +160,6 @@ for k, (dx, dy) in enumerate(((2.2, 1.2), (-1.5, 2.0))):
         Image.fromarray(np.asarray(f[..., :3], np.uint8)).save(a.out / f"robot_view{k}.png")
 (a.out / f"wheeled_isaac_{a.robot}.json").write_text(json.dumps({**res, "rows": rows}))
 print(json.dumps(res, indent=1), flush=True)
-app.close()
+from apm_isaac import hard_exit  # noqa: E402
+
+hard_exit(0)

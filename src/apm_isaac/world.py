@@ -29,6 +29,70 @@ from apm_isaac.robots import DT
 REPO = Path(__file__).resolve().parents[2]
 
 
+class _WheeledDriver:
+    """(v, w) bodies (Nova Carter, T1, the reference robot): `apm_express.wheeled.WheeledAdapter`, as in K/L."""
+
+    idle = (0.0, 0.0)
+
+    def __init__(self, robot, seed: int):
+        from apm_express.wheeled import WheeledAdapter
+        self.robot, self.ad = robot, WheeledAdapter(seed=seed)
+
+    def reset(self, t: float, pose, aim, intent) -> None:
+        self.ad.reset(pose, aim, intent)
+
+    def request(self, t: float, pose, aim, intent):
+        return self.ad.request(t, pose, aim, intent)
+
+    @property
+    def arrived(self) -> bool:
+        return bool(self.ad.arrived)
+
+    def send(self, cmd) -> bool:
+        return bool(self.robot.apply(*cmd))
+
+    def own_motion(self, cmd, tripped: bool) -> bool:
+        v, w = cmd
+        return bool(tripped or abs(v) > 1e-6 or abs(w) > 1e-6 or abs(self.robot.v_cmd) > 1e-3
+                    or abs(self.robot.w_cmd) > 1e-3)
+
+
+class _BipedDriver:
+    """NERVA: H's `BipedExpressionAdapter` with the admitted channels, NERVA's SafetyMonitor inside the body, the
+    adapter told of every fallback, exactly as in `nerva_world.closed_loop_encounter`."""
+
+    def __init__(self, robot, seed: int, channels: dict):
+        from apm_express.adapter import NEUTRAL_REQUEST, BipedChannels, BipedExpressionAdapter
+        ch = BipedChannels(min_dwell_s=channels["min_dwell_s"], pitch=channels["pitch"], head=channels["head"],
+                           head_pitch_range=tuple(channels["head_pitch_range"]),
+                           head_yaw_range=tuple(channels["head_yaw_range"]), head_rate=channels["head_rate"],
+                           head_while_moving=False)
+        self.robot, self.ad, self.idle = robot, BipedExpressionAdapter(ch, seed=seed), NEUTRAL_REQUEST
+        self.prev_head: np.ndarray = np.zeros(4)
+
+    def reset(self, t: float, pose, aim, intent) -> None:
+        self.ad.reset(t, pose, aim, intent)
+
+    def request(self, t: float, pose, aim, intent):
+        return self.ad.request(t, pose, aim, intent)
+
+    @property
+    def arrived(self) -> bool:
+        return bool(self.ad._arrived)
+
+    def send(self, cmd) -> bool:
+        tripped = bool(self.robot.drive(cmd))
+        if tripped:
+            self.ad.notify_fallback(self.robot.t)
+        return tripped
+
+    def own_motion(self, cmd, tripped: bool) -> bool:
+        head = np.asarray(cmd.head, float)
+        moved = bool(tripped or cmd.command != "rest" or np.abs(head - self.prev_head).max() > 1e-3)
+        self.prev_head = head
+        return moved
+
+
 @dataclass
 class SceneSpec:
     name: str
@@ -43,7 +107,7 @@ class SceneSpec:
 class IsaacWorld:
     def __init__(self, scene: SceneSpec, body: str, seed: int, vision_cfg: Any = None, video: bool = False,
                  characters: dict[str, str] | None = None, physics_dt: float = 0.002,
-                 policy_dir: str | Path | None = None):
+                 policy_dir: str | Path | None = None, nerva_channels: dict | None = None):
         from isaacsim.core.api import World
         from isaacsim.core.utils.stage import add_reference_to_stage
         from isaacsim.storage.native import get_assets_root_path
@@ -63,15 +127,26 @@ class IsaacWorld:
         self.world.scene.add_default_ground_plane(z_position=-0.001)
         hx, hy, hyaw = scene.home
         self.people: dict[str, Person] = {}
+        from apm_isaac.agents import setup_animation
+        graph = setup_animation(self.world.stage, self.root) if characters else None
         for sid, xy in scene.stations.items():
             ch = (characters or {}).get(sid)
-            self.people[sid] = add_person(self.world.stage, sid, np.array(xy), ch)
+            self.people[sid] = add_person(self.world.stage, sid, np.array(xy), ch, graph)
         if body == "nova_carter":  # the wheeled embodiment: NVIDIA Nova Carter (stock asset)
             from apm_isaac.robots import NovaCarterIsaac
             self.robot: Any = NovaCarterIsaac(self.world, "/World/Robot", (hx, hy), hyaw, seed, physics_dt)
         elif body in ("wheeled", "wheeled_reference"):  # reference only: the custom robot matched to MuJoCo
             from apm_isaac.robots import WheeledIsaac
             self.robot = WheeledIsaac(self.world, "/World/Robot", (hx, hy), hyaw, seed, physics_dt)
+        elif body == "nerva":  # NERVA on its frozen neutral controller (M3 import fixes: apm_isaac.nerva)
+            import os
+
+            from apm_isaac.nerva import NervaIsaac
+            self.robot = NervaIsaac(self.world, "/World/Robot", (hx, hy), hyaw, seed,
+                                    Path(os.environ.get("NERVA_ROOT", "/work/NERVA")),
+                                    Path(os.environ.get("ODP_ROOT", "/work/odp")),
+                                    Path(os.environ.get("APM_CACHE", "/work/apm_cache")) / "nerva_usd",
+                                    physics_dt, head_channel=bool((nerva_channels or {}).get("head", False)))
         elif body == "humanoid":  # Booster T1 on its Isaac Lab controller (M3: the MuJoCo controller does not transfer)
             from apm_isaac.robots import LabPolicyBody
             if policy_dir is None:
@@ -88,14 +163,37 @@ class IsaacWorld:
         if hasattr(self.robot, "post_reset"):
             self.robot.post_reset()
         self.vision_cfg = vision_cfg or VisionCamera()
+        self.nerva_channels = nerva_channels
         self._eye_cam = self._make_eye()
         self.video_frames: list[np.ndarray] | None = [] if video else None
+        self._video_target: tuple[float, float] = tuple(next(iter(scene.stations.values())))  # type: ignore[assignment]
+        self._video_eye: np.ndarray | None = None
         self._video_cam = self._make_video_cam() if video else None
         self.contacts: list[tuple[float, str, float]] = []
         self._subscribe_contacts()
         self.t = 0.0
         self._home = (hx, hy, hyaw)
         _ = add_reference_to_stage  # (used above)
+
+    def new_lifetime(self, seed: int) -> None:
+        """Start a fresh lifetime in the same loaded scene: physics reset, the robot home and its controller state
+        reset, a new random stream. Reloading the scene is not needed between lifetimes."""
+        self.world.reset()
+        self.seed, self.rng = seed, np.random.default_rng(seed)
+        if hasattr(self.robot, "_seed"):
+            self.robot._seed = seed
+        self.robot._init_common(seed)
+        if hasattr(self.robot, "monitor"):
+            from apm_express.safety import SafetyMonitor
+            self.robot.monitor = SafetyMonitor(self.robot.monitor.limits)
+        if hasattr(self.robot, "post_reset"):
+            self.robot.post_reset()
+        for p in self.people.values():
+            p.lunges, p.walk, p.disp = [], None, 0.0
+        self.contacts.clear()
+        self.t = 0.0
+        if self.video_frames is not None:
+            self.video_frames.clear()
 
     # ── sensors ──────────────────────────────────────────────────────────────
     def _make_eye(self):
@@ -156,28 +254,56 @@ class IsaacWorld:
             return
         # fixed side-on view of the interaction axis (home -> station), wide enough for robot and person
         x, y, _ = self.robot.pose()
-        sx, sy = next(iter(self.people.values())).xy
+        sx, sy = self._video_target
         mid = np.array([(x + sx) / 2, (y + sy) / 2, 0.55])
-        u = np.array([sx - x, sy - y])
-        u = u / (np.linalg.norm(u) or 1.0)
-        side = np.array([-u[1], u[0]])
-        eye = np.array([mid[0] - 3.2 * side[0] - 0.8 * u[0], mid[1] - 3.2 * side[1] - 0.8 * u[1], 1.9])
+        if self._video_eye is None:
+            self._video_eye = self._clear_view(mid, np.array([sx - x, sy - y]))
+        eye = self._video_eye
         self._video_cam.set_world_pose(position=eye, orientation=_look_at(eye, mid))
         self.world.render()
         f = self._video_cam.get_rgba()
         if f is not None and np.size(f):
             self.video_frames.append(np.asarray(f[..., :3], np.uint8))
 
+    def _clear_view(self, mid: np.ndarray, axis: np.ndarray) -> np.ndarray:
+        """A camera position looking at `mid` from the side of the interaction axis, with no collider in between
+        (multi-hit PhysX raycasts; the scene's walls and shelving block views)."""
+        import omni.physx
+        q = omni.physx.get_physx_scene_query_interface()
+        u = axis / (np.linalg.norm(axis) or 1.0)
+        side = np.array([-u[1], u[0]])
+        best, best_d = None, -1.0
+        for dist in (3.2, 2.6, 2.0, 1.6):
+            for sgn in (1.0, -1.0):
+                for back in (-0.8, 0.0, 0.8):
+                    eye = np.array([mid[0] + sgn * dist * side[0] + back * u[0],
+                                    mid[1] + sgn * dist * side[1] + back * u[1], 1.6])
+                    d = eye - mid
+                    n = float(np.linalg.norm(d))
+                    hit = q.raycast_closest(tuple(float(v) for v in mid), tuple(float(v) for v in d / n), n)
+                    free = n if not hit["hit"] or "/World/People" in str(hit.get("rigidBody", "")) \
+                        or "/World/Robot" in str(hit.get("rigidBody", "")) else float(hit["distance"])
+                    if free >= n - 1e-3:
+                        return eye
+                    if free > best_d:
+                        best, best_d = eye, free
+        return best if best is not None else mid + np.array([0.0, 0.0, 1.0])
+
     # ── one control step with the people ─────────────────────────────────────
-    def step(self, v: float, w: float, render_video: bool = False) -> tuple[dict, bool]:
+    def _driver(self, seed: int):
+        if self.body_name == "nerva":
+            if self.nerva_channels is None:
+                raise ValueError("NERVA needs its admitted channels (H_admitted_interface.json 'interface')")
+            return _BipedDriver(self.robot, seed, self.nerva_channels)
+        return _WheeledDriver(self.robot, seed)
+
+    def step(self, cmd, drv, render_video: bool = False) -> tuple[dict, bool]:
         x, y, _ = self.robot.pose()
         rxy = np.array([x, y])
         for p in self.people.values():
             pos, yaw = p.position(self.t, rxy)
             place(self.world.stage, p, pos, yaw)
-            if getattr(p, "animator", None) is not None:
-                p.animator.update(self.t)  # type: ignore[attr-defined]
-        tripped = self.robot.apply(v, w)
+        tripped = drv.send(cmd)
         row = self.robot.advance()
         self.t += DT
         if render_video and int(round(self.t / DT)) % 2 == 0:
@@ -190,7 +316,6 @@ class IsaacWorld:
         """One encounter from the robot's current pose. The robot returns home afterwards (a continuous lifetime)."""
         from apm_express.intent import ExpressionIntent
         from apm_express.styles import NEUTRAL
-        from apm_express.wheeled import WheeledAdapter
         from apm_transfer.nerva_world import (
             MAX_WINDOWS,
             MIN_QUIET_FRAMES,
@@ -203,18 +328,25 @@ class IsaacWorld:
         from apm_transfer.wheeled_world import WheeledLogger
         person = self.people[station]
         sx, sy = person.xy
+        self._video_target, self._video_eye = (sx, sy), None
         horizon = max_approach_s + POST_ARRIVAL_SKIP_S + WINDOW_S * MAX_WINDOWS + 20.0
         erng = np.random.default_rng(int(self.rng.integers(2**31)))
         person.schedule(erng, etype, self.t, horizon)
         n_contacts0 = len(self.contacts)
         trips0 = self.robot.trips  # the robot persists across a lifetime; trips are counted per encounter
-        adapter = WheeledAdapter(seed=int(self.rng.integers(2**31)))
+        adapter = self._driver(int(self.rng.integers(2**31)))
         log = WheeledLogger(np.random.default_rng(int(self.rng.integers(2**31))))
         perc = MotionPerception(self.vision_cfg)
         nav_err = float(self.rng.normal(0.0, self.vision_cfg.nav_sigma))
+        # The camera works in the abstract encounter's frame (agents.GAP0): the robot knows a person's standard body
+        # radius, so it takes the target at the station distance - RADIUS + GAP0. A reach estimate is then the
+        # person's surface displacement + GAP0, i.e. the abstract reach the camera codes were defined on.
+        from apm_isaac.agents import GAP0 as _G0
+        from apm_isaac.agents import RADIUS as _R
+        surf = _R - _G0
         n_settle = int(round(settle_s / DT))
         for _ in range(n_settle):
-            row, _ = self.step(0.0, 0.0, video)
+            row, _ = self.step(adapter.idle, adapter, video)
             log.read(row)
         x0, y0, _ = self.robot.pose()
         u = np.array([sx - x0, sy - y0])
@@ -223,7 +355,7 @@ class IsaacWorld:
         person.front = self.robot.front
         back = standoff + RADIUS + self.robot.front - GAP0  # physical geometry mapping (agents.GAP0)
         aim = (sx - back * u[0], sy - back * u[1])
-        adapter.reset(self.robot.pose(), aim, intent)
+        adapter.reset(self.t, self.robot.pose(), aim, intent)
         win_n, skip_n = int(round(WINDOW_S / DT)), int(round(POST_ARRIVAL_SKIP_S / DT))
         hold_n = int(round(SELF_MOTION_HOLD_S / DT))
         every = max(1, int(round(1.0 / (self.vision_cfg.hz * DT))))
@@ -239,21 +371,17 @@ class IsaacWorld:
             dist = math.hypot(sx - x, sy - y)
             if k_arrive is not None and k_arrive + skip_n <= k < k_arrive + skip_n + win_n:
                 hold_d.append(dist)
-            if k_arrive is None:
-                v, w_ = adapter.request(self.t, self.robot.pose(), aim, intent)
-            else:
-                v, w_ = 0.0, 0.0
-            row, tripped = self.step(v, w_, video)
+            cmd = adapter.request(self.t, self.robot.pose(), aim, intent) if k_arrive is None else adapter.idle
+            row, tripped = self.step(cmd, adapter, video)
             log.read(row)
-            own.append(bool(tripped or abs(v) > 1e-6 or abs(w_) > 1e-6 or abs(self.robot.v_cmd) > 1e-3
-                            or abs(self.robot.w_cmd) > 1e-3))
+            own.append(adapter.own_motion(cmd, tripped))
             if k_arrive is not None:
                 j = k - (k_arrive + skip_n)
                 if j == 0:
-                    perc.end_window(dist + nav_err)
+                    perc.end_window(dist + nav_err - surf)
                     perc.events = []
                 if -int(0.5 / DT) <= j < windows * win_n and j % every == 0:
-                    perc.frame(self.depth(), own[-1], dist + nav_err, self.robot.eye_offset)
+                    perc.frame(self.depth(), own[-1], dist + nav_err - surf, self.robot.eye_offset)
             if self.robot.fallen(row):
                 fell = True
                 break
@@ -266,7 +394,7 @@ class IsaacWorld:
                 q = np.ones(len(mv), bool)
                 q[w0:] = ~np.array([mv[max(0, jj - hold_n):jj + 1].any() for jj in range(w0, len(mv))], bool)
                 win_ev.append(log.summarise(w0, baseline, q, k))
-                cam_seen[len(win_ev) - 1] = perc.end_window(dist + nav_err)
+                cam_seen[len(win_ev) - 1] = perc.end_window(dist + nav_err - surf)
                 if abort_on_detect and win_ev[-1].detected and len(win_ev) < windows:
                     aborted = True
                     break
@@ -280,11 +408,10 @@ class IsaacWorld:
         # return home (part of the continuous lifetime; not sensed for this encounter)
         hx, hy, _ = self._home
         neutral = ExpressionIntent(**{**NEUTRAL.as_dict(), "proximity": 0.5}).sanitized()
-        adapter.reset(self.robot.pose(), (hx, hy), neutral)
+        adapter.reset(self.t, self.robot.pose(), (hx, hy), neutral)
         t_back = self.t
         while not fell and self.t - t_back < max_approach_s:
-            v, w_ = adapter.request(self.t, self.robot.pose(), (hx, hy), neutral)
-            row, _ = self.step(v, w_, video)
+            row, _ = self.step(adapter.request(self.t, self.robot.pose(), (hx, hy), neutral), adapter, video)
             if self.robot.fallen(row):
                 fell = True
             if adapter.arrived:

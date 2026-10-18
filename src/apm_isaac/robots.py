@@ -261,40 +261,56 @@ class NovaCarterIsaac(_IsaacBody):
             raise FileNotFoundError("Nova Carter asset not found under " + root)
         add_reference_to_stage(self.usd, path)
         top = world.stage.GetPrimAtPath(path)
-        xf = UsdGeom.XformCommonAPI(top)
-        xf.SetTranslate(Gf.Vec3d(pos[0], pos[1], 0.0))
-        xf.SetRotate(Gf.Vec3f(0.0, 0.0, math.degrees(yaw)))
         prims = list(Usd.PrimRange(top, Usd.TraverseInstanceProxies()))
+        bodies = [p for p in prims if p.HasAPI(UsdPhysics.RigidBodyAPI)]
+        chassis = next((p for p in bodies if "chassis" in p.GetName().lower()), bodies[0] if bodies else top)
+        # geometry at the asset's own origin and heading, before placement
+        cache = UsdGeom.XformCache()
+        bound = UsdGeom.BBoxCache(Usd.TimeCode.Default(), ["default"]).ComputeWorldBound(top).ComputeAlignedRange()
+        c0 = cache.GetLocalToWorldTransform(chassis).ExtractTranslation()
+        self.front = float(bound.GetMax()[0] - c0[0])
+        self.height = float(bound.GetMax()[2] - bound.GetMin()[2])
         art_root = next((str(p.GetPath()) for p in prims if p.HasAPI(UsdPhysics.ArticulationRootAPI)), path)
+        # contact handling only: overlap with a person's kinematic collider is resolved at <= 0.3 m/s (as on the
+        # reference robot), so a lunge transmits its contact velocity, not a depenetration spike
+        from pxr import PhysxSchema
+        for p in bodies:
+            PhysxSchema.PhysxRigidBodyAPI.Apply(p).CreateMaxDepenetrationVelocityAttr(0.3)
         self.art = world.scene.add(SingleArticulation(art_root, name=path.split("/")[-1]))
         self.start = (pos, yaw)
         # the eye: an Xform on the chassis link at the front Hawk camera's position, axes = chassis axes
-        bodies = [p for p in prims if p.HasAPI(UsdPhysics.RigidBodyAPI)]
-        chassis = next((p for p in bodies if "chassis" in p.GetName().lower()), bodies[0] if bodies else top)
         hawk = next((p for p in prims if "front_hawk" in p.GetName().lower()), None)
-        cache = UsdGeom.XformCache()
+        # the Hawk's lens: its first camera prim (the module's root sits behind the housing)
+        lens = next((q for q in Usd.PrimRange(hawk, Usd.TraverseInstanceProxies()) if q.IsA(UsdGeom.Camera)),
+                    hawk) if hawk is not None else None
         c_w = cache.GetLocalToWorldTransform(chassis)
-        if hawk is not None:
-            local = c_w.GetInverse().Transform(cache.GetLocalToWorldTransform(hawk).ExtractTranslation())
+        if lens is not None:
+            local = c_w.GetInverse().Transform(cache.GetLocalToWorldTransform(lens).ExtractTranslation())
         else:
             local = Gf.Vec3d(0.3, 0.0, 0.35)
-        local = Gf.Vec3d(local[0], 0.0, local[2])  # on the centre line, at the Hawk module's height and position
+        # on the centre line at the lens height, and clear of the robot's own front face (M4 eye check: from the
+        # module root the depth eye saw its own housing at 6 cm)
+        local = Gf.Vec3d(max(float(local[0]), self.front) + 0.02, 0.0, local[2])
         eye = UsdGeom.Xform.Define(world.stage, f"{chassis.GetPath()}/apm_eye")
         eye.AddTranslateOp().Set(local)
         self.eye_prim = str(eye.GetPath())
         self.eye_local = [round(float(v), 4) for v in local]
-        self.eye_from_hawk = hawk is not None
+        self.eye_from_hawk = lens is not None and lens is not hawk
         self.chassis_name = chassis.GetName()
         self.measured: dict | None = None
         self._init_common(seed)
 
     def post_reset(self) -> None:
         """Find the wheel joints and measure the asset's geometry (once)."""
-        from pxr import Usd, UsdGeom
         names = list(self.art.dof_names)
         self.wl = next(i for i, n in enumerate(names) if "wheel" in n.lower() and "left" in n.lower())
         self.wr = next(i for i, n in enumerate(names) if "wheel" in n.lower() and "right" in n.lower())
         self.dof_names = names
+        (x0, y0), yaw0 = self.start
+        self.art.set_world_pose(position=np.array([x0, y0, float(self.art.get_world_pose()[0][2])]),
+                                orientation=yaw_quat(yaw0))
+        self.art.set_linear_velocity(np.zeros(3))
+        self.art.set_angular_velocity(np.zeros(3))
         if self.measured is not None:
             return
         links = list(self.art._articulation_view._metadata.link_names)
@@ -304,21 +320,12 @@ class NovaCarterIsaac(_IsaacBody):
         if wl is not None and wr is not None:
             self.TRACK = float(np.linalg.norm(tf[wl, :2] - tf[wr, :2]))
             self.R_WHEEL = float((tf[wl, 2] + tf[wr, 2]) / 2)
-        (x, y), yaw = self.start
-        bound = UsdGeom.BBoxCache(Usd.TimeCode.Default(), ["default"]).ComputeWorldBound(
-            self.world.stage.GetPrimAtPath(self.path)).ComputeAlignedRange()
-        lo, hi = np.array(bound.GetMin()), np.array(bound.GetMax())
-        # extent ahead of the base origin along the start heading (spawned axis-aligned)
-        self.front = float(hi[0] - x if math.cos(yaw) >= 0 else x - lo[0])
-        bx, by, byaw = self.pose()
-        ci = links.index(self.chassis_name) if self.chassis_name in links else 0
-        ch_fwd = (tf[ci, 0] - bx) * math.cos(byaw) + (tf[ci, 1] - by) * math.sin(byaw)
-        self.eye_offset = float(ch_fwd + self.eye_local[0])
+        self.eye_offset = float(self.eye_local[0])  # the articulation root is the chassis link
         mass = float(np.asarray(self.art._articulation_view.get_body_masses())[0].sum())
         self.measured = {"usd": self.usd, "wheel_radius": round(self.R_WHEEL, 4), "track": round(self.TRACK, 4),
                          "front": round(self.front, 3), "eye_local": self.eye_local,
                          "eye_from_front_hawk": self.eye_from_hawk, "eye_offset": round(self.eye_offset, 3),
-                         "mass_kg": round(mass, 2), "height_m": round(float(hi[2] - lo[2]), 3), "dofs": names,
+                         "mass_kg": round(mass, 2), "height_m": round(self.height, 3), "dofs": names,
                          "links": links}
 
     def apply(self, v: float, w: float) -> bool:

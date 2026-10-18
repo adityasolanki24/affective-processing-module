@@ -14,7 +14,10 @@ from isaaclab.app import AppLauncher
 ap = argparse.ArgumentParser()
 ap.add_argument("--out", type=Path, required=True)
 a, _ = ap.parse_known_args()
-app = AppLauncher({"headless": True, "enable_cameras": True}).app
+# the AnimationGraph schema must be registered at startup, so its extensions are enabled on the Kit command line
+ANIM_EXTS = ("omni.anim.graph.schema", "omni.anim.graph.core", "omni.anim.retarget.core", "omni.anim.navigation.schema")
+app = AppLauncher({"headless": True, "enable_cameras": True,
+                   "kit_args": " ".join(f"--enable {e}" for e in ANIM_EXTS)}).app
 from isaacsim.core.utils.extensions import enable_extension  # noqa: E402
 
 for ext in ("isaacsim.sensors.camera", "omni.anim.graph.core", "omni.anim.graph.schema", "omni.anim.retarget.core",

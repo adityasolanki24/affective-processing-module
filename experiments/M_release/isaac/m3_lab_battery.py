@@ -117,4 +117,6 @@ for name, cfg in conditions().items():
           f"w_err {np.mean(we) if we else None}", flush=True)
 a.out.mkdir(parents=True, exist_ok=True)
 (a.out / "battery.json").write_text(json.dumps({"body": a.body, "policy": str(a.policy), "rows": rows}, indent=1))
-app.close()
+from apm_isaac import hard_exit  # noqa: E402
+
+hard_exit(0)
