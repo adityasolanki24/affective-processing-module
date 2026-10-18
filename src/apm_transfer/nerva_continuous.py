@@ -62,7 +62,7 @@ class ContinuousNerva:
         self.log = ImuLogger(np.random.default_rng(int(self.rng.integers(2**31))))
         self.camera, self.frame_hook, self.max_leg_s = camera, frame_hook, max_leg_s
         self.own: list[bool] = []
-        self.prev_head = np.zeros(4)
+        self.prev_head: np.ndarray = np.zeros(4)
         self.etype = "calm"
         self.fell = False
         self.phase = "home"
