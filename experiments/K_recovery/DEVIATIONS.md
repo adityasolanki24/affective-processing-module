@@ -36,3 +36,15 @@ least π_calm · (1 − e^(−λ)) ≈ 1.6% per encounter, and calm evidence can
   `--transition-fix`.
 - Both the original and the corrective results are reported. Recommendations use the corrective one, because the
   defect is in the implementation, not in the design being tested.
+
+## D2 (2026-10-18): K3-X lost to a spot preemption and rerun on an on-demand VM
+
+**What happened.** Google preempted the spot VM running K3-X (apm-k-1) before it finished, and the VM deleted itself
+(termination action DELETE). No K3-X output was uploaded or seen. K3-X2, queued behind it, never started.
+
+**Rerun:**
+- K3-X: same command, seeds, systems and protocol. Code at a later commit whose defaults reproduce the frozen
+  behaviour: `transition_each_meeting` defaults to False; the stand-off, robot and fix options default off;
+  `nerva_world.closed_loop_encounter` is unchanged since the freeze.
+- K3-X2: as specified in D1.
+- Both on on-demand (non-preemptible) VMs.
