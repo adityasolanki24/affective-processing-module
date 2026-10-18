@@ -392,6 +392,9 @@ class IsaacWorld:
                     hit = q.raycast_closest(tuple(float(v) for v in mid), tuple(float(v) for v in d / n), n)
                     free = n if not hit["hit"] or "/World/People" in str(hit.get("rigidBody", "")) \
                         or "/World/Robot" in str(hit.get("rigidBody", "")) else float(hit["distance"])
+                    # the camera itself must stand in open floor space (a clear ray can start inside shelving)
+                    if not self._free(float(eye[0]), float(eye[1]), r=0.4):
+                        free = min(free, 0.5 * n)
                     if free >= n - 1e-3:
                         return eye
                     if free > best_d:
