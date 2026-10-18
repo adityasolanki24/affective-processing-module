@@ -28,7 +28,6 @@ standing phase, as in training.
 from __future__ import annotations
 
 import math
-import pickle
 from functools import lru_cache
 from pathlib import Path
 
@@ -41,15 +40,13 @@ ASSETS = Path(__file__).resolve().parents[2] / "experiments" / "K_recovery" / "h
 
 
 @lru_cache(maxsize=1)
-def _policy(params_path: str) -> tuple:
-    with open(params_path, "rb") as f:
-        prm = pickle.load(f)
-    norm, pol = prm[0], prm[1]
-    mean, std = np.asarray(norm.mean, float), np.asarray(norm.std, float)
-    layers = pol["params"]
-    names = sorted(layers, key=lambda n: int(n.split("_")[-1]))
-    weights = [(np.asarray(layers[n]["kernel"], float), np.asarray(layers[n]["bias"], float)) for n in names]
-    return mean, std, weights
+def _policy(path: str) -> tuple:
+    """Plain-NumPy copy of the trained Brax PPO policy (`t1_policy.npz`: observation mean/std for the 'state' key and
+    the MLP layers hidden_0..hidden_3, converted from the training pickle)."""
+    z = np.load(path)
+    n = len([k for k in z.files if k.endswith("_kernel")])
+    weights = [(z[f"hidden_{i}_kernel"], z[f"hidden_{i}_bias"]) for i in range(n)]
+    return z["mean"], z["std"], weights
 
 
 def _act(obs: np.ndarray, mean: np.ndarray, std: np.ndarray, weights: list) -> np.ndarray:
@@ -79,7 +76,7 @@ class HumanoidRobot:
         mujoco.mj_forward(self.model, self.data)
         self.default = np.array(key.qpos[7:], float)
         self.n_sub = int(round(DT / self.model.opt.timestep))
-        self.mean, self.std, self.weights = _policy(str(assets / "t1_params.pkl"))
+        self.mean, self.std, self.weights = _policy(str(assets / "t1_policy.npz"))
         self.last_act = np.zeros(self.model.nu)
         self.phase = np.array([0.0, math.pi])
         self.phase_dt = 2 * math.pi * DT * GAIT_HZ
