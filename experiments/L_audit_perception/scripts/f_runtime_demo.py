@@ -125,8 +125,8 @@ def main() -> None:
                      "p_risk": round(d1.p_risk, 4), "predicted_risk": round(d1.predicted_risk, 4),
                      "d_stop": obs.report["d_stop"], "imu": list(obs.imu), "camera": list(obs.camera),
                      "contacts": truth["contacts"], "fell": obs.report["fell"], "trips": obs.report["trips"]})
-        print(f"{k:2} {ident} {etype:5} action {d1.action:3} {d1.reason:28} p {d1.p_risk:.3f} d {obs.report['d_stop']:.2f}"
-              f" contacts {truth['contacts']}", flush=True)
+        print(f"{k:2} {ident} {etype:5} action {d1.action:3} {d1.reason:28} p {d1.p_risk:.3f} "
+              f"d {obs.report['d_stop']:.2f} contacts {truth['contacts']}", flush=True)
     rep = replay(tmp / "r1.jsonl", make)
     intents_bounded = all(0 <= r["proximity"] <= 1 and r["windows"] in (1, 2, 3) for r in rows)
     res = {"body": a.body, "sensing": sensing, "encounters": N_ENC, "wall_s": round(time.time() - t0, 1),

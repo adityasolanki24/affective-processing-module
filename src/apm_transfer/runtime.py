@@ -162,7 +162,7 @@ class Runtime:
             raise ValueError("saved state belongs to another runtime version or type model")
         self.n, self.seed, self.safety.vetoes = int(s["n"]), int(s["seed"]), int(s["vetoes"])
         self.memory.load_state(s["memory"])
-        self.tracks = {k: tuple(v) for k, v in s.get("tracks", {}).items()}  # type: ignore[misc]
+        self.tracks = {k: (str(v[0]), str(v[1])) for k, v in s.get("tracks", {}).items()}
 
     def _log(self, rec: dict) -> None:
         if self.log_path is not None:
