@@ -62,7 +62,10 @@ def _act(obs: np.ndarray, mean: np.ndarray, std: np.ndarray, weights: list) -> n
 class HumanoidRobot:
     """Same interface as `wheeled_world.WheeledRobot`: apply(v, ω), advance(), pose(), push(), tilt(), fallen()."""
 
-    def __init__(self, seed: int, scene_extender=None, assets: Path = ASSETS):
+    # training-time observation noise scales (mujoco_playground T1 joystick); L audit A7 tests the policy with them
+    NOISE = {"linvel": 0.1, "gyro": 0.2, "gravity": 0.05, "joint_pos": 0.03, "joint_vel": 1.5}
+
+    def __init__(self, seed: int, scene_extender=None, assets: Path = ASSETS, obs_noise: float = 0.0):
         import mujoco
 
         if scene_extender is not None:
@@ -81,6 +84,8 @@ class HumanoidRobot:
         self.phase = np.array([0.0, math.pi])
         self.phase_dt = 2 * math.pi * DT * GAIT_HZ
         self.rng = np.random.default_rng(seed)
+        self.obs_noise = obs_noise
+        self.noise_rng = np.random.default_rng([seed, 7])  # separate stream: obs_noise=0 leaves K's runs unchanged
         self.t, self.dt = 0.0, DT
         self.v_cmd = self.w_cmd = 0.0
         self.brake_until, self.trips = -1.0, 0
@@ -123,8 +128,13 @@ class HumanoidRobot:
     def _obs(self, cmd: np.ndarray) -> np.ndarray:
         gravity = self.data.site_xmat[self.imu_site].reshape(3, 3).T @ np.array([0.0, 0.0, -1.0])
         phase = np.concatenate([np.cos(self.phase), np.sin(self.phase)])
-        return np.concatenate([self._sensor(self.s_linvel), self._sensor(self.s_gyro), gravity, cmd,
-                               self.data.qpos[7:] - self.default, self.data.qvel[6:], self.last_act, phase])
+        parts = {"linvel": self._sensor(self.s_linvel), "gyro": self._sensor(self.s_gyro), "gravity": gravity,
+                 "joint_pos": self.data.qpos[7:] - self.default, "joint_vel": np.array(self.data.qvel[6:], float)}
+        if self.obs_noise > 0:  # uniform noise of the training recipe: x + (2U - 1) * level * scale
+            parts = {k: v + (2 * self.noise_rng.random(v.shape) - 1) * self.obs_noise * self.NOISE[k]
+                     for k, v in parts.items()}
+        return np.concatenate([parts["linvel"], parts["gyro"], parts["gravity"], cmd, parts["joint_pos"],
+                               parts["joint_vel"], self.last_act, phase])
 
     def advance(self) -> dict:
         cmd = np.array([self.v_cmd, 0.0, self.w_cmd])
