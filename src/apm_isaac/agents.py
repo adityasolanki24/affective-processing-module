@@ -29,8 +29,14 @@ from dataclasses import dataclass, field
 import numpy as np
 
 RADIUS, HEIGHT = 0.22, 1.7
-MAX_OVERLAP = 0.06
-CONTACT_GAIN = 0.35
+MAX_OVERLAP = 0.03
+CONTACT_GAIN = 0.2   # lunge surface speed = 2 x gain x the type's speed (pushy 0.2-0.36 m/s, calm 0.04-0.16 m/s)
+# Geometry mapping from the abstract encounter of programmes K and L (point entity, robot as a point) to bodies.
+# - A stop distance d becomes a centre distance d + RADIUS + front - GAP0 (front: the robot's extent ahead of its
+#   origin).
+# - A lunge of reach r moves the person's body by r - GAP0.
+# So contact happens exactly when r > d, as before, and the closest grid stop (0.2) leaves a 5 cm gap.
+GAP0 = 0.15
 
 
 @dataclass
@@ -57,10 +63,13 @@ class Person:
     def walk_to(self, target: np.ndarray, t0: float, speed: float) -> None:
         self.walk = (self.xy.copy(), np.asarray(target, float), t0, speed)
 
+    front: float = 0.12  # the robot's extent ahead of its origin (set by the world)
+
     def displacement(self, t: float, dist_to_robot: float) -> float:
         s = 0.0
+        gap = max(0.0, dist_to_robot - self.front - RADIUS)
         for lg in self.lunges:
-            peak = float(np.clip(lg.reach - RADIUS, 0.0, max(0.0, dist_to_robot - RADIUS) + MAX_OVERLAP))
+            peak = float(np.clip(lg.reach - GAP0, 0.0, gap + MAX_OVERLAP))
             ramp = float(np.clip(peak / max(lg.speed * CONTACT_GAIN * 2, 1e-3), 0.15, 1.0))
             dt = abs(t - lg.t_peak)
             if dt <= ramp:
@@ -106,18 +115,50 @@ def add_person(stage, name: str, xy, character_usd: str | None) -> Person:
     if character_usd:
         vis = f"{root}/character"
         add_reference_to_stage(character_usd, vis)
+        bind_animation(stage, vis, character_usd.split("/Isaac/People/")[0] + "/Isaac/People/Animations/"
+                       "stand_idle_loop.skelanim.usd", f"{root}/anim")
     p = Person(name, root, np.asarray(xy, float))
     p.cap_path, p.vis_path = cap_path, vis  # type: ignore[attr-defined]
     return p
 
 
+def bind_animation(stage, character: str, anim_usd: str, anim_path: str) -> bool:
+    """Play a stock skeletal animation (looping, driven by the timeline) on the character's skeleton.
+    Visual only: the collider stays the physical body."""
+    from isaacsim.core.utils.stage import add_reference_to_stage
+    from pxr import Sdf, Usd, UsdSkel
+    if not stage.GetPrimAtPath(anim_path).IsValid():
+        add_reference_to_stage(anim_usd, anim_path)
+
+    def first(path: str, kind):
+        return next((p for p in Usd.PrimRange(stage.GetPrimAtPath(path), Usd.TraverseInstanceProxies())
+                     if p.IsA(kind)), None)
+    anim, skel = first(anim_path, UsdSkel.Animation), first(character, UsdSkel.Skeleton)
+    if anim is None or skel is None:
+        return False
+    UsdSkel.BindingAPI.Apply(skel).CreateAnimationSourceRel().SetTargets([Sdf.Path(str(anim.GetPath()))])
+    return True
+
+
 def place(stage, p: Person, xy: np.ndarray, yaw: float) -> None:
-    """Move the kinematic collider (PhysX uses this as its kinematic target) and the visual character."""
-    from pxr import Gf, UsdGeom
-    cap = UsdGeom.XformCommonAPI(stage.GetPrimAtPath(p.cap_path))  # type: ignore[attr-defined]
-    cap.SetTranslate(Gf.Vec3d(float(xy[0]), float(xy[1]), HEIGHT / 2))
-    vis = getattr(p, "vis_path", None)
-    if vis:
-        x = UsdGeom.XformCommonAPI(stage.GetPrimAtPath(vis))
-        x.SetTranslate(Gf.Vec3d(float(xy[0]), float(xy[1]), 0.0))
-        x.SetRotate(Gf.Vec3f(0.0, 0.0, math.degrees(yaw)))
+    """Move the kinematic collider (through PhysX, so the contact geometry really moves) and the visual character."""
+    from isaacsim.core.prims import SingleRigidPrim, SingleXFormPrim
+    if getattr(p, "_rb", None) is None:
+        p._rb = SingleRigidPrim(p.cap_path)  # type: ignore[attr-defined]
+        vis = getattr(p, "vis_path", None)
+        p._vis = SingleXFormPrim(vis) if vis else None  # type: ignore[attr-defined]
+    q = np.array([math.cos(yaw / 2), 0.0, 0.0, math.sin(yaw / 2)])
+    p._rb.set_world_pose(position=np.array([float(xy[0]), float(xy[1]), HEIGHT / 2]))  # type: ignore[attr-defined]
+    if p._vis is not None:  # type: ignore[attr-defined]
+        p._vis.set_world_pose(position=np.array([float(xy[0]), float(xy[1]), 0.0]), orientation=q)  # type: ignore[attr-defined]
+
+
+def find_character(root: str, name: str) -> str | None:
+    """Path of the character's .usd in the stock People assets (None if absent)."""
+    import omni.client
+    d = f"{root}/Isaac/People/Characters/{name}"
+    res, entries = omni.client.list(d)
+    if res != omni.client.Result.OK:
+        return None
+    usds = sorted(e.relative_path for e in entries if e.relative_path.endswith(".usd"))
+    return f"{d}/{usds[0]}" if usds else None

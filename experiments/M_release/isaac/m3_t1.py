@@ -38,6 +38,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--out", type=Path, required=True)
 ap.add_argument("--video", action="store_true")
 ap.add_argument("--friction", type=float, default=1.0)
+ap.add_argument("--physx-lab", action="store_true", help="Isaac Lab articulation settings (see robots.py)")
 a, _ = ap.parse_known_args()
 launcher = AppLauncher({"headless": True, "enable_cameras": True})
 app = launcher.app
@@ -103,6 +104,10 @@ for prim in stage.Traverse():
         art_root = str(prim.GetPath())
         break
 log["articulation_root"] = art_root
+if a.physx_lab:
+    sys.path.insert(0, str(REPO / "src"))
+    from apm_isaac.robots import physx_like_isaac_lab
+    physx_like_isaac_lab(world.stage, "/World/T1")
 robot = world.scene.add(SingleArticulation(art_root or "/World/T1", name="t1"))
 world.reset()
 names = list(robot.dof_names)

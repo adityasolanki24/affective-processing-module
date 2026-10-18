@@ -42,6 +42,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--out", type=Path, required=True)
 ap.add_argument("--odp", default="/work/odp")
 ap.add_argument("--nerva", default="/work/NERVA")
+ap.add_argument("--physx-lab", action="store_true", help="Isaac Lab articulation settings (see robots.py)")
 a, _ = ap.parse_known_args()
 app = AppLauncher({"headless": True}).app
 from isaacsim.core.utils.extensions import enable_extension  # noqa: E402
@@ -66,10 +67,24 @@ REF = json.loads((REPO / "experiments" / "M_release" / "configs" / "nerva_mujoco
 a.out.mkdir(parents=True, exist_ok=True)
 rep: dict = {}
 xml = Path(a.odp) / "playground" / "open_duck_mini_v2" / "xmls" / "open_duck_mini_v2_backlash.xml"
-conv = MjcfConverter(MjcfConverterCfg(asset_path=str(xml), usd_dir=str(a.out / "usd"), usd_file_name="open_duck.usd",
+# The importer handles one top-level <default>; this MJCF has two. Merge the second's classes into the first
+# (semantics unchanged) and write the result next to the original so mesh paths still resolve.
+import xml.etree.ElementTree as ET  # noqa: E402
+
+tree = ET.parse(xml)
+tops = tree.getroot().findall("default")
+for extra in tops[1:]:
+    for child in list(extra):
+        tops[0].append(child)
+    tree.getroot().remove(extra)
+merged = xml.with_name("open_duck_mini_v2_backlash_merged_defaults.xml")
+tree.write(merged)
+rep["mjcf_top_level_defaults_merged"] = len(tops)
+conv = MjcfConverter(MjcfConverterCfg(asset_path=str(merged), usd_dir=str((a.out / "usd").resolve()),
+                                      usd_file_name="open_duck.usd",
                                       fix_base=False, import_sites=True, force_usd_conversion=True,
                                       make_instanceable=False))
-usd = conv.usd_path
+usd = str(Path(conv.usd_path).resolve())  # absolute: the converter's configuration sublayers resolve from it
 rep["usd"] = usd
 print("converted", usd, flush=True)
 pol_path = Path(a.nerva) / REF["policy_rel"]
@@ -81,12 +96,18 @@ world = World(stage_units_in_meters=1.0, physics_dt=REF["timestep"], rendering_d
 world.scene.add_default_ground_plane(static_friction=1.0, dynamic_friction=1.0)
 add_reference_to_stage(usd, "/World/Duck")
 stage = world.stage
-root = next((str(p.GetPath()) for p in stage.Traverse()
-             if str(p.GetPath()).startswith("/World/Duck") and p.HasAPI(UsdPhysics.ArticulationRootAPI)), "/World/Duck")
+from pxr import Usd  # noqa: E402
+
+prims = list(Usd.PrimRange(stage.GetPrimAtPath("/World/Duck"), Usd.TraverseInstanceProxies()))
+root = next((str(p.GetPath()) for p in prims if p.HasAPI(UsdPhysics.ArticulationRootAPI)
+             or "PhysicsArticulationRootAPI" in p.GetAppliedSchemas()), None)
+if root is None:
+    for p in prims[:60]:
+        print("prim", p.GetPath(), p.GetTypeName(), list(p.GetAppliedSchemas())[:4], flush=True)
+    root = "/World/Duck"
 rep["articulation_root"] = root
 # drives: MuJoCo actuator gains, armature; passive backlash joints keep their damping/armature
-by_name = {p.GetName(): p for p in stage.Traverse() if str(p.GetPath()).startswith("/World/Duck")
-           and p.IsA(UsdPhysics.RevoluteJoint)}
+by_name = {p.GetName(): p for p in prims if p.IsA(UsdPhysics.RevoluteJoint)}
 for x in REF["actuators"]:
     p = by_name.get(x["joint"])
     if p is None:
@@ -101,6 +122,10 @@ for x in REF["backlash"]:
     p = by_name.get(x["joint"])
     if p is not None:
         PhysxSchema.PhysxJointAPI.Apply(p).CreateArmatureAttr(x["armature"])
+if a.physx_lab:
+    sys.path.insert(0, str(REPO / "src"))
+    from apm_isaac.robots import physx_like_isaac_lab
+    physx_like_isaac_lab(world.stage, "/World/Duck")
 robot = world.scene.add(SingleArticulation(root, name="duck"))
 world.reset()
 names = list(robot.dof_names)

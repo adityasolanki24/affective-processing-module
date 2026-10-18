@@ -1,0 +1,78 @@
+{
+ "_doc": "APM v1.0 scenes (Isaac Sim 5.1 stock assets). Hubs and stations come from PhysX multi-hit raycast occupancy (m2_scenes2.py): every 2.2 m line from the hub to a station is >= 0.45 m from colliders. floor_z shifts the scene so its floor is at z = 0.",
+ "home": {
+  "usd": "/Isaac/Environments/Simple_Room/simple_room.usd",
+  "floor_z": -0.815,
+  "scale": 1.0,
+  "role": "development (residential room)",
+  "home": [
+   1.65,
+   2.02,
+   0.0
+  ],
+  "stations": {
+   "P1": [
+    3.206,
+    3.576
+   ],
+   "P2": [
+    0.094,
+    3.576
+   ],
+   "P3": [
+    3.206,
+    0.464
+   ]
+  }
+ },
+ "warehouse": {
+  "usd": "/Isaac/Environments/Simple_Warehouse/full_warehouse.usd",
+  "floor_z": 0.0,
+  "scale": 1.0,
+  "role": "development (industrial)",
+  "home": [
+   2.02,
+   13.31,
+   0.0
+  ],
+  "stations": {
+   "P1": [
+    2.02,
+    15.51
+   ],
+   "P2": [
+    0.464,
+    14.866
+   ],
+   "P3": [
+    0.464,
+    11.754
+   ]
+  }
+ },
+ "hospital": {
+  "usd": "/Isaac/Environments/Hospital/hospital.usd",
+  "floor_z": 0.0,
+  "scale": 1.0,
+  "role": "held-out (public interior)",
+  "home": [
+   -6.61,
+   2.69,
+   0.0
+  ],
+  "stations": {
+   "P1": [
+    -4.41,
+    2.69
+   ],
+   "P2": [
+    -6.61,
+    4.89
+   ],
+   "P3": [
+    -8.81,
+    2.69
+   ]
+  }
+ }
+}

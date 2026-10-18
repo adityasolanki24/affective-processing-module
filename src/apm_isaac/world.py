@@ -35,7 +35,8 @@ class SceneSpec:
     usd: str              # relative to the Isaac assets root, or an absolute path
     home: tuple[float, float, float]  # robot start x, y, yaw
     stations: dict[str, tuple[float, float]]  # where people stand (map positions)
-    floor_z: float = 0.0
+    floor_z: float = 0.0  # the asset's floor height in metres after `scale`; the scene is shifted so the floor is z=0
+    scale: float = 1.0    # 0.01 for centimetre assets (not rescaled automatically when referenced)
     held_out: bool = False
 
 
@@ -53,7 +54,12 @@ class IsaacWorld:
         self.root = get_assets_root_path()
         usd = scene.usd if "://" in scene.usd or scene.usd.startswith("/work") else self.root + scene.usd
         add_reference_to_stage(usd, "/World/Scene")
-        self.world.scene.add_default_ground_plane(z_position=scene.floor_z - 0.001)
+        from pxr import Gf, UsdGeom
+        xf = UsdGeom.XformCommonAPI(self.world.stage.GetPrimAtPath("/World/Scene"))
+        xf.SetTranslate(Gf.Vec3d(0.0, 0.0, -scene.floor_z))
+        if scene.scale != 1.0:
+            xf.SetScale(Gf.Vec3f(scene.scale, scene.scale, scene.scale))
+        self.world.scene.add_default_ground_plane(z_position=-0.001)
         hx, hy, hyaw = scene.home
         self.people: dict[str, Person] = {}
         for sid, xy in scene.stations.items():
@@ -118,7 +124,7 @@ class IsaacWorld:
 
     def _subscribe_contacts(self) -> None:
         from omni.physx import get_physx_simulation_interface
-        from pxr import PhysxSchema
+        from pxr import PhysicsSchemaTools, PhysxSchema
         for p in self.people.values():
             prim = self.world.stage.GetPrimAtPath(p.cap_path)  # type: ignore[attr-defined]
             api = PhysxSchema.PhysxContactReportAPI.Apply(prim)
@@ -126,7 +132,8 @@ class IsaacWorld:
 
         def on_contact(headers, data):
             for h in headers:
-                a0, a1 = str(h.actor0), str(h.actor1)
+                a0 = str(PhysicsSchemaTools.intToSdfPath(h.actor0))
+                a1 = str(PhysicsSchemaTools.intToSdfPath(h.actor1))
                 if "/World/People/" in a0 + a1 and "/World/Robot" in a0 + a1:
                     imp = sum(np.linalg.norm(np.asarray(data[h.contact_data_offset + i].impulse))
                               for i in range(h.num_contact_data))
@@ -137,11 +144,15 @@ class IsaacWorld:
     def _video(self, info: str = "") -> None:
         if self._video_cam is None or self.video_frames is None:
             return
-        x, y, yaw = self.robot.pose()
-        self._video_cam.set_world_pose(position=np.array([x - 2.4 * math.cos(yaw) + 0.6 * math.sin(yaw),
-                                                         y - 2.4 * math.sin(yaw) - 0.6 * math.cos(yaw), 1.6]))
-        self._video_cam.set_world_pose(orientation=_look_at(np.array([x - 2.4 * math.cos(yaw), y - 2.4 *
-                                                                      math.sin(yaw), 1.6]), np.array([x, y, 0.5])))
+        # fixed side-on view of the interaction axis (home -> station), wide enough for robot and person
+        x, y, _ = self.robot.pose()
+        sx, sy = next(iter(self.people.values())).xy
+        mid = np.array([(x + sx) / 2, (y + sy) / 2, 0.55])
+        u = np.array([sx - x, sy - y])
+        u = u / (np.linalg.norm(u) or 1.0)
+        side = np.array([-u[1], u[0]])
+        eye = np.array([mid[0] - 3.2 * side[0] - 0.8 * u[0], mid[1] - 3.2 * side[1] - 0.8 * u[1], 1.9])
+        self._video_cam.set_world_pose(position=eye, orientation=_look_at(eye, mid))
         self.world.render()
         f = self._video_cam.get_rgba()
         if f is not None and np.size(f):
@@ -195,7 +206,10 @@ class IsaacWorld:
         x0, y0, _ = self.robot.pose()
         u = np.array([sx - x0, sy - y0])
         u = u / (np.linalg.norm(u) or 1.0)
-        aim = (sx - standoff * u[0], sy - standoff * u[1])
+        from apm_isaac.agents import GAP0, RADIUS
+        person.front = self.robot.front
+        back = standoff + RADIUS + self.robot.front - GAP0  # physical geometry mapping (agents.GAP0)
+        aim = (sx - back * u[0], sy - back * u[1])
         adapter.reset(self.robot.pose(), aim, intent)
         win_n, skip_n = int(round(WINDOW_S / DT)), int(round(POST_ARRIVAL_SKIP_S / DT))
         hold_n = int(round(SELF_MOTION_HOLD_S / DT))

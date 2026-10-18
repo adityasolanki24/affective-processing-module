@@ -41,6 +41,7 @@ from apm_transfer.infoseek import HOLD, OBSERVE, STANDOFF_M, Emissions, Task, ch
 from apm_transfer.nerva_memory import TypeStateModel
 
 DIST_EDGES = (0.3, 0.5)
+CUSTOM = -3  # a continuous intent from a non-grid controller (lookup, monotone rule, fixed style, neutral)
 CAM_OFFSET = 24
 STATE_VERSION = 1
 
@@ -79,6 +80,11 @@ class Decision:
     reason: str
 
     def intent(self):
+        if self.action == CUSTOM:
+            from apm_express.intent import ExpressionIntent
+            from apm_express.styles import NEUTRAL
+            return ExpressionIntent(**{**NEUTRAL.as_dict(), "proximity": self.proximity, "tempo": self.tempo,
+                                       "hesitation": self.hesitation}).sanitized()
         return GRID[2] if self.action < 0 else GRID[self.action]
 
 
@@ -105,9 +111,12 @@ class SafetySupervisor:
 class Runtime:
     def __init__(self, model_cfg: dict, time_coef: list[float], task: Task, voi: dict, lam: float = 0.02,
                  seed: int = 0, camera: bool = True, observe_imu: bool = True, log: Path | None = None,
-                 policy: str = "voi"):
+                 policy: str = "voi", supervise: bool = True):
         self.model_cfg, self.time_coef, self.task, self.voi = model_cfg, list(time_coef), task, voi
         self.lam, self.seed, self.camera, self.observe_imu, self.policy = lam, seed, camera, observe_imu, policy
+        # APM's predicted-risk supervisor. Conventional baselines and exploration have no learned risk model, so
+        # they run without it; every body's physical safety layer applies regardless.
+        self.supervise = supervise
         self.model = TypeModel.from_dict(model_cfg["model"])
         em = Emissions.from_model(self.model.E, camera_block=self.model.E.shape[1] > 24)
         self.camera_block = em.cam is not None and camera
@@ -126,15 +135,29 @@ class Runtime:
         p = float(b @ self.model.r)
         u = float(-np.sum(b * np.log(np.clip(b, 1e-12, 1.0))) / math.log(len(b))) if len(b) > 1 else 0.0
         rng = np.random.default_rng([self.seed, self.n])
-        a, w, diag = choose(self.policy, b, self.model.pi, self.tm, self.em, self.task, lam=self.lam,
-                            horizon=self.voi["horizon"], gap=self.voi["gap"], u_trigger=self.voi["u_trigger"], rng=rng)
-        a, w, vetoed = self.safety.check(a, w, b)
-        standoff = STANDOFF_M if a < 0 else 0.0
-        it = GRID[2] if a < 0 else GRID[a]
+        custom = None
+        if self.policy in ("greedy", "voi", "uncertain"):
+            a, w, diag = choose(self.policy, b, self.model.pi, self.tm, self.em, self.task, lam=self.lam,
+                                horizon=self.voi["horizon"], gap=self.voi["gap"], u_trigger=self.voi["u_trigger"],
+                                rng=rng)
+        else:
+            custom = self._baseline_intent(p, u, rng)
+            a, w, diag = CUSTOM, custom[3], {}
+        check_a = a if custom is None else self._nearest_grid(custom[0], custom[1])
+        a2, w, vetoed = self.safety.check(check_a, w, b) if self.supervise else (check_a, w, False)
+        if vetoed:
+            a, custom = a2, None
+        standoff = STANDOFF_M if a in (OBSERVE, HOLD) else 0.0
+        if custom is None:
+            it = GRID[2] if a < 0 else GRID[a]
+            prox, tempo, hes = it.proximity, it.tempo, it.hesitation
+        else:
+            prox, tempo, hes = custom[0], custom[1], custom[2]
         reason = ("vetoed by the safety supervisor" if vetoed else "no safe action: hold" if a == HOLD
-                  else "observe from beyond reach" if a == OBSERVE else "approach")
-        d = Decision(self.n, identity, kind, int(a), int(w), standoff, it.proximity, it.tempo, it.hesitation, p, u,
-                     self.safety.risk(a, w, b), float(diag.get("voi", 0.0)), vetoed, reason)
+                  else "observe from beyond reach" if a == OBSERVE else f"approach ({self.policy})")
+        risk = self.safety.risk(check_a if a == CUSTOM else a, w, b)
+        d = Decision(self.n, identity, kind, int(a), int(w), standoff, float(prox), float(tempo), float(hes), p, u,
+                     risk, float(diag.get("voi", 0.0)), vetoed, reason)
         self.n += 1
         self._log({"t": "decide", "identity": identity, "kind": kind, "context": context,
                    "belief": [round(float(v), 12) for v in b], "decision": asdict(d)})
@@ -145,6 +168,45 @@ class Runtime:
             [CAM_OFFSET + c for c in obs.camera] if self.camera_block else [])
         self.memory.observe_many(obs.identity, obs.kind, cats, float(obs.detected))
         self._log({"t": "observe", "obs": asdict(obs)})
+
+    # ── baselines that share the runtime (memory, logging, supervisor) ───────
+    def _baseline_intent(self, p: float, u: float, rng: np.random.Generator) -> tuple[float, float, float, int]:
+        """(proximity, tempo, hesitation, windows) for non-decision-theoretic policies.
+
+        Policy strings:
+        - "lookup[:c=..,a=..]": H's lookup (E0) or the retuned lookup (E1);
+        - "monotone:lo=..,width=..": the tuned monotonic rule (E2);
+        - "fixed:proximity=..,tempo=..,hesitation=..": a fixed style, the same every time;
+        - "neutral": neutral motion at the hand-over distance;
+        - "random": a random grid intent (exploration);
+        - "reactive": memory-free; neutral approach, 3 windows, leaves when disturbed (the body aborts on its own
+          detector).
+        """
+        from apm_express.states import Readout
+        from apm_transfer.controllers import lookup_tuned, monotone
+        name, _, args = self.policy.partition(":")
+        kw = {k: float(v) for k, v in (x.split("=") for x in args.split("/") if x)}
+        rd = Readout(p, u, self.memory.g)
+        if name == "lookup":
+            it = lookup_tuned(rd, **kw)
+            return it.proximity, it.tempo, it.hesitation, 1
+        if name == "monotone":
+            it = monotone(rd, **kw)
+            return it.proximity, it.tempo, it.hesitation, 1
+        if name == "fixed":
+            return kw.get("proximity", 0.5), kw.get("tempo", 1.0), kw.get("hesitation", 0.0), 1
+        if name == "neutral":
+            return 0.75, 1.0, 0.0, 1
+        if name == "reactive":
+            return 0.75, 0.7, 0.0, 3
+        if name == "random":
+            g = GRID[int(rng.integers(len(GRID)))]
+            return g.proximity, g.tempo, g.hesitation, int(rng.integers(1, 4))
+        raise ValueError(f"unknown policy {self.policy}")
+
+    @staticmethod
+    def _nearest_grid(proximity: float, tempo: float) -> int:
+        return int(np.argmin([abs(g.proximity - proximity) + 0.1 * abs(g.tempo - tempo) for g in GRID]))
 
     # ── persistence, logging, replay ────────────────────────────────────────
     def state(self) -> dict:

@@ -44,6 +44,22 @@ def yaw_quat(yaw: float) -> np.ndarray:
     return np.array([math.cos(yaw / 2), 0.0, 0.0, math.sin(yaw / 2)])
 
 
+def physx_like_isaac_lab(stage, root_prefix: str, depen: float = 1.0) -> None:
+    """The articulation settings Isaac Lab trains with: depenetration velocity capped, 8/4 solver iterations,
+    self-collision off."""
+    from pxr import PhysxSchema, UsdPhysics
+    for prim in stage.Traverse():
+        if not str(prim.GetPath()).startswith(root_prefix):
+            continue
+        if prim.HasAPI(UsdPhysics.RigidBodyAPI):
+            PhysxSchema.PhysxRigidBodyAPI.Apply(prim).CreateMaxDepenetrationVelocityAttr(depen)
+        if prim.HasAPI(UsdPhysics.ArticulationRootAPI):
+            api = PhysxSchema.PhysxArticulationAPI.Apply(prim)
+            api.CreateEnabledSelfCollisionsAttr(False)
+            api.CreateSolverPositionIterationCountAttr(8)
+            api.CreateSolverVelocityIterationCountAttr(4)
+
+
 class _IsaacBody:
     """Shared IMU, pose and supervisor bookkeeping. Subclasses set `self.art` (SingleArticulation) and `self.world`."""
 
@@ -93,11 +109,13 @@ class WheeledIsaac(_IsaacBody):
     R_WHEEL, TRACK = 0.04, 0.22
     SHOVE_TRIP, TILT_TRIP, TILT_FALL, BRAKE_S = 0.35, math.radians(25), math.radians(60), 0.5
     eye_offset = 0.11
+    front = 0.12  # chassis extent ahead of the origin
 
     def __init__(self, world, path: str, pos: tuple[float, float], yaw: float, seed: int, physics_dt: float = 0.002):
         from isaacsim.core.prims import SingleArticulation
         self.world, self.path, self.physics_dt = world, path, physics_dt
         self._build(world.stage, path, pos, yaw)
+        physx_like_isaac_lab(world.stage, path, depen=0.3)
         self.art = world.scene.add(SingleArticulation(path, name=path.split("/")[-1]))
         self.eye_prim = f"{path}/base/eye"
         self._init_common(seed)
@@ -212,6 +230,7 @@ class T1Isaac(_IsaacBody):
 
     TILT_TRIP, TILT_FALL, Z_FALL, BRAKE_S = math.radians(25), math.radians(50), 0.45, 1.0
     eye_offset = 0.16
+    front = 0.15  # feet/torso extent ahead of the base origin
 
     def __init__(self, world, path: str, pos: tuple[float, float], yaw: float, seed: int, usd: str,
                  physics_dt: float = 0.002):
@@ -301,6 +320,106 @@ class T1Isaac(_IsaacBody):
         self.last = act
         nxt = np.fmod(self.phase + 2 * math.pi * DT * 1.5 + math.pi, 2 * math.pi) - math.pi
         self.phase = nxt if np.linalg.norm(cmd) > 0.01 else np.ones(2) * math.pi
+        self.t += DT
+        return self._row()
+
+    def fallen(self, row: dict) -> bool:
+        return math.radians(row["tilt"]) > self.TILT_FALL or row["z"] < self.Z_FALL or not row["finite"]
+
+
+class LabPolicyBody(_IsaacBody):
+    """A legged body driven by a policy trained in Isaac Lab (this repository's tasks), deployed with exactly the
+    training observation: base linear and angular velocity, projected gravity, (vx, vy, ω) command, joint position
+    and velocity offsets, last action. Control 50 Hz (physics `sim_dt`, `decimation` from `env_cfg.json`).
+    Targets: default + scale × action. A tilt supervisor (25° → zero command for 1 s) is the body's own."""
+
+    TILT_TRIP, TILT_FALL, Z_FALL, BRAKE_S = math.radians(25), math.radians(50), 0.45, 1.0
+    eye_offset = 0.16
+    front = 0.15  # feet/torso extent ahead of the base origin
+    eye_link = "H2"
+
+    def __init__(self, world, path: str, usd: str, pos: tuple[float, float], yaw: float, seed: int, policy_dir: Path,
+                 base_z: float, physics_dt: float = 0.005):
+        import json
+
+        import torch
+        from isaacsim.core.prims import SingleArticulation
+        from isaacsim.core.utils.stage import add_reference_to_stage
+        from pxr import UsdPhysics
+        self.world, self.physics_dt = world, physics_dt
+        self.cfg = json.loads((policy_dir / "env_cfg.json").read_text())
+        self.policy = torch.jit.load(str(policy_dir / "policy.pt"), map_location="cpu").eval()
+        self.torch = torch
+        add_reference_to_stage(usd, path)
+        root = path
+        for prim in world.stage.Traverse():
+            if str(prim.GetPath()).startswith(path) and prim.HasAPI(UsdPhysics.ArticulationRootAPI):
+                root = str(prim.GetPath())
+                break
+        self.art = world.scene.add(SingleArticulation(root, name=path.split("/")[-1]))
+        self.start, self.base_z = (pos, yaw), base_z
+        self.eye_prim: str | None = None
+        self.decim = int(round(DT / physics_dt))
+        self._init_common(seed)
+
+    def post_reset(self, gains: dict[str, tuple[float, float]] | None = None) -> None:
+        import re
+        names = list(self.art.dof_names)
+        self.idx = np.array([names.index(j) for j in self.cfg["joint_names"]])
+        self.default = np.asarray(self.cfg["default_joint_pos"], float)
+        if gains:
+            kp, kd = np.zeros(len(names)), np.zeros(len(names))
+            for i, n in enumerate(names):
+                for pat, (p, d) in gains.items():
+                    if re.fullmatch(pat, n):
+                        kp[i], kd[i] = p, d
+            self.art.get_articulation_controller().set_gains(kps=kp, kds=kd)
+        q = np.zeros(len(names))
+        q[self.idx] = self.default
+        self.art.set_joint_positions(q)
+        self.art.set_joint_velocities(np.zeros(len(names)))
+        (x, y), yaw = self.start
+        self.art.set_world_pose(position=np.array([x, y, self.base_z]), orientation=yaw_quat(yaw))
+        self.last = np.zeros(len(self.idx))
+        root = str(self.art.prim_path).rsplit("/", 1)[0]
+        for prim in self.world.stage.Traverse():
+            if prim.GetName() == self.eye_link and str(prim.GetPath()).startswith(root):
+                self.eye_prim = str(prim.GetPath())
+                break
+
+    def apply(self, v: float, w: float) -> bool:
+        tripped = False
+        if self.tilt() > self.TILT_TRIP:
+            if self.t >= self.brake_until:
+                self.trips += 1
+            self.brake_until = self.t + self.BRAKE_S
+            tripped = True
+        if self.t < self.brake_until:
+            v, w = 0.0, 0.0
+        self.v_cmd += float(np.clip(v - self.v_cmd, -1.0 * DT, 1.0 * DT))
+        self.w_cmd += float(np.clip(w - self.w_cmd, -3.0 * DT, 3.0 * DT))
+        return tripped
+
+    def observation(self) -> np.ndarray:
+        R = self.rot()
+        lin = R.T @ np.asarray(self.art.get_linear_velocity(), float)
+        ang = R.T @ np.asarray(self.art.get_angular_velocity(), float)
+        grav = R.T @ np.array([0.0, 0.0, -1.0])
+        q = np.asarray(self.art.get_joint_positions(), float)[self.idx]
+        dq = np.asarray(self.art.get_joint_velocities(), float)[self.idx]
+        cmd = np.array([self.v_cmd, 0.0, self.w_cmd])
+        return np.concatenate([lin, ang, grav, cmd, q - self.default, dq, self.last]).astype(np.float32)
+
+    def advance(self) -> dict:
+        from isaacsim.core.utils.types import ArticulationAction
+        with self.torch.no_grad():
+            act = self.policy(self.torch.from_numpy(self.observation())[None]).numpy()[0]
+        target = np.asarray(self.art.get_joint_positions(), float).copy()
+        target[self.idx] = self.default + self.cfg["action_scale"] * act
+        self.art.apply_action(ArticulationAction(joint_positions=target))
+        for _ in range(self.decim):
+            self.world.step(render=False)
+        self.last = act.astype(float)
         self.t += DT
         return self._row()
 
