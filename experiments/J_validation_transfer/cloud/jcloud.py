@@ -137,7 +137,7 @@ def _archive(path: Path, commit: bool, cmd: str) -> str:
                 str(clone)])
             sh(["git", "-C", str(clone), "sparse-checkout", "set", "--cone", "src", "runs",
                 "experiments/F_behavioral_learning/configs", "experiments/G_architecture_selection",
-                "experiments/I_autonomous_revision", "experiments/J_validation_transfer"])
+                "experiments/I_autonomous_revision", "experiments/J_validation_transfer", "experiments/K_recovery"])
             sh(["git", "-C", str(clone), "checkout", "-q", sha])
             tar.add(clone, arcname="apm")
             for extra in ("runs/E2/predictor.json",):  # git-tracked inputs are already in the clone

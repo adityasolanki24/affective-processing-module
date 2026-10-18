@@ -112,6 +112,24 @@ class TypeStateModel(StateModel):
         self.kinds[ob.identity] = ob.kind
         self.g += self.alpha * (ob.y - self.g)
 
+    def observe_many(self, identity: str, kind: str, categories: list[int], y: float) -> None:
+        """Programme K: several conditionally independent observations from one encounter (sensing windows, camera
+        codes), as flattened emission columns. The clock advances once. With no categories (nothing observable),
+        nothing is learned and the clock still advances."""
+        b = self._at(identity) if identity in self.b else self._prior(kind)
+        for cat in categories:
+            b = b * self.model.E[:, cat]
+            b = b / b.sum()
+        self.n += 1
+        if categories:
+            self.b[identity] = b
+            self.k[identity] = self.n
+            self.kinds[identity] = kind
+            self.g += self.alpha * (y - self.g)
+
+    def belief(self, identity: str, kind: str) -> np.ndarray:
+        return self._at(identity) if identity in self.b else self._prior(kind)
+
     def readout(self, probe: Probe) -> Readout:
         b = self._at(probe.identity) if probe.identity in self.b else self._prior(probe.kind)
         p = float(b @ self.model.r)

@@ -116,13 +116,13 @@ class ImuLogger:
         self.tilt.append(float(row["tilt"]))
 
     def summarise(self, start: int, baseline: slice, dt: float, gyro_thr: float = 0.35,
-                  quiet: np.ndarray | None = None) -> Evidence:
-        """Evidence over frames start..end. `quiet` (efference-copy gate) keeps only frames the robot did not
-        move itself."""
-        g = np.array(self.gyro[start:])
+                  quiet: np.ndarray | None = None, end: int | None = None) -> Evidence:
+        """Evidence over frames start..end (default: to the last frame). `quiet` (efference-copy gate) keeps only
+        frames the robot did not move itself."""
+        g = np.array(self.gyro[start:end])
         acc = np.array(self.acc)
         base_acc = acc[baseline].mean(0) if len(acc[baseline]) else np.zeros(2)
-        a = np.linalg.norm(acc[start:] - base_acc, axis=1)
+        a = np.linalg.norm(acc[start:end] - base_acc, axis=1)
         n_quiet = -1
         if quiet is not None:
             mask = np.asarray(quiet[start:start + len(g)], bool)
@@ -139,18 +139,19 @@ class ImuLogger:
             stab = (end - above[0]) * dt
         else:
             stab = 0.0
-        c = self.contacts[start:]
+        c = self.contacts[start:end]
         changes = sum(c[k] != c[k - 1] for k in range(1, len(c)))
         base_eff = np.mean(self.effort[baseline]) if len(self.effort[baseline]) else 1.0
-        eff = np.max(self.effort[start:]) / max(1e-9, base_eff) if len(self.effort[start:]) else 1.0
+        eff = np.max(self.effort[start:end]) / max(1e-9, base_eff) if len(self.effort[start:end]) else 1.0
         tilt = np.array(self.tilt)
-        tilt_peak = float(tilt[start:].max() - tilt[baseline].mean()) if len(tilt[baseline]) else 0.0
+        tilt_peak = float(tilt[start:end].max() - tilt[baseline].mean()) if len(tilt[baseline]) else 0.0
         base_dev = np.linalg.norm(acc[baseline] - base_acc, axis=1) if len(acc[baseline]) else np.zeros(1)
         base_peak = float(np.max(base_dev))
         energy = float(np.sum(np.clip(a - base_peak, 0.0, None) ** 2)) if len(a) else 0.0
         peak = float(np.max(a)) if len(a) else 0.0
         return Evidence(float(g.max()) if len(g) else 0.0, peak, float(stab), int(changes), float(eff), tilt_peak,
-                        bool(np.max(self.tilt[start:]) > 45.0), base_peak, energy, bool(peak > 1.5 * base_peak),
+                        bool(np.max(self.tilt[start:end]) > 45.0), base_peak, energy,
+                        bool(peak > 1.5 * base_peak),
                         n_quiet)
 
 
@@ -160,11 +161,37 @@ TARGET = (0.9, 0.0)  # the entity stands at the approach target (as H's ball), 0
 POST_ARRIVAL_SKIP_S = 1.0  # evidence starts 1 s after arrival, past the gait-stopping transient
 SELF_MOTION_HOLD_S = 0.6   # efference copy: frames within 0.6 s after the robot's own commanded motion are ignored
 MIN_QUIET_FRAMES = 25      # fewer quiet frames than this (0.5 s): the encounter is unobservable (no evidence)
+WINDOW_S = 4.0             # programme K: one sensing window (the J3/J5 window length)
+MAX_WINDOWS = 3            # programme K: at most 3 windows per encounter; lunge streams are drawn for this horizon
+
+
+@dataclass(frozen=True)
+class Camera:
+    """Programme K **sensor extension** (not on NERVA's simulated robot today): a head camera that sees the entity's
+    lunges, whether or not they reach the robot. A lunge during a sensing window is seen with probability `p_detect`
+    if the entity is within `fov` of the robot's heading and within `range_m`. Its reach is measured with Gaussian
+    noise `sigma` (m). It reads the entity's *motion*, never its type."""
+    fov: float = math.radians(40)
+    range_m: float = 2.0
+    p_detect: float = 0.9
+    sigma: float = 0.05
+
+
+def camera_code(reaches: list[float]) -> int:
+    """8 categories: 0 none seen; 1-3 one lunge, max reach < 0.35 / 0.35-0.55 / > 0.55 m; 4-6 two lunges, same
+    bins; 7 three or more."""
+    if not reaches:
+        return 0
+    if len(reaches) >= 3:
+        return 7
+    b = int(np.searchsorted((0.35, 0.55), max(reaches)))
+    return 1 + 3 * (len(reaches) - 1) + b
 
 
 def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s: float = 5.0, settle_s: float = 2.0,
                           max_approach_s: float = 45.0, sensing_pause: bool = True, scene_extender=None,
-                          frame_hook=None) -> tuple[Evidence, dict, dict]:
+                          frame_hook=None, windows: int | None = None, camera: Camera | None = None,
+                          abort_on_detect: bool = True) -> tuple[Evidence, dict, dict]:
     """J5: one encounter in which the robot's own expression shapes what happens.
 
     The robot settles, then approaches the entity under `intent`, through H's `BipedExpressionAdapter` with the
@@ -191,6 +218,14 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     after every control step with the entity's lunge on that step (reach, contact or not), the distance and the phase.
     Neither changes the simulation.
 
+    **Programme K options** (the defaults reproduce J exactly):
+    - `windows=n` (1-3): the robot stands for 1 s plus n sensing windows of 4 s each (protected observation). Each
+      window is summarised separately, in `outcome["windows"]`. Lunge streams are drawn for the longest possible
+      encounter, so systems choosing different n meet the same entity behaviour. With `abort_on_detect`, if the
+      robot's own detector fires in a window and more windows were planned, it stops observing and leaves: it never
+      stays to collect repeated pushes.
+    - `camera=Camera()`: the sensor extension above. Its codes per window go in `outcome["camera"]`.
+
     Returns:
     - robot-observable evidence;
     - outcome: arrival time, arrived, final distance, safety trips, fallback steps, fell, stopping distance — task and
@@ -216,8 +251,18 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     ctrl.apply(NEUTRAL_REQUEST)
     for _ in range(n_settle):
         log.read(ctrl, ctrl.advance())
-    window = max_approach_s + dwell_s
+    if windows is not None:
+        dwell_s = POST_ARRIVAL_SKIP_S + WINDOW_S * windows
+        window = max_approach_s + POST_ARRIVAL_SKIP_S + WINDOW_S * MAX_WINDOWS
+    else:
+        window = max_approach_s + dwell_s
     events = {n_settle + int(round(t / ctrl.dt)): (reach, speed) for t, reach, speed in lunges(rng, etype, window)}
+    cam_rng = np.random.default_rng([seed, 7])
+    win_n = int(round(WINDOW_S / ctrl.dt))
+    skip_n = int(round(POST_ARRIVAL_SKIP_S / ctrl.dt))
+    cam_seen: list[list[float]] = [[] for _ in range(windows or 0)]
+    win_ev: list[Evidence] = []
+    aborted = False
     adapter.reset(ctrl.t, ctrl.pose(), TARGET, intent)
     pushes, t_arrive, k_arrive, fell, fallback = [], None, None, False, 0
     own = [False] * n_settle  # per frame: did the robot itself command motion?
@@ -231,6 +276,13 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
             reach, speed = events[k]
             m = impulse(reach, speed, dist)
             lunge = (reach, m)
+            if camera is not None and windows is not None and k_arrive is not None and k >= k_arrive + skip_n:
+                w = (k - k_arrive - skip_n) // win_n
+                bearing = math.atan2(TARGET[1] - y, TARGET[0] - x) - ctrl.pose()[2]
+                bearing = math.atan2(math.sin(bearing), math.cos(bearing))
+                if (w < windows and abs(bearing) <= camera.fov and dist <= camera.range_m
+                        and cam_rng.random() < camera.p_detect):
+                    cam_seen[w].append(round(reach + float(cam_rng.normal(0.0, camera.sigma)), 3))
             if m > 0:
                 away = math.atan2(y - TARGET[1], x - TARGET[0]) + float(rng.uniform(-math.radians(20),
                                                                                     math.radians(20)))
@@ -259,6 +311,16 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
         if k_arrive is None and adapter._arrived:
             k_arrive, t_arrive = k + 1, round(ctrl.t - settle_s, 2)
         k += 1
+        if (windows is not None and k_arrive is not None and k > k_arrive + skip_n
+                and (k - k_arrive - skip_n) % win_n == 0):
+            w0 = k_arrive + skip_n + len(win_ev) * win_n
+            hold_n = int(round(SELF_MOTION_HOLD_S / ctrl.dt))
+            mv = np.asarray(own, bool)
+            q = ~np.array([mv[max(0, j - hold_n):j + 1].any() for j in range(len(mv))])
+            win_ev.append(log.summarise(w0, slice(max(0, n_settle - 50), n_settle), ctrl.dt, quiet=q, end=k))
+            if abort_on_detect and win_ev[-1].detected and len(win_ev) < windows:
+                aborted = True
+                break
         if k_arrive is not None and k - k_arrive >= int(round(dwell_s / ctrl.dt)):
             break
         if k - n_settle >= int(round(window / ctrl.dt)):
@@ -268,10 +330,20 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     hold = int(round(SELF_MOTION_HOLD_S / ctrl.dt))
     moved = np.asarray(own, bool)
     quiet = ~np.array([moved[max(0, j - hold):j + 1].any() for j in range(len(moved))])
-    ev = log.summarise(start, slice(max(0, n_settle - 50), n_settle), ctrl.dt, quiet=quiet)
+    if windows is not None and win_ev:
+        ev = win_ev[0]
+    else:
+        ev = log.summarise(start, slice(max(0, n_settle - 50), n_settle), ctrl.dt, quiet=quiet)
     x, y, _ = ctrl.pose()
-    outcome = {"arrived": k_arrive is not None, "t_arrive": t_arrive, "final_distance": round(math.hypot(
+    outcome: dict = {"arrived": k_arrive is not None, "t_arrive": t_arrive, "final_distance": round(math.hypot(
         TARGET[0] - x, TARGET[1] - y), 3), "trips": monitor.trips, "fallback_steps": fallback, "fell": fell}
+    if windows is not None:
+        outcome["windows"] = [e.as_list() for e in win_ev]
+        outcome["aborted"] = aborted
+        outcome["dwell_s"] = round((k - k_arrive) * ctrl.dt, 2) if k_arrive is not None else 0.0
+        if camera is not None:
+            outcome["camera"] = [camera_code(c) for c in cam_seen[:len(win_ev)]]
+            outcome["camera_reaches"] = cam_seen[:len(win_ev)]
     truth = {"type": etype, "contacts": len(pushes), "contacts_dwell": sum(p[2] for p in pushes),
              "max_push": max((p[1] for p in pushes), default=0.0), "pushes": pushes}
     return ev, outcome, truth
