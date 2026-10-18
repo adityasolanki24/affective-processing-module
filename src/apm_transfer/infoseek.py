@@ -204,7 +204,10 @@ def choose(policy: str, b: np.ndarray, pi: np.ndarray, tm: TimeModel, em: Emissi
         h = -float(np.sum(b * np.log(np.clip(b, 1e-12, 1.0)))) / math.log(len(b))
         if i == NO_SAFE_ACTION:
             return hold(i, c, {"entropy": h})
-        return i, (3 if h > u_trigger else 1), {"cost": c, "entropy": h, "standoff": 0.0}
+        w = 3 if h > u_trigger else 1
+        if w > 1 and not legacy and cost(i, w, b, tm, em, task)[1] > task.risk_cap:
+            w = 1  # the cap is per encounter: K checked one window and then executed three (audit A3)
+        return i, w, {"cost": c, "entropy": h, "standoff": 0.0}
     if policy == "voi":
         assert rng is not None
         cache: dict[tuple[int, int], float] = {}  # VOI depends on the action only through its band

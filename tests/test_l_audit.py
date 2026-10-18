@@ -61,6 +61,26 @@ def test_a3_no_safe_action_is_explicit_and_never_an_over_cap_approach():
                 assert d["no_safe_action"] and d["standoff"] > 0
 
 
+def test_a3_uncertainty_triggered_windows_respect_the_cap_per_encounter():
+    import numpy as np
+
+    from apm_transfer.expression_map import TimeModel
+    from apm_transfer.infoseek import Emissions, Task, choose, cost
+    m = _all_risky_model()
+    tm = TimeModel([20.0, 10.0, -17.0, -1.5, 6.5])
+    em = Emissions(Emissions.from_model(m.E, camera_block=True).imu, None)
+    task = Task("handoff", d_task=0.3, retry_s=12.6)
+    found = False
+    for p in np.linspace(0.02, 0.6, 59):  # uncertain beliefs: one window within the cap, three beyond it
+        b = np.array([1 - p, p])
+        i, w, d = choose("uncertain", b, m.pi, tm, em, task, u_trigger=0.1)
+        if i >= 0:
+            assert cost(i, w, b, tm, em, task)[1] <= task.risk_cap
+            li, lw, _ = choose("uncertain", b, m.pi, tm, em, task, u_trigger=0.1, legacy=True)
+            found |= lw == 3 and cost(li, lw, b, tm, em, task)[1] > task.risk_cap
+    assert found  # K's behaviour exceeded the cap on some of these beliefs
+
+
 # ---- A6: the change model (TypeStateModel) -------------------------------------------------------------------------
 
 def _two_type(lam=0.1, **kw):

@@ -71,12 +71,15 @@ SYSTEMS = {
     "DT_CAM": {"policy": "greedy", "lam": 0.02, "camera": True},
     "DT_CAM_VOI": {"policy": "voi", "lam": 0.02, "camera": True},
     "RANDINTENT": {"policy": "random", "lam": 0.02, "camera": True},
+    # programme L references: K's behaviour (legacy cap and camera) on L's seeds, for paired comparisons
+    "DT_K": {"policy": "greedy", "lam": 0.02, "camera": False, "legacy_cap": True, "legacy_camera": True},
+    "DT_CAM_VOI_K": {"policy": "voi", "lam": 0.02, "camera": True, "legacy_cap": True, "legacy_camera": True},
 }
 RENDER = None  # k_demo.py only: callable(...) -> clip with kwargs()/close(row), or None
 
 
-def _seeds():
-    spec = importlib.util.spec_from_file_location("k_seeds", HERE / "seeds.py")
+def _seeds(path: str | None = None):
+    spec = importlib.util.spec_from_file_location("k_seeds", path or HERE / "seeds.py")
     mod = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(mod)
@@ -110,7 +113,7 @@ def job(args: tuple) -> dict:
         from apm_transfer.nerva_world import closed_loop_encounter
 
     spec = SYSTEMS[system]
-    S = _seeds()
+    S = _seeds(cfg.get("seeds"))
     base = int(S.world_seed(experiment, partition, index).generate_state(1)[0])
     rng = np.random.default_rng(base)
     order = [ENTITIES[int(i)] for i in rng.choice(3, N_ENC, p=P_ENTITY)][:cfg.get("n_enc", N_ENC)]
@@ -130,7 +133,9 @@ def job(args: tuple) -> dict:
     nerva = cfg.get("robot", "nerva") == "nerva"
     channels = json.loads(Path(cfg["channels"]).read_text())["interface"] if nerva else None
     mem = TypeStateModel(model, spec["lam"], kind_prior=False, transition_each_meeting=cfg.get("transition_fix", False))
-    camera = (Camera.legacy() if cfg.get("legacy_camera") else Camera()) if spec["camera"] else None
+    legacy_cap = spec.get("legacy_cap", cfg.get("legacy_cap", False))
+    legacy_camera = spec.get("legacy_camera", cfg.get("legacy_camera", False))
+    camera = (Camera.legacy() if legacy_camera else Camera()) if spec["camera"] else None
     rows = []
     t0 = time.time()
     for k, (ident, kind) in enumerate(order):
@@ -150,7 +155,7 @@ def job(args: tuple) -> dict:
             pol = "greedy" if spec["policy"] == "oracle" else spec["policy"]
             grid_i, w, diag = choose(pol, bb, model.pi, tm, em if spec["camera"] else em_imu, task, lam=spec["lam"],
                                      horizon=voi_cfg["horizon"], gap=voi_cfg["gap"], u_trigger=voi_cfg["u_trigger"],
-                                     rng=decide_rng, legacy=cfg.get("legacy_cap", False))
+                                     rng=decide_rng, legacy=legacy_cap)
             intent = GRID[2] if grid_i < 0 else GRID[grid_i]  # OBSERVE / HOLD stand off beyond reach
         standoff = diag.get("standoff", 0.0)
         clip = RENDER(system, history, index, k, ident, etype, b, rd, intent, w) if RENDER is not None else None
@@ -215,6 +220,7 @@ def main() -> None:
                     help="reproduce K: 40 deg FOV applied as +-40 deg (audit A5)")
     ap.add_argument("--legacy-cap", action="store_true",
                     help="reproduce K: approach even when every option exceeds the risk cap (audit A3)")
+    ap.add_argument("--seeds", default=None, help="seed module (default K's seeds.py; programme L: its own)")
     ap.add_argument("--addendum", default="", help="confirmatory run: committed protocol (clean tree required)")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
@@ -225,7 +231,7 @@ def main() -> None:
     cfg = {"types_model": a.types_model, "edges": a.edges, "time_model": a.time_model, "channels": a.channels,
            "task": a.task, "task_spec": tasks["tasks"][a.task], "voi": tasks["voi"], "n_enc": a.n_enc,
            "robot": a.robot, "transition_fix": a.transition_fix,
-           "legacy_cap": a.legacy_cap, "legacy_camera": a.legacy_camera}
+           "legacy_cap": a.legacy_cap, "legacy_camera": a.legacy_camera, "seeds": a.seeds}
     jobs = [(a.experiment, a.partition, a.first + i, h, s, cfg) for i in range(a.n) for h in a.histories.split(",")
             for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)

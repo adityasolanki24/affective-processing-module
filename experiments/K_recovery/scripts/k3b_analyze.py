@@ -7,7 +7,9 @@
     approach time + 4 s × (windows − 1) + 20 s × strong perturbations felt + 12.6 s × (1 − task success)
 
 A strong perturbation felt is an observable window with acc8 ≥ 6. Task success is `Task.p_success` at the measured
-stopping distance. Each lifetime contributes its mean, and DT − L0 is taken over paired seeds, with bootstrap 95% CIs.
+stopping distance (K). `--measured-success` (programme L, audit A4): hold completed for proximity tasks,
+stopping distance ≥ min_sep for separation, arrival for waypoint. Each lifetime contributes its mean, and DT − L0
+is taken over paired seeds, with bootstrap 95% CIs.
 
 **Promotion rule per task:**
 1. cost difference: 95% upper bound < 0;
@@ -27,6 +29,7 @@ from pathlib import Path
 import numpy as np
 
 STRONG = 6
+MEASURED = False
 
 
 def boot(x: list[float], n: int = 4000) -> dict:
@@ -37,10 +40,20 @@ def boot(x: list[float], n: int = 4000) -> dict:
             "n": int(len(a))}
 
 
+def success(x: dict, task: dict) -> float:
+    if not MEASURED:
+        return x["task_success"]
+    if task.get("d_task") is not None:
+        return float(x["hold_completed"])
+    if task.get("min_sep") is not None:
+        return float(x["arrived"] and x["d_stop"] >= task["min_sep"])
+    return float(x["arrived"])
+
+
 def enc_cost(x: dict, task: dict) -> float:
     strong = sum(c >= STRONG for c in x["imu_cats"])
     return ((x["t_arrive"] or 45.0) + 4.0 * (x["windows_done"] - 1) + task["price_s"] * strong
-            + task["retry_s"] * (1.0 - x["task_success"]))
+            + task["retry_s"] * (1.0 - success(x, task)))
 
 
 def main() -> None:
@@ -48,7 +61,10 @@ def main() -> None:
     ap.add_argument("--runs", type=Path, nargs="+", required=True)
     ap.add_argument("--tasks", type=Path, default=Path(__file__).resolve().parents[1] / "configs" / "K_tasks.json")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--measured-success", action="store_true", help="programme L: measured task outcomes (A4)")
     a = ap.parse_args()
+    global MEASURED
+    MEASURED = a.measured_success
     tasks = json.loads(a.tasks.read_text())["tasks"]
     d: dict = defaultdict(lambda: defaultdict(dict))
     for p in a.runs:
@@ -64,7 +80,8 @@ def main() -> None:
             rows = [x for h in ("risky_B", "safe") for lt in runs[(s, h)].values() for x in lt]
             o[s] = {"cost": float(np.mean([enc_cost(x, spec) for x in rows])),
                     "contacts": float(np.mean([x["contacts"] for x in rows])),
-                    "task_success": float(np.mean([x["task_success"] for x in rows])),
+                    "task_success": float(np.mean([success(x, spec) for x in rows])),
+                    "holds": float(np.mean([x.get("no_safe_action", False) for x in rows])),
                     "approach_s": float(np.mean([x["t_arrive"] for x in rows if x["t_arrive"] is not None])),
                     "falls": int(sum(x["fell"] for x in rows)), "trips": int(sum(x["trips"] > 0 for x in rows))}
             late = {h: {i: [x["d_stop"] for x in lt if x["entity"] == "B1" and x["k"] >= 10]

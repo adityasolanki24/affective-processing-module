@@ -48,7 +48,8 @@ ROUTER, NAT = "apm-j-router", "apm-j-nat"
 INCLUDE = ("src", "pyproject.toml", "experiments/F_behavioral_learning/configs",
            "experiments/G_architecture_selection/scripts", "experiments/G_architecture_selection/configs",
            "experiments/G_architecture_selection/seeds.py", "experiments/I_autonomous_revision",
-           "experiments/J_validation_transfer", "runs/E2/predictor.json")
+           "experiments/J_validation_transfer", "experiments/K_recovery", "experiments/L_audit_perception",
+           "runs/E2/predictor.json")
 
 
 def g() -> str:
@@ -141,7 +142,8 @@ def _archive(path: Path, commit: bool, cmd: str) -> str:
                 str(clone)])
             sh(["git", "-C", str(clone), "sparse-checkout", "set", "--cone", "src", "runs",
                 "experiments/F_behavioral_learning/configs", "experiments/G_architecture_selection",
-                "experiments/I_autonomous_revision", "experiments/J_validation_transfer", "experiments/K_recovery"])
+                "experiments/I_autonomous_revision", "experiments/J_validation_transfer", "experiments/K_recovery",
+                "experiments/L_audit_perception"])
             sh(["git", "-C", str(clone), "checkout", "-q", sha])
             tar.add(clone, arcname="apm")
             for extra in ("runs/E2/predictor.json",):  # git-tracked inputs are already in the clone
