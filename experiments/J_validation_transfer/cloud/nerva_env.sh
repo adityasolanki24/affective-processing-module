@@ -19,4 +19,6 @@ if [ ! -x /work/nvenv/bin/python ]; then
 fi
 export NERVA_ROOT=/work/NERVA OPEN_DUCK_ROOT=/work PYTHONWARNINGS=ignore OMP_NUM_THREADS=1
 export NPY=/work/nvenv/bin/python
+# mujoco_playground clones its model menagerie on first import; do it once here, not racing in parallel workers
+[ -d /work/nvenv/lib/python3.12/site-packages/mujoco_playground/external_deps/mujoco_menagerie ] ||   $NPY -c "import mujoco_playground" >/dev/null 2>&1 || true
 export PYTHONPATH="$PWD/src:/work/NERVA"
