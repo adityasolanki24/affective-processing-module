@@ -5,7 +5,8 @@ Two steps, because the trained model needs MuJoCo 3.16 (`hum` venv) and the refe
     # 1. hum venv: observations from real rollouts (commands, stop/start, turns, pushes), NumPy actions
     python l_a7_policy_equiv.py collect --out results/A7_obs.npz
     # 2. brax venv: the training pickle through brax's own inference function, compared with step 1
-    python l_a7_policy_equiv.py compare --obs results/A7_obs.npz --params <t1_params.pkl>         --out results/A7_policy_equiv.json
+    python l_a7_policy_equiv.py compare --obs results/A7_obs.npz --params <t1_params.pkl>
+        --out results/A7_policy_equiv.json
 
 `compare` also rebuilds `t1_policy.npz` from the pickle and checks it array by array, and records the SHA-256 of the
 model and weights against the stored hashes.
