@@ -31,6 +31,9 @@ The robot is driven through H's admitted interface (`apm_express.adapter.MotionR
 commands plus head offsets). Every request first passes NERVA's `SafetyMonitor` (neutral fallback), exactly as in
 `nerva_world`.
 
+**Body colliders.** The MJCF collides only at the feet. For physical people, the upper body gets convex-hull colliders
+from its visual meshes (`add_body_colliders`); the gait's ground contacts are unchanged.
+
 **Eye.** As in programme L (`vision.robot_view`): 5 cm ahead of the head body along the face direction (the world +x
 of the home pose, in the head frame), level with the head's up axis.
 """
@@ -155,6 +158,37 @@ def match_mujoco(stage, root: str, mjcf: Path) -> dict:
             "mujoco_total_mass": round(float(mj.body_mass[1:].sum()), 4)}
 
 
+# NERVA's MJCF gives only its feet collision geometry. MuJoCo programmes K/L applied pushes as velocity impulses, so
+# that never mattered; with physical people in PhysX, a person would pass through the body. The upper body gets
+# convex-hull colliders from its own visual meshes (mass and inertia stay MuJoCo's; self-collision off). Shins and
+# feet are left as they are, so the gait's ground contacts are unchanged.
+BODY_COLLIDER_LINKS = ("trunk_assembly", "head_assembly", "neck_pitch_assembly", "head_pitch_to_yaw",
+                       "neck_yaw_assembly", "hip_roll_assembly", "hip_roll_assembly_2",
+                       "left_roll_to_pitch_assembly", "right_roll_to_pitch_assembly")
+
+
+def add_body_colliders(stage, root: str) -> list[str]:
+    from pxr import PhysxSchema, Usd, UsdGeom, UsdPhysics
+    added = []
+    prims = list(Usd.PrimRange(stage.GetPrimAtPath(root), Usd.TraverseInstanceProxies()))
+    links = {p.GetName(): p for p in prims if p.HasAPI(UsdPhysics.RigidBodyAPI)}
+    for name in BODY_COLLIDER_LINKS:
+        link = links.get(name)
+        if link is None:
+            continue
+        for q in Usd.PrimRange(link):
+            if q != link and q.HasAPI(UsdPhysics.RigidBodyAPI):
+                break  # stop at the next link
+            if q.IsA(UsdGeom.Mesh) and not q.HasAPI(UsdPhysics.CollisionAPI) and not q.IsInstanceProxy():
+                UsdPhysics.CollisionAPI.Apply(q)
+                UsdPhysics.MeshCollisionAPI.Apply(q).CreateApproximationAttr("convexHull")
+                added.append(str(q.GetPath()))
+    for p in prims:
+        if p.HasAPI(UsdPhysics.ArticulationRootAPI):
+            PhysxSchema.PhysxArticulationAPI.Apply(p).CreateEnabledSelfCollisionsAttr(False)
+    return added
+
+
 def head_eye_frame(mjcf: Path, home_qpos) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """(position, 3x3 rotation) of L's eye in the head body frame: 5 cm along the face direction, x = face,
     z = the head's up direction at the home pose made orthogonal to x. Third: the eye in the base frame at home."""
@@ -208,6 +242,7 @@ class NervaIsaac(_IsaacBody):
         add_reference_to_stage(self.usd, path)
         top = world.stage.GetPrimAtPath(path)
         self.import_report.update(match_mujoco(world.stage, path, self.mjcf))
+        self.import_report["body_colliders"] = add_body_colliders(world.stage, path)
         prims = list(Usd.PrimRange(top, Usd.TraverseInstanceProxies()))
         art_root = next(str(p.GetPath()) for p in prims if p.HasAPI(UsdPhysics.ArticulationRootAPI))
         # geometry at the asset origin: extent ahead of the base origin (feet/head)
