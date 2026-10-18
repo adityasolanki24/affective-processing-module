@@ -116,13 +116,13 @@ class ImuLogger:
         self.tilt.append(float(row["tilt"]))
 
     def summarise(self, start: int, baseline: slice, dt: float, gyro_thr: float = 0.35,
-                  quiet: np.ndarray | None = None, end: int | None = None) -> Evidence:
-        """Evidence over frames start..end (default: to the last frame). `quiet` (efference-copy gate) keeps only
+                  quiet: np.ndarray | None = None, stop: int | None = None) -> Evidence:
+        """Evidence over frames start..stop (default: to the last frame). `quiet` (efference-copy gate) keeps only
         frames the robot did not move itself."""
-        g = np.array(self.gyro[start:end])
+        g = np.array(self.gyro[start:stop])
         acc = np.array(self.acc)
         base_acc = acc[baseline].mean(0) if len(acc[baseline]) else np.zeros(2)
-        a = np.linalg.norm(acc[start:end] - base_acc, axis=1)
+        a = np.linalg.norm(acc[start:stop] - base_acc, axis=1)
         n_quiet = -1
         if quiet is not None:
             mask = np.asarray(quiet[start:start + len(g)], bool)
@@ -139,18 +139,18 @@ class ImuLogger:
             stab = (end - above[0]) * dt
         else:
             stab = 0.0
-        c = self.contacts[start:end]
+        c = self.contacts[start:stop]
         changes = sum(c[k] != c[k - 1] for k in range(1, len(c)))
         base_eff = np.mean(self.effort[baseline]) if len(self.effort[baseline]) else 1.0
-        eff = np.max(self.effort[start:end]) / max(1e-9, base_eff) if len(self.effort[start:end]) else 1.0
+        eff = np.max(self.effort[start:stop]) / max(1e-9, base_eff) if len(self.effort[start:stop]) else 1.0
         tilt = np.array(self.tilt)
-        tilt_peak = float(tilt[start:end].max() - tilt[baseline].mean()) if len(tilt[baseline]) else 0.0
+        tilt_peak = float(tilt[start:stop].max() - tilt[baseline].mean()) if len(tilt[baseline]) else 0.0
         base_dev = np.linalg.norm(acc[baseline] - base_acc, axis=1) if len(acc[baseline]) else np.zeros(1)
         base_peak = float(np.max(base_dev))
         energy = float(np.sum(np.clip(a - base_peak, 0.0, None) ** 2)) if len(a) else 0.0
         peak = float(np.max(a)) if len(a) else 0.0
         return Evidence(float(g.max()) if len(g) else 0.0, peak, float(stab), int(changes), float(eff), tilt_peak,
-                        bool(np.max(self.tilt[start:end]) > 45.0), base_peak, energy,
+                        bool(np.max(self.tilt[start:stop]) > 45.0), base_peak, energy,
                         bool(peak > 1.5 * base_peak),
                         n_quiet)
 
@@ -317,7 +317,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
             hold_n = int(round(SELF_MOTION_HOLD_S / ctrl.dt))
             mv = np.asarray(own, bool)
             q = ~np.array([mv[max(0, j - hold_n):j + 1].any() for j in range(len(mv))])
-            win_ev.append(log.summarise(w0, slice(max(0, n_settle - 50), n_settle), ctrl.dt, quiet=q, end=k))
+            win_ev.append(log.summarise(w0, slice(max(0, n_settle - 50), n_settle), ctrl.dt, quiet=q, stop=k))
             if abort_on_detect and win_ev[-1].detected and len(win_ev) < windows:
                 aborted = True
                 break
