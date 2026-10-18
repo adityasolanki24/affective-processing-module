@@ -14,8 +14,15 @@
                 + retry · (1 − P_success(d(a)))                       task failure cost
 
 P_success is 1 when the stopping distance d ≤ d_task, falls linearly to 0 at d_task + 0.3 m, and is 1 for tasks without
-a proximity requirement. **Risk cap:** options whose expected strong perturbations exceed `risk_cap` are excluded; if
-none is left, the farthest, shortest option is used.
+a proximity requirement. It is a *model of reaching the interaction distance*, not of completing a task.
+
+**Risk cap (audit A3, programme L).**
+- Options whose *predicted* expected strong perturbations exceed `risk_cap` are excluded.
+- If none is left, the result is `NO_SAFE_ACTION`. The robot then executes `HOLD`: it stops at the stand-off point
+  (0.9 m, beyond every type's reach), does not attempt the task, and learns nothing from IMU silence there.
+- K used the farthest approach even when it exceeded the cap; `legacy=True` reproduces that.
+- The cap constrains *predicted* risk under the robot's own model. Physical safety stays with the independent safety
+  monitor and the validated controller.
 
 **Policies.**
 - `greedy`: argmin over the grid of C(a, 1 | b). This is J6's decision-theoretic mapping with frozen task values.
@@ -96,7 +103,15 @@ def cost(i: int, w: int, b: np.ndarray, tm: TimeModel, em: Emissions, task: Task
     return c, risk
 
 
-def best_greedy(b: np.ndarray, tm: TimeModel, em: Emissions, task: Task) -> tuple[int, float]:
+OBSERVE = -1
+HOLD = -2           # executed when there is NO_SAFE_ACTION: stand off beyond reach, task not attempted
+NO_SAFE_ACTION = HOLD
+STANDOFF_M = 0.3
+OUT_OF_REACH = 3  # pseudo-band: no IMU evidence
+
+
+def best_greedy(b: np.ndarray, tm: TimeModel, em: Emissions, task: Task, legacy: bool = False) -> tuple[int, float]:
+    """Cheapest grid intent within the risk cap; `(NO_SAFE_ACTION, hold cost)` if there is none."""
     best, best_c, fallback = -1, math.inf, None
     for i in range(len(GRID)):
         c, risk = cost(i, 1, b, tm, em, task)
@@ -106,19 +121,17 @@ def best_greedy(b: np.ndarray, tm: TimeModel, em: Emissions, task: Task) -> tupl
         if fallback is None or far < fallback[0]:
             fallback = (far, i, c)
     if best < 0:
-        assert fallback is not None
-        return fallback[1], fallback[2]
+        if legacy:  # programme K: farthest approach even when it exceeds the cap
+            assert fallback is not None
+            return fallback[1], fallback[2]
+        return NO_SAFE_ACTION, action_cost(HOLD, 1, b, tm, em, task)[0]
     return best, best_c
 
 
-OBSERVE = -1
-STANDOFF_M = 0.3
-OUT_OF_REACH = 3  # pseudo-band: no IMU evidence
-
-
 def action_cost(a: int, w: int, b: np.ndarray, tm: TimeModel, em: Emissions, task: Task) -> tuple[float, float]:
-    """Cost of a grid intent (a >= 0) or of OBSERVE (a == -1) with w windows."""
-    if a != OBSERVE:
+    """Cost of a grid intent (a >= 0), OBSERVE (-1) or HOLD (-2) with w windows. OBSERVE and HOLD stop beyond reach:
+    no predicted perturbation, and the task is not achieved there."""
+    if a >= 0:
         return cost(a, w, b, tm, em, task)
     it = GRID[2]  # proximity 0, tempo 1, no hesitation
     c = tm.predict(it) + WINDOW_S * (w - 1) + task.retry_s * (1.0 - task.p_success(stop_distance(0.0) + STANDOFF_M))
@@ -165,14 +178,21 @@ def voi(band: int, w: int, b: np.ndarray, pi: np.ndarray, tm: TimeModel, em: Emi
 
 def choose(policy: str, b: np.ndarray, pi: np.ndarray, tm: TimeModel, em: Emissions, task: Task, lam: float = 0.02,
            horizon: float = 5.0, gap: float = 3.0, u_trigger: float = 0.6,
-           rng: np.random.Generator | None = None) -> tuple[int, int, dict]:
-    """Return (grid index or OBSERVE, windows, diagnostics incl. "standoff")."""
+           rng: np.random.Generator | None = None, legacy: bool = False) -> tuple[int, int, dict]:
+    """Return (grid index, OBSERVE or HOLD, windows, diagnostics incl. "standoff" and "no_safe_action")."""
+    def hold(i: int, c: float, extra: dict) -> tuple[int, int, dict]:
+        return i, 1, {"cost": c, "standoff": STANDOFF_M, "no_safe_action": True, **extra}
+
     if policy in ("greedy", "oracle"):
-        i, c = best_greedy(b, tm, em, task)
+        i, c = best_greedy(b, tm, em, task, legacy)
+        if i == NO_SAFE_ACTION:
+            return hold(i, c, {})
         return i, 1, {"cost": c, "standoff": 0.0}
     if policy == "uncertain":
-        i, c = best_greedy(b, tm, em, task)
+        i, c = best_greedy(b, tm, em, task, legacy)
         h = -float(np.sum(b * np.log(np.clip(b, 1e-12, 1.0)))) / math.log(len(b))
+        if i == NO_SAFE_ACTION:
+            return hold(i, c, {"entropy": h})
         return i, (3 if h > u_trigger else 1), {"cost": c, "entropy": h, "standoff": 0.0}
     if policy == "voi":
         assert rng is not None
@@ -191,7 +211,9 @@ def choose(policy: str, b: np.ndarray, pi: np.ndarray, tm: TimeModel, em: Emissi
                 if best is None or c - v < best[0] - 1e-9:
                     best = (c - v, a, w, c, v)
         if best is None:
-            i, c = best_greedy(b, tm, em, task)
+            i, c = best_greedy(b, tm, em, task, legacy)
+            if i == NO_SAFE_ACTION:
+                return hold(i, c, {"voi": 0.0})
             return i, 1, {"cost": c, "voi": 0.0, "standoff": 0.0}
         return best[1], best[2], {"cost": best[3], "voi": best[4],
                                   "standoff": STANDOFF_M if best[1] == OBSERVE else 0.0}

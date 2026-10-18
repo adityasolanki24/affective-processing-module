@@ -168,7 +168,7 @@ def lifetime(args: tuple) -> dict:
     from apm_express.styles import NEUTRAL
     from apm_revise.belief import TypeModel
     from apm_transfer.expression_map import GRID, TimeModel
-    from apm_transfer.infoseek import OBSERVE, Emissions, Task, choose
+    from apm_transfer.infoseek import Emissions, Task, choose
     from apm_transfer.nerva_continuous import ContinuousNerva
     from apm_transfer.nerva_memory import TypeStateModel
     from apm_transfer.nerva_world import MIN_QUIET_FRAMES, Camera
@@ -203,8 +203,9 @@ def lifetime(args: tuple) -> dict:
             intent = ExpressionIntent(**{**NEUTRAL.as_dict(), "proximity": 0.5}).sanitized()
         else:
             grid_i, w, diag = choose(pol, b, model.pi, tm, em_used, task, lam=spec["lam"],
-                                     horizon=cfg["voi"]["horizon"], gap=1.0, rng=rng)
-            intent = GRID[2] if grid_i == OBSERVE else GRID[grid_i]
+                                     horizon=cfg["voi"]["horizon"], gap=1.0, rng=rng,
+                                     legacy=cfg.get("legacy_cap", False))
+            intent = GRID[2] if grid_i < 0 else GRID[grid_i]  # OBSERVE / HOLD stand off beyond reach
         standoff = diag.get("standoff", 0.0)
         if overlay:
             overlay.text = [f"encounter {k + 1}/{N_ENC}   stage {stage_of(k)}   entity now: {etype} (sim label)",
@@ -229,7 +230,7 @@ def lifetime(args: tuple) -> dict:
         rows.append({"k": k, "stage": stage_of(k), "type": etype, "b_before": [round(float(v), 4) for v in b],
                      "p_disruptive": round(float(b[-1]), 4), "u": round(rd.u, 3), "grid_i": grid_i, "windows": w,
                      "proximity": round(intent.proximity, 3), "voi": round(diag.get("voi", 0.0), 2),
-                     "standoff": standoff,
+                     "standoff": standoff, "no_safe_action": bool(diag.get("no_safe_action", False)),
                      "d_stop": d, "t": out["t"], "t_arrive": out["t_arrive"], "aborted": out["aborted"],
                      "imu_cats": imu, "cam_codes": out["camera"], "informative": len(cats), "cats": cats,
                      "contacts": out["truth"]["contacts"], "max_push": out["truth"]["max_push"],

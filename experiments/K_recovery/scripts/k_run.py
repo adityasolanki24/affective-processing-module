@@ -99,7 +99,7 @@ def job(args: tuple) -> dict:
     from apm_express.states import Probe, lookup_intent
     from apm_revise.belief import TypeModel
     from apm_transfer.expression_map import GRID, TimeModel, band_of
-    from apm_transfer.infoseek import OBSERVE, Emissions, Task, choose
+    from apm_transfer.infoseek import Emissions, Task, choose
     from apm_transfer.nerva_memory import TypeStateModel
     from apm_transfer.nerva_world import MIN_QUIET_FRAMES, Camera
     if cfg.get("robot", "nerva") == "wheeled":
@@ -150,8 +150,8 @@ def job(args: tuple) -> dict:
             pol = "greedy" if spec["policy"] == "oracle" else spec["policy"]
             grid_i, w, diag = choose(pol, bb, model.pi, tm, em if spec["camera"] else em_imu, task, lam=spec["lam"],
                                      horizon=voi_cfg["horizon"], gap=voi_cfg["gap"], u_trigger=voi_cfg["u_trigger"],
-                                     rng=decide_rng)
-            intent = GRID[2] if grid_i == OBSERVE else GRID[grid_i]
+                                     rng=decide_rng, legacy=cfg.get("legacy_cap", False))
+            intent = GRID[2] if grid_i < 0 else GRID[grid_i]  # OBSERVE / HOLD stand off beyond reach
         standoff = diag.get("standoff", 0.0)
         clip = RENDER(system, history, index, k, ident, etype, b, rd, intent, w) if RENDER is not None else None
         ev, out, truth = closed_loop_encounter(int(enc_seeds[k]), etype, intent, channels, windows=w, camera=camera,
@@ -179,7 +179,8 @@ def job(args: tuple) -> dict:
                      "contacts_dwell": truth["contacts_dwell"], "max_push": truth["max_push"],
                      "arrived": out["arrived"], "t_arrive": out["t_arrive"], "dwell_s": out["dwell_s"],
                      "trips": out["trips"], "fell": out["fell"], "task_success": task.p_success(d),
-                     "voi": round(diag.get("voi", 0.0), 3), "standoff": standoff})
+                     "voi": round(diag.get("voi", 0.0), 3), "standoff": standoff,
+                     "no_safe_action": bool(diag.get("no_safe_action", False))})
         if clip is not None:
             clip.close(rows[-1])
         if out["fell"]:
@@ -207,6 +208,8 @@ def main() -> None:
     ap.add_argument("--n-enc", type=int, default=N_ENC, help="shorter lifetimes, for smoke tests only")
     ap.add_argument("--robot", choices=("nerva", "wheeled", "humanoid"), default="nerva")
     ap.add_argument("--transition-fix", action="store_true", help="DEVIATIONS D1: change transition every meeting")
+    ap.add_argument("--legacy-cap", action="store_true",
+                    help="reproduce K: approach even when every option exceeds the risk cap (audit A3)")
     ap.add_argument("--addendum", default="", help="confirmatory run: committed protocol (clean tree required)")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
@@ -216,7 +219,8 @@ def main() -> None:
     tasks = json.loads(Path(a.tasks_config).read_text())
     cfg = {"types_model": a.types_model, "edges": a.edges, "time_model": a.time_model, "channels": a.channels,
            "task": a.task, "task_spec": tasks["tasks"][a.task], "voi": tasks["voi"], "n_enc": a.n_enc,
-           "robot": a.robot, "transition_fix": a.transition_fix}
+           "robot": a.robot, "transition_fix": a.transition_fix,
+           "legacy_cap": a.legacy_cap}
     jobs = [(a.experiment, a.partition, a.first + i, h, s, cfg) for i in range(a.n) for h in a.histories.split(",")
             for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)
