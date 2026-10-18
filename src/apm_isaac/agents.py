@@ -40,6 +40,7 @@ V_CONTACT_MAX = 0.15
 # - A lunge of reach r moves the person's body by r - GAP0.
 # So contact happens exactly when r > d, as before, and the closest grid stop (0.2) leaves a 5 cm gap.
 GAP0 = 0.15
+CHARACTER_YAW = math.pi / 2  # the stock People characters face their local -y (M4 eye check: seen side-on otherwise)
 
 
 @dataclass
@@ -172,6 +173,7 @@ def place(stage, p: Person, xy: np.ndarray, yaw: float) -> None:
         p._vis = SingleXFormPrim(vis) if vis else None  # type: ignore[attr-defined]
         p._char = None  # type: ignore[attr-defined]
     x, y = float(xy[0]), float(xy[1])
+    yaw = yaw + CHARACTER_YAW  # the stock characters face their local -y
     p._rb.set_world_pose(position=np.array([x, y, HEIGHT / 2]))  # type: ignore[attr-defined]
     if p._vis is None:  # type: ignore[attr-defined]
         return

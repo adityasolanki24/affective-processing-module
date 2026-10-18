@@ -31,6 +31,7 @@ ap.add_argument("--scene", default="warehouse")
 ap.add_argument("--policy-dir", default=None)
 ap.add_argument("--video", action="store_true")
 ap.add_argument("--stations", type=int, default=1, help="how many stations to visit")
+ap.add_argument("--approach-from", type=float, default=None, help="experiment mode: start each encounter here")
 a, _ = ap.parse_known_args()
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "src"))
@@ -68,7 +69,8 @@ plan = [(sid, et, gi, so) for sid in stations for et, gi, so in
 rows = []
 for k, (sid, etype, gi, standoff) in enumerate(plan):
     t0 = time.time()
-    out, truth = w.encounter(sid, etype, GRID[gi], windows=2, standoff=standoff, video=a.video)
+    out, truth = w.encounter(sid, etype, GRID[gi], windows=2, standoff=standoff, video=a.video,
+                             approach_from=a.approach_from, return_home=a.approach_from is None)
     row = {"k": k, "station": sid, "type": etype, "grid": gi, "standoff": standoff, "arrived": out["arrived"],
            "d_stop": out["final_distance"], "imu_peaks": [round(e[1], 4) for e in out["windows"]],
            "detected": [bool(e[9]) for e in out["windows"]], "camera": out["camera"],

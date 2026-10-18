@@ -71,6 +71,9 @@ ap.add_argument("--task-config", default=None,
                 help="JSON with this robot's task values (retry_s from its own time model)")
 ap.add_argument("--policy-dir", default=None)
 ap.add_argument("--video", action="store_true")
+ap.add_argument("--walk-home", action="store_true",
+                help="continuous lifetime (videos): walk home between encounters instead of starting each encounter "
+                     "from its approach point")
 ap.add_argument("--logs", type=Path, default=None)
 ap.add_argument("--out", type=Path, required=True)
 a, _ = ap.parse_known_args()
@@ -97,6 +100,9 @@ L = REPO / "experiments" / "L_audit_perception" / "configs"
 K = REPO / "experiments" / "K_recovery" / "configs"
 ENTITIES = (("A1", "A", "P1"), ("B1", "B", "P2"), ("C1", "C", "P3"))
 P_ENTITY = (0.25, 0.5, 0.25)
+# Approach distance from each encounter's start point to the station: 2.2 m (the scenes' hub radius) for the
+# 0.7 m-tall robots; 1.1 m for NERVA (0.4 m tall, 0.05 m/s), which keeps its approach time comparable.
+APPROACH_M = {"nova_carter": 2.2, "humanoid": 2.2, "nerva": 1.1, "wheeled_reference": 2.2}
 CHARACTERS = {"P1": "male_adult_construction_05_new", "P2": "F_Business_02", "P3": "M_Medical_01"}
 TUNED = json.loads((L / "LE_tuned.json").read_text())["tuned"]
 SYSTEMS = {
@@ -170,7 +176,7 @@ for index in range(a.first, a.first + a.n):
                 log.unlink()
             rt = Runtime(mcfg, time_coef, task, voi, lam=0.02, seed=base + 3, camera=True, log=log,
                          policy=spec["policy"], supervise=spec.get("supervise", True))
-            body = IsaacBody(world, edges, stations)
+            body = IsaacBody(world, edges, stations, approach_from=None if a.walk_home else APPROACH_M[a.robot])
             rows, t0 = [], time.time()
             for k, (ident, kind, _) in enumerate(order):
                 etype = btype(history, k) if ident == "B1" else "calm"

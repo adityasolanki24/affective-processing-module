@@ -220,20 +220,25 @@ class IsaacWorld:
         cache = UsdGeom.XformCache()
         m = cache.GetLocalToWorldTransform(eye) * cache.GetLocalToWorldTransform(link).GetInverse()
         self._eye_local = np.array(m, float).T  # USD row-vector convention -> column convention
-        el = math.radians(-c.pitch_deg)  # pitch_deg < 0 looks down: rotate +|pitch| about the eye's y axis
-        self._eye_pitch = np.array([[math.cos(el), 0.0, math.sin(el)], [0.0, 1.0, 0.0],
-                                    [-math.sin(el), 0.0, math.cos(el)]])
         return cam
 
     def eye_pose(self) -> tuple[np.ndarray, np.ndarray]:
-        """World position and rotation (x = view direction) of the depth eye, from the PhysX link pose."""
+        """World position and rotation (x = view direction) of the depth eye, from the PhysX link pose.
+
+        As programme L's camera (`vision.VisionSession`): roll-free, with the azimuth and elevation of the mounting's
+        forward axis, plus the camera's own pitch (`VisionCamera.pitch_deg`)."""
         from apm_isaac.robots import quat_to_rot
         tf = np.asarray(self.robot.art._articulation_view._physics_view.get_link_transforms())[0][self._eye_link]
         M = np.eye(4)
         M[:3, :3] = quat_to_rot(np.array([tf[6], tf[3], tf[4], tf[5]]))
         M[:3, 3] = tf[:3]
         E = M @ self._eye_local
-        return E[:3, 3], E[:3, :3] @ self._eye_pitch
+        f = E[:3, 0] / np.linalg.norm(E[:3, 0])
+        az = math.atan2(f[1], f[0])
+        el = math.asin(float(np.clip(f[2], -1.0, 1.0))) + math.radians(self.vision_cfg.pitch_deg)
+        Rz = np.array([[math.cos(az), -math.sin(az), 0.0], [math.sin(az), math.cos(az), 0.0], [0.0, 0.0, 1.0]])
+        Ry = np.array([[math.cos(-el), 0.0, math.sin(-el)], [0.0, 1.0, 0.0], [-math.sin(-el), 0.0, math.cos(-el)]])
+        return E[:3, 3], Rz @ Ry
 
     def _pose_eye(self) -> None:
         from apm_isaac.robots import rot_to_quat
@@ -342,8 +347,13 @@ class IsaacWorld:
 
     def encounter(self, station: str, etype: str, intent, windows: int, standoff: float = 0.0,
                   settle_s: float = 1.0, max_approach_s: float = 45.0, abort_on_detect: bool = True,
-                  video: bool = False) -> tuple[dict, dict]:
-        """One encounter from the robot's current pose. The robot returns home afterwards (a continuous lifetime)."""
+                  video: bool = False, approach_from: float | None = None,
+                  return_home: bool = True) -> tuple[dict, dict]:
+        """One encounter from the robot's current pose; afterwards it walks home (a continuous lifetime).
+
+        Experiments use `approach_from=A, return_home=False`: the robot starts at rest A metres from the station
+        on the home-station line, facing it, and does not walk back. Encounters then take the same time
+        regardless of where the last one ended."""
         from apm_express.intent import ExpressionIntent
         from apm_express.styles import NEUTRAL
         from apm_transfer.nerva_world import (
@@ -359,6 +369,11 @@ class IsaacWorld:
         person = self.people[station]
         sx, sy = person.xy
         self._video_target, self._video_eye = (sx, sy), None
+        if approach_from is not None:
+            hx0, hy0, _ = self._home
+            dv = np.array([hx0 - sx, hy0 - sy])
+            dv = dv / (np.linalg.norm(dv) or 1.0)
+            self.robot.teleport(sx + approach_from * dv[0], sy + approach_from * dv[1], math.atan2(-dv[1], -dv[0]))
         horizon = max_approach_s + POST_ARRIVAL_SKIP_S + WINDOW_S * MAX_WINDOWS + 20.0
         erng = np.random.default_rng(int(self.rng.integers(2**31)))
         person.schedule(erng, etype, self.t, horizon)
@@ -366,7 +381,7 @@ class IsaacWorld:
         trips0 = self.robot.trips  # the robot persists across a lifetime; trips are counted per encounter
         adapter = self._driver(int(self.rng.integers(2**31)))
         log = WheeledLogger(np.random.default_rng(int(self.rng.integers(2**31))))
-        perc = MotionPerception(self.vision_cfg)
+        perc = MotionPerception(self.vision_cfg, articulated_target=True)  # people move their limbs
         nav_err = float(self.rng.normal(0.0, self.vision_cfg.nav_sigma))
         # The camera works in the abstract encounter's frame (agents.GAP0): the robot knows a person's standard body
         # radius, so it takes the target at the station distance - RADIUS + GAP0. A reach estimate is then the
@@ -440,7 +455,7 @@ class IsaacWorld:
         neutral = ExpressionIntent(**{**NEUTRAL.as_dict(), "proximity": 0.5}).sanitized()
         adapter.reset(self.t, self.robot.pose(), (hx, hy), neutral)
         t_back = self.t
-        while not fell and self.t - t_back < max_approach_s:
+        while return_home and not fell and self.t - t_back < max_approach_s:
             row, _ = self.step(adapter.request(self.t, self.robot.pose(), (hx, hy), neutral), adapter, video)
             if self.robot.fallen(row):
                 fell = True

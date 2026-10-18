@@ -16,9 +16,10 @@ from apm_transfer.runtime import Decision, Observation, _Body
 
 
 class IsaacBody(_Body):
-    def __init__(self, world, edges: list[float], stations: dict[str, str], camera=None, video: bool | None = None):
+    def __init__(self, world, edges: list[float], stations: dict[str, str], camera=None, video: bool | None = None,
+                 approach_from: float | None = None):
         super().__init__(edges, camera)
-        self.world, self.stations = world, stations
+        self.world, self.stations, self.approach_from = world, stations, approach_from
         self.video = world.video_frames is not None if video is None else video
         self.name = f"{world.body_name}@isaac:{world.scene.name}"
 
@@ -32,7 +33,8 @@ class IsaacBody(_Body):
         """Encounter randomness comes from the world's own per-lifetime stream (paired across systems); `seed`
         is unused here."""
         out, truth = self.world.encounter(self.stations[d.identity], etype, d.intent(), d.windows, d.standoff,
-                                          video=self.video)
+                                          video=self.video, approach_from=self.approach_from,
+                                          return_home=self.approach_from is None)
         self.last_out = out
         return out, truth
 

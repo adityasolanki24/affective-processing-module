@@ -177,7 +177,7 @@ def head_eye_frame(mjcf: Path, home_qpos) -> tuple[np.ndarray, np.ndarray, np.nd
 
 class NervaIsaac(_IsaacBody):
     TILT_FALL_DEG = 45.0  # K/L: a fall is tilt > 45 deg
-    eye_near = 0.06       # m: L's eye sits 5 cm ahead of the head body origin, inside the head shell
+    eye_near = 0.02       # m: the eye sits 1 cm beyond the head shell
     eye_offset = 0.08     # replaced by the measured mounting in post_reset
     front = 0.10          # replaced by the measured extent
 
@@ -222,6 +222,20 @@ class NervaIsaac(_IsaacBody):
         # the eye on the head body
         head = next(p for p in prims if p.GetName() == "head_assembly")
         e_pos, e_rot, self.eye_base = head_eye_frame(self.mjcf, R["home_qpos"])
+        # L's eye (5 cm along the face) lies inside the head shell in Isaac's render (M4 eye check): move it to 1 cm
+        # beyond the head geometry's extent along the face direction (measured from the asset at rest)
+        cache = UsdGeom.XformCache()
+        m_h = np.array(cache.GetLocalToWorldTransform(head), float).T  # column convention
+        rng_h = UsdGeom.BBoxCache(Usd.TimeCode.Default(), ["default", "render"]).ComputeWorldBound(
+            head).ComputeAlignedRange()
+        lo, hi = np.array(rng_h.GetMin()), np.array(rng_h.GetMax())
+        corners = np.array([[x, y, z, 1.0] for x in (lo[0], hi[0]) for y in (lo[1], hi[1]) for z in (lo[2], hi[2])])
+        local = (np.linalg.inv(m_h) @ corners.T).T[:, :3]
+        face = e_rot[:, 0]
+        self.head_extent = float(max((local @ face).max(), 0.05))
+        shift = (self.head_extent + 0.01) - 0.05
+        e_pos = e_pos + face * shift
+        self.eye_base = self.eye_base + np.array([shift, 0.0, 0.0])  # the face points along +x at the home pose
         eye = UsdGeom.Xform.Define(world.stage, f"{head.GetPath()}/apm_eye")
         m = Gf.Matrix4d(1.0)
         m.SetRotateOnly(Gf.Matrix3d(*e_rot.T.flatten().tolist()))  # USD row-vector convention
@@ -296,9 +310,14 @@ class NervaIsaac(_IsaacBody):
         self._v_site_prev: np.ndarray | None = None
         self.eye_offset = float(self.eye_base[0])
         self.measured = {"usd": self.usd, "import": self.import_report, "front": round(self.front, 3),
+                         "head_extent_along_face": round(self.head_extent, 3),
                          "eye_offset": round(self.eye_offset, 3),
                          "eye_height": round(float(self.eye_base[2] + R["home_qpos"][2]), 3),
                          "feet": self.feet, "mass_kg": round(float(np.asarray(av.get_body_masses())[0].sum()), 3)}
+
+    def teleport(self, x: float, y: float, yaw: float) -> None:
+        super().teleport(x, y, yaw)
+        self._v_site_prev = None
 
     # ── sensing ──────────────────────────────────────────────────────────────
     def _site_velocity(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -386,12 +405,18 @@ class NervaIsaac(_IsaacBody):
         full = np.asarray(self.art.get_joint_positions(), float).copy()
         full[self.idx] = targets
         self.art.apply_action(ArticulationAction(joint_positions=full))
+        v_start = self._site_velocity()[0]
         for k in range(self.decim):
             if k == self.decim - 1:
                 self._v_site_prev = self._site_velocity()[0]
             self.world.step(render=False)
         self.t += DT
         row = self._row()
+        # the evidence IMU (logger): specific force averaged over the control period, an IMU's bandwidth. The
+        # single-step value above (the policy's accelerometer) is dominated by PhysX contact impulses (5-8 m/s2 at
+        # rest; K's NERVA IMU edges are 0.4-0.85).
+        v_end, w, Rb = self._site_velocity()
+        row["acc"] = Rb.T @ ((v_end - v_start) / DT + np.array([0.0, 0.0, 9.81]))
         row["contacts"] = self.contacts()
         return row
 

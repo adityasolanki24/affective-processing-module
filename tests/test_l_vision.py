@@ -60,7 +60,9 @@ def test_own_motion_frames_are_ignored():
 def test_perception_takes_only_images_and_self_knowledge():
     params = list(inspect.signature(MotionPerception.frame).parameters)
     assert params == ["self", "depth", "own_motion", "d_nav", "eye_offset"]
-    assert list(inspect.signature(MotionPerception.__init__).parameters) == ["self", "cam"]
+    # v1.0: `articulated_target` is a design setting (the robot expects people, whose limbs move), not world truth
+    assert list(inspect.signature(MotionPerception.__init__).parameters) == ["self", "cam", "articulated_target"]
+    assert inspect.signature(MotionPerception.__init__).parameters["articulated_target"].default is False
 
 
 def _model():

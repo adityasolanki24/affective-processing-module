@@ -40,7 +40,15 @@ a.out.mkdir(parents=True, exist_ok=True)
 root = get_assets_root_path()
 scene = SceneSpec("grid", "/Isaac/Environments/Grid/default_environment.usd", home=(0.0, 0.0, 0.0),
                   stations={"P1": (1.5, 0.0)})
-w = IsaacWorld(scene, a.body, seed=1, characters={"P1": find_character(root, "male_adult_construction_05_new")})
+channels = json.loads((REPO / "experiments" / "J_validation_transfer" / "configs" / "H_admitted_interface.json")
+                      .read_text())["interface"]
+w = IsaacWorld(scene, a.body, seed=1, characters={"P1": find_character(root, "male_adult_construction_05_new")},
+               nerva_channels=channels)
+if a.body == "nerva":
+    from pxr import UsdGeom as _G
+    hp = next(q for q in w.world.stage.Traverse() if q.GetName() == "head_assembly")
+    print("head_usd_world", list(_G.XformCache().GetLocalToWorldTransform(hp).ExtractRotationMatrix()), flush=True)
+    print("eye_local", w._eye_local.round(3).tolist(), "eye_link", w._eye_link, flush=True)
 p = w.people["P1"]
 cap = UsdGeom.Capsule(w.world.stage.GetPrimAtPath(p.cap_path))  # type: ignore[attr-defined]
 cap.CreatePurposeAttr("default")  # make the collider visible for this debug render

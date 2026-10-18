@@ -104,6 +104,16 @@ class _IsaacBody:
     def tilt(self) -> float:
         return math.acos(float(np.clip(self.rot()[2, 2], -1.0, 1.0)))
 
+    def teleport(self, x: float, y: float, yaw: float) -> None:
+        """Experiments only: put the robot at (x, y, yaw) at rest, keeping its height and joint configuration (used
+        to start each encounter from its approach point instead of walking back; videos walk)."""
+        z = float(np.asarray(self.art.get_world_pose()[0])[2])
+        self.art.set_world_pose(position=np.array([x, y, z]), orientation=yaw_quat(yaw))
+        self.art.set_linear_velocity(np.zeros(3))
+        self.art.set_angular_velocity(np.zeros(3))
+        self.v_cmd = self.w_cmd = 0.0
+        self._v_prev = None
+
     def push(self, dvx: float, dvy: float) -> None:
         v = np.asarray(self.art.get_linear_velocity(), float)
         self.art.set_linear_velocity(v + np.array([dvx, dvy, 0.0]))
@@ -585,6 +595,17 @@ class LabPolicyBody(_IsaacBody):
         eye = UsdGeom.Xform.Define(self.world.stage, f"{head.GetPath()}/apm_eye")
         eye.AddTransformOp().Set(m_e * m_h.GetInverse())
         self.eye_prim = str(eye.GetPath())
+        # the body's extent ahead of the trunk origin along its forward axis, at the asset's rest pose
+        from pxr import Usd
+        top = self.world.stage.GetPrimAtPath(root)
+        bbc = UsdGeom.BBoxCache(Usd.TimeCode.Default(), ["default", "render"])
+        rng = bbc.ComputeWorldBound(top).ComputeAlignedRange()
+        lo, hi = np.array(rng.GetMin()), np.array(rng.GetMax())
+        t0 = np.array(m_t.ExtractTranslation())
+        f = np.array(fwd)
+        corners = np.array([[x, y, z] for x in (lo[0], hi[0]) for y in (lo[1], hi[1]) for z in (lo[2], hi[2])])
+        self.front = float(max(((corners - t0) @ f).max(), 0.05))
+        self.eye_offset = float((np.array(p_eye) - t0) @ f)
 
     def apply(self, v: float, w: float) -> bool:
         tripped = False
@@ -607,8 +628,8 @@ class LabPolicyBody(_IsaacBody):
         ok = meas > 0.02  # commands that make progress
         if not ok.any():
             return v
-        cmd, meas = cmd[ok], meas[ok]
-        return float(np.interp(v, meas, cmd, left=cmd[0], right=cmd[-1]))
+        cmd, meas = np.concatenate([[0.0], cmd[ok]]), np.concatenate([[0.0], meas[ok]])  # anchored at rest
+        return float(np.interp(v, meas, cmd, right=cmd[-1]))
 
     def observation(self) -> np.ndarray:
         R = self.rot()

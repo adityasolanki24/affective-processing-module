@@ -124,8 +124,12 @@ class MotionPerception:
 
     N_BG = 3
 
-    def __init__(self, cam: VisionCamera):
+    def __init__(self, cam: VisionCamera, articulated_target: bool = False):
+        """`articulated_target` (APM v1.0, physical people in Isaac Sim): a person's own limbs also move away from
+        the camera, so only pixels moving away *outside* the target's depth band count as evidence of the robot
+        being pushed (egomotion moves the whole scene). Off: programmes K and L exactly."""
         self.cam = cam
+        self.articulated_target = articulated_target
         f = (cam.width / 2) / math.tan(math.radians(cam.hfov_deg) / 2)
         el = math.radians(cam.pitch_deg)
         up = (cam.height / 2 - 0.5 - np.arange(cam.height)) / f  # image-up tangent per row
@@ -184,13 +188,14 @@ class MotionPerception:
         closer = self._coherent(ok & (self.bg - depth > thr))
         farther = self._coherent(ok & (depth - self.bg > thr) & (self.bg < c.range_m))
         n_fg = int(closer.sum())
-        if n_fg >= c.min_px and farther.sum() > 0.3 * n_fg:  # egomotion (e.g. pushed): discard, rebuild
-            self._close(d_nav)
-            self.bg, self.stack = None, [np.where(depth > 0.02, depth, np.nan)]
-            return
         # motion *of the thing at the target*: foreground whose background lies near the target distance (from the
         # robot's navigation). Silhouette edges, whose background is the floor behind, do not count.
         near_target = np.abs(self.bg * self.h_per_z - (d_nav - eye_offset)) < SURFACE_BAND
+        n_away = int((farther & ~near_target).sum()) if self.articulated_target else int(farther.sum())
+        if n_fg >= c.min_px and n_away > 0.3 * n_fg:  # egomotion (e.g. pushed): discard, rebuild
+            self._close(d_nav)
+            self.bg, self.stack = None, [np.where(depth > 0.02, depth, np.nan)]
+            return
         n_fg = int((closer & near_target).sum())
         if n_fg >= c.min_px:
             if self.event is None:

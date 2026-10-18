@@ -122,7 +122,7 @@ f = rgb.get_rgba()
 if f is not None and np.size(f):
     Image.fromarray(np.asarray(f[..., :3], np.uint8)).save(a.out / f"{a.body}_eye_rgb.png")
 # a scripted lunge through MotionPerception, with the robot still
-perc = MotionPerception(c)
+perc = MotionPerception(c, articulated_target=True)
 dist = float(np.hypot(person.xy[0] - x, person.xy[1] - y))
 perc.end_window(dist - RADIUS + GAP0)
 perc.events = []
