@@ -144,7 +144,8 @@ def job(args: tuple) -> dict:
     em = Emissions.from_model(model.E, camera_block=model.E.shape[1] > 24)
     edges = json.loads(Path(cfg["edges"]).read_text())["acc8"]
     tm = TimeModel(json.loads(Path(cfg["time_model"]).read_text())["time_coef"])
-    task = Task(cfg["task"], **{k: v for k, v in cfg["task_spec"].items() if k != "why"})
+    task = Task(cfg["task"], **{k: v for k, v in cfg["task_spec"].items() if k != "why"},
+                hold_completes=cfg.get("legacy_task_scoring", False))
     voi_cfg = cfg["voi"]
     nerva = cfg.get("robot", "nerva") == "nerva"
     channels = json.loads(Path(cfg["channels"]).read_text())["interface"] if nerva else None
@@ -247,6 +248,8 @@ def main() -> None:
     ap.add_argument("--legacy-cap", action="store_true",
                     help="reproduce K: approach even when every option exceeds the risk cap (audit A3)")
     ap.add_argument("--vision-config", default=None, help="programme L: JSON of VisionCamera fields")
+    ap.add_argument("--legacy-task-scoring", action="store_true",
+                    help="reproduce K/L: OBSERVE/HOLD complete tasks without a proximity requirement")
     ap.add_argument("--seeds", default=None, help="seed module (default K's seeds.py; programme L: its own)")
     ap.add_argument("--addendum", default="", help="confirmatory run: committed protocol (clean tree required)")
     ap.add_argument("--out", type=Path, required=True)
@@ -259,7 +262,8 @@ def main() -> None:
            "task": a.task, "task_spec": tasks["tasks"][a.task], "voi": tasks["voi"], "n_enc": a.n_enc,
            "robot": a.robot, "transition_fix": a.transition_fix,
            "legacy_cap": a.legacy_cap, "legacy_camera": a.legacy_camera, "seeds": a.seeds,
-           "vision": json.loads(Path(a.vision_config).read_text()) if a.vision_config else {}}
+           "vision": json.loads(Path(a.vision_config).read_text()) if a.vision_config else {},
+           "legacy_task_scoring": a.legacy_task_scoring}
     jobs = [(a.experiment, a.partition, a.first + i, h, s, cfg) for i in range(a.n) for h in a.histories.split(",")
             for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)

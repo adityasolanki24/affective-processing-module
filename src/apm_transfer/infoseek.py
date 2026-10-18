@@ -64,6 +64,10 @@ class Task:
     price_s: float = 20.0       # cost of one strong perturbation (s): a safety stop and check
     risk_cap: float = 0.30      # max expected strong perturbations per encounter (safety budget)
     min_sep: float | None = None  # tasks that require keeping at least this distance (m)
+    # APM v1.0: OBSERVE and HOLD stand off and never attempt the task, so they never complete it. K and L let them
+    # complete tasks with no proximity requirement (waypoint, separation): standing at the start "succeeded" (L §E
+    # artefact). True reproduces that.
+    hold_completes: bool = False
 
     def p_reach(self, d: float) -> float:
         """Model of *reaching the interaction distance* from the stopping distance d (audit A4). It is not task
@@ -149,7 +153,8 @@ def action_cost(a: int, w: int, b: np.ndarray, tm: TimeModel, em: Emissions, tas
     if a >= 0:
         return cost(a, w, b, tm, em, task)
     it = GRID[2]  # proximity 0, tempo 1, no hesitation
-    c = tm.predict(it) + WINDOW_S * (w - 1) + task.retry_s * (1.0 - task.p_success(stop_distance(0.0) + STANDOFF_M))
+    p_done = task.p_success(stop_distance(0.0) + STANDOFF_M) if task.hold_completes else 0.0
+    c = tm.predict(it) + WINDOW_S * (w - 1) + task.retry_s * (1.0 - p_done)
     return c, 0.0
 
 

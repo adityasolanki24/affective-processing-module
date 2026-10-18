@@ -59,7 +59,9 @@ class ContinuousNerva:
                                max_head_rate=1.5, max_pitch_rate=2.0, scene_extender=scene_extender)
         self.adapter = BipedExpressionAdapter(ch, seed=int(self.rng.integers(2**31)))
         self.monitor = SafetyMonitor(MonitorLimits(joint_margin_rad=channels.get("joint_margin_rad"),
-                                                   saturation_steps=channels.get("saturation_steps")))
+                                                   saturation_steps=channels.get("saturation_steps"),
+                           # APM v1.0 push reflex: optional earlier stop thresholds from the body's interface file
+                           **{k: channels[k] for k in ("stop_tilt_deg", "stop_angular_speed") if k in channels}))
         self.log = ImuLogger(np.random.default_rng(int(self.rng.integers(2**31))))
         self.camera, self.frame_hook, self.max_leg_s = camera, frame_hook, max_leg_s
         self.own: list[bool] = []

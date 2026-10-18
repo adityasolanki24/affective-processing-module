@@ -263,7 +263,9 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
                        head_yaw_range=tuple(channels["head_yaw_range"]), head_rate=channels["head_rate"],
                        head_while_moving=False)
     limits = MonitorLimits(joint_margin_rad=channels.get("joint_margin_rad"),
-                           saturation_steps=channels.get("saturation_steps"))
+                           saturation_steps=channels.get("saturation_steps"),
+                           # APM v1.0 push reflex: optional earlier stop thresholds from the body's interface file
+                           **{k: channels[k] for k in ("stop_tilt_deg", "stop_angular_speed") if k in channels})
     ctrl = NervaBiped(policy=channels["policy"], seed=int(rng.integers(2**31)), head_channel=ch.head,
                       max_head_rate=1.5, max_pitch_rate=2.0, scene_extender=scene_extender)
     adapter, monitor = BipedExpressionAdapter(ch, seed=int(rng.integers(2**31))), SafetyMonitor(limits)

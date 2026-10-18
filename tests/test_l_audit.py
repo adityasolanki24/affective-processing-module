@@ -192,3 +192,19 @@ def test_a6_legacy_clock_reproduces_the_d1_defect():
         legacy.observe_many("a", "x", [0] * 3, 0.0)
     assert legacy.belief("a", "x")[0] < 0.5
     assert np.isfinite(legacy.b["a"]).all()
+
+
+def test_v1_observe_and_hold_never_complete_a_movement_task():
+    import numpy as np
+
+    from apm_transfer.expression_map import TimeModel
+    from apm_transfer.infoseek import HOLD, OBSERVE, Emissions, Task, action_cost
+    m = _all_risky_model()
+    tm = TimeModel([20.0, 10.0, -17.0, -1.5, 6.5])
+    em = Emissions.from_model(m.E, camera_block=True)
+    b = np.array([0.5, 0.5])
+    for name, kw in (("waypoint", {"d_task": None}), ("separation", {"d_task": None, "min_sep": 0.5})):
+        new = Task(name, retry_s=12.6, **kw)
+        old = Task(name, retry_s=12.6, hold_completes=True, **kw)
+        for a in (OBSERVE, HOLD):
+            assert action_cost(a, 1, b, tm, em, new)[0] - action_cost(a, 1, b, tm, em, old)[0] == 12.6
