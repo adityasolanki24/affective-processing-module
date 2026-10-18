@@ -28,6 +28,9 @@ while :; do
   printf "%s progress:" "$(date -u +%H:%M)"
   for f in "$OUT"/part_*.jsonl; do [ -f "$f" ] && printf " %s=%s" "$(basename $f .jsonl)" "$(wc -l < $f)"; done
   echo " alive=$alive"
+  for i in "${!PIDS[@]}"; do  # where each live process is
+    kill -0 "${PIDS[$i]}" 2>/dev/null && echo "  p$i: $(grep -vE '\[Warning\]|\[Info\]|^\s*$' "$OUT/proc_$i.log" | tail -1 | cut -c1-160)"
+  done
   [ $alive -eq 0 ] && break
   sleep 60
 done
