@@ -1,4 +1,4 @@
-# Programme K protocol: recovering from negative experience (frozen before any K-X data)
+# Programme K protocol: recovering from negative experience (frozen 2026-10-18, before any K-X / K5-X / K3b data)
 
 **Branch:** `research/apm-v0.7-recovery`.
 **Code:** `src/apm_transfer/{nerva_world,nerva_memory,infoseek}.py`, `experiments/K_recovery/scripts/`.
@@ -147,6 +147,14 @@ The memory and decision code are unchanged.
 **Test:** K5-X, indices 0–49, systems L0, DT, DT_VOI, DT_CAM, DT_CAM_VOI and ORACLE × 4 histories, task handoff.
 
 **Criteria:** P1–P5 as in §4, judged per candidate. Fall here means tipping over (> 60°).
+
+## 5c. Pilot (partition P; debugging only; `results/pilot/`)
+
+- **Runs:** NERVA, all 8 systems × 4 histories × 4 lifetimes; wheeled, 6 systems × 4 histories × 6 lifetimes.
+- **Safety and task:** no falls, no trips; arrival 100%.
+- **DT_VOI with IMU only** made the same choices as DT throughout. Its value-of-information rule never paid for
+  itself with IMU-only evidence, consistent with §2.
+- **No change** to systems, values or criteria followed the pilot.
 
 ## 6. Rules
 

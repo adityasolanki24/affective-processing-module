@@ -186,7 +186,7 @@ def main() -> None:
     for s, o in res["systems"].items():
         def f(k: str, o: dict = o):
             return (o.get(k) or {}).get("median")
-        print(f"{s:11} rev p→c {f('revision_pushy_to_calm')} rec {f('behaviour_recovery')} rev c→p "
+        print(f"{s:11} rev p-c {f('revision_pushy_to_calm')} rec {f('behaviour_recovery')} rev c-p "
               f"{f('revision_calm_to_pushy')} correct {(o['belief_correct_after_switch'] or {}).get('estimate')} "
               f"avoid {o['excess_avoidance_calm_far']} info {o['informative_per_B1']:.2f} "
               f"rep {o['repeated_push_rate_pushy_B1']} falls {o['falls']} trips {o['trip_rate']:.3f} "
