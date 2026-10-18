@@ -36,7 +36,7 @@ robot interface contract ([affectlink.md](affectlink.md)).
 | wheeled testbed | 2D unicycle, 6 m arena, pedestrians with hidden dispositions | 2D kinematics with slip | reactive navigation + bounded high-level actions + safety brake |
 | kinematic wheeled base | H7's second expressive embodiment | kinematic only | (v, ω) tracking with limits |
 | **MuJoCo wheeled robot** (programme K) | 2.9 kg differential drive, casters, chassis IMU | full physics | wheel-speed (v, ω) tracking + shove/tilt supervisor |
-| Booster T1 humanoid (programme K6) | MuJoCo model from mujoco_playground | full physics | learned walking policy (trained here, with pushes); see the K report |
+| **Booster T1 humanoid** (programme K6) | MuJoCo model from mujoco_playground | full physics | walking policy trained here with pushes (2.1 h, one L4); gate G0 passed: 0 falls, 100% arrival |
 
 Nothing has run on hardware.
 
@@ -51,7 +51,7 @@ with the loop closed in both directions.
 | Beliefs change physical expression | **done (sim)** | K3b (0.29 m where the task needs closeness, 0 where it does not); K4 |
 | Expression changes future outcomes | **done (sim)** | K4 controls (no expression: 3.6–13× more contacts); K3-X2 (information-seeking: 3× fewer contacts) |
 | New evidence changes beliefs | **done (sim), both directions** | K3-X2: pushy→calm in 3–5 meetings, calm→pushy in 1 |
-| Behaviour recovers after conditions change | **done (sim)**: reliably with a camera, at the margin with NERVA's IMU alone | K3-X2, K5-X2, K4 continuous video |
+| Behaviour recovers after conditions change | **done (sim)** on NERVA, a wheeled robot and a humanoid: reliably with a camera, at the margin with NERVA's IMU alone | K3-X2, K5-X2, K6-X, K4 continuous video |
 | Stability and task performance preserved | **done for the candidates** (0 falls, 100% arrival); repeated pushes remain a NERVA controller limit | K3-X, K3-X2 |
 | Expression interpretable to humans | **untested** | H2 needs an ethics determination |
 
@@ -62,7 +62,8 @@ with the loop closed in both directions.
   5 meetings with a camera, 8 with the IMU alone.
 - With a camera it gathers information safely, by watching from beyond reach before approaching.
 - The whole loop runs continuously in one lifetime: `experiments/K_recovery/videos/K4_two_robots_continuous.mp4`.
-- The same memory and decision code works on a biped and a physics wheeled robot, each with its own fitted models.
+- The same memory and decision code works on three bodies (biped, wheeled, humanoid), each with its own fitted
+  models. H's hand-written mapping does not transfer: it saturates on the humanoid.
 
 ## Failed hypotheses (do not revisit without new evidence)
 

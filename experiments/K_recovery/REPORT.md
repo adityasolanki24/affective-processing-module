@@ -26,8 +26,9 @@ Everything is simulation only.
    - It shows experience-dependent stopping distance only where the task needs closeness.
 4. **Run the whole loop continuously**: experience → belief → expression → physical outcome → new evidence →
    revision → recovered behaviour. Two identical NERVA robots in single, never-reset simulations; video and trace.
-5. **Run the same learning and decision code, unchanged, on physically different bodies**: the NERVA biped and a
-   MuJoCo wheeled robot. Each has its own fitted sensor coding, time model and type model. Humanoid: §K6.
+5. **Run the same learning and decision code, unchanged, on three physically different bodies**: the NERVA biped,
+   a MuJoCo wheeled robot and a Booster T1 humanoid on a walking controller trained here. Each has its own fitted
+   sensor coding, time model and type model.
 
 ## K1: why NERVA could not recover (diagnosis)
 
@@ -116,9 +117,31 @@ home, stop, sense, walk home.
 | shuffled histories | 0.66 / 0.83 | 10.4 / 2.2 | behaviour follows the memory given, not the body |
 | no active information | 0.59 / 0.51 | 8.5 / 12.7 | yes, with about 5× more contacts |
 
-## K6: humanoid
+## K6: humanoid (Booster T1, MuJoCo; `prereg/K6_HUMANOID.md`)
 
-See §K6 at the end, filled in when the controller gate is decided.
+**Controller.**
+- A walking policy trained here with mujoco_playground's published PPO recipe, with random pushes.
+- 202 M steps, 2.1 h on one L4 GPU (`humanoid/trained/`).
+- Deployed in plain MuJoCo with NumPy inference.
+
+**Gate G0** (50 encounters): **passes**.
+- 0 falls, 100% arrival, 100% of stops within 0.1 m of the request.
+- About 2 contacts per pushy encounter, absorbed.
+
+**K6-X** (600 lifetimes, fixed memory, task handoff; `results/K6_X.json`, `figures/K6_recovery_humanoid.png`):
+
+| system | pushy→calm / behaviour / calm→pushy | contacts per pushy meeting | milestone |
+|---|---|---|---|
+| DT (IMU) | 8 / **12** / 2 | 0.83 | ✗ (its own gait sway masks the evidence) |
+| DT_CAM | 3 / 5 / 1 | 0.82 | ✓ |
+| **DT_CAM_VOI** | **3 / 6 / 1** | **0.25** | **✓** |
+| L0 | degenerate: always stops at 0.6 m, handoff success 2% | 0.85 | — |
+
+- 0 falls and 0 trips in every system.
+- L0 fails on this body because the robot's self-calibrated push detector fires in > 90% of windows from gait sway
+  alone. L0 reads that detection rate, so its caution saturates.
+- The decision-theoretic mapping reads the type belief, so it is unaffected. This is direct evidence that the
+  hand-written mapping does not transfer across bodies, while the learned one does.
 
 ## Expression capability audit (section 8 of the brief)
 
@@ -141,11 +164,11 @@ not an APM problem.
 
 | milestone | status | evidence |
 |---|---|---|
-| Experience changes beliefs | **done (sim)** | K3-X2: all systems; history AUROC 1.00 (J4) |
+| Experience changes beliefs | **done (sim)** | K3-X2, K5-X2, K6-X; history AUROC 1.00 (J4) |
 | Beliefs change physical expression | **done (sim)** | K3b differentiation 0.29 m (handoff); K4 |
 | Expression changes future outcomes | **done (sim)** | K4 controls: no expression → 3.6–13× more stage-2 contacts; DT_CAM_VOI 3× fewer contacts than DT |
 | New evidence changes beliefs | **done (sim), both directions** | K3-X2: pushy→calm 3–5, calm→pushy 1 |
-| Behaviour recovers after conditions change | **done (sim)** with camera; at the margin with IMU only | K3-X2, K5-X2, K4 |
+| Behaviour recovers after conditions change | **done (sim)** with camera on all three bodies; at the margin with NERVA's IMU only | K3-X2, K5-X2, K6-X, K4 |
 | Stability and task performance preserved | **done for candidates** (0 falls, 100% arrival); L0 fell once; repeated-push risk remains a controller limitation | K3-X |
 | Expression interpretable to humans | **untested** | H2 needs ethics approval |
 
@@ -160,4 +183,4 @@ not an APM problem.
 
 ## Compute
 
-About US$12–15 estimated of the US$40 cap (`COMPUTE_LOG.md`).
+About US$11 estimated (upper bound US$14) of the US$40 cap (`COMPUTE_LOG.md`). Final cloud audit: nothing left running.

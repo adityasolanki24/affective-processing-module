@@ -147,6 +147,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--k3", type=Path)
     ap.add_argument("--k5", type=Path)
+    ap.add_argument("--k6", type=Path)
     ap.add_argument("--demo", type=Path)
     ap.add_argument("--controls", type=Path)
     a = ap.parse_args()
@@ -158,6 +159,9 @@ def main() -> None:
     if a.k5:
         fig_recovery(a.k5, "K5_recovery_wheeled.png", "K5-X wheeled robot: recovery after the entity changes",
                      ["L0", "DT", "DT_VOI", "ORACLE", "DT_CAM", "DT_CAM_VOI"])
+    if a.k6:
+        fig_recovery(a.k6, "K6_recovery_humanoid.png", "K6-X humanoid (Booster T1): recovery after the entity changes",
+                     ["L0", "DT", "ORACLE", "DT_CAM", "DT_CAM_VOI"])
     if a.demo:
         fig_demo(a.demo, a.controls)
     print("figures ->", FIG)

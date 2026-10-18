@@ -14,8 +14,8 @@ It is **research code, simulation only.** It makes no claim that robots have emo
 ## What works today (simulation)
 
 - A NERVA biped (MuJoCo) learns from its own sensors which entities disrupt it, and changes how it approaches.
-- **It revises those expectations when the entity changes, and its behaviour recovers.** A wheeled robot does the
-  same with the same code.
+- **It revises those expectations when the entity changes, and its behaviour recovers.** A wheeled robot and a
+  humanoid (Booster T1) do the same with the same code.
 - With a (modelled) camera, it gathers information safely, by watching from beyond reach before approaching again.
 - Expression is chosen by a small decision-theoretic mapping with task values fixed from requirements. It beats the
   earlier hand-written mapping in 4/4 tasks.
