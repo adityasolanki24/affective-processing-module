@@ -8,7 +8,7 @@
     step(now)        expires stale context, integrates affect to `now`, and returns the output bundle.
 
 The runtime never commands actuators and is never a safety authority: a robot must behave safely with the APM
-absent, late, or wrong (docs/safety.md).
+absent, late, or wrong (docs/ARCHITECTURE.md (safety boundaries)).
 """
 from __future__ import annotations
 

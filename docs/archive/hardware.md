@@ -66,7 +66,7 @@ Not designed now: a custom ASIC.
 
 ## Failure behaviour
 
-Required: the robot keeps its ordinary safe behaviour without APM. See docs/safety.md for the full table.
+Required: the robot keeps its ordinary safe behaviour without APM. See docs/ARCHITECTURE.md (safety boundaries) for the full table.
 
 | event | design response |
 |---|---|

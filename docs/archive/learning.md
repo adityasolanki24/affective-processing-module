@@ -46,8 +46,8 @@ validated model ──► live predictions
 
 ## What has been measured
 
-See [experiments/C_learning/README.md](../experiments/C_learning/README.md) and
-[experiments/D_portability](../experiments/D_portability/).
+See [experiments/C_learning/README.md](../../experiments/C_learning/README.md) and
+[experiments/D_portability](../../experiments/D_portability/).
 
 | question | NERVA biped result |
 |---|---|
@@ -68,4 +68,4 @@ On the wheeled robot (Milestone D):
 - One simulated embodiment per dataset, one seed per model in Milestone C.
 - Hand-set appraisal and affect constants.
 - The GRU is evaluated in Python/PyTorch on a development PC. Embedded inference (ONNX Runtime / TFLite class) is
-  untested; see docs/hardware.md.
+  untested; see docs/archive/hardware.md.

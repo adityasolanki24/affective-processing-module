@@ -1,8 +1,13 @@
 # Changelog
 
-All notable changes; the project follows docs/versioning.md.
+All notable changes. Versioning: semantic versioning for the package (pre-1.0 minor versions may change APIs); AffectLink carries its own `affectlink/<major>.<minor>` version (minor = additive optional fields only).
 
 ## [Unreleased]
+### Changed (documentation, 2026-10-18)
+- Documentation consolidated into README, docs/STATE.md (authoritative), docs/ARCHITECTURE.md, docs/ROADMAP.md and
+  docs/RESEARCH_HISTORY.md. v0.1-era narrative docs moved to docs/archive/; safety, adapter and versioning notes were
+  folded into ARCHITECTURE and this file. Experiment records are unchanged.
+
 ### Added (programme I, v0.5 research code)
 - `apm_revise`: robot-observable encounter evidence (dense clearance coding), EM-learned person types with BIC,
   change-aware type beliefs, a revising memory (drop-in for F/G memories), memory-driven keep-away with exploration
