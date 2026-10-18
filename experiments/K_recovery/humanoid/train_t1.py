@@ -27,10 +27,10 @@ ap.add_argument("--steps", type=int, default=0, help="override num_timesteps (0:
 a = ap.parse_args()
 env = registry.load(a.env)
 env_cfg = registry.get_default_config(a.env)
-params = locomotion_params.brax_ppo_config(a.env)
+params = locomotion_params.brax_ppo_config(a.env).to_dict()
 if a.steps:
-    params.num_timesteps = a.steps
-net = params.pop("network_factory") if "network_factory" in params else None
+    params["num_timesteps"] = a.steps
+net = params.pop("network_factory", None)
 factory = functools.partial(ppo_networks.make_ppo_networks, **net) if net else ppo_networks.make_ppo_networks
 t0 = time.time()
 log = []
@@ -42,7 +42,7 @@ def progress(step, metrics):
     print(f"step {step} reward {r:.2f} t {time.time() - t0:.0f}s", flush=True)
 
 
-train_fn = functools.partial(ppo.train, **dict(params), network_factory=factory,
+train_fn = functools.partial(ppo.train, **params, network_factory=factory,
                              randomization_fn=registry.get_domain_randomizer(a.env), progress_fn=progress)
 make_inference_fn, prm, _ = train_fn(environment=env, eval_env=registry.load(a.env, config=env_cfg))
 a.out.mkdir(parents=True, exist_ok=True)
@@ -50,7 +50,7 @@ with open(a.out / "t1_params.pkl", "wb") as f:
     pickle.dump(jax.tree_util.tree_map(np.asarray, prm), f)
 (a.out / "t1_meta.json").write_text(json.dumps({"env": a.env, "env_config": env_cfg.to_dict(),
                                                 "ppo": {k: (v if isinstance(v, (int, float, str, bool)) else str(v))
-                                                        for k, v in dict(params).items()},
-                                                "network": net.to_dict() if net else None, "log": log,
+                                                        for k, v in params.items()},
+                                                "network": net, "log": log,
                                                 "wall_s": round(time.time() - t0, 1)}, default=str), encoding="utf-8")
 print("saved", a.out, "wall", round(time.time() - t0, 1))
