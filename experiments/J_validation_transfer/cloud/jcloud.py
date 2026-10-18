@@ -107,13 +107,15 @@ def cmd_create(a) -> None:
     with tempfile.TemporaryDirectory() as tmp:
         start = Path(tmp) / "runner.sh"
         start.write_bytes((HERE / "runner.sh").read_bytes().replace(b"\r\n", b"\n"))
+        image = (["--image-family=common-cu124-ubuntu-2204-py310", "--image-project=deeplearning-platform-release",
+                  "--boot-disk-size=100GB", "--maintenance-policy=TERMINATE"] if a.gpu else
+                 ["--image-family=ubuntu-2404-lts-amd64", "--image-project=ubuntu-os-cloud", "--boot-disk-size=30GB"])
+        meta = f"apm-bucket={BUCKET},apm-idle-min={a.idle_min}" + (",install-nvidia-driver=True" if a.gpu else "")
         sh([g(), "compute", "instances", "create", a.name, f"--project={PROJECT}", f"--zone={a.zone}",
             f"--machine-type={a.machine}", "--provisioning-model=SPOT", "--instance-termination-action=DELETE",
-            f"--max-run-duration={int(a.max_hours * 3600)}s", "--image-family=ubuntu-2404-lts-amd64",
-            "--image-project=ubuntu-os-cloud", "--boot-disk-size=30GB", "--no-address",
+            f"--max-run-duration={int(a.max_hours * 3600)}s", *image, "--no-address",
             f"--service-account={SERVICE_ACCOUNT}", "--scopes=cloud-platform", "--labels=apm-j=1",
-            f"--metadata-from-file=startup-script={start}",
-            f"--metadata=apm-bucket={BUCKET},apm-idle-min={a.idle_min}"])
+            f"--metadata-from-file=startup-script={start}", f"--metadata={meta}"])
     print(f"created {a.name} ({a.machine}, spot; hard cap {a.max_hours} h, idle delete {a.idle_min} min)")
     for _ in range(80):
         if exists(f"{q(a.name)}/ready"):
@@ -245,6 +247,7 @@ def main() -> None:
     p.add_argument("--machine", default="n2d-highcpu-128")
     p.add_argument("--max-hours", type=float, default=4.0)
     p.add_argument("--idle-min", type=int, default=30)
+    p.add_argument("--gpu", action="store_true", help="Deep Learning VM image with NVIDIA driver (e.g. g2-standard-8)")
     p.set_defaults(func=cmd_create)
     p = sub.add_parser("submit")
     p.add_argument("name")
