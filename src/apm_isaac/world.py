@@ -23,10 +23,12 @@ from typing import Any
 
 import numpy as np
 
-from apm_isaac.agents import Person, add_person, place
+from apm_isaac.agents import Person, add_person, find_character, place
 from apm_isaac.robots import DT
 
 REPO = Path(__file__).resolve().parents[2]
+WALKER_CHARACTERS = ("F_Medical_01", "male_adult_police_04", "female_adult_police_02")
+WALK_SPEED = 1.0  # m/s, bystanders
 
 
 class _WheeledDriver:
@@ -107,7 +109,7 @@ class SceneSpec:
 class IsaacWorld:
     def __init__(self, scene: SceneSpec, body: str, seed: int, vision_cfg: Any = None, video: bool = False,
                  characters: dict[str, str] | None = None, physics_dt: float = 0.002,
-                 policy_dir: str | Path | None = None, nerva_channels: dict | None = None):
+                 policy_dir: str | Path | None = None, nerva_channels: dict | None = None, walkers: int = 1):
         from isaacsim.core.api import World
         from isaacsim.core.utils.stage import add_reference_to_stage
         from isaacsim.storage.native import get_assets_root_path
@@ -132,6 +134,12 @@ class IsaacWorld:
         for sid, xy in scene.stations.items():
             ch = (characters or {}).get(sid)
             self.people[sid] = add_person(self.world.stage, sid, np.array(xy), ch, graph)
+        # bystanders: people walking a patrol path away from the stations and the robot's approach lines (set after
+        # the first reset, when the scene's colliders can be queried)
+        for i in range(walkers):
+            ch = find_character(self.root, WALKER_CHARACTERS[i % len(WALKER_CHARACTERS)]) if characters else None
+            far = np.array(scene.home[:2]) + np.array([50.0 + 3 * i, 50.0])
+            self.people[f"W{i + 1}"] = add_person(self.world.stage, f"W{i + 1}", far, ch, graph)
         if body == "nova_carter":  # the wheeled embodiment: NVIDIA Nova Carter (stock asset)
             from apm_isaac.robots import NovaCarterIsaac
             self.robot: Any = NovaCarterIsaac(self.world, "/World/Robot", (hx, hy), hyaw, seed, physics_dt)
@@ -162,6 +170,14 @@ class IsaacWorld:
         self.world.reset()
         if hasattr(self.robot, "post_reset"):
             self.robot.post_reset()
+        self.patrols: dict[str, list[list[float]]] = {}
+        for name, p in self.people.items():
+            if name.startswith("W"):
+                path = self._find_patrol(len(self.patrols))
+                if path is not None:
+                    p.patrol = (path[0], path[1], WALK_SPEED)
+                    p.xy = path[0].copy()
+                    self.patrols[name] = [path[0].round(3).tolist(), path[1].round(3).tolist()]
         self.vision_cfg = vision_cfg or VisionCamera()
         self.nerva_channels = nerva_channels
         self._eye_cam = self._make_eye()
@@ -169,7 +185,7 @@ class IsaacWorld:
         self._video_target: tuple[float, float] = tuple(next(iter(scene.stations.values())))  # type: ignore[assignment]
         self._video_eye: np.ndarray | None = None
         self._video_cam = self._make_video_cam() if video else None
-        self.contacts: list[tuple[float, str, float]] = []
+        self.contacts: list[tuple[float, str, float, int | None]] = []
         self._subscribe_contacts()
         self.t = 0.0
         self._home = (hx, hy, hyaw)
@@ -194,6 +210,48 @@ class IsaacWorld:
         self.t = 0.0
         if self.video_frames is not None:
             self.video_frames.clear()
+
+    def _free(self, x: float, y: float, r: float = 0.35) -> bool:
+        """No collider between 0.06 and 1.6 m above the floor within r of (x, y) (multi-hit downward rays)."""
+        import omni.physx
+        q = omni.physx.get_physx_scene_query_interface()
+        for dx, dy in ((0.0, 0.0), (r, 0.0), (-r, 0.0), (0.0, r), (0.0, -r)):
+            hits: list[float] = []
+
+            def cb(h, hits=hits):
+                hits.append(float(h.position[2]))
+                return True
+            q.raycast_all((x + dx, y + dy, 2.5), (0.0, 0.0, -1.0), 3.0, cb)
+            if not hits or any(0.06 < z < 1.6 for z in hits):
+                return False
+        return True
+
+    def _find_patrol(self, k: int) -> tuple[np.ndarray, np.ndarray] | None:
+        """The k-th valid 3 m patrol chord 2.8-4.2 m from the hub: free of colliders, >= 1 m from every station
+        and >= 0.8 m from every hub-station line (the robot's approaches)."""
+        hub = np.array(self.scene.home[:2])
+        sts = [np.array(v) for v in self.scene.stations.values()]
+
+        def seg_dist(p, a, b):
+            ab = b - a
+            t = float(np.clip((p - a) @ ab / (ab @ ab), 0.0, 1.0))
+            return float(np.linalg.norm(p - (a + t * ab)))
+        found = 0
+        for r in (3.4, 3.0, 3.8, 2.8, 4.2):
+            phi = math.asin(1.5 / r)
+            for ang in np.radians(np.arange(0, 360, 15)):
+                a = hub + r * np.array([math.cos(ang - phi), math.sin(ang - phi)])
+                b = hub + r * np.array([math.cos(ang + phi), math.sin(ang + phi)])
+                pts = [a + f * (b - a) for f in np.linspace(0, 1, 13)]
+                if any(min(np.linalg.norm(p - s) for s in sts) < 1.0 for p in pts):
+                    continue
+                if any(min(seg_dist(p, hub, s) for s in sts) < 0.8 for p in pts):
+                    continue
+                if all(self._free(float(p[0]), float(p[1])) for p in pts):
+                    if found == k:
+                        return a, b
+                    found += 1
+        return None
 
     # ── sensors ──────────────────────────────────────────────────────────────
     def _make_eye(self):
@@ -281,7 +339,8 @@ class IsaacWorld:
                     imp = sum(np.linalg.norm(np.asarray(data[h.contact_data_offset + i].impulse))
                               for i in range(h.num_contact_data))
                     who = (a0 if "/World/People/" in a0 else a1).split("/")[3]
-                    self.contacts.append((round(self.t, 3), who, float(imp)))
+                    lunge = self.people[who].active if who in self.people else None
+                    self.contacts.append((round(self.t, 3), who, float(imp), lunge))
         self._contact_sub = get_physx_simulation_interface().subscribe_contact_report_events(on_contact)
 
     def _video(self, info: str = "") -> None:
@@ -469,7 +528,13 @@ class IsaacWorld:
                    "hold_max_dist": round(max(hold_d), 4) if len(hold_d) == win_n else None,
                    "hold_min_dist": round(min(hold_d), 4) if hold_d else None,
                    "quiet_frames": [e.quiet_frames >= MIN_QUIET_FRAMES for e in win_ev]}
-        truth = {"type": etype, "contacts": len({round(c[0], 1) for c in contacts}),
+        # Truth (evaluation only). As in K/L, `contacts` counts the person's lunges that reached the robot. Contact
+        # episodes (gaps > 0.5 s) and total contact time also include incidental touching (e.g. a humanoid's arm).
+        times = sorted({round(c[0], 2) for c in contacts})
+        episodes = sum(1 for i, tc in enumerate(times) if i == 0 or tc - times[i - 1] > 0.5)
+        truth = {"type": etype, "contacts": len({c[3] for c in contacts if c[3] is not None}),
+                 "contact_episodes": episodes,
+                 "contact_s": round(0.02 * len({round(c[0] / 0.02) for c in contacts}), 2),
                  "contact_impulse_max": max((c[2] for c in contacts), default=0.0), "station": station}
         return outcome, truth
 

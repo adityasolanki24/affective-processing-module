@@ -160,7 +160,8 @@ a.out.parent.mkdir(parents=True, exist_ok=True)
 if a.logs:
     a.logs.mkdir(parents=True, exist_ok=True)
 print("robot", json.dumps(getattr(world.robot, "measured", None) or {}, default=str)[:600],
-      "animated", {k: getattr(p, "animated", False) for k, p in world.people.items()}, flush=True)
+      "animated", {k: getattr(p, "animated", False) for k, p in world.people.items()}, "patrols", world.patrols,
+      flush=True)
 
 for index in range(a.first, a.first + a.n):
     for history in a.histories.split(","):
@@ -207,6 +208,7 @@ for index in range(a.first, a.first + a.n):
                     "cam_reaches": out.get("camera_reaches"), "detected": obs.detected, "band": obs.band,
                     "d_stop": d_abs, "d_stop_physical": obs.report.get("d_stop_physical"),
                     "intended_band": band_of(d.proximity), "contacts": truth["contacts"],
+                    "contact_episodes": truth["contact_episodes"], "contact_s": truth["contact_s"],
                     "impulse_max": round(truth["contact_impulse_max"], 4), "arrived": out["arrived"],
                     "t_arrive": out["t_arrive"], "trips": out["trips"], "fell": out["fell"],
                     "task_success": task.p_success(d_abs),

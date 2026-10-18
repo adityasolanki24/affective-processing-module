@@ -59,6 +59,8 @@ class Person:
     lunges: list[Lunge] = field(default_factory=list)
     walk: tuple[np.ndarray, np.ndarray, float, float] | None = None  # (from, to, t0, speed)
     disp: float = 0.0  # current lunge displacement toward the robot (m)
+    patrol: tuple[np.ndarray, np.ndarray, float] | None = None  # a bystander walking A <-> B at a speed (m/s)
+    moving: bool = False
 
     def schedule(self, rng: np.random.Generator, etype: str, t0: float, seconds: float) -> None:
         from apm_transfer.nerva_world import lunges
@@ -72,16 +74,29 @@ class Person:
     def displacement(self, t: float, dist_to_robot: float) -> float:
         s = 0.0
         gap = max(0.0, dist_to_robot - self.front - RADIUS)
-        for lg in self.lunges:
+        self.active = None
+        for i, lg in enumerate(self.lunges):
             peak = float(np.clip(lg.reach - GAP0, 0.0, gap + MAX_OVERLAP))
             v_surf = min(lg.speed * CONTACT_GAIN * 2, V_CONTACT_MAX)
             ramp = max(peak / max(v_surf, 1e-3), 0.15)
             dt = abs(t - lg.t_peak)
-            if dt <= ramp:
-                s = max(s, peak * (1.0 - dt / ramp))
+            if dt <= ramp and peak * (1.0 - dt / ramp) >= s:
+                s = peak * (1.0 - dt / ramp)
+                self.active = i if s > 0 else self.active
         return s
 
+    active: int | None = None  # index of the lunge moving the person now (evaluation truth only)
+
     def position(self, t: float, robot_xy: np.ndarray) -> tuple[np.ndarray, float]:
+        if self.patrol is not None:
+            pa, pb, v = self.patrol
+            L = float(np.linalg.norm(pb - pa))
+            s = (t * v) % (2 * L)
+            self.moving = True
+            if s < L:
+                return pa + (s / L) * (pb - pa), math.atan2(pb[1] - pa[1], pb[0] - pa[0])
+            return pb + ((s - L) / L) * (pa - pb), math.atan2(pa[1] - pb[1], pa[0] - pb[0])
+        self.moving = False
         if self.walk is not None:
             a, b, t0, v = self.walk
             L = float(np.linalg.norm(b - a))
@@ -182,6 +197,10 @@ def place(stage, p: Person, xy: np.ndarray, yaw: float) -> None:
             p._char = _graph_character(stage, p.vis_path)  # type: ignore[attr-defined]
         if p._char is not None:  # type: ignore[attr-defined]
             import carb
+            if p.moving != getattr(p, "_walking", False):  # the graph's walk cycle while moving, idle otherwise
+                p._char.set_variable("Action", "Walk" if p.moving else "None")  # type: ignore[attr-defined]
+                p._char.set_variable("Walk", 1.0 if p.moving else 0.0)  # type: ignore[attr-defined]
+                p._walking = p.moving  # type: ignore[attr-defined]
             p._char.set_world_transform(carb.Float3(x, y, 0.0),  # type: ignore[attr-defined]
                                         carb.Float4(0.0, 0.0, math.sin(yaw / 2), math.cos(yaw / 2)))
             return

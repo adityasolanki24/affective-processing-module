@@ -13,9 +13,9 @@ change, so each identity keeps one behaviour.
 **Programme L** (`--edges FILE`): the body's fixed acc8 edges re-categorise the IMU peaks, and nothing else is
 refitted (vision type models share K's body configuration).
 
-**Wheeled robot** (`--robot wheeled`). Its own acc8 edges come from pooled quantiles of its own window peaks (all
-exploration lifetimes), and its own time model from least squares of its own arrival times on intent (as J6). Both
-are written next to `--out`.
+**Wheeled robot** (`--robot wheeled`; APM v1.0: also `nova_carter`, `t1_isaac`, `nerva_isaac`). Its own acc8 edges
+come from pooled quantiles of its own window peaks (all exploration lifetimes), and its own time model from least
+squares of its own arrival times on intent (as J6). Both are written next to `--out`.
 
 IMU-only systems use the same model and ignore the camera block. Because blocks are conditionally independent given
 the type, that is exact marginalisation.
@@ -69,14 +69,15 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
-    ap.add_argument("--robot", choices=("nerva", "wheeled", "humanoid"), default="nerva")
+    ap.add_argument("--robot", choices=("nerva", "wheeled", "humanoid", "nova_carter", "t1_isaac", "nerva_isaac"),
+                    default="nerva", help="APM v1.0: the Isaac robots fit their own edges and time model")
     ap.add_argument("--edges", type=Path, default=None,
                     help="programme L: categorise with these fixed acc8 edges (no edge or time-model refit)")
     a = ap.parse_args()
     edges = None
     if a.edges is not None:
         edges = json.loads(a.edges.read_text())["acc8"]
-    elif a.robot in ("wheeled", "humanoid"):
+    elif a.robot != "nerva":
         from apm_express.intent import ExpressionIntent
         from apm_express.styles import NEUTRAL
         from apm_transfer.expression_map import TimeModel

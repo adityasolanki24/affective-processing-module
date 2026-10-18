@@ -63,7 +63,7 @@ channels = json.loads((REPO / "experiments" / "J_validation_transfer" / "configs
 w = IsaacWorld(scene, a.body, seed=7, video=a.video, characters={k: v for k, v in chars.items() if v},
                physics_dt=dt, policy_dir=a.policy_dir, nerva_channels=channels)
 print("robot", json.dumps(getattr(w.robot, "measured", None) or {"front": w.robot.front}, default=str)[:2000],
-      "animated", {k: getattr(p, "animated", False) for k, p in w.people.items()}, flush=True)
+      "animated", {k: getattr(p, "animated", False) for k, p in w.people.items()}, "patrols", w.patrols, flush=True)
 plan = [(sid, et, gi, so) for sid in stations for et, gi, so in
         (("calm", 14, 0.0), ("pushy", 14, 0.0), ("pushy", 2, 0.3))]
 rows = []
