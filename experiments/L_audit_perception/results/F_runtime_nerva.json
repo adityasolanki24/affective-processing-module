@@ -1,0 +1,568 @@
+{
+ "body": "nerva",
+ "sensing": "IMU + rendered vision",
+ "encounters": 24,
+ "wall_s": 95.5,
+ "F1_runs_on_body": true,
+ "F2_restart_identical": true,
+ "F3_replay": {
+  "decisions": 24,
+  "mismatches": 0,
+  "identical": true
+ },
+ "F4_affectlink": {
+  "messages": 72,
+  "valid_roundtrip": 72,
+  "ok": true
+ },
+ "F5_cap": {
+  "max_predicted_risk": 0.298,
+  "cap": 0.3,
+  "ok": true,
+  "supervisor_vetoes": 0
+ },
+ "F6_intents_bounded": true,
+ "falls": 0,
+ "trips": 0,
+ "B1_stops_before_after": [
+  [
+   0.302,
+   0.897
+  ],
+  [
+   0.892,
+   0.897,
+   0.396,
+   0.313,
+   0.298
+  ]
+ ],
+ "rows": [
+  {
+   "k": 0,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2464,
+   "predicted_risk": 0.2048,
+   "d_stop": 0.293,
+   "imu": [
+    3
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 1,
+   "identity": "A1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2464,
+   "predicted_risk": 0.2048,
+   "d_stop": 0.304,
+   "imu": [
+    5
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 2,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2041,
+   "predicted_risk": 0.1348,
+   "d_stop": 0.298,
+   "imu": [
+    0
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 3,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.1945,
+   "predicted_risk": 0.119,
+   "d_stop": 0.288,
+   "imu": [
+    4
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 4,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.1925,
+   "predicted_risk": 0.1156,
+   "d_stop": 0.296,
+   "imu": [
+    3
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 5,
+   "identity": "A1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2173,
+   "predicted_risk": 0.1566,
+   "d_stop": 0.312,
+   "imu": [
+    0
+   ],
+   "camera": [
+    1
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 6,
+   "identity": "A1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2155,
+   "predicted_risk": 0.1537,
+   "d_stop": 0.294,
+   "imu": [
+    6
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 7,
+   "identity": "A1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2141,
+   "predicted_risk": 0.1514,
+   "d_stop": 0.305,
+   "imu": [
+    2
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 8,
+   "identity": "B1",
+   "true_type": "pushy",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2464,
+   "predicted_risk": 0.2048,
+   "d_stop": 0.302,
+   "imu": [
+    7
+   ],
+   "camera": [
+    1
+   ],
+   "contacts": 1,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 9,
+   "identity": "B1",
+   "true_type": "pushy",
+   "action": -1,
+   "reason": "observe from beyond reach",
+   "windows": 1,
+   "standoff": 0.3,
+   "proximity": 0.0,
+   "p_risk": 0.522,
+   "predicted_risk": 0.0,
+   "d_stop": 0.897,
+   "imu": [],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 10,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.197,
+   "predicted_risk": 0.1232,
+   "d_stop": 0.303,
+   "imu": [
+    3
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 11,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.1938,
+   "predicted_risk": 0.1177,
+   "d_stop": 0.304,
+   "imu": [
+    5
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 12,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.1928,
+   "predicted_risk": 0.1161,
+   "d_stop": 0.306,
+   "imu": [
+    4
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 13,
+   "identity": "B1",
+   "true_type": "calm",
+   "action": -1,
+   "reason": "observe from beyond reach",
+   "windows": 2,
+   "standoff": 0.3,
+   "proximity": 0.0,
+   "p_risk": 0.4979,
+   "predicted_risk": 0.0,
+   "d_stop": 0.892,
+   "imu": [],
+   "camera": [
+    0,
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 14,
+   "identity": "B1",
+   "true_type": "calm",
+   "action": -1,
+   "reason": "observe from beyond reach",
+   "windows": 3,
+   "standoff": 0.3,
+   "proximity": 0.0,
+   "p_risk": 0.4596,
+   "predicted_risk": 0.0,
+   "d_stop": 0.897,
+   "imu": [],
+   "camera": [
+    0,
+    0,
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 15,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.1945,
+   "predicted_risk": 0.119,
+   "d_stop": 0.31,
+   "imu": [
+    3
+   ],
+   "camera": [
+    1
+   ],
+   "contacts": 1,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 16,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.1948,
+   "predicted_risk": 0.1195,
+   "d_stop": 0.293,
+   "imu": [
+    5
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 17,
+   "identity": "A1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2072,
+   "predicted_risk": 0.1399,
+   "d_stop": 0.313,
+   "imu": [
+    2
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 18,
+   "identity": "B1",
+   "true_type": "calm",
+   "action": 10,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.5,
+   "p_risk": 0.3552,
+   "predicted_risk": 0.298,
+   "d_stop": 0.396,
+   "imu": [
+    5
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 19,
+   "identity": "A1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.198,
+   "predicted_risk": 0.1247,
+   "d_stop": 0.294,
+   "imu": [
+    3
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 20,
+   "identity": "B1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2809,
+   "predicted_risk": 0.2618,
+   "d_stop": 0.313,
+   "imu": [
+    5
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 21,
+   "identity": "A1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.1939,
+   "predicted_risk": 0.118,
+   "d_stop": 0.302,
+   "imu": [
+    4
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 22,
+   "identity": "C1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.1978,
+   "predicted_risk": 0.1244,
+   "d_stop": 0.285,
+   "imu": [
+    5
+   ],
+   "camera": [
+    0
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  },
+  {
+   "k": 23,
+   "identity": "B1",
+   "true_type": "calm",
+   "action": 14,
+   "reason": "approach",
+   "windows": 1,
+   "standoff": 0.0,
+   "proximity": 0.75,
+   "p_risk": 0.2336,
+   "predicted_risk": 0.1836,
+   "d_stop": 0.298,
+   "imu": [
+    3
+   ],
+   "camera": [
+    1
+   ],
+   "contacts": 0,
+   "fell": false,
+   "trips": 0
+  }
+ ],
+ "all_checks_pass": true
+}

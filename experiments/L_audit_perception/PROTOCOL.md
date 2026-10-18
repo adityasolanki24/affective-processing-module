@@ -299,3 +299,26 @@ scenarios. J4 found that the GRU adds nothing over the type model.
     controller (upper bound of the paired difference ≤ 1 s);
   - the simpler option wins when they are equivalent.
 - **E5 (learned)** is justified only if the answer is "no". It is not run in L otherwise.
+
+---
+
+## F. Integrated runtime (engineering verification; written 2026-10-18 *after* the first demo runs)
+
+This section is not a statistical test. Its checks are binary properties of the code, with no thresholds that
+could be tuned. It was written after the first demo runs, and nothing was changed in response to them.
+
+**What runs.**
+- `src/apm_transfer/runtime.py`, with `f_runtime_demo.py`.
+- One 24-encounter lifetime per body, with B1 changing from pushy to calm at encounter 12. Seeds: LF, partition D.
+- Bodies and sensing:
+  - NERVA and wheeled: IMU + rendered vision, with their vision models;
+  - humanoid: IMU + abstract camera, because there is no humanoid vision model.
+
+**Checks** (all must pass on ≥ 2 bodies, including NERVA):
+- F1: the same runtime code runs on the body;
+- F2: decisions after a save → delete → load restart are identical to an uninterrupted runtime's;
+- F3: a replay of the log reproduces every decision;
+- F4: every AffectLink v1 message validates and survives an encode/decode round trip;
+- F5: no executed approach exceeds the predicted-risk cap. The independent supervisor's vetoes are counted, and
+  its veto of every over-cap approach is unit-tested;
+- F6: every intent is within its bounds.
