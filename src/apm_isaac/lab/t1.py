@@ -136,3 +136,37 @@ gym.register(id="APM-Velocity-Flat-T1-v0", entry_point="isaaclab.envs:ManagerBas
              disable_env_checker=True,
              kwargs={"env_cfg_entry_point": f"{__name__}:T1FlatEnvCfg",
                      "rsl_rl_cfg_entry_point": f"{__name__}:T1FlatPPORunnerCfg"})
+
+
+@configclass
+class T1FlatEnvCfgV2(T1FlatEnvCfg):
+    """v2, after the v1 gate battery (v1 undershoots slow commands: 0.1 m/s → ~0, 0.2 → 0.13 m/s).
+    - Yaw-rate commands sampled directly (APM sends ω, not a heading).
+    - Tighter velocity tracking (σ 0.25 instead of 0.5).
+    - Forward −0.1–0.5 m/s and lateral ±0.1 m/s (APM's operating range).
+    - Training pushes up to ±0.8 m/s (v1: ±0.5)."""
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.commands.base_velocity.heading_command = False
+        self.commands.base_velocity.rel_heading_envs = 0.0
+        self.commands.base_velocity.ranges.heading = None
+        self.commands.base_velocity.ranges.lin_vel_x = (-0.1, 0.5)
+        self.commands.base_velocity.ranges.lin_vel_y = (-0.1, 0.1)
+        self.rewards.track_lin_vel_xy_exp.params["std"] = 0.25
+        self.rewards.track_ang_vel_z_exp.params["std"] = 0.25
+        self.events.push_robot.params = {"velocity_range": {"x": (-0.8, 0.8), "y": (-0.8, 0.8)}}
+
+
+@configclass
+class T1FlatPPORunnerCfgV2(T1FlatPPORunnerCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.experiment_name = "apm_t1_flat_v2"
+        self.max_iterations = 3000
+
+
+gym.register(id="APM-Velocity-Flat-T1-v2", entry_point="isaaclab.envs:ManagerBasedRLEnv",
+             disable_env_checker=True,
+             kwargs={"env_cfg_entry_point": f"{__name__}:T1FlatEnvCfgV2",
+                     "rsl_rl_cfg_entry_point": f"{__name__}:T1FlatPPORunnerCfgV2"})

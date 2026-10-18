@@ -42,7 +42,8 @@ class SceneSpec:
 
 class IsaacWorld:
     def __init__(self, scene: SceneSpec, body: str, seed: int, vision_cfg: Any = None, video: bool = False,
-                 characters: dict[str, str] | None = None, physics_dt: float = 0.002):
+                 characters: dict[str, str] | None = None, physics_dt: float = 0.002,
+                 policy_dir: str | Path | None = None):
         from isaacsim.core.api import World
         from isaacsim.core.utils.stage import add_reference_to_stage
         from isaacsim.storage.native import get_assets_root_path
@@ -65,10 +66,19 @@ class IsaacWorld:
         for sid, xy in scene.stations.items():
             ch = (characters or {}).get(sid)
             self.people[sid] = add_person(self.world.stage, sid, np.array(xy), ch)
-        if body == "wheeled":
+        if body == "nova_carter":  # the wheeled embodiment: NVIDIA Nova Carter (stock asset)
+            from apm_isaac.robots import NovaCarterIsaac
+            self.robot: Any = NovaCarterIsaac(self.world, "/World/Robot", (hx, hy), hyaw, seed, physics_dt)
+        elif body in ("wheeled", "wheeled_reference"):  # reference only: the custom robot matched to MuJoCo
             from apm_isaac.robots import WheeledIsaac
-            self.robot: Any = WheeledIsaac(self.world, "/World/Robot", (hx, hy), hyaw, seed, physics_dt)
-        elif body == "humanoid":
+            self.robot = WheeledIsaac(self.world, "/World/Robot", (hx, hy), hyaw, seed, physics_dt)
+        elif body == "humanoid":  # Booster T1 on its Isaac Lab controller (M3: the MuJoCo controller does not transfer)
+            from apm_isaac.robots import LabPolicyBody
+            if policy_dir is None:
+                raise ValueError("the humanoid needs policy_dir (an Isaac Lab export: policy.pt + env_cfg.json)")
+            self.robot = LabPolicyBody.t1(self.world, "/World/Robot", (hx, hy), hyaw, seed, Path(policy_dir),
+                                          physics_dt)
+        elif body == "humanoid_mujoco_policy":  # reference only: the MuJoCo-trained T1 policy (falls in PhysX)
             from apm_isaac.robots import T1Isaac
             usd_t1 = self.root + "/Isaac/Robots/BoosterRobotics/BoosterT1/T1.usd"
             self.robot = T1Isaac(self.world, "/World/Robot", (hx, hy), hyaw, seed, usd_t1, physics_dt)
@@ -165,6 +175,8 @@ class IsaacWorld:
         for p in self.people.values():
             pos, yaw = p.position(self.t, rxy)
             place(self.world.stage, p, pos, yaw)
+            if getattr(p, "animator", None) is not None:
+                p.animator.update(self.t)  # type: ignore[attr-defined]
         tripped = self.robot.apply(v, w)
         row = self.robot.advance()
         self.t += DT
@@ -195,6 +207,7 @@ class IsaacWorld:
         erng = np.random.default_rng(int(self.rng.integers(2**31)))
         person.schedule(erng, etype, self.t, horizon)
         n_contacts0 = len(self.contacts)
+        trips0 = self.robot.trips  # the robot persists across a lifetime; trips are counted per encounter
         adapter = WheeledAdapter(seed=int(self.rng.integers(2**31)))
         log = WheeledLogger(np.random.default_rng(int(self.rng.integers(2**31))))
         perc = MotionPerception(self.vision_cfg)
@@ -278,7 +291,7 @@ class IsaacWorld:
                 break
         contacts = self.contacts[n_contacts0:]
         outcome = {"arrived": k_arrive is not None, "t_arrive": t_arrive, "final_distance": d_stop,
-                   "trips": self.robot.trips, "fell": fell, "windows": [e.as_list() for e in win_ev],
+                   "trips": self.robot.trips - trips0, "fell": fell, "windows": [e.as_list() for e in win_ev],
                    "aborted": aborted, "camera": [camera_code(c) for c in cam_seen[:len(win_ev)]],
                    "camera_reaches": cam_seen[:len(win_ev)],
                    "hold_max_dist": round(max(hold_d), 4) if len(hold_d) == win_n else None,

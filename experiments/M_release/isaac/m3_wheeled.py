@@ -1,6 +1,7 @@
-"""M3: validate the APM wheeled robot in Isaac Sim, then compare it with MuJoCo on the same command script.
+"""M3: validate the wheeled embodiment in Isaac Sim (NVIDIA Nova Carter by default; `--robot reference` is the custom
+robot matched to MuJoCo), and the reference robot against MuJoCo on the same command script.
 
-    $ISAAC_PY experiments/M_release/isaac/m3_wheeled.py --out out/m3_wheeled     (Isaac side)
+    $ISAAC_PY experiments/M_release/isaac/m3_wheeled.py --out out/m3_wheeled [--robot reference]  (Isaac side)
     python experiments/M_release/isaac/m3_wheeled.py --mujoco --out <dir>        (MuJoCo reference)
 
 **Script** (one run, 50 Hz commands; the (v, ω) tracking controller and supervisor are the body's own):
@@ -17,7 +18,8 @@
 
 **Isaac only:**
 - a 0.6 m/s shove (the supervisor must trip; there must be no fall);
-- the depth eye's range to a 0.5 m box placed 1.0 m ahead of the eye (median over its centre pixels).
+- the depth eye's range to a 0.5 × 0.5 × 1.2 m box whose face is 1.0 m ahead of the eye (median over its centre
+  pixels).
 """
 from __future__ import annotations
 
@@ -30,6 +32,8 @@ from pathlib import Path
 ap = argparse.ArgumentParser()
 ap.add_argument("--out", type=Path, required=True)
 ap.add_argument("--mujoco", action="store_true")
+ap.add_argument("--robot", choices=("nova_carter", "reference"), default="nova_carter",
+                help="nova_carter: the release's wheeled embodiment; reference: the custom robot matched to MuJoCo")
 a, _ = ap.parse_known_args()
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "src"))
@@ -89,16 +93,20 @@ import numpy as np  # noqa: E402
 from isaacsim.core.api import World  # noqa: E402
 from isaacsim.core.api.objects import FixedCuboid  # noqa: E402
 
-from apm_isaac.robots import WheeledIsaac  # noqa: E402
+from apm_isaac.robots import NovaCarterIsaac, WheeledIsaac  # noqa: E402
 
 a.out.mkdir(parents=True, exist_ok=True)
 world = World(stage_units_in_meters=1.0, physics_dt=0.002, rendering_dt=0.02)
 world.scene.add_default_ground_plane(static_friction=1.0, dynamic_friction=1.0)
-bot = WheeledIsaac(world, "/World/Robot", (0.0, 0.0), 0.0, seed=0)
+bot = (NovaCarterIsaac if a.robot == "nova_carter" else WheeledIsaac)(world, "/World/Robot", (0.0, 0.0), 0.0, seed=0)
 world.reset()
+if hasattr(bot, "post_reset"):
+    bot.post_reset()
+print("measured", json.dumps(getattr(bot, "measured", {})), flush=True)
 rows = []
 drive(bot, rows)
-res: dict = {"engine": "isaac sim 5.1 physx", "metrics": metrics(rows), "dof_names": list(bot.art.dof_names)}
+res: dict = {"engine": "isaac sim 5.1 physx", "robot": a.robot, "metrics": metrics(rows),
+             "dof_names": list(bot.art.dof_names), "measured": getattr(bot, "measured", None)}
 # shove: the supervisor must trip (speed > 0.35 m/s) and the robot must not fall
 trips0 = bot.trips
 bot.push(0.6, 0.0)
@@ -110,10 +118,10 @@ for _ in range(100):
 res["shove"] = {"tripped": bot.trips > trips0, "fell": fell}
 # depth eye range check: a box 1.0 m ahead of the eye
 x, y, yaw = bot.pose()
-ex, ey = x + 0.11 * math.cos(yaw), y + 0.11 * math.sin(yaw)
+ex, ey = x + bot.eye_offset * math.cos(yaw), y + bot.eye_offset * math.sin(yaw)
 world.scene.add(FixedCuboid(prim_path="/World/target_box", name="target_box",
-                            position=np.array([ex + 1.25 * math.cos(yaw), ey + 1.25 * math.sin(yaw), 0.25]),
-                            scale=np.array([0.5, 0.5, 0.5])))
+                            position=np.array([ex + 1.25 * math.cos(yaw), ey + 1.25 * math.sin(yaw), 0.6]),
+                            scale=np.array([0.5, 0.5, 1.2])))
 from isaacsim.core.utils.rotations import euler_angles_to_quat  # noqa: E402
 from isaacsim.sensors.camera import Camera  # noqa: E402
 
@@ -134,6 +142,22 @@ if d is not None and np.size(d):
     res["depth_check"] = {"expected_face_m": 1.0, "median_centre_m": float(np.nanmedian(centre)),
                           "shape": list(np.shape(d))}
     np.save(a.out / "depth_frame.npy", np.asarray(d, np.float32))
-(a.out / "wheeled_isaac.json").write_text(json.dumps({**res, "rows": rows}))
+# a look at the robot itself (release QA)
+from PIL import Image  # noqa: E402
+
+from apm_isaac.world import _look_at  # noqa: E402
+
+vc = Camera(prim_path="/World/qa_cam", resolution=(960, 540))
+vc.initialize()
+vc.set_focal_length(1.8)
+for k, (dx, dy) in enumerate(((2.2, 1.2), (-1.5, 2.0))):
+    eye = np.array([x + dx, y + dy, 1.2])
+    vc.set_world_pose(position=eye, orientation=_look_at(eye, np.array([x, y, 0.3])))
+    for _ in range(10):
+        world.step(render=True)
+    f = vc.get_rgba()
+    if f is not None and np.size(f):
+        Image.fromarray(np.asarray(f[..., :3], np.uint8)).save(a.out / f"robot_view{k}.png")
+(a.out / f"wheeled_isaac_{a.robot}.json").write_text(json.dumps({**res, "rows": rows}))
 print(json.dumps(res, indent=1), flush=True)
 app.close()

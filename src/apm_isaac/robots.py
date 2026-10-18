@@ -225,6 +225,131 @@ class WheeledIsaac(_IsaacBody):
         return math.radians(row["tilt"]) > self.TILT_FALL or not row["finite"]
 
 
+class NovaCarterIsaac(_IsaacBody):
+    """NVIDIA Nova Carter, the stock Isaac Sim asset: a commercial differential-drive AMR. It is APM v1.0's wheeled
+    embodiment (user decision 2026-10-19). The custom `WheeledIsaac` remains only as a MuJoCo cross-physics
+    reference.
+
+    - **Asset.** Physics, wheel drives and casters are the asset's own. Nothing is retuned.
+    - **Geometry measured from the asset** after the first reset: wheel radius (axle height), track (wheel
+      separation), front extent (bounding box ahead of the base origin), mass.
+    - **Motion.** The same (v, w) interface and acceleration limits as the reference robot, executed as wheel
+      velocity targets on the asset's wheel drives.
+    - **Safety.** The same supervisor: base speed > 0.35 m/s or tilt > 25 deg -> zero command for 0.5 s and a
+      counted trip.
+    - **Eye.** APM's depth eye is mounted at the front Hawk stereo camera's forward position and height, on the
+      centre line (chassis frame, facing forward)."""
+
+    SHOVE_TRIP, TILT_TRIP, TILT_FALL, BRAKE_S = 0.35, math.radians(25), math.radians(60), 0.5
+    CANDIDATES = ("/Isaac/Robots/NVIDIA/NovaCarter/nova_carter.usd", "/Isaac/Robots/Carter/nova_carter_sensors.usd",
+                  "/Isaac/Robots/NVIDIA/Carter/nova_carter/nova_carter.usd")
+    R_WHEEL, TRACK = 0.14, 0.413  # replaced by measured values in post_reset
+    front, eye_offset = 0.35, 0.25
+
+    def __init__(self, world, path: str, pos: tuple[float, float], yaw: float, seed: int,
+                 physics_dt: float = 0.002):
+        import omni.client
+        from isaacsim.core.prims import SingleArticulation
+        from isaacsim.core.utils.stage import add_reference_to_stage
+        from isaacsim.storage.native import get_assets_root_path
+        from pxr import Gf, Usd, UsdGeom, UsdPhysics
+        self.world, self.path, self.physics_dt = world, path, physics_dt
+        root = get_assets_root_path()
+        self.usd = next((root + c for c in self.CANDIDATES if omni.client.stat(root + c)[0] == omni.client.Result.OK),
+                        None)
+        if self.usd is None:
+            raise FileNotFoundError("Nova Carter asset not found under " + root)
+        add_reference_to_stage(self.usd, path)
+        top = world.stage.GetPrimAtPath(path)
+        xf = UsdGeom.XformCommonAPI(top)
+        xf.SetTranslate(Gf.Vec3d(pos[0], pos[1], 0.0))
+        xf.SetRotate(Gf.Vec3f(0.0, 0.0, math.degrees(yaw)))
+        prims = list(Usd.PrimRange(top, Usd.TraverseInstanceProxies()))
+        art_root = next((str(p.GetPath()) for p in prims if p.HasAPI(UsdPhysics.ArticulationRootAPI)), path)
+        self.art = world.scene.add(SingleArticulation(art_root, name=path.split("/")[-1]))
+        self.start = (pos, yaw)
+        # the eye: an Xform on the chassis link at the front Hawk camera's position, axes = chassis axes
+        bodies = [p for p in prims if p.HasAPI(UsdPhysics.RigidBodyAPI)]
+        chassis = next((p for p in bodies if "chassis" in p.GetName().lower()), bodies[0] if bodies else top)
+        hawk = next((p for p in prims if "front_hawk" in p.GetName().lower()), None)
+        cache = UsdGeom.XformCache()
+        c_w = cache.GetLocalToWorldTransform(chassis)
+        if hawk is not None:
+            local = c_w.GetInverse().Transform(cache.GetLocalToWorldTransform(hawk).ExtractTranslation())
+        else:
+            local = Gf.Vec3d(0.3, 0.0, 0.35)
+        local = Gf.Vec3d(local[0], 0.0, local[2])  # on the centre line, at the Hawk module's height and position
+        eye = UsdGeom.Xform.Define(world.stage, f"{chassis.GetPath()}/apm_eye")
+        eye.AddTranslateOp().Set(local)
+        self.eye_prim = str(eye.GetPath())
+        self.eye_local = [round(float(v), 4) for v in local]
+        self.eye_from_hawk = hawk is not None
+        self.chassis_name = chassis.GetName()
+        self.measured: dict | None = None
+        self._init_common(seed)
+
+    def post_reset(self) -> None:
+        """Find the wheel joints and measure the asset's geometry (once)."""
+        from pxr import Usd, UsdGeom
+        names = list(self.art.dof_names)
+        self.wl = next(i for i, n in enumerate(names) if "wheel" in n.lower() and "left" in n.lower())
+        self.wr = next(i for i, n in enumerate(names) if "wheel" in n.lower() and "right" in n.lower())
+        self.dof_names = names
+        if self.measured is not None:
+            return
+        links = list(self.art._articulation_view._metadata.link_names)
+        tf = np.asarray(self.art._articulation_view._physics_view.get_link_transforms())[0]
+        wl = next((i for i, n in enumerate(links) if "wheel" in n.lower() and "left" in n.lower()), None)
+        wr = next((i for i, n in enumerate(links) if "wheel" in n.lower() and "right" in n.lower()), None)
+        if wl is not None and wr is not None:
+            self.TRACK = float(np.linalg.norm(tf[wl, :2] - tf[wr, :2]))
+            self.R_WHEEL = float((tf[wl, 2] + tf[wr, 2]) / 2)
+        (x, y), yaw = self.start
+        bound = UsdGeom.BBoxCache(Usd.TimeCode.Default(), ["default"]).ComputeWorldBound(
+            self.world.stage.GetPrimAtPath(self.path)).ComputeAlignedRange()
+        lo, hi = np.array(bound.GetMin()), np.array(bound.GetMax())
+        # extent ahead of the base origin along the start heading (spawned axis-aligned)
+        self.front = float(hi[0] - x if math.cos(yaw) >= 0 else x - lo[0])
+        bx, by, byaw = self.pose()
+        ci = links.index(self.chassis_name) if self.chassis_name in links else 0
+        ch_fwd = (tf[ci, 0] - bx) * math.cos(byaw) + (tf[ci, 1] - by) * math.sin(byaw)
+        self.eye_offset = float(ch_fwd + self.eye_local[0])
+        mass = float(np.asarray(self.art._articulation_view.get_body_masses())[0].sum())
+        self.measured = {"usd": self.usd, "wheel_radius": round(self.R_WHEEL, 4), "track": round(self.TRACK, 4),
+                         "front": round(self.front, 3), "eye_local": self.eye_local,
+                         "eye_from_front_hawk": self.eye_from_hawk, "eye_offset": round(self.eye_offset, 3),
+                         "mass_kg": round(mass, 2), "height_m": round(float(hi[2] - lo[2]), 3), "dofs": names,
+                         "links": links}
+
+    def apply(self, v: float, w: float) -> bool:
+        from isaacsim.core.utils.types import ArticulationAction
+        lin = np.asarray(self.art.get_linear_velocity(), float)
+        tripped = False
+        if float(np.hypot(lin[0], lin[1])) > self.SHOVE_TRIP or self.tilt() > self.TILT_TRIP:
+            if self.t >= self.brake_until:
+                self.trips += 1
+            self.brake_until = self.t + self.BRAKE_S
+            tripped = True
+        if self.t < self.brake_until:
+            v, w = 0.0, 0.0
+        self.v_cmd += float(np.clip(v - self.v_cmd, -0.4 * DT, 0.4 * DT))
+        self.w_cmd += float(np.clip(w - self.w_cmd, -3.0 * DT, 3.0 * DT))
+        wl = (self.v_cmd - self.w_cmd * self.TRACK / 2) / self.R_WHEEL
+        wr = (self.v_cmd + self.w_cmd * self.TRACK / 2) / self.R_WHEEL
+        self.art.apply_action(ArticulationAction(joint_velocities=np.array([wl, wr]),
+                                                 joint_indices=np.array([self.wl, self.wr])))
+        return tripped
+
+    def advance(self) -> dict:
+        for _ in range(int(round(DT / self.physics_dt))):
+            self.world.step(render=False)
+        self.t += DT
+        return self._row()
+
+    def fallen(self, row: dict) -> bool:
+        return math.radians(row["tilt"]) > self.TILT_FALL or not row["finite"]
+
+
 class T1Isaac(_IsaacBody):
     """Booster T1 (stock Isaac Sim USD) on the MuJoCo-trained walking policy."""
 
@@ -327,6 +452,12 @@ class T1Isaac(_IsaacBody):
         return math.radians(row["tilt"]) > self.TILT_FALL or row["z"] < self.Z_FALL or not row["finite"]
 
 
+# T1 PD gains (kp, kd) as trained (`apm_isaac.lab.t1.T1_CFG`)
+T1_GAINS = {".*_Hip_.*": (100.0, 3.0), ".*_Knee_Pitch": (150.0, 4.0), "Waist": (100.0, 3.0),
+            ".*_Ankle_.*": (40.0, 2.0), ".*_Shoulder_.*": (40.0, 2.0), ".*_Elbow_.*": (40.0, 2.0),
+            "AAHead_yaw": (20.0, 1.0), "Head_pitch": (20.0, 1.0)}
+
+
 class LabPolicyBody(_IsaacBody):
     """A legged body driven by a policy trained in Isaac Lab (this repository's tasks), deployed with exactly the
     training observation: base linear and angular velocity, projected gravity, (vx, vy, ω) command, joint position
@@ -362,8 +493,27 @@ class LabPolicyBody(_IsaacBody):
         self.decim = int(round(DT / physics_dt))
         self._init_common(seed)
 
+    @classmethod
+    def t1(cls, world, path: str, pos: tuple[float, float], yaw: float, seed: int, policy_dir: Path,
+           physics_dt: float = 0.005) -> LabPolicyBody:
+        """The Booster T1 with the physics it was trained in (`apm_isaac.lab.t1`): stock T1_locomotion.usd, the
+        trained PD gains and armature, self-collision off, 8/4 solver iterations."""
+        from isaacsim.storage.native import get_assets_root_path
+        from pxr import PhysxSchema, UsdPhysics
+        usd = get_assets_root_path() + "/Isaac/Robots/BoosterRobotics/BoosterT1/T1_locomotion.usd"
+        body = cls(world, path, usd, pos, yaw, seed, policy_dir, 0.70, physics_dt)
+        physx_like_isaac_lab(world.stage, path)
+        for prim in world.stage.Traverse():
+            if str(prim.GetPath()).startswith(path) and prim.IsA(UsdPhysics.RevoluteJoint):
+                PhysxSchema.PhysxJointAPI.Apply(prim).CreateArmatureAttr(0.01)
+        body.gains = T1_GAINS
+        return body
+
+    gains: dict[str, tuple[float, float]] | None = None
+
     def post_reset(self, gains: dict[str, tuple[float, float]] | None = None) -> None:
         import re
+        gains = gains or self.gains
         names = list(self.art.dof_names)
         self.idx = np.array([names.index(j) for j in self.cfg["joint_names"]])
         self.default = np.asarray(self.cfg["default_joint_pos"], float)

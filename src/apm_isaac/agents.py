@@ -115,29 +115,71 @@ def add_person(stage, name: str, xy, character_usd: str | None) -> Person:
     if character_usd:
         vis = f"{root}/character"
         add_reference_to_stage(character_usd, vis)
-        bind_animation(stage, vis, character_usd.split("/Isaac/People/")[0] + "/Isaac/People/Animations/"
-                       "stand_idle_loop.skelanim.usd", f"{root}/anim")
     p = Person(name, root, np.asarray(xy, float))
     p.cap_path, p.vis_path = cap_path, vis  # type: ignore[attr-defined]
+    p.animator = None  # type: ignore[attr-defined]
+    if character_usd and vis:
+        clip = character_usd.split("/Isaac/People/")[0] + "/Isaac/People/Animations/stand_idle_loop.skelanim.usd"
+        p.animator = Animator(stage, vis, clip, f"{root}/anim")  # type: ignore[attr-defined]
     return p
 
 
-def bind_animation(stage, character: str, anim_usd: str, anim_path: str) -> bool:
-    """Play a stock skeletal animation (looping, driven by the timeline) on the character's skeleton.
-    Visual only: the collider stays the physical body."""
-    from isaacsim.core.utils.stage import add_reference_to_stage
-    from pxr import Sdf, Usd, UsdSkel
-    if not stage.GetPrimAtPath(anim_path).IsValid():
-        add_reference_to_stage(anim_usd, anim_path)
+class Animator:
+    """Plays a stock skeletal clip (looping) on a character, independent of the timeline. Visual only: the collider
+    stays the physical body.
 
-    def first(path: str, kind):
-        return next((p for p in Usd.PrimRange(stage.GetPrimAtPath(path), Usd.TraverseInstanceProxies())
-                     if p.IsA(kind)), None)
-    anim, skel = first(anim_path, UsdSkel.Animation), first(character, UsdSkel.Skeleton)
-    if anim is None or skel is None:
-        return False
-    UsdSkel.BindingAPI.Apply(skel).CreateAnimationSourceRel().SetTargets([Sdf.Path(str(anim.GetPath()))])
-    return True
+    The character is un-instanced so its skeleton can be bound. The skeleton is then bound to a live
+    `SkelAnimation`, and `update(t)` copies the clip's pose at time t into it."""
+
+    def __init__(self, stage, character: str, clip_usd: str, root: str):
+        from pxr import Sdf, Usd, UsdSkel
+        changed = True
+        while changed:  # nested instances appear only after their parent is un-instanced
+            changed = False
+            for p in Usd.PrimRange(stage.GetPrimAtPath(character)):
+                if p.IsInstance():
+                    p.SetInstanceable(False)
+                    changed = True
+                    break
+        src_path = f"{root}/clip"
+        if not stage.GetPrimAtPath(src_path).IsValid():
+            # the stock clips have no default prim: reference the SkelAnimation by its path in the clip file
+            clip_stage = Usd.Stage.Open(clip_usd)
+            anim_in_clip = next((q.GetPath() for q in clip_stage.Traverse() if q.IsA(UsdSkel.Animation)), None)
+            holder = stage.DefinePrim(src_path)
+            if anim_in_clip is not None:
+                holder.GetReferences().AddReference(clip_usd, anim_in_clip)
+
+        def first(path: str, kind):
+            return next((p for p in Usd.PrimRange(stage.GetPrimAtPath(path), Usd.TraverseInstanceProxies())
+                         if p.IsA(kind)), None)
+        src, skel = first(src_path, UsdSkel.Animation), first(character, UsdSkel.Skeleton)
+        self.ok = src is not None and skel is not None and not skel.IsInstanceProxy()
+        self.why = {"clip": str(src.GetPath()) if src is not None else None,
+                    "skeleton": str(skel.GetPath()) if skel is not None else None,
+                    "skeleton_is_proxy": bool(skel.IsInstanceProxy()) if skel is not None else None}
+        self.src = UsdSkel.Animation(src) if src is not None else None
+        if not self.ok or self.src is None:
+            return
+        self.live = UsdSkel.Animation.Define(stage, f"{root}/live_anim")
+        self.live.CreateJointsAttr(self.src.GetJointsAttr().Get())
+        for name in ("Translations", "Rotations", "Scales"):
+            getattr(self.live, f"Create{name}Attr")()
+        UsdSkel.BindingAPI.Apply(skel).CreateAnimationSourceRel().SetTargets([Sdf.Path(str(self.live.GetPath()))])
+        ts = self.src.GetRotationsAttr().GetTimeSamples() or [0.0]
+        self.t0, self.t1 = float(ts[0]), float(ts[-1])
+        self.tcps = float(stage.GetTimeCodesPerSecond() or 24.0)
+        self.update(0.0)
+
+    def update(self, t: float) -> None:
+        if not self.ok or self.src is None:
+            return
+        span = max(self.t1 - self.t0, 1e-6)
+        tc = self.t0 + (t * self.tcps) % span
+        for name in ("Translations", "Rotations", "Scales"):
+            v = getattr(self.src, f"Get{name}Attr")().Get(tc)
+            if v is not None:
+                getattr(self.live, f"Get{name}Attr")().Set(v)
 
 
 def place(stage, p: Person, xy: np.ndarray, yaw: float) -> None:
