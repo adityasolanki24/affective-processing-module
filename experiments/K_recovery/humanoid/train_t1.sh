@@ -6,7 +6,8 @@ for i in $(seq 1 60); do nvidia-smi >/dev/null 2>&1 && break; sleep 10; done   #
 nvidia-smi --query-gpu=name,memory.total --format=csv
 python3 -m venv /work/hvenv
 /work/hvenv/bin/pip install -q --upgrade pip
-/work/hvenv/bin/pip install -q "jax[cuda12]==0.5.3" playground==0.0.4 2>&1 | tail -2 || /work/hvenv/bin/pip install -q "jax[cuda12]" playground
+/work/hvenv/bin/pip install -q "jax[cuda12]" playground 2>&1 | tail -2
+/work/hvenv/bin/pip list 2>/dev/null | grep -iE "^(jax|jaxlib|brax|playground|mujoco|mujoco-mjx|flax) "
 /work/hvenv/bin/python -c "import jax; d = jax.devices(); print('devices', d); assert d[0].platform == 'gpu'"
 mkdir -p out/humanoid
 /work/hvenv/bin/python experiments/K_recovery/humanoid/train_t1.py --out out/humanoid 2>&1 | tee out/humanoid/train_log.txt

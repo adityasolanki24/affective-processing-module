@@ -17,7 +17,8 @@ import jax
 import numpy as np
 from brax.training.agents.ppo import networks as ppo_networks
 from brax.training.agents.ppo import train as ppo
-from mujoco_playground import registry
+import mujoco
+from mujoco_playground import registry, wrapper
 from mujoco_playground.config import locomotion_params
 
 ap = argparse.ArgumentParser()
@@ -44,11 +45,16 @@ def progress(step, metrics):
 
 train_fn = functools.partial(ppo.train, **params, network_factory=factory,
                              randomization_fn=registry.get_domain_randomizer(a.env), progress_fn=progress)
-make_inference_fn, prm, _ = train_fn(environment=env, eval_env=registry.load(a.env, config=env_cfg))
+make_inference_fn, prm, _ = train_fn(environment=env, eval_env=registry.load(a.env, config=env_cfg),
+                                     wrap_env_fn=wrapper.wrap_for_brax_training)
 a.out.mkdir(parents=True, exist_ok=True)
+mujoco.mj_saveModel(env.mj_model, str(a.out / "t1_model.mjb"), None)  # the exact trained-on robot and scene
 with open(a.out / "t1_params.pkl", "wb") as f:
     pickle.dump(jax.tree_util.tree_map(np.asarray, prm), f)
-(a.out / "t1_meta.json").write_text(json.dumps({"env": a.env, "env_config": env_cfg.to_dict(),
+import importlib.metadata as md  # noqa: E402
+
+versions = {p: md.version(p) for p in ("playground", "brax", "jax", "mujoco", "mujoco-mjx", "flax")}
+(a.out / "t1_meta.json").write_text(json.dumps({"env": a.env, "versions": versions, "env_config": env_cfg.to_dict(),
                                                 "ppo": {k: (v if isinstance(v, (int, float, str, bool)) else str(v))
                                                         for k, v in params.items()},
                                                 "network": net, "log": log,
