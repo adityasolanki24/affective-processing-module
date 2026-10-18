@@ -130,7 +130,7 @@ def job(args: tuple) -> dict:
     nerva = cfg.get("robot", "nerva") == "nerva"
     channels = json.loads(Path(cfg["channels"]).read_text())["interface"] if nerva else None
     mem = TypeStateModel(model, spec["lam"], kind_prior=False, transition_each_meeting=cfg.get("transition_fix", False))
-    camera = Camera() if spec["camera"] else None
+    camera = (Camera.legacy() if cfg.get("legacy_camera") else Camera()) if spec["camera"] else None
     rows = []
     t0 = time.time()
     for k, (ident, kind) in enumerate(order):
@@ -179,6 +179,9 @@ def job(args: tuple) -> dict:
                      "contacts_dwell": truth["contacts_dwell"], "max_push": truth["max_push"],
                      "arrived": out["arrived"], "t_arrive": out["t_arrive"], "dwell_s": out["dwell_s"],
                      "trips": out["trips"], "fell": out["fell"], "task_success": task.p_success(d),
+                     "reached_interaction": bool(task.d_task is not None and d <= task.d_task + 0.05),
+                     "hold_max_dist": out.get("hold_max_dist"),
+                     "hold_completed": task.hold_completed(out["arrived"], out.get("hold_max_dist")),
                      "voi": round(diag.get("voi", 0.0), 3), "standoff": standoff,
                      "no_safe_action": bool(diag.get("no_safe_action", False))})
         if clip is not None:
@@ -208,6 +211,8 @@ def main() -> None:
     ap.add_argument("--n-enc", type=int, default=N_ENC, help="shorter lifetimes, for smoke tests only")
     ap.add_argument("--robot", choices=("nerva", "wheeled", "humanoid"), default="nerva")
     ap.add_argument("--transition-fix", action="store_true", help="DEVIATIONS D1: change transition every meeting")
+    ap.add_argument("--legacy-camera", action="store_true",
+                    help="reproduce K: 40 deg FOV applied as +-40 deg (audit A5)")
     ap.add_argument("--legacy-cap", action="store_true",
                     help="reproduce K: approach even when every option exceeds the risk cap (audit A3)")
     ap.add_argument("--addendum", default="", help="confirmatory run: committed protocol (clean tree required)")
@@ -220,7 +225,7 @@ def main() -> None:
     cfg = {"types_model": a.types_model, "edges": a.edges, "time_model": a.time_model, "channels": a.channels,
            "task": a.task, "task_spec": tasks["tasks"][a.task], "voi": tasks["voi"], "n_enc": a.n_enc,
            "robot": a.robot, "transition_fix": a.transition_fix,
-           "legacy_cap": a.legacy_cap}
+           "legacy_cap": a.legacy_cap, "legacy_camera": a.legacy_camera}
     jobs = [(a.experiment, a.partition, a.first + i, h, s, cfg) for i in range(a.n) for h in a.histories.split(",")
             for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)

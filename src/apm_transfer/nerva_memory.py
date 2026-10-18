@@ -78,13 +78,16 @@ class ObsX(Obs):
 
 class TypeStateModel(StateModel):
     def __init__(self, model: TypeModel, lam: float = 0.0, kind_prior: bool = False, alpha: float = 0.15,
-                 name: str = "M_type", transition_each_meeting: bool = False):
+                 name: str = "M_type", transition_each_meeting: bool = False, log_space: bool = False):
         self.model, self.lam, self.kind_prior, self.alpha, self.name = model, lam, kind_prior, alpha, name
         # Programme K deviation D1. The change model must apply one transition per encounter *including* the one being
         # entered (predict, then update). Without it, an identity met in consecutive encounters never relaxes, and a
         # few decisive observations drive the belief to exactly 0 or 1, from which no evidence can revise it.
         # False reproduces programmes J and K up to K3-X / K5-X exactly.
         self.transition_each_meeting = transition_each_meeting
+        # Programme L audit A6: accumulate the evidence of one encounter in log space and normalise once (no
+        # intermediate underflow). False reproduces K's sequential product exactly.
+        self.log_space = log_space
         self.reset()
 
     def reset(self) -> None:
@@ -123,9 +126,17 @@ class TypeStateModel(StateModel):
         codes), as flattened emission columns. The clock advances once. With no categories (nothing observable),
         nothing is learned and the clock still advances."""
         b = self._at(identity) if identity in self.b else self._prior(kind)
-        for cat in categories:
-            b = b * self.model.E[:, cat]
-            b = b / b.sum()
+        if self.log_space:
+            with np.errstate(divide="ignore"):
+                lp = np.log(b) + sum((np.log(self.model.E[:, c]) for c in categories), np.zeros_like(b))
+            if np.isfinite(lp.max()):  # all types impossible (zero emissions): keep the predicted belief
+                lp -= lp.max()
+                b = np.exp(lp)
+                b = b / b.sum()
+        else:
+            for cat in categories:
+                b = b * self.model.E[:, cat]
+                b = b / b.sum()
         self.n += 1
         if categories:
             self.b[identity] = b

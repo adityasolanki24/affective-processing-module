@@ -7,6 +7,17 @@
 
 Everything is simulation only.
 
+> **Errata from the programme L audit (2026-10-18; `experiments/L_audit_perception/`).** The tables below are left
+> as published. Read them with these corrections:
+> 1. **"Handoff" / "task success"** is the stopping-distance proxy `Task.p_success` (now `p_reach`), not a completed
+>    handoff. NERVA has no arm. P5 measured navigation arrival, not task completion.
+> 2. **Recovery counts.** A lone favourable final meeting was counted as confirmed. Corrected, the counts drop
+>    (e.g. NERVA DT_CAM_VOI 50 → 47 of 50); no median or milestone verdict changes.
+> 3. **The risk cap was not enforced.** DT, DT_VOI, DT_CAM and DT_UNC approached beyond the predicted cap in 5–29% of
+>    decisions. DT_CAM_VOI never did. Results for those systems are re-tested with the cap enforced in L.
+> 4. **The "camera" is an abstract sensor** that reports generated lunge events. It is not image processing. Its
+>    ±40° bearing test treated a 40° field of view as a half-angle.
+
 ## What APM can do now that it could not before
 
 1. **Revise a negative expectation and recover its behaviour, in both directions, within one lifetime, inside the

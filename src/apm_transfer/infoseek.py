@@ -65,12 +65,23 @@ class Task:
     risk_cap: float = 0.30      # max expected strong perturbations per encounter (safety budget)
     min_sep: float | None = None  # tasks that require keeping at least this distance (m)
 
-    def p_success(self, d: float) -> float:
+    def p_reach(self, d: float) -> float:
+        """Model of *reaching the interaction distance* from the stopping distance d (audit A4). It is not task
+        completion; the measured task outcome is the interaction hold (`hold_completed`)."""
         if self.min_sep is not None and d < self.min_sep - 1e-9:
             return 0.0
         if self.d_task is None:
             return 1.0
         return float(np.clip(1.0 - (d - self.d_task) / 0.3, 0.0, 1.0))
+
+    p_success = p_reach  # programme K's name, kept for reproducibility
+
+    def hold_completed(self, arrived: bool, hold_max_dist: float | None) -> bool:
+        """Measured interaction task: the robot arrived and stayed within the interaction zone (d_task + 0.05 m) for
+        the whole first sensing window, despite any pushes. It applies only to tasks with a proximity requirement."""
+        if self.d_task is None or not arrived or hold_max_dist is None:
+            return False
+        return hold_max_dist <= self.d_task + 0.05
 
 
 @dataclass

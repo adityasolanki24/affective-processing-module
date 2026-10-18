@@ -91,7 +91,7 @@ class ContinuousNerva:
             if self.camera is not None and cam_w is not None:
                 bearing = math.atan2(TARGET[1] - y, TARGET[0] - x) - self.ctrl.pose()[2]
                 bearing = math.atan2(math.sin(bearing), math.cos(bearing))
-                if (abs(bearing) <= self.camera.fov and dist <= self.camera.range_m
+                if (self.camera.within_fov(bearing) and dist <= self.camera.range_m
                         and self.cam_rng.random() < self.camera.p_detect):
                     info["cam_seen"][cam_w].append(round(reach + float(self.cam_rng.normal(0, self.camera.sigma)),
                                                          3))

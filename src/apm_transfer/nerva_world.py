@@ -167,14 +167,33 @@ MAX_WINDOWS = 3            # programme K: at most 3 windows per encounter; lunge
 
 @dataclass(frozen=True)
 class Camera:
-    """Programme K **sensor extension** (not on NERVA's simulated robot today): a head camera that sees the entity's
-    lunges, whether or not they reach the robot. A lunge during a sensing window is seen with probability `p_detect`
-    if the entity is within `fov` of the robot's heading and within `range_m`. Its reach is measured with Gaussian
-    noise `sigma` (m). It reads the entity's *motion*, never its type."""
+    """Programme K **abstract event sensor** (`AbstractCamera`). It is not image processing, and it is not on NERVA's
+    simulated robot today.
+    - It reports each lunge of the entity, from the simulator's own event list, whether or not the lunge reaches
+      the robot.
+    - A lunge during a sensing window is seen with probability `p_detect` if the entity is inside the field of view
+      and within `range_m`.
+    - Its reach is reported with Gaussian noise `sigma` (m). It reads the entity's *motion*, never its type.
+
+    **Field of view (audit A5, programme L).** `fov` is the *full* angle: visible means |bearing| ≤ fov / 2. K applied
+    it as a half-angle (±40°); `Camera.legacy()` reproduces that. Rendered-image perception is a separate,
+    programme L module."""
     fov: float = math.radians(40)
     range_m: float = 2.0
     p_detect: float = 0.9
     sigma: float = 0.05
+    fov_is_half_angle: bool = False
+
+    @classmethod
+    def legacy(cls) -> Camera:
+        """Programme K's sensor: a 40° parameter used as a ±40° bearing limit."""
+        return cls(fov_is_half_angle=True)
+
+    def within_fov(self, bearing: float) -> bool:
+        return abs(bearing) <= (self.fov if self.fov_is_half_angle else self.fov / 2)
+
+
+AbstractCamera = Camera
 
 
 def camera_code(reaches: list[float]) -> int:
@@ -264,6 +283,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     skip_n = int(round(POST_ARRIVAL_SKIP_S / ctrl.dt))
     cam_seen: list[list[float]] = [[] for _ in range(windows or 0)]
     win_ev: list[Evidence] = []
+    hold_d: list[float] = []  # distance to the entity during the first sensing window (the interaction hold)
     aborted = False
     aim = (TARGET[0] - standoff, TARGET[1])
     adapter.reset(ctrl.t, ctrl.pose(), aim, intent)
@@ -275,6 +295,8 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
         x, y, _ = ctrl.pose()
         dist = math.hypot(TARGET[0] - x, TARGET[1] - y)
         lunge = None
+        if windows is not None and k_arrive is not None and k_arrive + skip_n <= k < k_arrive + skip_n + win_n:
+            hold_d.append(dist)
         if k in events:
             reach, speed = events[k]
             m = impulse(reach, speed, dist)
@@ -283,7 +305,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
                 w = (k - k_arrive - skip_n) // win_n
                 bearing = math.atan2(TARGET[1] - y, TARGET[0] - x) - ctrl.pose()[2]
                 bearing = math.atan2(math.sin(bearing), math.cos(bearing))
-                if (w < windows and abs(bearing) <= camera.fov and dist <= camera.range_m
+                if (w < windows and camera.within_fov(bearing) and dist <= camera.range_m
                         and cam_rng.random() < camera.p_detect):
                     cam_seen[w].append(round(reach + float(cam_rng.normal(0.0, camera.sigma)), 3))
             if m > 0:
@@ -343,6 +365,8 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict, dwell_s
     if windows is not None:
         outcome["windows"] = [e.as_list() for e in win_ev]
         outcome["aborted"] = aborted
+        outcome["hold_max_dist"] = round(max(hold_d), 4) if len(hold_d) == win_n else None
+        outcome["hold_min_dist"] = round(min(hold_d), 4) if hold_d else None
         outcome["dwell_s"] = round((k - k_arrive) * ctrl.dt, 2) if k_arrive is not None else 0.0
         if camera is not None:
             outcome["camera"] = [camera_code(c) for c in cam_seen[:len(win_ev)]]

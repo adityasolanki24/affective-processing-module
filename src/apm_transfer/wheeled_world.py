@@ -223,12 +223,15 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
     pushes: list[tuple[float, float, bool]] = []
     cam_seen: list[list[float]] = [[] for _ in range(windows)]
     win_ev: list[Evidence] = []
+    hold_d: list[float] = []  # distance during the first sensing window (the interaction hold)
     k, k_arrive, t_arrive, fell, aborted = n_settle, None, None, False, False
     baseline = slice(max(0, n_settle - 50), n_settle)
     while True:
         x, y, yaw = bot.pose()
         dist = math.hypot(TARGET[0] - x, TARGET[1] - y)
         lunge = None
+        if k_arrive is not None and k_arrive + skip_n <= k < k_arrive + skip_n + win_n:
+            hold_d.append(dist)
         if k in events:
             reach, speed = events[k]
             m = impulse(reach, speed, dist)
@@ -241,7 +244,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
                 w = (k - k_arrive - skip_n) // win_n
                 bearing = math.atan2(math.sin(math.atan2(TARGET[1] - y, TARGET[0] - x) - yaw),
                                      math.cos(math.atan2(TARGET[1] - y, TARGET[0] - x) - yaw))
-                if w < windows and abs(bearing) <= camera.fov and dist <= camera.range_m \
+                if w < windows and camera.within_fov(bearing) and dist <= camera.range_m \
                         and cam_rng.random() < camera.p_detect:
                     cam_seen[w].append(round(reach + float(cam_rng.normal(0, camera.sigma)), 3))
         if k_arrive is None:
@@ -279,7 +282,9 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
     outcome: dict = {"arrived": k_arrive is not None, "t_arrive": t_arrive,
                      "final_distance": round(math.hypot(TARGET[0] - x, TARGET[1] - y), 3), "trips": bot.trips,
                      "fallback_steps": 0, "fell": fell, "windows": [e.as_list() for e in win_ev], "aborted": aborted,
-                     "dwell_s": round((k - k_arrive) * DT, 2) if k_arrive is not None else 0.0}
+                     "dwell_s": round((k - k_arrive) * DT, 2) if k_arrive is not None else 0.0,
+                     "hold_max_dist": round(max(hold_d), 4) if len(hold_d) == win_n else None,
+                     "hold_min_dist": round(min(hold_d), 4) if hold_d else None}
     if camera is not None:
         outcome["camera"] = [camera_code(c) for c in cam_seen[:len(win_ev)]]
         outcome["camera_reaches"] = cam_seen[:len(win_ev)]
