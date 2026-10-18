@@ -178,7 +178,7 @@ def criteria(res: dict, candidates: tuple[str, ...] = ("DT_VOI", "DT_CAM_VOI", "
         o = res["systems"].get(s)
         if o is None:
             continue
-        med = lambda k: (o.get(k) or {}).get("median")  # noqa: E731
+        med = lambda k, o=o: (o.get(k) or {}).get("median")  # noqa: E731
         le = lambda v, x: v is not None and v <= x  # noqa: E731
         rep = [((res.get("vs_DT", {}).get(s, {}).get(h, {}) or {}).get("repeated_push_after_switch") or {})
                for h in ("change_B", "late_B")]

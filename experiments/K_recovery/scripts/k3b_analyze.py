@@ -73,7 +73,7 @@ def main() -> None:
             o[s]["expressive_differentiation_m"] = boot([np.mean(late["risky_B"][i] or [np.nan])
                                                          - np.mean(late["safe"][i] or [np.nan]) for i in keys])
         diffs: dict = {}
-        for name, f in (("cost", lambda x: enc_cost(x, spec)), ("contacts", lambda x: x["contacts"])):
+        for name, f in (("cost", lambda x, sp=spec: enc_cost(x, sp)), ("contacts", lambda x: x["contacts"])):
             vals = []
             for h in ("risky_B", "safe"):
                 for i in sorted(set(runs[("DT", h)]) & set(runs[("L0", h)])):
