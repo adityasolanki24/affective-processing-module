@@ -107,7 +107,7 @@ def cmd_create(a) -> None:
     with tempfile.TemporaryDirectory() as tmp:
         start = Path(tmp) / "runner.sh"
         start.write_bytes((HERE / "runner.sh").read_bytes().replace(b"\r\n", b"\n"))
-        image = (["--image-family=common-cu124-ubuntu-2204-py310", "--image-project=deeplearning-platform-release",
+        image = (["--image-family=common-cu129-ubuntu-2204-nvidia-580", "--image-project=deeplearning-platform-release",
                   "--boot-disk-size=100GB", "--maintenance-policy=TERMINATE"] if a.gpu else
                  ["--image-family=ubuntu-2404-lts-amd64", "--image-project=ubuntu-os-cloud", "--boot-disk-size=30GB"])
         meta = f"apm-bucket={BUCKET},apm-idle-min={a.idle_min}" + (",install-nvidia-driver=True" if a.gpu else "")
