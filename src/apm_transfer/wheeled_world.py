@@ -196,11 +196,14 @@ class WheeledLogger:
 def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None = None, settle_s: float = 2.0,
                           max_approach_s: float = 45.0, windows: int = 1, camera: Camera | None = None,
                           abort_on_detect: bool = True, scene_extender=None,
-                          frame_hook=None, standoff: float = 0.0, robot_factory=None) -> tuple[Evidence, dict, dict]:
+                          frame_hook=None, standoff: float = 0.0, robot_factory=None,
+                          target: tuple[float, float] | None = None) -> tuple[Evidence, dict, dict]:
     """Same protocol and return structure as `nerva_world.closed_loop_encounter` with `windows` set.
 
     `robot_factory(seed, scene_extender)` may supply another (v, ω)-commanded body with the same interface
-    (`humanoid_world.HumanoidRobot`); the default is this wheeled robot."""
+    (`humanoid_world.HumanoidRobot`); the default is this wheeled robot. `target` moves the entity (default
+    `TARGET`, straight ahead)."""
+    tgt = TARGET if target is None else target  # programme L Phase D: other entity positions
     from apm_express.wheeled import WheeledAdapter
 
     rng = np.random.default_rng(seed)
@@ -217,7 +220,13 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
     n_settle = len(log.acc)
     horizon = max_approach_s + POST_ARRIVAL_SKIP_S + WINDOW_S * MAX_WINDOWS
     events = {n_settle + int(round(t / DT)): (reach, speed) for t, reach, speed in lunges(rng, etype, horizon)}
-    aim = (TARGET[0] - standoff, TARGET[1])
+    if target is None:
+        aim = (tgt[0] - standoff, tgt[1])  # K: the entity straight ahead
+    else:
+        x0, y0, _ = bot.pose()
+        u = (tgt[0] - x0, tgt[1] - y0)
+        n = math.hypot(*u) or 1.0
+        aim = (tgt[0] - standoff * u[0] / n, tgt[1] - standoff * u[1] / n)  # back off along the approach line
     adapter.reset(bot.pose(), aim, intent)
     win_n, skip_n = int(round(WINDOW_S / DT)), int(round(POST_ARRIVAL_SKIP_S / DT))
     hold_n = int(round(SELF_MOTION_HOLD_S / DT))
@@ -230,7 +239,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
     baseline = slice(max(0, n_settle - 50), n_settle)
     while True:
         x, y, yaw = bot.pose()
-        dist = math.hypot(TARGET[0] - x, TARGET[1] - y)
+        dist = math.hypot(tgt[0] - x, tgt[1] - y)
         lunge = None
         if k_arrive is not None and k_arrive + skip_n <= k < k_arrive + skip_n + win_n:
             hold_d.append(dist)
@@ -239,13 +248,13 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
             m = impulse(reach, speed, dist)
             lunge = (reach, m)
             if m > 0:
-                away = math.atan2(y - TARGET[1], x - TARGET[0]) + float(rng.uniform(-0.35, 0.35))
+                away = math.atan2(y - tgt[1], x - tgt[0]) + float(rng.uniform(-0.35, 0.35))
                 bot.push(m * math.cos(away), m * math.sin(away))
                 pushes.append((round(bot.t, 2), round(m, 4), k_arrive is not None))
             if camera is not None and not is_vision and k_arrive is not None and k >= k_arrive + skip_n:
                 w = (k - k_arrive - skip_n) // win_n
-                bearing = math.atan2(math.sin(math.atan2(TARGET[1] - y, TARGET[0] - x) - yaw),
-                                     math.cos(math.atan2(TARGET[1] - y, TARGET[0] - x) - yaw))
+                bearing = math.atan2(math.sin(math.atan2(tgt[1] - y, tgt[0] - x) - yaw),
+                                     math.cos(math.atan2(tgt[1] - y, tgt[0] - x) - yaw))
                 if w < windows and camera.within_fov(bearing) and dist <= camera.range_m \
                         and cam_rng.random() < camera.p_detect:
                     cam_seen[w].append(round(reach + float(cam_rng.normal(0, camera.sigma)), 3))
@@ -261,7 +270,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
         if is_vision and k_arrive is not None:
             from apm_transfer.vision import WARM_S, VisionSession
             if vis is None:
-                vis = VisionSession(camera, bot, events, DT, TARGET, seed)  # type: ignore[arg-type]
+                vis = VisionSession(camera, bot, events, DT, tgt, seed)  # type: ignore[arg-type]
             j = k - (k_arrive + skip_n)
             if -int(round(WARM_S / DT)) <= j < windows * win_n:
                 vis.step(k, j, dist, own[-1])
@@ -291,7 +300,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
     x, y, _ = bot.pose()
     ev = win_ev[0] if win_ev else Evidence(0, 0, 0, 0, 1.0, 0, fell, 0, 0, False, 0)
     outcome: dict = {"arrived": k_arrive is not None, "t_arrive": t_arrive,
-                     "final_distance": round(math.hypot(TARGET[0] - x, TARGET[1] - y), 3), "trips": bot.trips,
+                     "final_distance": round(math.hypot(tgt[0] - x, tgt[1] - y), 3), "trips": bot.trips,
                      "fallback_steps": 0, "fell": fell, "windows": [e.as_list() for e in win_ev], "aborted": aborted,
                      "dwell_s": round((k - k_arrive) * DT, 2) if k_arrive is not None else 0.0,
                      "hold_max_dist": round(max(hold_d), 4) if len(hold_d) == win_n else None,

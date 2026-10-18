@@ -68,6 +68,7 @@ class VisionCamera:
     tau: float = 0.05
     min_px: int = 8
     keep_frames: bool = False  # videos and figures only
+    occluded: bool = False     # programme L Phase D: a static screen partly hides the entity in this encounter
 
     @property
     def fovy_deg(self) -> float:
@@ -273,6 +274,17 @@ class VisionSession:
             self.mj.mjv_initGeom(scn.geoms[scn.ngeom], int(self.mj.mjtGeom.mjGEOM_CYLINDER),
                                  np.array([ENTITY_R, ENTITY_H / 2, 0.0]), centre, np.eye(3).flatten(),
                                  np.array([0.85, 0.35, 0.2, 1.0], np.float32))
+            scn.ngeom += 1
+        if self.cam.occluded and scn.ngeom < scn.maxgeom:  # screen halfway, covering ~70% of the column's width
+            tx, ty = origin[0] + self.target[0], origin[1] + self.target[1]
+            v = np.array([tx - eye[0], ty - eye[1]])
+            v = v / (np.linalg.norm(v) or 1.0)
+            side = np.array([-v[1], v[0]])
+            mid = np.array([eye[0], eye[1]]) + 0.5 * (np.array([tx, ty]) - eye[:2]) + 0.05 * side
+            rot = np.array([[v[0], -v[1], 0.0], [v[1], v[0], 0.0], [0.0, 0.0, 1.0]])
+            self.mj.mjv_initGeom(scn.geoms[scn.ngeom], int(self.mj.mjtGeom.mjGEOM_BOX),
+                                 np.array([0.01, 0.10, ENTITY_H / 2]), np.array([mid[0], mid[1], ENTITY_H / 2]),
+                                 rot.flatten(), np.array([0.3, 0.3, 0.3, 1.0], np.float32))
             scn.ngeom += 1
         depth = np.asarray(r.render(), float).copy()
         depth += self.rng.normal(0.0, 1.0, depth.shape) * self.cam.depth_sigma * (1.0 + depth)

@@ -191,3 +191,66 @@ visual observations instead of K's abstract event sensor?
 - **Interpretation rules, fixed now:**
   - If Q1 passes where DT_VOI fails, the camera's benefit in K survives with real perception.
   - If Q1 fails where DT_CAM_VOI passes, K's camera result depended on the abstract sensor.
+
+---
+
+## D. Behavioural learning under stress (frozen 2026-10-18, before any LD data)
+
+**Question.** Is the system effective when the entity's behaviour, the world or the sensing changes? Is another
+memory better?
+
+**Body and policy.**
+- The wheeled robot with IMU + rendered vision.
+- The decision-theoretic mapping with VOI, with every §B correction.
+- Its type model is §C.2's wheeled vision model, committed before LD runs.
+
+**Runner and analysis:** `d_stress.py` and `d_analyze.py` at this commit.
+
+**Scenarios (15):**
+
+| scenario | change |
+|---|---|
+| nominal | K's change at encounter 16 |
+| overlap | forceful/gentle types, not seen in fitting |
+| drift | gradual change over encounters 16–32 |
+| erratic | flips with p 0.3 per meeting |
+| positions | 4 entity places |
+| occlusion | 40% of encounters partly hidden |
+| identities | 6 identities, B2 opposite |
+| tracking | 15% identity confusions |
+| speed fast / slow | lunge speed ×1.6 / ×0.5 |
+| camera_poor | 32×24, σ 3 cm, 10% dropout, 5 Hz |
+| context | behaviour depends on the zone approached |
+| goal inspect / separation / waypoint | other task goals |
+
+- Histories: change (risky → safe) and late (safe → risky), for B identities.
+- **Seeds:** experiment LD, partition X 0–29. Every system sees identical entity draws.
+
+**Memories:**
+- M0: none (prior);
+- M1: Bayesian change-aware type memory (λ 0.02);
+- M2: recency-weighted leaky evidence (α 0.2, set a priori: half-life about 3 meetings);
+- M3: M1 keyed by (identity, zone or position);
+- ORACLE: the true current type (reference).
+
+**A small predictive model (GRU)** is run only if it is justified, i.e. if M1 and M2 both fail D1 in ≥ 2
+scenarios. J4 found that the GRU adds nothing over the type model.
+
+**Criteria.**
+- **D1, per scenario:** M1 is effective if, against M0:
+  - task cost per B meeting: paired upper bound < 0;
+  - contacts per risky meeting: upper bound ≤ +0.05.
+- **Answer to "effective under changed entity behaviour?":**
+  - yes: D1 holds in ≥ 12 of 15 scenarios;
+  - partly: 8–11;
+  - no: < 8.
+  - The failing scenarios are named.
+- **Memory choice:**
+  - M2 replaces M1 if its cost is lower (upper < 0) in ≥ 3 scenarios and higher (lower > 0) in none.
+  - M3 is recommended as a context extension if it is lower than M1 in *context* and higher in at most one
+    scenario.
+  - Otherwise M1 stays: the simpler or incumbent option wins ties.
+- **Reported:**
+  - anticipation accuracy (the belief before the meeting matches the risk);
+  - excess avoidance;
+  - the gap to ORACLE.

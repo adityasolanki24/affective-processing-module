@@ -61,3 +61,38 @@ def test_perception_takes_only_images_and_self_knowledge():
     params = list(inspect.signature(MotionPerception.frame).parameters)
     assert params == ["self", "depth", "own_motion", "d_nav", "eye_offset"]
     assert list(inspect.signature(MotionPerception.__init__).parameters) == ["self", "cam"]
+
+
+def _model():
+    from apm_revise.belief import TypeModel
+    E = np.array([[0.7, 0.2, 0.05, 0.05], [0.05, 0.05, 0.2, 0.7]])
+    return TypeModel("t", np.array([0.8, 0.2]), E, np.array([0.1, 0.9]))
+
+
+def test_leaky_memory_forgets_geometrically_and_revises():
+    from apm_transfer.nerva_memory import LeakyEvidenceMemory
+    m = LeakyEvidenceMemory(_model(), alpha=0.2)
+    for _ in range(10):
+        m.observe_many("a", "x", [3, 3], 0.0)
+    assert m.belief("a", "x")[1] > 0.99
+    n = 0
+    while m.belief("a", "x")[0] < 0.5:
+        m.observe_many("a", "x", [0, 0], 0.0)
+        n += 1
+    assert n <= 3
+    m.observe_many("a", "x", [], 0.0)  # nothing observed: nothing changes
+    assert m.belief("b", "x")[0] == 0.8
+
+
+def test_context_memory_keeps_contexts_apart():
+    from apm_transfer.nerva_memory import ContextKeyedMemory, TypeStateModel
+    m = ContextKeyedMemory(TypeStateModel(_model(), lam=0.02, transition_each_meeting=True))
+    m.context = "left"
+    for _ in range(5):
+        m.observe_many("a", "x", [3, 3], 0.0)
+    m.context = "right"
+    for _ in range(5):
+        m.observe_many("a", "x", [0, 0], 0.0)
+    assert m.belief("a", "x")[0] > 0.9
+    m.context = "left"
+    assert m.belief("a", "x")[1] > 0.9

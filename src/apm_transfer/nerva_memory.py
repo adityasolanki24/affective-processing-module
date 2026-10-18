@@ -193,3 +193,66 @@ class GruMemory(StateModel):
         h = self.h.get(probe.identity, self.net.init())
         z = float((self.net.Wo @ h + self.net.bo)[0])
         return Readout(1.0 / (1.0 + math.exp(-z)), 1.0 / (1 + self.n.get(probe.identity, 0)), self.g)
+
+
+class PriorOnlyMemory:
+    """Programme L Phase D baseline: no memory. Every belief is the type prior π."""
+
+    name = "M0_prior"
+
+    def __init__(self, model: TypeModel):
+        self.model = model
+
+    def belief(self, identity: str, kind: str) -> np.ndarray:
+        return self.model.pi.copy()
+
+    def observe_many(self, identity: str, kind: str, categories: list[int], y: float) -> None:
+        return None
+
+
+class LeakyEvidenceMemory:
+    """Programme L Phase D alternative: a recency-weighted risk estimate.
+
+    Per identity, it keeps a leaky sum of per-type log-likelihoods: s <- (1 - alpha) s + sum_c log E[:, c], updated
+    at each of *that identity's* meetings that has observations. The belief is softmax(log π + s). Old evidence
+    fades geometrically (half-life ln 0.5 / ln(1 - alpha) meetings), whatever happened in between. It has no change
+    model and no global clock."""
+
+    name = "M2_leaky"
+
+    def __init__(self, model: TypeModel, alpha: float = 0.2):
+        self.model, self.alpha = model, alpha
+        self.s: dict[str, np.ndarray] = {}
+        self.logE = np.log(np.clip(model.E, 1e-300, None))
+
+    def belief(self, identity: str, kind: str) -> np.ndarray:
+        lp = np.log(self.model.pi) + self.s.get(identity, 0.0)
+        lp = lp - lp.max()
+        b = np.exp(lp)
+        return b / b.sum()
+
+    def observe_many(self, identity: str, kind: str, categories: list[int], y: float) -> None:
+        if not categories:
+            return
+        ll = self.logE[:, categories].sum(1)
+        self.s[identity] = (1 - self.alpha) * self.s.get(identity, np.zeros_like(ll)) + (ll - ll.max())
+
+
+class ContextKeyedMemory:
+    """Programme L Phase D alternative: the Bayesian type memory kept separately per (identity, context). The
+    context is something the robot knows itself, e.g. the zone it is approaching."""
+
+    name = "M3_context"
+
+    def __init__(self, inner: TypeStateModel):
+        self.inner = inner
+        self.context = ""
+
+    def key(self, identity: str) -> str:
+        return f"{identity}@{self.context}"
+
+    def belief(self, identity: str, kind: str) -> np.ndarray:
+        return self.inner.belief(self.key(identity), kind)
+
+    def observe_many(self, identity: str, kind: str, categories: list[int], y: float) -> None:
+        self.inner.observe_many(self.key(identity), kind, categories, y)

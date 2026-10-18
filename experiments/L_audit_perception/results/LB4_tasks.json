@@ -1,0 +1,234 @@
+{
+ "tasks": {
+  "handoff": {
+   "systems": {
+    "L0": {
+     "cost": 31.280206250000003,
+     "contacts": 0.475625,
+     "task_success": 0.0,
+     "holds": 0.0,
+     "approach_s": 14.961456250000001,
+     "falls": 0,
+     "trips": 0,
+     "expressive_differentiation_m": {
+      "estimate": 0.07303719799936907,
+      "ci95": [
+       0.06821959157541109,
+       0.07756096276151665
+      ],
+      "n": 40
+     }
+    },
+    "DT": {
+     "cost": 12.923356250000001,
+     "contacts": 0.2915625,
+     "task_success": 0.784375,
+     "holds": 0.05625,
+     "approach_s": 7.637731249999999,
+     "falls": 0,
+     "trips": 0,
+     "expressive_differentiation_m": {
+      "estimate": 0.32439291168809264,
+      "ci95": [
+       0.3095579625522048,
+       0.33948691170329126
+      ],
+      "n": 40
+     }
+    }
+   },
+   "DT_minus_L0": {
+    "cost": {
+     "estimate": -18.35685,
+     "ci95": [
+      -18.6985946875,
+      -18.00930734375
+     ],
+     "n": 80
+    },
+    "contacts": {
+     "estimate": -0.18406250000000002,
+     "ci95": [
+      -0.2553203125,
+      -0.11436718750000001
+     ],
+     "n": 80
+    }
+   },
+   "DT_promoted_for_task": true
+  },
+  "inspect": {
+   "systems": {
+    "L0": {
+     "cost": 21.82626875,
+     "contacts": 0.475625,
+     "task_success": 0.7503125,
+     "holds": 0.0,
+     "approach_s": 14.961456250000001,
+     "falls": 0,
+     "trips": 0,
+     "expressive_differentiation_m": {
+      "estimate": 0.07303719799936907,
+      "ci95": [
+       0.06821959157541109,
+       0.07756096276151665
+      ],
+      "n": 40
+     }
+    },
+    "DT": {
+     "cost": 11.635593749999998,
+     "contacts": 0.218125,
+     "task_success": 0.79625,
+     "holds": 0.05,
+     "approach_s": 6.51209375,
+     "falls": 0,
+     "trips": 0,
+     "expressive_differentiation_m": {
+      "estimate": 0.22034373014412484,
+      "ci95": [
+       0.20610404054082795,
+       0.2342716719857719
+      ],
+      "n": 40
+     }
+    }
+   },
+   "DT_minus_L0": {
+    "cost": {
+     "estimate": -10.190674999999999,
+     "ci95": [
+      -10.77752015625,
+      -9.623341875000001
+     ],
+     "n": 80
+    },
+    "contacts": {
+     "estimate": -0.2575,
+     "ci95": [
+      -0.32594531250000003,
+      -0.19031250000000002
+     ],
+     "n": 80
+    }
+   },
+   "DT_promoted_for_task": true
+  },
+  "separation": {
+   "systems": {
+    "L0": {
+     "cost": 29.79970625,
+     "contacts": 0.475625,
+     "task_success": 0.1175,
+     "holds": 0.0,
+     "approach_s": 14.961456250000001,
+     "falls": 0,
+     "trips": 0,
+     "expressive_differentiation_m": {
+      "estimate": 0.07303719799936907,
+      "ci95": [
+       0.06821959157541109,
+       0.07756096276151665
+      ],
+      "n": 40
+     }
+    },
+    "DT": {
+     "cost": 6.95546875,
+     "contacts": 0.1571875,
+     "task_success": 1.0,
+     "holds": 0.02375,
+     "approach_s": 4.30546875,
+     "falls": 0,
+     "trips": 0,
+     "expressive_differentiation_m": {
+      "estimate": 0.027369505395919914,
+      "ci95": [
+       0.017947113319109656,
+       0.03702441940611477
+      ],
+      "n": 40
+     }
+    }
+   },
+   "DT_minus_L0": {
+    "cost": {
+     "estimate": -22.8442375,
+     "ci95": [
+      -23.21191390625,
+      -22.481011249999998
+     ],
+     "n": 80
+    },
+    "contacts": {
+     "estimate": -0.31843750000000004,
+     "ci95": [
+      -0.39125,
+      -0.24781250000000005
+     ],
+     "n": 80
+    }
+   },
+   "DT_promoted_for_task": true
+  },
+  "waypoint": {
+   "systems": {
+    "L0": {
+     "cost": 18.68020625,
+     "contacts": 0.475625,
+     "task_success": 1.0,
+     "holds": 0.0,
+     "approach_s": 14.961456250000001,
+     "falls": 0,
+     "trips": 0,
+     "expressive_differentiation_m": {
+      "estimate": 0.07303719799936907,
+      "ci95": [
+       0.06821959157541109,
+       0.07756096276151665
+      ],
+      "n": 40
+     }
+    },
+    "DT": {
+     "cost": 6.95546875,
+     "contacts": 0.1571875,
+     "task_success": 1.0,
+     "holds": 0.02375,
+     "approach_s": 4.30546875,
+     "falls": 0,
+     "trips": 0,
+     "expressive_differentiation_m": {
+      "estimate": 0.027369505395919914,
+      "ci95": [
+       0.017947113319109656,
+       0.03702441940611477
+      ],
+      "n": 40
+     }
+    }
+   },
+   "DT_minus_L0": {
+    "cost": {
+     "estimate": -11.7247375,
+     "ci95": [
+      -12.11937359375,
+      -11.3433646875
+     ],
+     "n": 80
+    },
+    "contacts": {
+     "estimate": -0.31843750000000004,
+     "ci95": [
+      -0.39125,
+      -0.24781250000000005
+     ],
+     "n": 80
+    }
+   },
+   "DT_promoted_for_task": true
+  }
+ },
+ "tasks_passed": 4,
+ "DT_replaces_L0": true
+}
