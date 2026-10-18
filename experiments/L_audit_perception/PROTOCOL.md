@@ -109,3 +109,85 @@ As in K §4, with corrections:
 - Cloud spot VMs (`jcloud.py`), under programme L's US$60 cap. A preempted job is rerun with identical seeds, and
   the rerun is logged.
 - Raw lifetimes are git-ignored under `runs/L/` and hashed in the analysis output.
+
+---
+
+## C. Rendered-image perception (frozen 2026-10-18, before any LC T, V or X data)
+
+**Question.** Is there a genuine vision pipeline, and does recovery still work when the robot learns from noisy
+visual observations instead of K's abstract event sensor?
+
+**Pipeline** (`src/apm_transfer/vision.py` at this commit).
+
+- **World side.**
+  - The entity is drawn as a person-scale column, render-only, so physics is unchanged.
+  - It physically slides toward the robot through each scheduled lunge, peaking at the impulse step.
+  - A depth eye on the robot renders at 10 Hz during the sensing windows:
+    - placement: NERVA's head, the wheeled robot's mast, the T1's head;
+    - 64 × 48 px, 40° horizontal field of view, pitched 10° down;
+    - noise σ (1 + depth) with σ = 1 cm, and 2% dropouts.
+- **Perception side (`MotionPerception`).**
+  - Inputs:
+    - depth frames;
+    - own-motion flags (efference copy);
+    - the navigation estimate of the target distance (true + N(0, 3 cm) per encounter);
+    - the robot's knowledge of its own camera: intrinsics, pitch, noise specification, mounting offset.
+  - Method:
+    - median background;
+    - a noise-scaled threshold;
+    - spatial coherence;
+    - an egomotion rejection;
+    - foreground counted only near the target surface;
+    - events tolerate a one-frame gap;
+    - reach = navigation distance − eye offset − closest foreground.
+  - Codes are K's 8 categories.
+  - It never reads simulator state. A unit test checks its interface.
+
+**Pilot basis.** The perception was developed on smoke encounters and partition P only.
+- A wheeled P pilot (LC2-P, 40 encounters) showed recall 1.0 for lunges that displace the column ≥ 5 cm and 0 below.
+  That fixed the *definition* of a visible lunge.
+- The gate thresholds below were set before that pilot and are unchanged.
+
+### C.1 Perception quality (LC1 NERVA, LC2 wheeled, LC3 humanoid; X 0–399; `c_perception.py`)
+
+- **Encounters.** Calm and pushy alternate, at stopping distances 0.3, 0.4, 0.6 and 0.9 m (stand-off), with 3
+  windows each. Every encounter is simulated twice with the same seed: rendered vision, then the abstract camera.
+- **Metrics:**
+  - recall of visible lunges (in view, displacement ≥ 5 cm);
+  - recall over all moving lunges;
+  - false events per window;
+  - reach bias and MAE;
+  - KL(calm ‖ pushy) of the window code per stopping distance, for both sensors.
+- **Perception gate per body:**
+  - G1: recall ≥ 0.7;
+  - G2: false events ≤ 0.25 per window;
+  - G3: vision KL at 0.6 m ≥ 0.2 nats per window (the IMU gives 0.14 there, K1).
+- "A genuine, working vision pipeline" on a body means G1–G3 pass. The humanoid is judged the same way.
+
+### C.2 Vision type models (LC4 NERVA, LC5 wheeled; partition T 0–99)
+
+- **Exploration:** RANDINTENT_VIS × 4 histories.
+- **Fit:** `k_fit.py`, K's procedure (K by BIC), writing `configs/LC_{nerva,wheeled}_vision_types.json`.
+- The fitted models are committed before any LC V or X run.
+
+### C.3 Recovery comparison (LC4 NERVA, LC5 wheeled; V 0–29 safe only; X 0–49 × 4 histories)
+
+| system | sensing | type model |
+|---|---|---|
+| DT_VOI | IMU only | K's |
+| DT_CAM_VOI | IMU + abstract camera (corrected FOV) | K's |
+| DT_VIS_VOI | rendered vision only (IMU not observed) | vision |
+| DT_IMUVIS_VOI | IMU + rendered vision | vision |
+| ORACLE | true type (reference) | K's |
+
+- **Corrections:** all of §B (enforced cap, fixed memory, confirmed onset). V-calibrated targets are written by
+  `l_b_targets.py` to `configs/LC_recovery_targets.json` and committed before any X analysis.
+- **Criteria:** exactly §B.3, P1–P5 with both P2 variants (`c_recovery_analyze.py`).
+- **Questions:**
+  - Q1: does DT_IMUVIS_VOI meet the recovery milestone? (per body)
+  - Q2: does DT_VIS_VOI meet it? (per body)
+- **Reported, not decisive:** paired differences against DT_CAM_VOI in recovery meetings (censored at 14) and in
+  contacts per pushy meeting.
+- **Interpretation rules, fixed now:**
+  - If Q1 passes where DT_VOI fails, the camera's benefit in K survives with real perception.
+  - If Q1 fails where DT_CAM_VOI passes, K's camera result depended on the abstract sensor.

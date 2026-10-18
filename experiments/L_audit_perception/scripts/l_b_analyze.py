@@ -62,6 +62,33 @@ def cap_audit(data: dict, types: Path, time_model: Path) -> dict:
     return out
 
 
+def cap_audit_with(data: dict, types: Path, time_model: Path, vision: tuple[str, ...] = ()) -> dict:
+    """`cap_audit` for programme L §C: the vision systems are capped and observe a camera block too."""
+    from apm_revise.belief import TypeModel
+    from apm_transfer.expression_map import TimeModel
+    from apm_transfer.infoseek import Emissions, Task, cost
+    model = TypeModel.from_dict(json.loads(types.read_text())["model"])
+    tm = TimeModel(json.loads(time_model.read_text())["time_coef"])
+    spec = json.loads((K / "configs" / "K_tasks.json").read_text())["tasks"]["handoff"]
+    task = Task("handoff", **{k: v for k, v in spec.items() if k != "why"})
+    em = Emissions.from_model(model.E, camera_block=model.E.shape[1] > 24)
+    out = {}
+    for s in data:
+        if s not in CAPPED + vision:
+            continue
+        e = em if s in CAM + vision else Emissions(em.imu, None)
+        n = over = 0
+        for hist in data[s].values():
+            for rows in hist.values():
+                for x in rows:
+                    n += 1
+                    if x["grid_i"] is not None and x["grid_i"] >= 0:
+                        risk = cost(x["grid_i"], x["windows_planned"], np.asarray(x["b_before"]), tm, e, task)[1]
+                        over += int(risk > task.risk_cap + TOL)
+        out[s] = {"decisions": n, "over_cap": over, "share": round(over / max(n, 1), 4)}
+    return out
+
+
 def outcomes(data: dict) -> dict:
     out = {}
     for s, hist in data.items():

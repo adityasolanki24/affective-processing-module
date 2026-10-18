@@ -208,6 +208,8 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
     adapter = WheeledAdapter(seed=int(rng.integers(2**31)))
     log = WheeledLogger(np.random.default_rng(int(rng.integers(2**31))))
     cam_rng = np.random.default_rng([seed, 7])
+    is_vision = camera is not None and type(camera).__name__ == "VisionCamera"  # programme L: rendered images
+    vis = None
     n_settle = int(round(settle_s / DT))
     for _ in range(n_settle):
         bot.apply(0.0, 0.0)
@@ -240,7 +242,7 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
                 away = math.atan2(y - TARGET[1], x - TARGET[0]) + float(rng.uniform(-0.35, 0.35))
                 bot.push(m * math.cos(away), m * math.sin(away))
                 pushes.append((round(bot.t, 2), round(m, 4), k_arrive is not None))
-            if camera is not None and k_arrive is not None and k >= k_arrive + skip_n:
+            if camera is not None and not is_vision and k_arrive is not None and k >= k_arrive + skip_n:
                 w = (k - k_arrive - skip_n) // win_n
                 bearing = math.atan2(math.sin(math.atan2(TARGET[1] - y, TARGET[0] - x) - yaw),
                                      math.cos(math.atan2(TARGET[1] - y, TARGET[0] - x) - yaw))
@@ -256,6 +258,13 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
                         or abs(bot.w_cmd) > 1e-3))
         row = bot.advance()
         log.read(row)
+        if is_vision and k_arrive is not None:
+            from apm_transfer.vision import WARM_S, VisionSession
+            if vis is None:
+                vis = VisionSession(camera, bot, events, DT, TARGET, seed)  # type: ignore[arg-type]
+            j = k - (k_arrive + skip_n)
+            if -int(round(WARM_S / DT)) <= j < windows * win_n:
+                vis.step(k, j, dist, own[-1])
         if frame_hook is not None:
             frame_hook(bot, {"lunge": lunge, "dist": dist, "arrived": k_arrive is not None, "fallback": tripped})
         if bot.fallen(row):
@@ -270,6 +279,8 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
             q = np.ones(len(mv), bool)
             q[w0:] = ~np.array([mv[max(0, j - hold_n):j + 1].any() for j in range(w0, len(mv))], bool)
             win_ev.append(log.summarise(w0, baseline, q, k))
+            if vis is not None:
+                cam_seen[len(win_ev) - 1] = vis.window(dist)
             if abort_on_detect and win_ev[-1].detected and len(win_ev) < windows:
                 aborted = True
                 break
@@ -288,6 +299,11 @@ def closed_loop_encounter(seed: int, etype: str, intent, channels: dict | None =
     if camera is not None:
         outcome["camera"] = [camera_code(c) for c in cam_seen[:len(win_ev)]]
         outcome["camera_reaches"] = cam_seen[:len(win_ev)]
+    if vis is not None:
+        outcome["vision"] = {"events": vis.window_events, "truth": vis.window_truth}
+        if getattr(camera, "keep_frames", False):
+            outcome["vision"]["frames"] = vis.frames
+        vis.close()
     truth = {"type": etype, "contacts": len(pushes), "contacts_dwell": sum(p[2] for p in pushes),
              "max_push": max((p[1] for p in pushes), default=0.0), "pushes": pushes}
     return ev, outcome, truth

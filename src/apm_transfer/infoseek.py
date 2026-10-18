@@ -86,9 +86,13 @@ class Task:
 
 @dataclass
 class Emissions:
-    """E[k, band, c] for the IMU blocks and optionally Ecam[k, c], split from a flattened type model."""
+    """E[k, band, c] for the IMU blocks and optionally Ecam[k, c], split from a flattened type model.
+
+    `observe_imu=False` (programme L, vision only): IMU categories are not observed. The IMU block still predicts
+    risk, i.e. the strong perturbations an approach would cause, but it carries no information."""
     imu: np.ndarray
     cam: np.ndarray | None
+    observe_imu: bool = True
 
     @classmethod
     def from_model(cls, E: np.ndarray, bands: int = 3, C: int = 8, camera_block: bool = False) -> Emissions:
@@ -151,7 +155,7 @@ def action_cost(a: int, w: int, b: np.ndarray, tm: TimeModel, em: Emissions, tas
 
 def posterior(b: np.ndarray, imu_cats: list[int], band: int, cam_cats: list[int], em: Emissions) -> np.ndarray:
     lp = np.log(np.clip(b, 1e-300, None))
-    if band != OUT_OF_REACH:
+    if band != OUT_OF_REACH and em.observe_imu:
         for c in imu_cats:
             lp = lp + np.log(em.imu[:, band, c])
     if em.cam is not None:
@@ -170,7 +174,8 @@ def improvement(n: int, band: int, b: np.ndarray, pi: np.ndarray, tm: TimeModel,
     after = 0.0
     for _ in range(samples):
         k = int(rng.choice(K, p=b))
-        imu = [] if band == OUT_OF_REACH else [int(rng.choice(em.imu.shape[2], p=em.imu[k, band])) for _ in range(n)]
+        imu = ([] if band == OUT_OF_REACH or not em.observe_imu else
+               [int(rng.choice(em.imu.shape[2], p=em.imu[k, band])) for _ in range(n)])
         cam = [int(rng.choice(em.cam.shape[1], p=em.cam[k])) for _ in range(n)] if em.cam is not None else []
         after += best_greedy(relax(posterior(b, imu, band, cam, em), pi, lam, gap), tm, em, task)[1]
     return max(0.0, now - after / samples)

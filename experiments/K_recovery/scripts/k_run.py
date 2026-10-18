@@ -74,6 +74,11 @@ SYSTEMS = {
     # programme L references: K's behaviour (legacy cap and camera) on L's seeds, for paired comparisons
     "DT_K": {"policy": "greedy", "lam": 0.02, "camera": False, "legacy_cap": True, "legacy_camera": True},
     "DT_CAM_VOI_K": {"policy": "voi", "lam": 0.02, "camera": True, "legacy_cap": True, "legacy_camera": True},
+    # programme L Phase C: rendered-image perception (`apm_transfer.vision`) instead of the abstract event sensor
+    "DT_VIS_VOI": {"policy": "voi", "lam": 0.02, "camera": "vision", "imu": False},
+    "DT_IMUVIS_VOI": {"policy": "voi", "lam": 0.02, "camera": "vision"},
+    "DT_IMUVIS": {"policy": "greedy", "lam": 0.02, "camera": "vision"},
+    "RANDINTENT_VIS": {"policy": "random", "lam": 0.02, "camera": "vision"},
 }
 RENDER = None  # k_demo.py only: callable(...) -> clip with kwargs()/close(row), or None
 
@@ -125,7 +130,6 @@ def job(args: tuple) -> dict:
         mcfg = {"model": mcfg, "oracle": {}}
     model = TypeModel.from_dict(mcfg["model"])
     em = Emissions.from_model(model.E, camera_block=model.E.shape[1] > 24)
-    em_imu = Emissions(em.imu, None)
     edges = json.loads(Path(cfg["edges"]).read_text())["acc8"]
     tm = TimeModel(json.loads(Path(cfg["time_model"]).read_text())["time_coef"])
     task = Task(cfg["task"], **{k: v for k, v in cfg["task_spec"].items() if k != "why"})
@@ -135,7 +139,13 @@ def job(args: tuple) -> dict:
     mem = TypeStateModel(model, spec["lam"], kind_prior=False, transition_each_meeting=cfg.get("transition_fix", False))
     legacy_cap = spec.get("legacy_cap", cfg.get("legacy_cap", False))
     legacy_camera = spec.get("legacy_camera", cfg.get("legacy_camera", False))
-    camera = (Camera.legacy() if legacy_camera else Camera()) if spec["camera"] else None
+    if spec["camera"] == "vision":
+        from apm_transfer.vision import VisionCamera
+        camera = VisionCamera(**cfg.get("vision", {}))
+    else:
+        camera = (Camera.legacy() if legacy_camera else Camera()) if spec["camera"] else None
+    use_imu = spec.get("imu", True)
+    em_sys = Emissions(em.imu, em.cam, observe_imu=use_imu) if spec["camera"] else Emissions(em.imu, None)
     rows = []
     t0 = time.time()
     for k, (ident, kind) in enumerate(order):
@@ -153,7 +163,7 @@ def job(args: tuple) -> dict:
         else:
             bb = np.asarray(mcfg["oracle"][etype]) if spec["policy"] == "oracle" else b
             pol = "greedy" if spec["policy"] == "oracle" else spec["policy"]
-            grid_i, w, diag = choose(pol, bb, model.pi, tm, em if spec["camera"] else em_imu, task, lam=spec["lam"],
+            grid_i, w, diag = choose(pol, bb, model.pi, tm, em_sys, task, lam=spec["lam"],
                                      horizon=voi_cfg["horizon"], gap=voi_cfg["gap"], u_trigger=voi_cfg["u_trigger"],
                                      rng=decide_rng, legacy=legacy_cap)
             intent = GRID[2] if grid_i < 0 else GRID[grid_i]  # OBSERVE / HOLD stand off beyond reach
@@ -165,8 +175,8 @@ def job(args: tuple) -> dict:
         band = int(np.searchsorted(DIST_EDGES, d))
         imu = [int(np.searchsorted(edges, e[1], side="right")) for e in out["windows"] if e[10] >= MIN_QUIET_FRAMES]
         cams = list(out.get("camera", []))
-        if standoff > 0:
-            imu = []  # out of every type's reach: IMU silence is not evidence of safety
+        if standoff > 0 or not use_imu:
+            imu = []  # out of every type's reach (IMU silence is not evidence of safety), or not sensed
         cats = [band * 8 + c for c in imu] + ([CAM_OFFSET + c for c in cams] if em.cam is not None else [])
         detected = any(bool(e[9]) for e in out["windows"] if e[10] >= MIN_QUIET_FRAMES)
         mem.observe_many(ident, kind, cats, float(detected))
@@ -178,7 +188,7 @@ def job(args: tuple) -> dict:
                      "windows_planned": w, "windows_done": len(out["windows"]), "aborted": out["aborted"],
                      "imu_cats": imu, "cam_codes": cams,
                      "imu_peaks": [round(e[1], 5) for e in out["windows"] if e[10] >= MIN_QUIET_FRAMES],
-                     "cam_reaches": out.get("camera_reaches"),
+                     "cam_reaches": out.get("camera_reaches"), "vision": out.get("vision"),
                      "informative": len(cats), "detected": detected, "d_stop": d, "band": band,
                      "intended_band": band_of(intent.proximity), "contacts": truth["contacts"],
                      "contacts_dwell": truth["contacts_dwell"], "max_push": truth["max_push"],
@@ -220,6 +230,7 @@ def main() -> None:
                     help="reproduce K: 40 deg FOV applied as +-40 deg (audit A5)")
     ap.add_argument("--legacy-cap", action="store_true",
                     help="reproduce K: approach even when every option exceeds the risk cap (audit A3)")
+    ap.add_argument("--vision-config", default=None, help="programme L: JSON of VisionCamera fields")
     ap.add_argument("--seeds", default=None, help="seed module (default K's seeds.py; programme L: its own)")
     ap.add_argument("--addendum", default="", help="confirmatory run: committed protocol (clean tree required)")
     ap.add_argument("--out", type=Path, required=True)
@@ -231,7 +242,8 @@ def main() -> None:
     cfg = {"types_model": a.types_model, "edges": a.edges, "time_model": a.time_model, "channels": a.channels,
            "task": a.task, "task_spec": tasks["tasks"][a.task], "voi": tasks["voi"], "n_enc": a.n_enc,
            "robot": a.robot, "transition_fix": a.transition_fix,
-           "legacy_cap": a.legacy_cap, "legacy_camera": a.legacy_camera, "seeds": a.seeds}
+           "legacy_cap": a.legacy_cap, "legacy_camera": a.legacy_camera, "seeds": a.seeds,
+           "vision": json.loads(Path(a.vision_config).read_text()) if a.vision_config else {}}
     jobs = [(a.experiment, a.partition, a.first + i, h, s, cfg) for i in range(a.n) for h in a.histories.split(",")
             for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)
