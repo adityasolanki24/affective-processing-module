@@ -182,6 +182,7 @@ class IsaacWorld:
         self.nerva_channels = nerva_channels
         self._eye_cam = self._make_eye()
         self.video_frames: list[np.ndarray] | None = [] if video else None
+        self.video_writer: Any = None  # if set (an imageio writer), frames stream to it instead of the list
         self.video_meta: list[dict] = []
         self.eye_frames: list[tuple[float, np.ndarray]] | None = None  # set to [] to record the depth eye (videos)
         self.phase = "idle"
@@ -370,7 +371,12 @@ class IsaacWorld:
         self.world.render()
         f = self._video_cam.get_rgba()
         if f is not None and np.size(f):
-            self.video_frames.append(np.asarray(f[..., :3], np.uint8))
+            frame = np.asarray(f[..., :3], np.uint8)
+            if self.video_writer is not None:
+                self.video_writer.append_data(frame)
+                self.video_frames.append(np.zeros((0,), np.uint8))  # a placeholder keeps the frame count
+            else:
+                self.video_frames.append(frame)
             # per-frame metadata for overlays (what the robot sensed and decided; nothing is drawn in the scene)
             self.video_meta.append({"t": round(self.t, 2), "phase": self.phase, **self.overlay})
 

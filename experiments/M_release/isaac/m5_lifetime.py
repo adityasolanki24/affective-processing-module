@@ -199,6 +199,11 @@ for index in range(a.first, a.first + a.n):
             order = [ENTITIES[int(i)] for i in rng.choice(3, a.n_enc, p=P_ENTITY)]
             shuffle_rng = np.random.default_rng(base + 5)
             world.new_lifetime(base + 1)
+            stem = a.out.parent / f"{a.robot}_{a.scene}_{system}_{history}_{a.partition}{index}"
+            if a.video:  # stream frames to disk (a lifetime is ~10^4 frames of 2.8 MB)
+                import imageio
+                world.video_writer = imageio.get_writer(f"{stem}.mp4", fps=25, codec="libx264", quality=8,
+                                                        macro_block_size=8)
             log = a.logs / f"{a.robot}_{a.scene}_{system}_{history}_{a.partition}{index}.jsonl" if a.logs else None
             if log is not None and log.exists():
                 log.unlink()
@@ -289,10 +294,9 @@ for index in range(a.first, a.first + a.n):
                 f.write(json.dumps(rec) + "\n")
             print(f"{system} {history} {a.partition}{index}: {len(rows)} enc, falls {sum(r['fell'] for r in rows)}, "
                   f"contacts {sum(r['contacts'] for r in rows)}, wall {rec['wall_s']} s", flush=True)
-            if a.video and world.video_frames:
-                import imageio
-                stem = a.out.parent / f"{a.robot}_{a.scene}_{system}_{history}_{a.partition}{index}"
-                imageio.mimsave(f"{stem}.mp4", world.video_frames, fps=25)
+            if a.video and world.video_writer is not None:
+                world.video_writer.close()
+                world.video_writer = None
                 Path(f"{stem}_meta.json").write_text(json.dumps({"frames": world.video_meta, "record": rec}))
                 if world.eye_frames:
                     np.savez_compressed(f"{stem}_eye.npz", t=np.array([e[0] for e in world.eye_frames]),
