@@ -197,19 +197,48 @@ class IsaacWorld:
 
     # ── sensors ──────────────────────────────────────────────────────────────
     def _make_eye(self):
-        from isaacsim.core.utils.rotations import euler_angles_to_quat
+        """The depth eye: a top-level camera posed before every frame from PhysX (`_pose_eye`). A camera parented
+        to a robot link does not follow it: PhysX does not write link poses back to USD (M4 eye check)."""
         from isaacsim.sensors.camera import Camera
+        from pxr import UsdGeom, UsdPhysics
         c = self.vision_cfg
-        cam = Camera(prim_path=f"{self.robot.eye_prim}/depth_eye", resolution=(c.width, c.height),
-                     translation=np.array([0.0, 0.0, 0.0]),
-                     orientation=euler_angles_to_quat(np.array([0.0, -c.pitch_deg, 0.0]), degrees=True))
+        cam = Camera(prim_path="/World/EyeCam", resolution=(c.width, c.height))
         cam.initialize()
         f = 1.0
         cam.set_focal_length(f)
         cam.set_horizontal_aperture(2 * f * math.tan(math.radians(c.hfov_deg) / 2))
-        cam.set_clipping_range(0.02, 30.0)
+        cam.set_clipping_range(float(getattr(self.robot, "eye_near", 0.02)), 30.0)
         cam.add_distance_to_image_plane_to_frame()
+        # the eye's fixed mounting on its link, from the USD rest pose
+        stage = self.world.stage
+        eye = stage.GetPrimAtPath(self.robot.eye_prim)
+        link = eye.GetParent()
+        while link.IsValid() and not link.HasAPI(UsdPhysics.RigidBodyAPI):
+            link = link.GetParent()
+        names = list(self.robot.art._articulation_view._metadata.link_names)
+        self._eye_link = names.index(link.GetName())
+        cache = UsdGeom.XformCache()
+        m = cache.GetLocalToWorldTransform(eye) * cache.GetLocalToWorldTransform(link).GetInverse()
+        self._eye_local = np.array(m, float).T  # USD row-vector convention -> column convention
+        el = math.radians(-c.pitch_deg)  # pitch_deg < 0 looks down: rotate +|pitch| about the eye's y axis
+        self._eye_pitch = np.array([[math.cos(el), 0.0, math.sin(el)], [0.0, 1.0, 0.0],
+                                    [-math.sin(el), 0.0, math.cos(el)]])
         return cam
+
+    def eye_pose(self) -> tuple[np.ndarray, np.ndarray]:
+        """World position and rotation (x = view direction) of the depth eye, from the PhysX link pose."""
+        from apm_isaac.robots import quat_to_rot
+        tf = np.asarray(self.robot.art._articulation_view._physics_view.get_link_transforms())[0][self._eye_link]
+        M = np.eye(4)
+        M[:3, :3] = quat_to_rot(np.array([tf[6], tf[3], tf[4], tf[5]]))
+        M[:3, 3] = tf[:3]
+        E = M @ self._eye_local
+        return E[:3, 3], E[:3, :3] @ self._eye_pitch
+
+    def _pose_eye(self) -> None:
+        from apm_isaac.robots import rot_to_quat
+        p, R = self.eye_pose()
+        self._eye_cam.set_world_pose(position=p, orientation=rot_to_quat(R), camera_axes="world")
 
     def _make_video_cam(self):
         from isaacsim.sensors.camera import Camera
@@ -219,6 +248,7 @@ class IsaacWorld:
         return cam
 
     def depth(self) -> np.ndarray:
+        self._pose_eye()
         self.world.render()
         d = self._eye_cam.get_depth()
         if d is None or not np.size(d):

@@ -13,7 +13,7 @@ stream:
   the scheduled time.
 - **If the robot is closer than the reach, they collide.**
   - Penetration is limited to `MAX_OVERLAP`.
-  - Contact speed is `CONTACT_GAIN × speed`.
+  - Surface speed is `2 × CONTACT_GAIN × speed`, capped at `V_CONTACT_MAX` (0.15 m/s).
   - That keeps a shove in the survivable range characterised in L A7 for each body.
   - The Δv each body actually receives is measured in validation, not assumed.
 - **Walking** (`walk_to`): the capsule follows a straight path at a set speed. Corridor crossings, path cutting
@@ -30,7 +30,10 @@ import numpy as np
 
 RADIUS, HEIGHT = 0.22, 1.7
 MAX_OVERLAP = 0.03
-CONTACT_GAIN = 0.2   # lunge surface speed = 2 x gain x the type's speed (pushy 0.2-0.36 m/s, calm 0.04-0.16 m/s)
+CONTACT_GAIN = 0.2   # lunge surface speed = 2 x gain x the type's speed, capped at V_CONTACT_MAX
+# The largest repeated push every body's controller survives in its M3 gate battery (NERVA: 0 falls at 0.15 m/s in
+# Isaac and MuJoCo, 5/10 at 0.20 m/s at rest). Frozen before any experiment data.
+V_CONTACT_MAX = 0.15
 # Geometry mapping from the abstract encounter of programmes K and L (point entity, robot as a point) to bodies.
 # - A stop distance d becomes a centre distance d + RADIUS + front - GAP0 (front: the robot's extent ahead of its
 #   origin).
@@ -70,7 +73,8 @@ class Person:
         gap = max(0.0, dist_to_robot - self.front - RADIUS)
         for lg in self.lunges:
             peak = float(np.clip(lg.reach - GAP0, 0.0, gap + MAX_OVERLAP))
-            ramp = float(np.clip(peak / max(lg.speed * CONTACT_GAIN * 2, 1e-3), 0.15, 1.0))
+            v_surf = min(lg.speed * CONTACT_GAIN * 2, V_CONTACT_MAX)
+            ramp = max(peak / max(v_surf, 1e-3), 0.15)
             dt = abs(t - lg.t_peak)
             if dt <= ramp:
                 s = max(s, peak * (1.0 - dt / ramp))
@@ -157,16 +161,41 @@ def setup_animation(stage, assets_root: str) -> str | None:
 
 
 def place(stage, p: Person, xy: np.ndarray, yaw: float) -> None:
-    """Move the kinematic collider (through PhysX, so the contact geometry really moves) and the visual character."""
+    """Move the kinematic collider (through PhysX, so the contact geometry really moves) and the visual character.
+
+    An animated character is moved through its AnimationGraph character (`set_world_transform`): the graph owns the
+    rendered skeleton's root and ignores the prim's transform once it runs (M4 debug renders)."""
     from isaacsim.core.prims import SingleRigidPrim, SingleXFormPrim
     if getattr(p, "_rb", None) is None:
         p._rb = SingleRigidPrim(p.cap_path)  # type: ignore[attr-defined]
         vis = getattr(p, "vis_path", None)
         p._vis = SingleXFormPrim(vis) if vis else None  # type: ignore[attr-defined]
+        p._char = None  # type: ignore[attr-defined]
+    x, y = float(xy[0]), float(xy[1])
+    p._rb.set_world_pose(position=np.array([x, y, HEIGHT / 2]))  # type: ignore[attr-defined]
+    if p._vis is None:  # type: ignore[attr-defined]
+        return
+    if getattr(p, "animated", False):
+        if p._char is None:  # type: ignore[attr-defined]
+            p._char = _graph_character(stage, p.vis_path)  # type: ignore[attr-defined]
+        if p._char is not None:  # type: ignore[attr-defined]
+            import carb
+            p._char.set_world_transform(carb.Float3(x, y, 0.0),  # type: ignore[attr-defined]
+                                        carb.Float4(0.0, 0.0, math.sin(yaw / 2), math.cos(yaw / 2)))
+            return
     q = np.array([math.cos(yaw / 2), 0.0, 0.0, math.sin(yaw / 2)])
-    p._rb.set_world_pose(position=np.array([float(xy[0]), float(xy[1]), HEIGHT / 2]))  # type: ignore[attr-defined]
-    if p._vis is not None:  # type: ignore[attr-defined]
-        p._vis.set_world_pose(position=np.array([float(xy[0]), float(xy[1]), 0.0]), orientation=q)  # type: ignore[attr-defined]
+    p._vis.set_world_pose(position=np.array([x, y, 0.0]), orientation=q)  # type: ignore[attr-defined]
+
+
+def _graph_character(stage, vis_path: str):
+    """The AnimationGraph character of a visual, once the graph has started (None before)."""
+    from pxr import Usd, UsdSkel
+    try:
+        import omni.anim.graph.core as ag
+    except ImportError:
+        return None
+    sr = next((q for q in Usd.PrimRange(stage.GetPrimAtPath(vis_path)) if q.IsA(UsdSkel.Root)), None)
+    return ag.get_character(str(sr.GetPath())) if sr is not None else None
 
 
 def find_character(root: str, name: str) -> str | None:

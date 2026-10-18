@@ -177,6 +177,7 @@ def head_eye_frame(mjcf: Path, home_qpos) -> tuple[np.ndarray, np.ndarray, np.nd
 
 class NervaIsaac(_IsaacBody):
     TILT_FALL_DEG = 45.0  # K/L: a fall is tilt > 45 deg
+    eye_near = 0.06       # m: L's eye sits 5 cm ahead of the head body origin, inside the head shell
     eye_offset = 0.08     # replaced by the measured mounting in post_reset
     front = 0.10          # replaced by the measured extent
 

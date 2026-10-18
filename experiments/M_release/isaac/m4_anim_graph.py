@@ -87,10 +87,20 @@ for k in range(200):
             for pid in chars:
                 sr = next(q for q in Usd.PrimRange(st.GetPrimAtPath(f"/World/People/{pid}")) if q.IsA(UsdSkel.Root))
                 c = ag.get_character(str(sr.GetPath()))
-                print(pid, "character handle", c, flush=True)
+                print(pid, "character handle", c, [m for m in dir(c) if not m.startswith("_")], flush=True)
                 if c is not None and pid == "P2":
-                    c.set_variable("Action", "Walk")
-                    c.set_variable("Walk", 1.0)
+                    import carb
+                    pos, rot = carb.Float3(0, 0, 0), carb.Float4(0, 0, 0, 1)
+                    try:
+                        c.get_world_transform(pos, rot)
+                        print("P2 world before", pos, rot, flush=True)
+                    except Exception as e:  # noqa: BLE001
+                        print("get_world_transform", repr(e)[:200], flush=True)
+                    try:
+                        c.set_world_transform(carb.Float3(1.5, 1.0, 0.0), carb.Float4(0, 0, 0, 1))
+                        print("set_world_transform ok", flush=True)
+                    except Exception as e:  # noqa: BLE001
+                        print("set_world_transform", repr(e)[:200], flush=True)
         except Exception as e:  # noqa: BLE001
             print("ag api", repr(e)[:200], flush=True)
     if k % 25 == 24:
@@ -100,4 +110,6 @@ for k in range(200):
 print("frames", len(frames), flush=True)
 if frames:
     Image.fromarray(np.concatenate(frames, axis=1)).save(a.out / "graph_strip.png")
-app.close()
+from apm_isaac import hard_exit  # noqa: E402
+
+hard_exit(0)

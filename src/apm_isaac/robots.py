@@ -40,6 +40,25 @@ def quat_to_rot(q: np.ndarray) -> np.ndarray:
                      [2 * (x * z - w * y), 2 * (y * z + w * x), 1 - 2 * (x * x + y * y)]])
 
 
+def rot_to_quat(R: np.ndarray) -> np.ndarray:
+    """(w, x, y, z) of a rotation matrix."""
+    t = float(np.trace(R))
+    if t > 0:
+        s = math.sqrt(t + 1.0) * 2
+        q = [0.25 * s, (R[2, 1] - R[1, 2]) / s, (R[0, 2] - R[2, 0]) / s, (R[1, 0] - R[0, 1]) / s]
+    elif R[0, 0] > R[1, 1] and R[0, 0] > R[2, 2]:
+        s = math.sqrt(1.0 + R[0, 0] - R[1, 1] - R[2, 2]) * 2
+        q = [(R[2, 1] - R[1, 2]) / s, 0.25 * s, (R[0, 1] + R[1, 0]) / s, (R[0, 2] + R[2, 0]) / s]
+    elif R[1, 1] > R[2, 2]:
+        s = math.sqrt(1.0 + R[1, 1] - R[0, 0] - R[2, 2]) * 2
+        q = [(R[0, 2] - R[2, 0]) / s, (R[0, 1] + R[1, 0]) / s, 0.25 * s, (R[1, 2] + R[2, 1]) / s]
+    else:
+        s = math.sqrt(1.0 + R[2, 2] - R[0, 0] - R[1, 1]) * 2
+        q = [(R[1, 0] - R[0, 1]) / s, (R[0, 2] + R[2, 0]) / s, (R[1, 2] + R[2, 1]) / s, 0.25 * s]
+    qa = np.asarray(q, float)
+    return qa / np.linalg.norm(qa)
+
+
 def yaw_quat(yaw: float) -> np.ndarray:
     return np.array([math.cos(yaw / 2), 0.0, 0.0, math.sin(yaw / 2)])
 
@@ -474,7 +493,9 @@ class LabPolicyBody(_IsaacBody):
     TILT_TRIP, TILT_FALL, Z_FALL, BRAKE_S = math.radians(25), math.radians(50), 0.45, 1.0
     eye_offset = 0.16
     front = 0.15  # feet/torso extent ahead of the base origin
-    eye_link = "H2"
+    eye_link, trunk_link = "H2", "Trunk"
+    eye_ahead = 0.10   # m ahead of the head link
+    eye_near = 0.05    # m: the depth eye's near clip (it sits just outside the head)
 
     def __init__(self, world, path: str, usd: str, pos: tuple[float, float], yaw: float, seed: int, policy_dir: Path,
                  base_z: float, physics_dt: float = 0.005):
@@ -486,6 +507,9 @@ class LabPolicyBody(_IsaacBody):
         from pxr import UsdPhysics
         self.world, self.physics_dt = world, physics_dt
         self.cfg = json.loads((policy_dir / "env_cfg.json").read_text())
+        # the controller's measured speed response (m3_lab_battery.py --calibrate), inverted on forward commands
+        vm = policy_dir / "velocity_map.json"
+        self.vmap = json.loads(vm.read_text()) if vm.exists() else None
         self.policy = torch.jit.load(str(policy_dir / "policy.pt"), map_location="cpu").eval()
         self.torch = torch
         add_reference_to_stage(usd, path)
@@ -538,11 +562,29 @@ class LabPolicyBody(_IsaacBody):
         (x, y), yaw = self.start
         self.art.set_world_pose(position=np.array([x, y, self.base_z]), orientation=yaw_quat(yaw))
         self.last = np.zeros(len(self.idx))
+        if self.eye_prim is None:
+            self._make_eye_frame()
+
+    def _make_eye_frame(self) -> None:
+        """The depth eye: 10 cm ahead of the head link, with the trunk's axes (x forward, z up) at the asset's rest
+        pose, so it is level and faces forward (the head link's own frame is rolled). Computed from the USD rest
+        transforms (PhysX link poses update only on a step)."""
+        from pxr import Gf, UsdGeom
         root = str(self.art.prim_path).rsplit("/", 1)[0]
-        for prim in self.world.stage.Traverse():
-            if prim.GetName() == self.eye_link and str(prim.GetPath()).startswith(root):
-                self.eye_prim = str(prim.GetPath())
-                break
+        prims = [p for p in self.world.stage.Traverse() if str(p.GetPath()).startswith(root)]
+        head = next(p for p in prims if p.GetName() == self.eye_link)
+        trunk = next((p for p in prims if p.GetName() == self.trunk_link), head)
+        cache = UsdGeom.XformCache()
+        m_h, m_t = cache.GetLocalToWorldTransform(head), cache.GetLocalToWorldTransform(trunk)
+        r_t = m_t.ExtractRotationMatrix()
+        fwd = Gf.Vec3d(r_t.GetRow(0))  # trunk x axis in world (row-vector convention)
+        p_eye = m_h.ExtractTranslation() + fwd * self.eye_ahead
+        m_e = Gf.Matrix4d(1.0)
+        m_e.SetRotateOnly(r_t)
+        m_e.SetTranslateOnly(p_eye)
+        eye = UsdGeom.Xform.Define(self.world.stage, f"{head.GetPath()}/apm_eye")
+        eye.AddTransformOp().Set(m_e * m_h.GetInverse())
+        self.eye_prim = str(eye.GetPath())
 
     def apply(self, v: float, w: float) -> bool:
         tripped = False
@@ -557,6 +599,17 @@ class LabPolicyBody(_IsaacBody):
         self.w_cmd += float(np.clip(w - self.w_cmd, -3.0 * DT, 3.0 * DT))
         return tripped
 
+    def command_for(self, v: float) -> float:
+        """Forward command that yields speed v (the calibrated map); identity without a map or for v <= 0."""
+        if self.vmap is None or v <= 1e-6:
+            return v
+        cmd, meas = np.asarray(self.vmap["command"]), np.asarray(self.vmap["measured"])
+        ok = meas > 0.02  # commands that make progress
+        if not ok.any():
+            return v
+        cmd, meas = cmd[ok], meas[ok]
+        return float(np.interp(v, meas, cmd, left=cmd[0], right=cmd[-1]))
+
     def observation(self) -> np.ndarray:
         R = self.rot()
         lin = R.T @ np.asarray(self.art.get_linear_velocity(), float)
@@ -564,7 +617,7 @@ class LabPolicyBody(_IsaacBody):
         grav = R.T @ np.array([0.0, 0.0, -1.0])
         q = np.asarray(self.art.get_joint_positions(), float)[self.idx]
         dq = np.asarray(self.art.get_joint_velocities(), float)[self.idx]
-        cmd = np.array([self.v_cmd, 0.0, self.w_cmd])
+        cmd = np.array([self.command_for(self.v_cmd), 0.0, self.w_cmd])
         return np.concatenate([lin, ang, grav, cmd, q - self.default, dq, self.last]).astype(np.float32)
 
     def advance(self) -> dict:

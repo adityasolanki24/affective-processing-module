@@ -32,6 +32,9 @@ ap.add_argument("--body", choices=("t1", "nerva"), required=True)
 ap.add_argument("--policy", type=Path, required=True)
 ap.add_argument("--seeds", type=int, default=10)
 ap.add_argument("--out", type=Path, required=True)
+ap.add_argument("--calibrate", action="store_true",
+                help="steady-state forward speed per command (0.10-0.50 m/s): writes velocity_map.json")
+ap.add_argument("--verify-map", action="store_true", help="speed tracking with the policy's velocity_map.json")
 a, _ = ap.parse_known_args()
 app = AppLauncher({"headless": True}).app
 
@@ -54,6 +57,10 @@ B = BODIES[a.body]
 
 
 def conditions() -> dict:
+    if a.verify_map:  # tracking with the frozen velocity map, over APM's (v, w) adapter range
+        return {f"map_{v:.2f}": {"v": v} for v in (0.05, 0.08, 0.12, 0.16, 0.20)}
+    if a.calibrate:
+        return {f"cal_{v:.2f}": {"v": v} for v in np.round(np.arange(0.10, 0.501, 0.05), 2)}
     c: dict = {f"speed_{v}": {"v": v} for v in (0.0, 0.1, 0.2, 0.3, 0.5) if v <= B["v_max"]}
     c.update({f"turn_{w}": {"v": 0.2, "w": w} for w in (-1.0, -0.5, 0.5, 1.0)})
     c["stop_start"] = {"v": 0.3, "stop_start": 1.5}
@@ -116,6 +123,20 @@ for name, cfg in conditions().items():
           f"tilt95 {np.percentile([r['max_tilt'] for r in rr], 95):.1f} v_err {np.mean(ve) if ve else None} "
           f"w_err {np.mean(we) if we else None}", flush=True)
 a.out.mkdir(parents=True, exist_ok=True)
+if a.calibrate:
+    # measured speed per command (mean over seeds, falls excluded), made monotone; the body inverts it
+    cmds, meas = [], []
+    for name, cfg in conditions().items():
+        e = [r["v_err"] for r in rows if r["cond"] == name and r["v_err"] is not None]
+        if e:
+            cmds.append(cfg["v"])
+            meas.append(cfg["v"] + float(np.mean(e)))
+    meas = list(np.maximum.accumulate(meas))
+    vm = {"command": cmds, "measured": [round(m, 4) for m in meas], "falls": sum(r["fell"] for r in rows),
+          "rule": "command = interpolate(desired, measured, command); below the first measured speed: the first "
+                  "command with progress; frozen before any experiment"}
+    (a.out / "velocity_map.json").write_text(json.dumps(vm, indent=1))
+    print("velocity_map", vm, flush=True)
 (a.out / "battery.json").write_text(json.dumps({"body": a.body, "policy": str(a.policy), "rows": rows}, indent=1))
 from apm_isaac import hard_exit  # noqa: E402
 
