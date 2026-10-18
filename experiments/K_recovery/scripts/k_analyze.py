@@ -39,8 +39,16 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "src"))
 from apm_select.survival import km_bootstrap  # noqa: E402
+from apm_transfer.recovery_metrics import confirmed_onset  # noqa: E402
 
 SWITCH, LATE = 16, 10
+# Programme L audit (A1, A2). Defaults are the corrected definitions:
+# - LEGACY_LAST: True reproduces K's published numbers, where a lone favourable final meeting counted as confirmed;
+# - RECOVERY_TARGET: "test-safe-mean" (K's published target, computed on the test partition itself),
+#   "task" (fixed: stopping distance <= TASK_D + TASK_TOL) or a dict {system: target} calibrated on independent data.
+LEGACY_LAST = False
+RECOVERY_TARGET: object = "task"
+TASK_D, TASK_TOL = 0.30, 0.05
 
 
 def load(paths: list[Path]) -> dict:
@@ -73,19 +81,14 @@ def b1(rows: list[dict]) -> list[dict]:
 def revision_time(rows: list[dict], r: np.ndarray, mid: float, to: str) -> tuple[float, bool]:
     after = [x for x in b1(rows) if x["k"] >= SWITCH]
     ok = [(p_of(x["b_after"], r) < mid) if to == "calm" else (p_of(x["b_after"], r) > mid) for x in after]
-    for j in range(len(ok)):
-        if ok[j] and (j + 1 == len(ok) or ok[j + 1]):
-            return float(j + 1), True
-    return float(max(1, len(ok))), False
+    return confirmed_onset(ok, 2, legacy=LEGACY_LAST)
 
 
-def recovery_time(rows: list[dict], target: float) -> tuple[float, bool]:
+def recovery_time(rows: list[dict], target: float | None) -> tuple[float, bool]:
+    """target None: the fixed task criterion (d_stop <= TASK_D + TASK_TOL); else within 0.05 m of target."""
     after = [x for x in b1(rows) if x["k"] >= SWITCH]
-    ok = [abs(x["d_stop"] - target) <= 0.05 for x in after]
-    for j in range(len(ok)):
-        if ok[j] and (j + 1 == len(ok) or ok[j + 1]):
-            return float(j + 1), True
-    return float(max(1, len(ok))), False
+    ok = [(x["d_stop"] <= TASK_D + TASK_TOL) if target is None else abs(x["d_stop"] - target) <= 0.05 for x in after]
+    return confirmed_onset(ok, 2, legacy=LEGACY_LAST)
 
 
 def km(items: list[tuple[float, bool]], horizon: float) -> dict:
@@ -107,8 +110,11 @@ def analyse(data: dict, r: np.ndarray, anchors: dict) -> dict:
         if "change_B" in hist:
             o["revision_pushy_to_calm"] = km([revision_time(rows, r, mid, "calm")
                                               for rows in hist["change_B"].values()], horizon)
-            if safe_mean is not None:
-                o["behaviour_recovery"] = km([recovery_time(rows, safe_mean) for rows in hist["change_B"].values()],
+            target = (safe_mean if RECOVERY_TARGET == "test-safe-mean" else None if RECOVERY_TARGET == "task"
+                      else RECOVERY_TARGET.get(s) if isinstance(RECOVERY_TARGET, dict) else None)
+            o["recovery_target"] = target if target is not None else f"task: d_stop <= {TASK_D + TASK_TOL:.2f} m"
+            if target is not None or RECOVERY_TARGET == "task":
+                o["behaviour_recovery"] = km([recovery_time(rows, target) for rows in hist["change_B"].values()],
                                              horizon)
         if "late_B" in hist:
             o["revision_calm_to_pushy"] = km([revision_time(rows, r, mid, "pushy") for rows in hist["late_B"].values()],
@@ -199,12 +205,22 @@ def main() -> None:
     ap.add_argument("--types-model", type=Path, default=REPO / "experiments" / "K_recovery" / "configs" /
                     "K_types.json")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--legacy-last-meeting", action="store_true", help="reproduce K: lone final meeting counts")
+    ap.add_argument("--recovery-target", default="task",
+                    help="'task' (fixed criterion), 'test-safe-mean' (K's published), or a JSON file {system: target}")
+    ap.add_argument("--task-d", type=float, default=0.30, help="task interaction distance for --recovery-target task")
     a = ap.parse_args()
+    global LEGACY_LAST, RECOVERY_TARGET, TASK_D
+    LEGACY_LAST, TASK_D = a.legacy_last_meeting, a.task_d
+    RECOVERY_TARGET = (json.loads(Path(a.recovery_target).read_text()) if a.recovery_target.endswith(".json")
+                       else a.recovery_target)
     mcfg = json.loads(a.types_model.read_text())
     r = np.asarray(mcfg["model"]["r"], float)
     anchors = {t: float(np.asarray(v) @ r) for t, v in mcfg["oracle"].items()}
     res = analyse(load(a.runs), r, anchors)
     res["criteria"] = criteria(res)
+    res["analysis_options"] = {"legacy_last_meeting": LEGACY_LAST, "recovery_target": str(a.recovery_target),
+                               "task_d": TASK_D, "task_tol": TASK_TOL}
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
     for s, o in res["systems"].items():
