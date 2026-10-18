@@ -1,0 +1,43 @@
+{
+ "rule": "mean B1 d_stop, encounters >= 10, safe history, partition V",
+ "targets": {
+  "nerva": {
+   "DT_CAM_VOI": 0.3,
+   "DT_IMUVIS_VOI": 0.3,
+   "DT_VIS_VOI": 0.3082,
+   "DT_VOI": 0.3,
+   "ORACLE": 0.3
+  },
+  "wheeled": {
+   "DT_CAM_VOI": 0.2815,
+   "DT_IMUVIS_VOI": 0.2752,
+   "DT_VIS_VOI": 0.275,
+   "DT_VOI": 0.2773,
+   "ORACLE": 0.275
+  }
+ },
+ "sources": {
+  "nerva": {
+   "file": "LC4_V_all.jsonl",
+   "sha256": "5e5a48912159b0e6343d7b7c820a2c8a69260ca01360e4044bb29c2cb6614121",
+   "n_values": {
+    "ORACLE": 438,
+    "DT_VOI": 438,
+    "DT_CAM_VOI": 438,
+    "DT_VIS_VOI": 438,
+    "DT_IMUVIS_VOI": 438
+   }
+  },
+  "wheeled": {
+   "file": "LC5_V_all.jsonl",
+   "sha256": "261c989e3cd640718f94bc729e814715f3fad077adb21fcbc1a38705cfdfce26",
+   "n_values": {
+    "ORACLE": 472,
+    "DT_VOI": 472,
+    "DT_CAM_VOI": 472,
+    "DT_VIS_VOI": 472,
+    "DT_IMUVIS_VOI": 472
+   }
+  }
+ }
+}
