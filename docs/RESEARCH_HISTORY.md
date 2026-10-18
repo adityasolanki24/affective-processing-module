@@ -13,6 +13,7 @@ happens, it is marked ⟶.
 | I (v0.5) | 2026-10-17 | autonomous revision under self-selected avoidance | **I1 passed:** dense near-miss evidence + EM types + change-aware belief; revises in 2–3 episodes; −56% avoidable collisions. VOI probing escapes outright keep-away traps. PR #3, **not merged** | `experiments/I_autonomous_revision/reports/AUTONOMOUS_REVISION_DECISION.md` |
 | J (v0.6) | 2026-10-18 | validate I; transfer to NERVA; close the expressive loop | J1: I1 survives frozen calibration, but **its safety gain is not caused by revision**. J2: not a universal default. J4: NERVA memory learns from IMU, but revision is slow and one-directional. J5: **loop not closed with L0**. J6 (exploratory): 5-parameter decision-theoretic mapping beats L0; GRU adds nothing. **Decision E** | `experiments/J_validation_transfer/reports/FINAL_REPORT.md` |
 | K (v0.7) | 2026-10-18 | recovery from negative experience; frozen-task confirmation; continuous demonstration; other bodies | Recovery was limited by information (IMU at a safe distance) **and** by a memory defect (D1: no change step between consecutive meetings). Fixed memory + value of information + a modelled camera: **recovery in both directions on NERVA and a wheeled robot, 0 falls**. Decision-theoretic mapping **replaces L0** (4/4 frozen tasks). Continuous two-robot demo with controls | `experiments/K_recovery/REPORT.md` |
+| L (v0.8) | 2026-10-18 | independent audit corrections; genuine vision; stress tests; fair controller comparison; integrated runtime | Audit confirmed: unenforced risk cap (5–29% over-cap decisions), recovery-metric and target-calibration defects, proxy task success, abstract camera. **Corrected on fresh seeds, 6/7 K claims survive** (caution-return claim fails for wheeled IMU). Rendered depth vision passes the perception gate on NERVA/wheeled; recovers on NERVA, too slowly on wheeled (K's camera result depended on the idealised sensor). Memory halves contacts under stress but its cost gain is significant in 6/15 scenarios. Runtime passes F1–F6 on 3 bodies; continuous demo with vision | `experiments/L_audit_perception/REPORT.md` |
 
 ## Architecture recommendations over time
 
@@ -22,8 +23,10 @@ Only the last item is current.
 2. G, decision A: predictor + cumulative entity memory + EMA risk ⟶ memory replaced by I's type memory.
 3. H, decision B: memory + fixed lookup + bounded adapter ⟶ J5 shows the lookup does not close the loop on NERVA.
 4. J, decision E: keep explicit type memory + L0 ⟶ superseded by K.
-5. **K (current):** explicit type memory with the D1 fix + decision-theoretic expression mapping with task values
-   fixed from requirements + non-myopic information gathering (needs a sensor that sees the entity).
+5. K: explicit type memory with the D1 fix + decision-theoretic expression mapping + non-myopic information
+   gathering ⟶ L found the risk cap unenforced and the camera abstract.
+6. **L (current):** the same memory and mapping with an **enforced risk cap**, **IMU + rendered depth vision**, an
+   independent supervisor, in one runtime behind AffectLink; value of information optional.
 
 ## Conventions used throughout
 

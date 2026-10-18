@@ -1,14 +1,16 @@
 # Architecture
 
-The current APM architecture, as validated by programmes G–J. For which parts are demonstrated, see
-[STATE.md](STATE.md).
+The current APM architecture, as validated by programmes G–L. For which parts are demonstrated, see
+[STATE.md](STATE.md). Since programme L, the whole loop runs in one runtime, `apm_transfer.runtime` (below).
 
 ```
  sensors (robot-specific)
-   │  only robot-observable signals: IMU, contacts, own commands, tracked entities
+   │  only robot-observable signals: IMU, depth camera, contacts, own commands, tracked entities
    ▼
  ┌─ embodiment observation model ───────────────┐   robot-specific; e.g. NERVA: efference-copy gate,
- │ encounter evidence: dense outcome category   │   sensing pause, self-calibrated push detector, acc8 code
+ │ encounter evidence: dense outcome category   │   sensing pause, self-calibrated push detector, acc8 code;
+│ + camera code from motion perception         │   depth camera: MotionPerception (pixels, efference copy,
+│                                              │   navigation distance; never simulator state)
  └──────────────────────────────────────────────┘
    │ Obs(identity, kind, context, category, detected)
    ▼
@@ -21,6 +23,8 @@ The current APM architecture, as validated by programmes G–J. For which parts 
  │                       directness, gaze, scanning, lean, head elevation                      │
  │                       mapping: decision-theoretic (current; L0 retired by K3b)              │
  │ 5 information gather  non-myopic VOI; OBSERVE from beyond reach (needs a camera)  infoseek  │
+│ 6 risk cap            predicted risk ≤ cap, else NO_SAFE_ACTION → HOLD beyond reach         │
+│ 7 supervisor          independent re-check of every decision (own risk model) → veto/HOLD  │
  └────────────────────────────────────────────────────────────────────────────────────────────┘
    │ ExpressionIntent (bounded, abstract)
    ▼
@@ -84,6 +88,23 @@ No deployment-time weight updates are validated (programme G, G7).
 
 For the v0.1 AffectLink runtime, the worked adapters are `apm.adapters.nerva` (biped) and `apm.adapters.wheeled`.
 
+## The integrated runtime (programme L)
+
+`apm_transfer.runtime.Runtime` runs layers 2 and 4–7 for any body:
+- `decide(identity, kind)` → `Decision` (grid intent, OBSERVE or HOLD; windows; stand-off; diagnostics);
+- the body adapter executes it through the body's own expression adapter and safety monitor, and returns an
+  `Observation`;
+- `observe(obs)` updates memory.
+
+Further properties:
+- **Persistence.** State is saved atomically (`save`/`load`); a restart gives bit-identical decisions.
+- **Determinism.** Each decision draws from its own seeded stream, and `replay(log)` re-derives every decision
+  from the JSONL log.
+- **AffectLink.** `ingest(EntityObservation)` binds tracks to identities, and `affectlink(decision)` emits
+  `MemoryExpectation`, `ActionTendency` and `ExpressionIntent` (all validated).
+- **Bodies:** `NervaBody`, `WheeledBody`, `HumanoidBody`.
+- **Demo:** `experiments/L_audit_perception/scripts/f_runtime_demo.py`.
+
 ## The v0.1 runtime and AffectLink
 
 `src/apm` holds the original runtime:
@@ -93,4 +114,5 @@ For the v0.1 AffectLink runtime, the worked adapters are `apm.adapters.nerva` (b
 
 **AffectLink** ([affectlink.md](affectlink.md)) remains the robot-facing message contract. The **PAD core is
 superseded**: programme G showed it harmful. Migrating the current architecture into a production runtime behind
-AffectLink is on the roadmap. It happens only after the interfaces above are validated on more than one embodiment.
+AffectLink is programme L's runtime, in simulation. Replacing `src/apm`'s PAD core as the shipped runtime is
+still open.

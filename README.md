@@ -14,12 +14,17 @@ It is **research code, simulation only.** It makes no claim that robots have emo
 ## What works today (simulation)
 
 - A NERVA biped (MuJoCo) learns from its own sensors which entities disrupt it, and changes how it approaches.
-- **It revises those expectations when the entity changes, and its behaviour recovers.** A wheeled robot and a
-  humanoid (Booster T1) do the same with the same code.
-- With a (modelled) camera, it gathers information safely, by watching from beyond reach before approaching again.
-- Expression is chosen by a small decision-theoretic mapping with task values fixed from requirements. It beats the
-  earlier hand-written mapping in 4/4 tasks.
-- **Not yet:** a real camera on NERVA, hardware, human legibility, worlds with overlapping entity behaviours.
+- It sees with a **rendered depth camera and motion perception** that reads only pixels, not simulator state.
+- **It revises those expectations when the entity changes, and its behaviour recovers.** With rendered vision this
+  takes about 7 meetings on NERVA; on the wheeled robot real vision is still too slow. A wheeled robot and a
+  humanoid (Booster T1) run the same code.
+- A **risk cap is enforced**: if no approach is predicted safe, the robot holds back. An independent supervisor
+  re-checks every decision.
+- Expression is chosen by a decision-theoretic mapping with task values fixed from requirements. It beats the
+  hand-written mapping in 4/4 tasks.
+- One **integrated runtime** runs the whole loop on three bodies. It persists across restarts, replays exactly and
+  speaks AffectLink.
+- **Not yet:** a real camera on hardware, close-range vision, human legibility.
 
 ## Install
 
@@ -40,17 +45,19 @@ Playground). Set `NERVA_ROOT=<NERVA checkout>` and `PYTHONPATH="src;<NERVA>"` (`
 | synthetic robot, no simulator | `python examples/standalone/scenario.py` | APM only |
 | wheeled robot with learned per-person expectations | `python examples/wheeled_robot/run.py` | APM only |
 | NERVA closed loop: memory → expression → physical outcomes (J5/J6 protocol) | `python experiments/J_validation_transfer/scripts/j5_closed_loop.py --partition P --n 2 --types-model experiments/J_validation_transfer/configs/J5_types_distance.json --edges experiments/J_validation_transfer/configs/J4_edges.json --lam 0.02 --systems CL --out runs/demo.jsonl` | NERVA |
-| **best demo:** two identical NERVA robots, different histories, one continuous lifetime each (experience → belief → expression → outcome → revision → recovery) | `python experiments/K_recovery/scripts/k_demo.py --system DT_CAM_VOI --render --out runs/demo` | NERVA, ffmpeg |
+| **best demo:** two identical NERVA robots with rendered vision on the integrated runtime, different histories, one continuous lifetime each (experience → belief → expression → outcome → revision → recovery) | `python experiments/L_audit_perception/scripts/g_demo.py render --index 0 --out runs/demo` | NERVA, ffmpeg |
+| integrated runtime on a body (restart, replay, AffectLink checks) | `python experiments/L_audit_perception/scripts/f_runtime_demo.py --body wheeled --out runs/F.json` | MuJoCo |
 | recovery study on the wheeled robot (fast) | `python experiments/K_recovery/scripts/k_run.py --robot wheeled --experiment K5 --partition P --n 2 --systems DT,DT_CAM_VOI --transition-fix --types-model experiments/K_recovery/configs/K_wheeled_types.json --edges experiments/K_recovery/configs/K_wheeled_edges.json --time-model experiments/K_recovery/configs/K_wheeled_time.json --out runs/wheeled.jsonl` | MuJoCo |
 
-Recorded video: `experiments/K_recovery/videos/K4_two_robots_continuous.mp4`.
+Recorded video: `experiments/L_audit_perception/videos/G_two_robots_vision_runtime.mp4`. Programme K's
+`K4_two_robots_continuous.mp4` used the abstract camera.
 
 ## Where the code lives
 
 | package | role |
 |---|---|
 | `src/apm_revise` | experience memory: EM-learned entity types, change-aware beliefs (robot-independent) |
-| `src/apm_transfer` | memory (`nerva_memory`), expression mapping and information gathering (`expression_map`, `infoseek`), worlds: NERVA (`nerva_world`, `nerva_continuous`), wheeled (`wheeled_world`), humanoid (`humanoid_world`) |
+| `src/apm_transfer` | integrated runtime (`runtime`), memory (`nerva_memory`), expression mapping and information gathering (`expression_map`, `infoseek`, `controllers`), rendered vision (`vision`), worlds: NERVA (`nerva_world`, `nerva_continuous`), wheeled (`wheeled_world`), humanoid (`humanoid_world`) |
 | `src/apm_express` | `ExpressionIntent`, L0 mapping, NERVA and wheeled expression adapters, safety monitor |
 | `src/apm_select`, `src/apm_research` | consequence predictors, regulators, statistics (programmes F/G) |
 | `src/apm_testbeds` | wheeled testbed with pedestrians and a safety supervisor |

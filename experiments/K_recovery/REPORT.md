@@ -17,6 +17,10 @@ Everything is simulation only.
 >    decisions. DT_CAM_VOI never did. Results for those systems are re-tested with the cap enforced in L.
 > 4. **The "camera" is an abstract sensor** that reports generated lunge events. It is not image processing. Its
 >    ±40° bearing test treated a 40° field of view as a half-angle.
+> 5. **Outcome of the corrective test** (L §B, fresh seeds, all corrections): claims 1–3 and the 4/4 task result
+>    survive. "Caution returns within 1–2 meetings" holds with the camera but not for the wheeled robot's IMU
+>    alone (5 meetings). With rendered vision instead of the abstract camera, recovery holds on NERVA (7
+>    meetings) but not on the wheeled robot. See `experiments/L_audit_perception/REPORT.md`.
 
 ## What APM can do now that it could not before
 
