@@ -127,16 +127,21 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=Path, nargs="+", required=True)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--base", default="v1")
+    ap.add_argument("--cand", default="candidate")
+    ap.add_argument("--seeds", default=None, help="e.g. 72201-72205")
     a = ap.parse_args()
     runs: dict[tuple, dict] = {}
     for d in a.runs:
-        for f in sorted(d.rglob("*_7200[0-9].jsonl")):
+        for f in sorted(d.rglob("*_72[0-9][0-9][0-9].jsonl")):
             meta, rows = load(f)
+            if a.seeds and not (int(a.seeds.split("-")[0]) <= meta["seed"] <= int(a.seeds.split("-")[1])):
+                continue
             runs[(meta["env"], meta["scenario"], meta["seed"], meta["controller"])] = metrics(meta, rows)
     keys = sorted({k[:3] for k in runs})
-    pairs = [(k, runs.get((*k, "v1")), runs.get((*k, "candidate"))) for k in keys]
+    pairs = [(k, runs.get((*k, a.base)), runs.get((*k, a.cand))) for k in keys]
     pairs = [(k, b, c) for k, b, c in pairs if b is not None and c is not None]
-    res: dict = {"runs": len(runs), "pairs": len(pairs)}
+    res: dict = {"runs": len(runs), "pairs": len(pairs), "base": a.base, "cand": a.cand, "seeds": a.seeds}
     # falls by condition
     falls = defaultdict(lambda: [0, 0, 0])
     for (env, sc, _), b, c in pairs:

@@ -74,8 +74,12 @@ def calibrate_threshold(standing_peaks: list[float], quantile: float = 0.99, mar
 class ExperienceState:
     disturbance: DisturbanceMemory = field(default_factory=DisturbanceMemory)
     movement: SensorExpectation = field(default_factory=SensorExpectation)
-    w_disturbance: float = 0.75  # designed weights of the two learned expectations in "wariness"
+    w_disturbance: float = 0.75  # legacy weighted readout (combination="weighted"), kept for replaying old states
     w_movement: float = 0.25
+    # Designed combination. "noisy_or": the chance this person disturbs the robot OR comes at it, since either
+    # kind of evidence is a reason for caution. Changed from "weighted" after the expression pilots: NERVA learned
+    # a clear movement expectation from near-miss lunges (0.77 vs 0.20), which a 0.25 weight hid.
+    combination: str = "noisy_or"
 
     def observe(self, identity: str, window_peaks: list[float] | None, camera_reaches) -> None:
         self.disturbance.observe(identity, window_peaks)
@@ -87,16 +91,19 @@ class ExperienceState:
         a, b = self.disturbance.counts.get(identity, [1.0, 1.0])
         sd = float(np.sqrt(a * b / ((a + b) ** 2 * (a + b + 1))))
         n = self.disturbance.meetings.get(identity, 0.0)
-        return {"wariness": float(self.w_disturbance * d + self.w_movement * m),
+        wariness = (1.0 - (1.0 - d) * (1.0 - m) if self.combination == "noisy_or"
+                    else self.w_disturbance * d + self.w_movement * m)
+        return {"wariness": float(wariness),
                 "uncertainty": float(min(1.0, sd / np.sqrt(1 / 12))),  # 1 = the uniform prior's spread
                 "familiarity": float(1.0 - np.exp(-n / 3.0)), "disturbance_p": d, "movement_p": m,
                 "meetings": n}
 
     def state(self) -> dict:
         return {"disturbance": self.disturbance.state(), "movement": self.movement.state(),
-                "weights": [self.w_disturbance, self.w_movement]}
+                "weights": [self.w_disturbance, self.w_movement], "combination": self.combination}
 
     def load(self, s: dict) -> None:
         self.disturbance.load(s["disturbance"])
         self.movement.load(s["movement"])
         self.w_disturbance, self.w_movement = (float(x) for x in s["weights"])
+        self.combination = str(s.get("combination", "weighted"))  # states saved before the change replay as saved

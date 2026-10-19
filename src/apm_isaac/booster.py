@@ -56,6 +56,13 @@ class BoosterPolicyBody(LabPolicyBody):
         ramp = profile.get("command_ramp_m_s2")
         self.command_ramp = float(ramp) if ramp is not None else None
         self.cmd_smoothed = np.zeros(3)
+        # Push-recovery reflex (controller stack, off unless the profile asks for it): when the measured base
+        # velocity departs from the command by more than `trigger_m_s`, command a step along the disturbance for
+        # `hold_s` (the policy steps with the push instead of resisting it). Uses only the robot's own velocity
+        # estimate; no external forces.
+        self.reflex = profile.get("push_reflex")
+        self.reflex_until, self.reflex_cmd = -1.0, np.zeros(3)
+        self.reflex_count = 0
 
     def post_reset(self, gains=None):
         super().post_reset()
@@ -67,12 +74,27 @@ class BoosterPolicyBody(LabPolicyBody):
         self.head_target = np.zeros(2)
         self.upper_offset = np.zeros(11)
         self.cmd_smoothed = np.zeros(3)
+        self.reflex_until, self.reflex_cmd = -1.0, np.zeros(3)
 
     def advance(self):
         q = np.asarray(self.art.get_joint_positions(), float)[self.idx]
         dq = np.asarray(self.art.get_joint_velocities(), float)[self.idx]
         r = self.rot()
         cmd = np.array([self.v_cmd, 0.0, self.w_cmd])
+        if self.reflex:
+            lin_b = r.T @ np.asarray(self.art.get_linear_velocity(), float)  # base frame
+            ref = self.cmd_smoothed if self.command_ramp is not None else cmd
+            err = lin_b[:2] - ref[:2]
+            if self.t >= self.reflex_until and float(np.linalg.norm(err)) > float(self.reflex["trigger_m_s"]):
+                step = np.clip(float(self.reflex.get("gain", 1.0)) * lin_b[:2], -float(self.reflex["max_m_s"]),
+                               float(self.reflex["max_m_s"]))
+                self.reflex_cmd = np.array([step[0], step[1], 0.0])
+                self.reflex_until = self.t + float(self.reflex["hold_s"])
+                self.reflex_count += 1
+            if self.t < self.reflex_until:
+                cmd = self.reflex_cmd.copy()
+                if self.command_ramp is not None:
+                    self.cmd_smoothed = cmd.copy()  # the reflex acts at once, then ramps back
         if self.command_ramp is not None:
             step = self.command_ramp * DT
             self.cmd_smoothed = self.cmd_smoothed + np.clip(cmd - self.cmd_smoothed, -step, step)

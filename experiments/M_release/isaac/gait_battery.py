@@ -25,6 +25,9 @@ ap.add_argument("--scenarios", default="all", help="comma-separated names or 'al
 ap.add_argument("--video-seed", type=int, default=None, help="record side-view video for this seed")
 ap.add_argument("--video-scenarios", default="speed_0.2,turn_walk_+,startstop,push_walk_0.3")
 ap.add_argument("--out", type=Path, required=True)
+ap.add_argument("--profile", default=None, help="candidate only: JSON deployment-profile override, e.g. a push "
+                "reflex (configs/t1_push_reflex.json)")
+ap.add_argument("--label", default="", help="suffix of the controller name in run files (variants)")
 a = ap.parse_args()
 
 
@@ -129,6 +132,12 @@ else:
         raise RuntimeError(f"no collider-free 4 m heading near the {a.env} hub")
     start = free_path
 
+if a.profile and a.controller == "candidate":  # deployment-profile override (push reflex, command ramp)
+    prof = json.loads(Path(a.profile).read_text()) if a.profile.endswith(".json") else json.loads(a.profile)
+    body.reflex = prof.get("push_reflex")
+    if prof.get("command_ramp_m_s2") is not None:
+        body.command_ramp = float(prof["command_ramp_m_s2"])
+CTRL = a.controller + a.label
 feet = []
 for side in ("left", "right"):
     prim = next(p for p in stage.Traverse()
@@ -161,7 +170,7 @@ for name in names:
         writer = None
         if camera is not None and seed == a.video_seed and name in video_names:
             import imageio.v2 as imageio
-            writer = imageio.get_writer(a.out / f"{a.env}_{a.controller}_{name}_{seed}.mp4", fps=25,
+            writer = imageio.get_writer(a.out / f"{a.env}_{CTRL}_{name}_{seed}.mp4", fps=25,
                                         codec="libx264", quality=7, macro_block_size=2)
         rows, fell, fall_t = [], False, None
         for k in range(round(spec["seconds"] / 0.02)):
@@ -203,8 +212,8 @@ for name in names:
                 break
         if writer is not None:
             writer.close()
-        run = f"{a.env}_{a.controller}_{name}_{seed}"
-        meta = {"run": run, "env": a.env, "controller": a.controller, "scenario": name, "seed": seed,
+        run = f"{a.env}_{CTRL}_{name}_{seed}"
+        meta = {"run": run, "env": a.env, "controller": CTRL, "profile": a.profile, "scenario": name, "seed": seed,
                 "fell": fell, "fall_t": fall_t, "physics_dt": physics_dt, "trace_hz": 50,
                 "start": [round(float(x), 4) for x in start], "spec": spec, "policy_sha256": policy_sha,
                 "joint_names": list(body.art.dof_names), "engine": "Isaac Sim 5.1 / PhysX"}
@@ -215,6 +224,6 @@ for name in names:
         summary.append({"run": run, "fell": fell, "fall_t": fall_t})
         print("RUN", run, "fell" if fell else "ok", f"{rows[-1]['t']:.2f}s", flush=True)
 
-(a.out / f"summary_{a.env}_{a.controller}.json").write_text(json.dumps(summary, indent=1))
-print("BATTERY DONE", a.env, a.controller, len(summary), "runs,", sum(s["fell"] for s in summary), "falls", flush=True)
+(a.out / f"summary_{a.env}_{CTRL}.json").write_text(json.dumps(summary, indent=1))
+print("BATTERY DONE", a.env, CTRL, len(summary), "runs,", sum(s["fell"] for s in summary), "falls", flush=True)
 hard_exit(0)
