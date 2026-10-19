@@ -36,6 +36,7 @@ from typing import Any
 import numpy as np
 
 from apm_revise.belief import TypeModel
+from apm_transfer.experience_state import ExperienceState
 from apm_transfer.expression_map import GRID, TimeModel
 from apm_transfer.infoseek import HOLD, OBSERVE, STANDOFF_M, Emissions, Task, choose, cost
 from apm_transfer.nerva_memory import TypeStateModel
@@ -130,6 +131,7 @@ class Runtime:
         self.log_path = log
         self.tracks: dict[str, tuple[str, str]] = {}  # AffectLink track id -> (identity, kind)
         self.sensor_expectation: SensorExpectation | None = None  # optional pilot, independent of navigation/risk
+        self.experience: ExperienceState | None = None  # optional: drives the expressive program (designed map)
 
     # ── the loop ─────────────────────────────────────────────────────────────
     def decide(self, identity: str, kind: str, context: str = "") -> Decision:
@@ -168,6 +170,8 @@ class Runtime:
     def observe(self, obs: Observation) -> None:
         if self.sensor_expectation is not None:
             self.sensor_expectation.observe(obs.identity, obs.report.get("camera_reaches"))
+        if self.experience is not None:
+            self.experience.observe(obs.identity, obs.report.get("self_disp_peaks"), obs.report.get("camera_reaches"))
         cats = obs.categories(self.camera_block) if self.observe_imu else (
             [CAM_OFFSET + c for c in obs.camera] if self.camera_block else [])
         self.memory.observe_many(obs.identity, obs.kind, cats, float(obs.detected))
@@ -218,6 +222,8 @@ class Runtime:
                 "memory": self.memory.state(), "vetoes": self.safety.vetoes, "tracks": self.tracks}
         if self.sensor_expectation is not None:
             state["sensor_expectation"] = self.sensor_expectation.state()
+        if self.experience is not None:
+            state["experience"] = self.experience.state()
         return state
 
     def save(self, path: Path) -> None:
@@ -237,6 +243,11 @@ class Runtime:
             self.sensor_expectation.load(s["sensor_expectation"])
         else:
             self.sensor_expectation = None
+        if "experience" in s:
+            self.experience = ExperienceState()
+            self.experience.load(s["experience"])
+        else:
+            self.experience = None
 
     def _log(self, rec: dict) -> None:
         if self.log_path is not None:

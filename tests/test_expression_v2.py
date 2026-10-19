@@ -1,0 +1,76 @@
+"""Expression v2: label-free experience memory and the designed expressive program."""
+import numpy as np
+import pytest
+
+from apm_isaac.posture import RateLimited, nerva_offsets, t1_offsets
+from apm_transfer.experience_state import DisturbanceMemory, ExperienceState, calibrate_threshold
+from apm_transfer.expressive_program import plan, upper_targets
+
+
+def test_threshold_is_label_free_and_above_standing_sway():
+    sway = list(np.random.default_rng(0).uniform(0.0, 0.02, 200))
+    th = calibrate_threshold(sway)
+    assert th > max(sway) * 0.98
+    with pytest.raises(ValueError):
+        calibrate_threshold([0.01] * 5)
+
+
+def test_disturbance_memory_learns_and_revises():
+    m = DisturbanceMemory(threshold_m_s=0.05)
+    for _ in range(8):
+        m.observe("B1", [0.01, 0.12])  # pushed during a window
+    high = m.probability("B1")
+    for _ in range(8):
+        m.observe("B1", [0.01, 0.02])  # calm meetings: the outdated tendency fades
+    assert high > 0.75 and m.probability("B1") < 0.35
+    m.observe("B1", None)  # no valid window is not evidence
+    m.observe("C1", [])
+    assert "C1" not in m.counts
+
+
+def test_histories_give_different_states_from_sensing_only():
+    pushy, calm = ExperienceState(), ExperienceState()
+    for _ in range(8):
+        pushy.observe("B1", [0.02, 0.15], [[0.25]])
+        calm.observe("B1", [0.02, 0.01], [[0.01]])
+    a, b = pushy.readout("B1"), calm.readout("B1")
+    assert a["wariness"] - b["wariness"] > 0.4
+    assert a["familiarity"] == pytest.approx(b["familiarity"])
+
+
+def test_experience_persists_through_state_round_trip():
+    e = ExperienceState()
+    e.observe("B1", [0.2], [[0.3]])
+    f = ExperienceState()
+    f.load(e.state())
+    assert f.readout("B1") == e.readout("B1")
+
+
+def test_plan_is_monotone_in_wariness_and_matched_removes_speed_and_distance():
+    lo = plan({"wariness": 0.1, "uncertainty": 0.2, "familiarity": 0.9})
+    hi = plan({"wariness": 0.9, "uncertainty": 0.2, "familiarity": 0.9})
+    assert hi.observe_s > lo.observe_s and hi.guard > lo.guard and hi.retreat_m > lo.retreat_m
+    assert hi.directness < lo.directness and lo.openness > hi.openness
+    lm = plan({"wariness": 0.1, "uncertainty": 0.2, "familiarity": 0.9}, matched=True)
+    hm = plan({"wariness": 0.9, "uncertainty": 0.2, "familiarity": 0.9}, matched=True)
+    assert (lm.tempo, lm.proximity, lm.hesitation) == (hm.tempo, hm.proximity, hm.hesitation)
+    assert hm.guard != lm.guard and hm.observe_s != lm.observe_s
+
+
+def test_neutral_program_has_no_expression():
+    p = plan(None)
+    g = upper_targets(p, "interact", 1.0, 0.3)
+    assert g["guard"] == g["openness"] == g["tilt"] == 0.0 and g["gaze_yaw"] == 0.0
+
+
+def test_body_offsets_stay_in_bounds_and_rate_limited():
+    for g in ({"gaze_yaw": 5, "gaze_pitch": 5, "guard": 1, "openness": 1, "tilt": 1, "side_on": 1},
+              {"gaze_yaw": -5, "gaze_pitch": -5, "guard": 0, "openness": 0, "tilt": 0, "side_on": 0}):
+        n = nerva_offsets(g)
+        assert np.all(np.abs(n[1:3]) <= 0.4 + 1e-9) and abs(n[0]) <= 0.25 and abs(n[3]) <= 0.25
+        t = t1_offsets(g)
+        assert abs(t[0]) <= 0.6 and abs(t[1]) <= 0.3 and abs(t[10]) <= 0.35
+    r = RateLimited(4, 0.75)
+    v = r.step(np.ones(4), 0.02)
+    assert np.allclose(v, 0.015)
+    assert np.allclose(r.step(np.ones(4), 0.02, allowed=False), 0.0)

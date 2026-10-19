@@ -6,7 +6,10 @@ The offsets are added to joint *targets* of joints that each robot's locomotion 
 Leg targets, root pose and contacts are never touched. An offset is applied only while the body is upright (tilt
 below its trip angle and not braking); otherwise it decays to zero.
 
-Sign constants were checked against rendered pose stills (`isaac/posture_check.py`). Limits are kept inside each
+Sign constants were checked against rendered pose stills (`isaac/posture_check.py`, job POSTURE, 2026-10-19):
+T1 head pitch, arms (guard: forearms forward; open: arms away from the body) and waist; NERVA head yaw, roll and
+the guarded head draw-back. Every posture held 6 s without a fall or trip; T1 walking with the guarded posture
+had tilt p95 3.9 deg (neutral 4.2). Limits are kept inside each
 body's validated range (NERVA: programme H's admitted head pitch/yaw ±0.4 rad at 0.75 rad/s; neck pitch and head
 roll are new and limited to ±0.25 rad, pending the posture stability check).
 """

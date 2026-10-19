@@ -523,10 +523,44 @@ class IsaacWorld:
             self._video()
         return row, tripped
 
+    def _depart(self, program, adapter, overlay, video: bool, out: dict) -> bool:
+        """Leave the person: back away (still facing them) by the program's retreat distance, turn away about
+        150 degrees, and walk off. Returns whether the robot fell."""
+        from apm_express.adapter import MotionRequest
+        self.phase = "depart"
+        nerva = self.body_name == "nerva"
+        fell = False
+
+        def moved(origin) -> float:
+            x, y, _ = self.robot.pose()
+            return float(math.hypot(x - origin[0], y - origin[1]))
+
+        start, t0 = self.robot.pose()[:2], self.t
+        while not fell and self.t - t0 < 15.0 and moved(start) < program.retreat_m:
+            cmd = MotionRequest("backward", 0.0, (0.0,) * 4) if nerva else (-0.15, 0.0)
+            row, _ = self.step(overlay(cmd, "depart", self.t - t0), adapter, video)
+            fell = self.robot.fallen(row)
+        out["retreat_m"], out["retreat_s"] = round(moved(start), 3), round(self.t - t0, 2)
+        t1, yaw0, turned = self.t, self.robot.pose()[2], 0.0
+        while not fell and self.t - t1 < 12.0 and turned < math.radians(150):
+            cmd = MotionRequest("turn_left", 0.0, (0.0,) * 4) if nerva else (0.0, program.depart_turn_rad_s)
+            row, _ = self.step(overlay(cmd, "depart", self.t - t0), adapter, video)
+            fell = self.robot.fallen(row)
+            d_yaw = self.robot.pose()[2] - yaw0
+            turned = abs(math.atan2(math.sin(d_yaw), math.cos(d_yaw)))
+        out["turn_s"] = round(self.t - t1, 2)
+        start, t2 = self.robot.pose()[:2], self.t
+        while not fell and self.t - t2 < 10.0 and moved(start) < (0.3 if nerva else 0.6):
+            cmd = MotionRequest("forward", 0.0, (0.0,) * 4) if nerva else (0.2, 0.0)
+            row, _ = self.step(overlay(cmd, "depart", self.t - t0), adapter, video)
+            fell = self.robot.fallen(row)
+        out["leave_s"] = round(self.t - t2, 2)
+        return bool(fell)
+
     def encounter(self, station: str, etype: str, intent, windows: int, standoff: float = 0.0,
                   settle_s: float = 1.0, max_approach_s: float = 45.0, abort_on_detect: bool = True,
                   video: bool = False, approach_from: float | None = None,
-                  return_home: bool = True) -> tuple[dict, dict]:
+                  return_home: bool = True, program=None, program_side: float = 1.0) -> tuple[dict, dict]:
         """One encounter from the robot's current pose; afterwards it walks home (a continuous lifetime).
 
         Experiments use `approach_from=A, return_home=False`: the robot starts at rest A metres from the station
@@ -568,10 +602,77 @@ class IsaacWorld:
         from apm_isaac.agents import RADIUS as _R
         surf = _R - _G0
         n_settle = int(round(settle_s / DT))
+        # Expressive program (apm_transfer.expressive_program): posture/gaze overlay on joints the locomotion
+        # policy does not control, plus observe and depart phases. None = the original encounter.
+        from apm_isaac.posture import RateLimited, nerva_offsets, t1_offsets
+        from apm_transfer.expressive_program import upper_targets
+        upper_kind = ("t1" if hasattr(self.robot, "upper_offset") else "nerva" if self.body_name == "nerva"
+                      else None) if program is not None else None
+        limiter = (RateLimited(11 if upper_kind == "t1" else 4, 0.6 if upper_kind == "t1" else 0.75)
+                   if upper_kind else None)
+        expr_trace: list[dict] = []
+        upper_moved = [False]
+
+        def overlay(cmd, phase: str, t_phase: float):
+            if limiter is None:
+                upper_moved[0] = False
+                return cmd
+            xr, yr, yawr = self.robot.pose()
+            bearing = math.atan2(sy - yr, sx - xr) - yawr
+            bearing = math.atan2(math.sin(bearing), math.cos(bearing))
+            g = upper_targets(program, phase, t_phase, bearing)
+            upright = self.robot.tilt() < math.radians(20)
+            before = limiter.value.copy()
+            if upper_kind == "t1":
+                self.robot.upper_offset = limiter.step(t1_offsets(g, program_side), DT, upright)
+            else:
+                from dataclasses import replace as _replace
+                resting = getattr(cmd, "command", "rest") == "rest"  # NERVA: head offsets at rest only (H0)
+                head = limiter.step(nerva_offsets(g), DT, upright and resting)
+                cmd = _replace(cmd, head=tuple(float(v) for v in head))
+            upper_moved[0] = bool(np.max(np.abs(limiter.value - before)) > 1e-3)
+            if int(round(self.t / DT)) % 10 == 0:
+                expr_trace.append({"t": round(self.t, 2), "phase": phase,
+                                   "pose": [round(v, 4) for v in (xr, yr, yawr)],
+                                   "upper": np.round(limiter.value, 4).tolist()})
+            return cmd
+
+        def loco_idle(cmd) -> bool:
+            if hasattr(cmd, "command"):
+                return cmd.command == "rest"
+            return abs(cmd[0]) < 1e-6 and abs(cmd[1]) < 1e-6
+
+        speeds: list[float] = []
+        prev_xy: list[tuple[float, float]] = []
+
+        def base_speed() -> float:
+            xr, yr, _ = self.robot.pose()
+            speeds.append(math.hypot(xr - prev_xy[-1][0], yr - prev_xy[-1][1]) / DT if prev_xy else 0.0)
+            prev_xy.append((xr, yr))
+            return float(np.mean(speeds[-5:]))  # 0.1 s smoothing of the odometry speed
+
+        standing_peaks: list[float] = []  # label-free calibration: idle, nobody within reach
         self.phase = "settle"
-        for _ in range(n_settle):
-            row, _ = self.step(adapter.idle, adapter, video)
+        peak = 0.0
+        for i in range(n_settle):
+            row, _ = self.step(overlay(adapter.idle, "settle", i * DT), adapter, video)
             log.read(row)
+            sp = base_speed()
+            if i >= 10:
+                peak = max(peak, sp)
+        standing_peaks.append(round(peak, 4))
+        obs_own: list[bool] = []
+        if program is not None:
+            self.phase = "observe"
+            peak = 0.0
+            for i in range(int(round(program.observe_s / DT))):
+                cmd = overlay(adapter.idle, "observe", i * DT)
+                row, tripped = self.step(cmd, adapter, video)
+                log.read(row)
+                obs_own.append(bool(adapter.own_motion(cmd, tripped) or upper_moved[0]))
+                peak = max(peak, base_speed())
+            if obs_own:
+                standing_peaks.append(round(peak, 4))
         x0, y0, _ = self.robot.pose()
         u = np.array([sx - x0, sy - y0])
         u = u / (np.linalg.norm(u) or 1.0)
@@ -583,8 +684,9 @@ class IsaacWorld:
         win_n, skip_n = int(round(WINDOW_S / DT)), int(round(POST_ARRIVAL_SKIP_S / DT))
         hold_n = int(round(SELF_MOTION_HOLD_S / DT))
         every = max(1, int(round(1.0 / (self.vision_cfg.hz * DT))))
-        own = [False] * n_settle
-        k, k_arrive, t_arrive, fell, aborted = n_settle, None, None, False, False
+        own = [False] * n_settle + obs_own
+        k, k_arrive, t_arrive, fell, aborted = n_settle + len(obs_own), None, None, False, False
+        disp_peaks = [0.0] * windows
         win_ev: list = []
         cam_seen: list[list[float]] = [[] for _ in range(windows)]
         cam_quiet = [0] * windows
@@ -610,6 +712,9 @@ class IsaacWorld:
                 effective_intent = replace(intent, scanning=0.0)  # quiet observation after the inspection sweep
             cmd = (adapter.request(self.t, self.robot.pose(), aim, effective_intent)
                    if k_arrive is None or express else adapter.idle)
+            if program is not None:
+                cmd = (overlay(cmd, "approach", self.t - t_start - settle_s) if k_arrive is None
+                       else overlay(cmd, "interact", (k - k_arrive) * DT))
             ta = self.t - t_start - settle_s  # time into the approach
             if "interrupt" in self.faults and k_arrive is None:  # motion commands dropped (controller interruption)
                 d0, dur = self.faults["interrupt"]
@@ -629,7 +734,12 @@ class IsaacWorld:
                 next_push = self.t + frng.uniform(1.0, 2.0)
             row, tripped = self.step(cmd, adapter, video)
             log.read(row)
-            own.append(adapter.own_motion(cmd, tripped))
+            own.append(bool(adapter.own_motion(cmd, tripped) or upper_moved[0]))
+            sp = base_speed()
+            if k_arrive is not None and loco_idle(cmd):  # unintended self-motion while commanded to stand
+                jw = k - (k_arrive + skip_n)
+                if 0 <= jw < windows * win_n:
+                    disp_peaks[jw // win_n] = max(disp_peaks[jw // win_n], sp)
             if k_arrive is not None:
                 j = k - (k_arrive + skip_n)
                 if j == 0:
@@ -667,6 +777,11 @@ class IsaacWorld:
         measured_distance = person_distance((x, y), person_xy, self.robot.front, RADIUS)
         measured_distance["root_to_station_m"] = d_stop
         person.lunges = []
+        depart: dict = {}
+        if program is not None and not fell:
+            fell = self._depart(program, adapter, overlay, video, depart)
+            if limiter is not None and upper_kind == "t1":
+                self.robot.upper_offset = limiter.step(np.zeros(11), DT, False)
         # return home (part of the continuous lifetime; not sensed for this encounter)
         hx, hy, _ = self._home
         neutral = ExpressionIntent(**{**NEUTRAL.as_dict(), "proximity": 0.5}).sanitized()
@@ -690,7 +805,11 @@ class IsaacWorld:
                    "hold_max_dist": round(max(hold_d), 4) if len(hold_d) == win_n else None,
                    "hold_min_dist": round(min(hold_d), 4) if hold_d else None,
                    "quiet_frames": [e.quiet_frames >= MIN_QUIET_FRAMES for e in win_ev],
-                   "motion": motion_features(track, (sx, sy))}
+                   "motion": motion_features(track, (sx, sy)),
+                   "self_disp_peaks": [round(v, 4) for v in disp_peaks[:len(win_ev)]],
+                   "standing_peaks": standing_peaks,
+                   "expression": ({"plan": program.as_dict(), "depart": depart, "trace": expr_trace,
+                                   "observe_s": round(len(obs_own) * DT, 2)} if program is not None else None)}
         # Truth (evaluation only). As in K/L, `contacts` counts the person's lunges that reached the robot. Contact
         # episodes (gaps > 0.5 s) and total contact time also include incidental touching (e.g. a humanoid's arm).
         times = sorted({round(c[0], 2) for c in contacts})
