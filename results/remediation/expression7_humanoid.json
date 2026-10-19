@@ -1,0 +1,79 @@
+{
+ "humanoid": {
+  "learned": {
+   "pushy": {
+    "wariness": 0.952,
+    "uncertainty": 0.437,
+    "familiarity": 0.801,
+    "disturbance_p": 0.854,
+    "movement_p": 0.668,
+    "meetings": 4.85
+   },
+   "calm": {
+    "wariness": 0.276,
+    "uncertainty": 0.437,
+    "familiarity": 0.801,
+    "disturbance_p": 0.146,
+    "movement_p": 0.152,
+    "meetings": 4.85
+   }
+  },
+  "summary": {
+   "memory_after_pushy": {
+    "approach_speed_m_s": 0.2,
+    "approach_straightness": 0.952,
+    "encounter_s": 63.0,
+    "guard_posture_rad": 0.942,
+    "head_yaw_span_rad": 0.94,
+    "heading_sweep_rad": 0.034,
+    "observe_s": 3.5,
+    "retreat_m": 0.048,
+    "stop_gap_m": 0.163,
+    "torso_turn_rad": 0.341,
+    "turn_s": 12.01,
+    "falls": 0,
+    "n": 2
+   },
+   "neutral": {
+    "approach_speed_m_s": 0.187,
+    "approach_straightness": 0.989,
+    "encounter_s": 34.1,
+    "guard_posture_rad": 0.0,
+    "head_yaw_span_rad": 0.069,
+    "heading_sweep_rad": 0.003,
+    "observe_s": 0.5,
+    "retreat_m": 0.0,
+    "stop_gap_m": 0.111,
+    "torso_turn_rad": 0.0,
+    "turn_s": 7.3,
+    "falls": 0,
+    "n": 4
+   },
+   "memory_after_calm": {
+    "approach_speed_m_s": 0.188,
+    "approach_straightness": 0.99,
+    "encounter_s": 31.8,
+    "guard_posture_rad": 0.0,
+    "head_yaw_span_rad": 0.594,
+    "heading_sweep_rad": 0.005,
+    "observe_s": 0.93,
+    "retreat_m": 0.0,
+    "stop_gap_m": 0.091,
+    "torso_turn_rad": 0.0,
+    "turn_s": 4.7,
+    "falls": 0,
+    "n": 2
+   }
+  },
+  "matching": {
+   "memory_after_pushy": {
+    "approach_speed_diff_m_s": 0.013,
+    "stop_gap_diff_m": 0.052
+   },
+   "memory_after_calm": {
+    "approach_speed_diff_m_s": 0.001,
+    "stop_gap_diff_m": -0.02
+   }
+  }
+ }
+}
