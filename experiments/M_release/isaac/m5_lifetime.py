@@ -243,6 +243,7 @@ for index in range(a.first, a.first + a.n):
                                                 track_id=track, entity_type=kind, identity="B1",
                                                 identity_confidence=0.3))
                     rt_ident = rt.identity_of(track)[0]
+                    body.stations[rt_ident] = body.stations[ident]  # the track is the person at B1's station
                 b_before = rt.memory.belief(rt_ident, kind)
                 d = rt.decide(rt_ident, kind, context=f"{a.scene}:{k}")
                 world.overlay = {"k": k, "robot": a.robot, "scene": a.scene, "system": system, "history": history,
