@@ -95,6 +95,47 @@ class _BipedDriver:
         return moved
 
 
+class _HeadDriver(_WheeledDriver):
+    """T1 head inspection through joint targets; never alters leg targets or root pose."""
+
+    def __init__(self, robot, seed):
+        from apm_express.intent import ExpressionIntent
+        super().__init__(robot, seed)
+        self.intent = ExpressionIntent()
+        self.head = np.asarray(getattr(robot, "head_target", getattr(robot, "expression_head", np.zeros(2)))).copy()
+        self.prev_head = self.head.copy()
+
+    def reset(self, t, pose, aim, intent):
+        super().reset(t, pose, aim, intent)
+        self.intent = intent
+
+    def request(self, t, pose, aim, intent):
+        self.intent = intent
+        cmd = super().request(t, pose, aim, intent)
+        return (0., 0.) if self.ad.arrived else cmd
+
+    def send(self, cmd):
+        v, w = cmd
+        # Head motion only at rest; return to neutral before locomotion resumes.
+        desired = np.zeros(2)
+        if abs(v) < 1e-6 and abs(w) < 1e-6:
+            desired = np.array([0.4 * self.intent.scanning * math.sin(2 * math.pi * 0.25 * self.robot.t),
+                                0.15 * self.intent.head_elevation])
+        self.head += np.clip(desired - self.head, -0.75 * DT, 0.75 * DT)
+        if hasattr(self.robot, "head_target"):
+            self.robot.head_target = self.head.copy()
+        else:
+            self.robot.expression_head = self.head.copy()
+        if np.max(np.abs(self.head)) > 0.02 and (abs(v) + abs(w)) > 1e-6:
+            cmd = (0., 0.)
+        return super().send(cmd)
+
+    def own_motion(self, cmd, tripped):
+        moved = bool(np.max(np.abs(self.head - self.prev_head)) > 1e-3)
+        self.prev_head = self.head.copy()
+        return super().own_motion(cmd, tripped) or moved
+
+
 @dataclass
 class SceneSpec:
     name: str
@@ -156,11 +197,20 @@ class IsaacWorld:
                                     Path(os.environ.get("APM_CACHE", "/work/apm_cache")) / "nerva_usd",
                                     physics_dt, head_channel=bool((nerva_channels or {}).get("head", False)))
         elif body == "humanoid":  # Booster T1 on its Isaac Lab controller (M3: the MuJoCo controller does not transfer)
+            import json
+
             from apm_isaac.robots import LabPolicyBody
             if policy_dir is None:
                 raise ValueError("the humanoid needs policy_dir (an Isaac Lab export: policy.pt + env_cfg.json)")
-            self.robot = LabPolicyBody.t1(self.world, "/World/Robot", (hx, hy), hyaw, seed, Path(policy_dir),
-                                          physics_dt)
+            controller_cfg = json.loads((Path(policy_dir) / "env_cfg.json").read_text())
+            if controller_cfg.get("controller_kind") == "booster_gym_t1":
+                if abs(physics_dt - .002) > 1e-9:
+                    raise ValueError("the official T1 candidate requires a 0.002 s physics timestep")
+                from apm_isaac.booster import BoosterPolicyBody
+                self.robot = BoosterPolicyBody(self.world, "/World/Robot", (hx, hy), hyaw, seed, Path(policy_dir))
+            else:
+                self.robot = LabPolicyBody.t1(self.world, "/World/Robot", (hx, hy), hyaw, seed, Path(policy_dir),
+                                              physics_dt)
         elif body == "humanoid_mujoco_policy":  # reference only: the MuJoCo-trained T1 policy (falls in PhysX)
             from apm_isaac.robots import T1Isaac
             usd_t1 = self.root + "/Isaac/Robots/BoosterRobotics/BoosterT1/T1.usd"
@@ -365,6 +415,15 @@ class IsaacWorld:
         x, y, _ = self.robot.pose()
         sx, sy = self._video_target
         mid = np.array([(x + sx) / 2, (y + sy) / 2, 0.8])  # robot and person, head to feet
+        if getattr(self, "review_framing", False):
+            hx, hy, _ = self._home
+            axis = np.array([sx - hx, sy - hy])
+            axis /= np.linalg.norm(axis)
+            # Full robot framing, at the same fixed world coordinates in each history.
+            distance = 1.1 if self.body_name == "nerva" else 1.8
+            centre = np.array([sx, sy]) - distance * axis
+            mid = np.array([*centre, 0.24 if self.body_name == "nerva" else 0.45])
+            self._video_cam.set_focal_length(6.0 if self.body_name == "nerva" else 2.8)
         if self._video_eye is None:
             self._video_eye = self._clear_view(mid, np.array([sx - x, sy - y]))
         eye = self._video_eye
@@ -380,6 +439,11 @@ class IsaacWorld:
                 self.video_frames.append(frame)
             # per-frame metadata for overlays (what the robot sensed and decided; nothing is drawn in the scene)
             self.video_meta.append({"t": round(self.t, 2), "phase": self.phase, **self.overlay})
+            if getattr(self, "capture_expression_trace", False):
+                self.video_meta[-1].update({"pose": self.robot.pose(),
+                                           "q": np.asarray(self.robot.art.get_joint_positions()).tolist(),
+                                           "dq": np.asarray(self.robot.art.get_joint_velocities()).tolist(),
+                                           "joint_names": list(self.robot.art.dof_names)})
 
     def _clear_view(self, mid: np.ndarray, axis: np.ndarray) -> np.ndarray:
         """A camera position looking at `mid` from the side of the interaction axis, with nothing in between.
@@ -438,6 +502,8 @@ class IsaacWorld:
 
     # ── one control step with the people ─────────────────────────────────────
     def _driver(self, seed: int):
+        if self.body_name == "humanoid" and getattr(self, "embodied_expression", False):
+            return _HeadDriver(self.robot, seed)
         if self.body_name == "nerva":
             if self.nerva_channels is None:
                 raise ValueError("NERVA needs its admitted channels (H_admitted_interface.json 'interface')")
@@ -521,6 +587,7 @@ class IsaacWorld:
         k, k_arrive, t_arrive, fell, aborted = n_settle, None, None, False, False
         win_ev: list = []
         cam_seen: list[list[float]] = [[] for _ in range(windows)]
+        cam_quiet = [0] * windows
         hold_d: list[float] = []
         baseline = slice(max(0, n_settle - 50), n_settle)
         t_start = self.t
@@ -536,7 +603,13 @@ class IsaacWorld:
                 track.append((self.t, x, y, yaw))
             if k_arrive is not None and k_arrive + skip_n <= k < k_arrive + skip_n + win_n:
                 hold_d.append(dist)
-            cmd = adapter.request(self.t, self.robot.pose(), aim, intent) if k_arrive is None else adapter.idle
+            express = getattr(self, "embodied_expression", False)
+            effective_intent = intent
+            if express and k_arrive is not None and k - k_arrive >= int(4.0 / DT):
+                from dataclasses import replace
+                effective_intent = replace(intent, scanning=0.0)  # quiet observation after the inspection sweep
+            cmd = (adapter.request(self.t, self.robot.pose(), aim, effective_intent)
+                   if k_arrive is None or express else adapter.idle)
             ta = self.t - t_start - settle_s  # time into the approach
             if "interrupt" in self.faults and k_arrive is None:  # motion commands dropped (controller interruption)
                 d0, dur = self.faults["interrupt"]
@@ -564,6 +637,8 @@ class IsaacWorld:
                     perc.events = []
                 if -int(0.5 / DT) <= j < windows * win_n and j % every == 0:
                     perc.frame(self.depth(), own[-1], dist + nav_err - surf, self.robot.eye_offset)
+                    if j >= 0 and not own[-1]:
+                        cam_quiet[j // win_n] += 1
             if self.robot.fallen(row):
                 fell = True
                 break
@@ -587,6 +662,10 @@ class IsaacWorld:
                 break
         x, y, _ = self.robot.pose()
         d_stop = round(math.hypot(sx - x, sy - y), 3)
+        from apm_isaac.measurements import person_distance
+        person_xy = np.asarray(person._rb.get_world_pose()[0], float)[:2]
+        measured_distance = person_distance((x, y), person_xy, self.robot.front, RADIUS)
+        measured_distance["root_to_station_m"] = d_stop
         person.lunges = []
         # return home (part of the continuous lifetime; not sensed for this encounter)
         hx, hy, _ = self._home
@@ -603,9 +682,11 @@ class IsaacWorld:
         self.phase = "idle"
         contacts = self.contacts[n_contacts0:]
         outcome = {"arrived": k_arrive is not None, "t_arrive": t_arrive, "final_distance": d_stop,
+                   "measured_distance": measured_distance,
                    "trips": self.robot.trips - trips0, "fell": fell, "windows": [e.as_list() for e in win_ev],
                    "aborted": aborted, "camera": [camera_code(c) for c in cam_seen[:len(win_ev)]],
                    "camera_reaches": cam_seen[:len(win_ev)],
+                   "camera_observed_frames": cam_quiet[:len(win_ev)],
                    "hold_max_dist": round(max(hold_d), 4) if len(hold_d) == win_n else None,
                    "hold_min_dist": round(min(hold_d), 4) if hold_d else None,
                    "quiet_frames": [e.quiet_frames >= MIN_QUIET_FRAMES for e in win_ev],

@@ -572,6 +572,7 @@ class LabPolicyBody(_IsaacBody):
         (x, y), yaw = self.start
         self.art.set_world_pose(position=np.array([x, y, self.base_z]), orientation=yaw_quat(yaw))
         self.last = np.zeros(len(self.idx))
+        self.expression_head = np.zeros(2)  # yaw/pitch; optional expressive driver only
         if self.eye_prim is None:
             self._make_eye_frame()
 
@@ -647,6 +648,11 @@ class LabPolicyBody(_IsaacBody):
             act = self.policy(self.torch.from_numpy(self.observation())[None]).numpy()[0]
         target = np.asarray(self.art.get_joint_positions(), float).copy()
         target[self.idx] = self.default + self.cfg["action_scale"] * act
+        if self.tilt() < self.TILT_TRIP and self.t >= self.brake_until:
+            names = list(self.art.dof_names)
+            for name, offset in zip(("AAHead_yaw", "Head_pitch"), self.expression_head, strict=True):
+                if name in names:
+                    target[names.index(name)] += offset
         self.art.apply_action(ArticulationAction(joint_positions=target))
         for _ in range(self.decim):
             self.world.step(render=False)

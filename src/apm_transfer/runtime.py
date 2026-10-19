@@ -39,6 +39,7 @@ from apm_revise.belief import TypeModel
 from apm_transfer.expression_map import GRID, TimeModel
 from apm_transfer.infoseek import HOLD, OBSERVE, STANDOFF_M, Emissions, Task, choose, cost
 from apm_transfer.nerva_memory import TypeStateModel
+from apm_transfer.sensor_memory import SensorExpectation
 
 DIST_EDGES = (0.3, 0.5)
 CUSTOM = -3  # a continuous intent from a non-grid controller (lookup, monotone rule, fixed style, neutral)
@@ -128,6 +129,7 @@ class Runtime:
         self.model_hash = hashlib.sha256(json.dumps(model_cfg["model"], sort_keys=True).encode()).hexdigest()[:16]
         self.log_path = log
         self.tracks: dict[str, tuple[str, str]] = {}  # AffectLink track id -> (identity, kind)
+        self.sensor_expectation: SensorExpectation | None = None  # optional pilot, independent of navigation/risk
 
     # ── the loop ─────────────────────────────────────────────────────────────
     def decide(self, identity: str, kind: str, context: str = "") -> Decision:
@@ -164,6 +166,8 @@ class Runtime:
         return d
 
     def observe(self, obs: Observation) -> None:
+        if self.sensor_expectation is not None:
+            self.sensor_expectation.observe(obs.identity, obs.report.get("camera_reaches"))
         cats = obs.categories(self.camera_block) if self.observe_imu else (
             [CAM_OFFSET + c for c in obs.camera] if self.camera_block else [])
         self.memory.observe_many(obs.identity, obs.kind, cats, float(obs.detected))
@@ -210,8 +214,11 @@ class Runtime:
 
     # ── persistence, logging, replay ────────────────────────────────────────
     def state(self) -> dict:
-        return {"version": STATE_VERSION, "model_hash": self.model_hash, "n": self.n, "seed": self.seed,
+        state = {"version": STATE_VERSION, "model_hash": self.model_hash, "n": self.n, "seed": self.seed,
                 "memory": self.memory.state(), "vetoes": self.safety.vetoes, "tracks": self.tracks}
+        if self.sensor_expectation is not None:
+            state["sensor_expectation"] = self.sensor_expectation.state()
+        return state
 
     def save(self, path: Path) -> None:
         tmp = Path(path).with_suffix(".tmp")
@@ -225,6 +232,9 @@ class Runtime:
         self.n, self.seed, self.safety.vetoes = int(s["n"]), int(s["seed"]), int(s["vetoes"])
         self.memory.load_state(s["memory"])
         self.tracks = {k: (str(v[0]), str(v[1])) for k, v in s.get("tracks", {}).items()}
+        if "sensor_expectation" in s:
+            self.sensor_expectation = SensorExpectation()
+            self.sensor_expectation.load(s["sensor_expectation"])
 
     def _log(self, rec: dict) -> None:
         if self.log_path is not None:

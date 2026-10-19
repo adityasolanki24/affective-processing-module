@@ -22,6 +22,9 @@ class IsaacBody(_Body):
         self.world, self.stations, self.approach_from = world, stations, approach_from
         self.video = world.video_frames is not None if video is None else video
         self.name = f"{world.body_name}@isaac:{world.scene.name}"
+        self.expressive = False
+        self.match_motion = False
+        self.expression_state = None
 
     def offset(self) -> float:
         from apm_isaac.agents import GAP0, RADIUS
@@ -32,15 +35,31 @@ class IsaacBody(_Body):
     def _run(self, seed: int, etype: str, d: Decision) -> tuple[dict, dict]:
         """Encounter randomness comes from the world's own per-lifetime stream (paired across systems); `seed`
         is unused here."""
-        out, truth = self.world.encounter(self.stations[d.identity], etype, d.intent(), d.windows, d.standoff,
+        from apm_transfer.embodied_expression import memory_expression
+        intent = memory_expression(d, self.match_motion, self.expression_state) if self.expressive else d.intent()
+        if self.match_motion:
+            from dataclasses import replace
+            intent = replace(intent, tempo=1.0, proximity=0.75, hesitation=0.0)
+        self.world.embodied_expression = self.expressive
+        # A conservative inspection task for the matched control: every robot
+        # observes from the same stand-off, never closer than its safety decision.
+        standoff = max(1.0, d.standoff) if self.match_motion else d.standoff
+        windows = 3 if self.match_motion else d.windows
+        out, truth = self.world.encounter(self.stations[d.identity], etype, intent, windows, standoff,
                                           video=self.video, approach_from=self.approach_from,
                                           return_home=self.approach_from is None)
         self.last_out = out
+        from dataclasses import asdict
+        out["applied_intent"], out["executed_standoff"] = asdict(intent), standoff
         return out, truth
 
     def _observation(self, identity: str, kind: str, out: dict, standoff: float) -> Observation:
         physical = out["final_distance"]
         abstract = dict(out, final_distance=round(physical - self.offset(), 3))
-        obs = super()._observation(identity, kind, abstract, standoff)
+        obs = super()._observation(identity, kind, abstract, out.get("executed_standoff", standoff))
         obs.report["d_stop_physical"] = physical
+        obs.report["measured_distance"] = out.get("measured_distance")
+        reaches, observed = out.get("camera_reaches"), out.get("camera_observed_frames")
+        obs.report["camera_reaches"] = ([r for r, n in zip(reaches, observed, strict=True) if n >= 8]
+                                        if reaches is not None and observed is not None else reaches)
         return obs

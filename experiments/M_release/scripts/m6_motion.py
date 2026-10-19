@@ -29,12 +29,24 @@ sys.path.insert(0, str(HERE))
 from m6_analyze import load  # noqa: E402
 
 
+def average_ranks(values: np.ndarray) -> np.ndarray:
+    """Zero-based midranks: tied observations receive their group's mean rank."""
+    order = np.argsort(values, kind="stable")
+    ordered = values[order]
+    starts = np.r_[0, np.flatnonzero(ordered[1:] != ordered[:-1]) + 1]
+    ends = np.r_[starts[1:], len(values)]
+    ranks = np.empty(len(values), float)
+    for start, end in zip(starts, ends, strict=True):
+        ranks[order[start:end]] = (start + end - 1) / 2
+    return ranks
+
+
 def spearman(x, y) -> float | None:
     x, y = np.asarray(x, float), np.asarray(y, float)
     ok = np.isfinite(x) & np.isfinite(y)
     if ok.sum() < 5 or np.std(x[ok]) == 0 or np.std(y[ok]) == 0:
         return None
-    rx, ry = np.argsort(np.argsort(x[ok])), np.argsort(np.argsort(y[ok]))
+    rx, ry = average_ranks(x[ok]), average_ranks(y[ok])
     return float(np.corrcoef(rx, ry)[0, 1])
 
 
@@ -54,13 +66,19 @@ def main() -> None:
         tempo = [x["tempo"] for x in rows]
         hes = [x["hesitation"] for x in rows]
         mot = [x.get("motion") or {} for x in rows]
-        dist = [m.get("final_dist_to_person", x["d_stop"]) for m, x in zip(mot, rows, strict=True)]
+        physical = [(x.get("measured_distance") or {}).get("radial_surface_gap_m") for x in rows]
+        # Old M records do not contain the moving person's pose. Never relabel
+        # their root-to-station distance as a body surface gap.
+        has_physical = all(v is not None for v in physical)
+        dist = (physical if has_physical else
+                [m.get("final_dist_to_person", x["d_stop"]) for m, x in zip(mot, rows, strict=True)])
         speed = [m.get("mean_speed", np.nan) for m in mot]
         pauses = [m.get("pauses", np.nan) for m in mot]
         t_arr = [x.get("t_arrive") if x.get("t_arrive") is not None else np.nan for x in rows]
         intents = {(round(p, 2), round(t, 2), round(h, 2)) for p, t, h in zip(prox, tempo, hes, strict=True)}
         res[robot] = {
             "approaches": len(rows), "distinct_intents": len(intents),
+            "distance_metric": "radial_surface_gap_m" if has_physical else "legacy_station_or_abstract_distance",
             "graded_proximity_share": float(np.mean([0.05 < p < 0.95 for p in prox])),
             "spearman_proximity_vs_final_distance": spearman(prox, dist),
             "spearman_tempo_vs_mean_speed": spearman(tempo, speed),

@@ -12,7 +12,7 @@ ISAAC_LAB_TAG=v2.3.2
 TORCH_SPEC="torch==2.7.0 torchvision==0.22.0"
 ROOT=/work/isaac
 SNAP=gs://${APM_BUCKET:-$(curl -sf -H Metadata-Flavor:Google http://metadata.google.internal/computeMetadata/v1/instance/attributes/apm-bucket)}/apm-m/env/isaac-${ISAAC_SIM_VERSION}-lab-${ISAAC_LAB_TAG}.tar.zst
-export OMNI_KIT_ACCEPT_EULA=YES ACCEPT_EULA=Y PRIVACY_CONSENT=Y
+export OMNI_KIT_ACCEPT_EULA=YES ACCEPT_EULA=Y PRIVACY_CONSENT=N
 # startup-script jobs run without HOME; Kit derives its cache and data paths from it (null -> RTX init crash)
 export HOME=${HOME:-/root} XDG_CACHE_HOME=${XDG_CACHE_HOME:-/root/.cache} XDG_DATA_HOME=${XDG_DATA_HOME:-/root/.local/share}
 export USER=${USER:-root}

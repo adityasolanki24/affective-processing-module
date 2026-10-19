@@ -1,5 +1,53 @@
 # APM v1.0 release: milestone tracker
 
+## Corrective continuation — 19 October 2026
+
+- Branch: `codex/apm-v1-remediation`, base `c150288`.
+- **First delivery:** improved T1 walking comparison and unlabeled expressive-motion
+  comparison. User visual acceptance gates final validation and packaging.
+- Cloud authorization: user explicitly confirmed the same US$500 total cap in this
+  chat. Reserve US$185 for previous work pending billing reconciliation. Initial
+  corrective compute allocation: at most US$12, one L4 worker, hard runtime 2 h;
+  no training until video/trace diagnosis and target definition.
+- Read-only cloud inventory found no VMs, disks or routers in the configured project.
+- Existing T1 footage sampled at 30–36 s: full feet are clipped in several frames;
+  the lower overlay obscures motion. Candidate clips require full-body framing.
+- Confirmed code defects: double-argsort ranks mishandle ties; motion distance uses
+  root-to-person-centre rather than the separately recorded physical stopping gap.
+- Candidate under inspection: official Booster T1 policy, pinned at
+  `da396a06d6eed99e2de72d7749c48ee8748950f9`, Apache-2.0. PhysX transfer unvalidated.
+- Status: diagnosis and pilot tooling in progress. Neither requested video exists
+  yet; no improved gait or visible-expression success is claimed.
+- Physical pilot `GAIT_PILOT2`: both controllers completed 24 s without falls.
+  Candidate foot clearance increased, but the initial speed summary mistakenly
+  counted sway as progress. Correct body-forward speed was only 0.041 m/s against
+  0.200 requested. Not promoted. The 0.78 command-scale trial also failed progress.
+  A 2.0 scale reached 0.166 m/s; the next short pilot checks 2.25 plus smoother motor
+  targets. All attempts and traces are retained. Camera framing now includes feet/head.
+- `EXPRESSION_PILOT`: exploratory physical histories, then a common conservative
+  inspection task, with richer designed mapping only after six encounters.
+  NERVA's Isaac model has a constant zero perturbation readout; confidence in its
+  learned belief can still modulate inspection, but this does not establish a
+  useful learned risk estimate on NERVA. Camera false positives remain a concern.
+- One worker created with a 7200 s max runtime and 10 min idle deletion. Existing
+  queue bootstrap's unavailable NumPy pin was observed; Isaac's restored venv
+  works independently. Fix the bootstrap before any fresh-install claim.
+- A second L4 worker has a 1800 s hard cap for gait checks; first zone stockout,
+  second zone succeeded. The combined compute allocation remains US$12.
+- Ten focused regressions pass, including tied ranks, separating sway from forward
+  progress, controller observation order, physical distance and matched expression.
+- The official simulation PD gains resolved the transfer defect: pilot seed 71001
+  stance slip 0.0511 -> 0.0149 m/s; joint acceleration RMS 65.2 -> 28.1 rad/s2;
+  tilt p95 7.65 -> 4.19 degrees; body-forward speed 0.183 -> 0.183 m/s. No fall
+  on seeds 71001–71003 (71002 includes two 0.3 m/s disturbances). These are short
+  pilots, not the final stability battery or evidence of human preference.
+- First review video exists: `runs/remediation/review/01_T1_walking_comparison.mp4`.
+- Initial richer expression remains weak between physical histories. A documented
+  alternative now learns camera-event expectations per identity; motion mapping
+  remains designed. Original and alternative pilots are kept separate.
+
+---
+
 This is the only tracker for the final sprint. The final account is `REPORT.md`. Confirmatory tests are frozen in
 `PROTOCOL.md` before their data exist.
 

@@ -72,6 +72,16 @@ ap.add_argument("--task-config", default=None,
 ap.add_argument("--policy-dir", default=None)
 ap.add_argument("--video", action="store_true")
 ap.add_argument("--record-eye", action="store_true", help="with --video: also save the depth eye's frames")
+ap.add_argument("--expression-mode", choices=("legacy", "memory", "matched", "neutral_matched"), default="legacy",
+                help="corrective pilot: optional richer designed mapping from learned memory")
+ap.add_argument("--review-person-b", action="store_true", help="pilot only: repeatedly meet B1")
+ap.add_argument("--review-after", type=int, default=0,
+                help="pilot: enable richer expression only after this many physical learning encounters")
+ap.add_argument("--review-replay-dir", type=Path, default=None,
+                help="pilot: restore memory by replaying six encounters from actual recorded sensor logs")
+ap.add_argument("--sensor-expectation", action="store_true", help="pilot alternative: online camera-event expectation")
+ap.add_argument("--supervision", choices=("legacy", "matched"), default="legacy",
+                help="matched: every comparator gets the same model-based safety supervisor")
 ap.add_argument("--walk-home", action="store_true",
                 help="continuous lifetime (videos): walk home between encounters instead of starting each encounter "
                      "from its approach point")
@@ -90,6 +100,9 @@ ap.add_argument("--unexpected-contact", type=float, default=None, help="one push
 ap.add_argument("--fault-inject", action="store_true", help="the decision layer proposes the closest, fastest "
                 "approach to B1 every time; the risk supervisor must veto it when over the cap")
 a, _ = ap.parse_known_args()
+if a.partition == "X" and (a.expression_mode != "legacy" or a.supervision != "legacy" or a.sensor_expectation
+                            or a.review_person_b or a.review_replay_dir is not None):
+    raise ValueError("corrected confirmatory protocol and fresh seeds must be frozen before a new X run")
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "src"))
 from apm_isaac import ANIM_KIT_ARGS  # noqa: E402
@@ -171,8 +184,10 @@ channels = json.loads((REPO / "experiments" / "J_validation_transfer" / "configs
 from apm_transfer.vision import VisionCamera  # noqa: E402
 
 vcfg = VisionCamera(**({"dropout": a.camera_dropout} if a.camera_dropout is not None else {}))
+candidate = bool(a.policy_dir and json.loads((Path(a.policy_dir) / "env_cfg.json").read_text())
+                 .get("controller_kind") == "booster_gym_t1")
 world = IsaacWorld(scene, a.robot, seed=0, video=a.video, characters={k: v for k, v in chars.items() if v},
-                   physics_dt=0.005 if a.robot == "humanoid" else 0.002, policy_dir=a.policy_dir,
+                   physics_dt=0.005 if a.robot == "humanoid" and not candidate else 0.002, policy_dir=a.policy_dir,
                    nerva_channels=channels, vision_cfg=vcfg)
 if a.interrupt:
     world.faults["interrupt"] = tuple(a.interrupt)
@@ -195,11 +210,17 @@ for index in range(a.first, a.first + a.n):
         for system in a.systems.split(","):
             base_name, _, params = system.partition(":")  # "MONOTONE:lo=0.2/width=0.4": calibrated parameters
             spec = dict(SYSTEMS[base_name])
+            if a.supervision == "matched":
+                spec["supervise"] = True
             if params:
                 spec["policy"] = spec["policy"].split(":")[0] + ":" + params
             base = int(S.world_seed(a.experiment, a.partition, index).generate_state(1)[0])
             rng = np.random.default_rng(base)
             order = [ENTITIES[int(i)] for i in rng.choice(3, a.n_enc, p=P_ENTITY)]
+            if a.review_person_b:
+                if a.partition == "X":
+                    raise ValueError("single-person review is exploratory, not the frozen M test protocol")
+                order = [ENTITIES[1]] * a.n_enc
             shuffle_rng = np.random.default_rng(base + 5)
             world.new_lifetime(base + 1)
             sysname = system.replace(":", "_").replace("/", "_").replace("=", "")  # file-name safe
@@ -216,6 +237,43 @@ for index in range(a.first, a.first + a.n):
                 return Runtime(mcfg, time_coef, task, voi, lam=0.02, seed=base + 3, camera=not a.no_camera,
                                log=log_path, policy=spec["policy"], supervise=spec.get("supervise", True))
             rt = make_rt()
+            if a.sensor_expectation:
+                from apm_transfer.sensor_memory import SensorExpectation
+                rt.sensor_expectation = SensorExpectation()
+            replay_source = None
+            if a.review_replay_dir is not None:
+                if a.partition == "X":
+                    raise ValueError("recorded history replay is a review pilot, not confirmatory M")
+                import hashlib
+                from dataclasses import asdict
+                replay_source = a.review_replay_dir / f"{a.robot}_{a.scene}_DT_{history}_P71001.jsonl"
+                sensor_rows = None
+                if a.sensor_expectation:
+                    source_records = [json.loads(x) for x in (a.review_replay_dir.parent / "lifetimes.jsonl")
+                                      .read_text().splitlines()]
+                    source_record = next(x for x in source_records if x["history"] == history)
+                    sensor_rows = source_record["rows"]
+                n_observed = 0
+                for line in replay_source.read_text().splitlines():
+                    event = json.loads(line)
+                    if event["t"] == "decide":
+                        restored = rt.decide(event["identity"], event["kind"], event.get("context", ""))
+                        if asdict(restored) != event["decision"]:
+                            raise ValueError("recorded history does not replay with identical runtime decisions")
+                    elif event["t"] == "observe":
+                        o = event["obs"]
+                        if sensor_rows is not None:
+                            # Raw camera estimates recorded in the physical pilot;
+                            # no simulated contact or hidden entity type is read.
+                            o["report"]["camera_reaches"] = sensor_rows[n_observed]["cam_reaches"]
+                        rt.observe(Observation(o["identity"], o["kind"], o["band"], tuple(o["imu"]),
+                                               tuple(o["camera"]), o["detected"], o.get("context", ""),
+                                               o.get("report", {})))
+                        n_observed += 1
+                        if n_observed == 6:
+                            break
+                if n_observed != 6:
+                    raise ValueError("recorded history has fewer than six physical observations")
             if a.fault_inject:
                 import apm_transfer.runtime as _rtmod
                 from apm_transfer.expression_map import GRID as _G
@@ -246,6 +304,11 @@ for index in range(a.first, a.first + a.n):
                     body.stations[rt_ident] = body.stations[ident]  # the track is the person at B1's station
                 b_before = rt.memory.belief(rt_ident, kind)
                 d = rt.decide(rt_ident, kind, context=f"{a.scene}:{k}")
+                body.expressive = a.expression_mode in ("memory", "matched") and k >= a.review_after
+                body.match_motion = a.expression_mode in ("matched", "neutral_matched")
+                body.expression_state = rt.sensor_expectation.readout(rt_ident) if a.sensor_expectation else None
+                world.capture_expression_trace = a.expression_mode != "legacy"
+                world.review_framing = a.expression_mode != "legacy"
                 world.overlay = {"k": k, "robot": a.robot, "scene": a.scene, "system": system, "history": history,
                                  "entity": ident, "true_type": etype, "p_risk": round(d.p_risk, 3),
                                  "uncertainty": round(d.uncertainty, 3), "action": d.action,
@@ -281,6 +344,7 @@ for index in range(a.first, a.first + a.n):
                     "imu_cats": list(obs.imu), "imu_peaks": imu_peaks, "cam_codes": list(obs.camera),
                     "cam_reaches": out.get("camera_reaches"), "detected": obs.detected, "band": obs.band,
                     "d_stop": d_abs, "d_stop_physical": obs.report.get("d_stop_physical"),
+                    "measured_distance": obs.report.get("measured_distance"),
                     "intended_band": band_of(d.proximity), "contacts": truth["contacts"],
                     "contact_episodes": truth["contact_episodes"], "contact_s": truth["contact_s"],
                     "impulse_max": round(truth["contact_impulse_max"], 4), "arrived": out["arrived"],
@@ -290,12 +354,20 @@ for index in range(a.first, a.first + a.n):
                     "hold_max_dist": out.get("hold_max_dist"),
                     "hold_completed": task.hold_completed(out["arrived"], out.get("hold_max_dist")),
                     "motion": out.get("motion", {}), "wall_s": round(time.time() - tk, 1)})
+                rows[-1]["applied_intent"] = out.get("applied_intent")
+                rows[-1]["executed_standoff"] = out.get("executed_standoff")
+                rows[-1]["sensor_expectation"] = body.expression_state
                 if out["fell"]:
                     break  # a fall ends the lifetime; it is counted
             rec = {"experiment": a.experiment, "partition": a.partition, "index": index, "history": history,
                    "system": system, "robot": a.robot, "scene": a.scene, "held_out": scene.held_out, "task": a.task,
                    "engine": "isaac sim 5.1 / physx", "rows": rows, "wall_s": round(time.time() - t0, 1),
                    "vetoes": rt.safety.vetoes, "types_model": str(types_model), "edges": edges}
+            rec["expression_mode"] = a.expression_mode
+            rec["supervision"] = a.supervision
+            if replay_source is not None:
+                rec["replayed_physical_history"] = {"file": replay_source.name, "encounters": 6,
+                                                    "sha256": hashlib.sha256(replay_source.read_bytes()).hexdigest()}
             with open(a.out, "a", encoding="utf-8") as f:
                 f.write(json.dumps(rec) + "\n")
             print(f"{system} {history} {a.partition}{index}: {len(rows)} enc, falls {sum(r['fell'] for r in rows)}, "
