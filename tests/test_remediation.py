@@ -150,3 +150,6 @@ def test_runtime_persists_sensor_memory_without_changing_navigation(tmp_path):
     assert c.state() == b.state()
     assert c.sensor_expectation.readout("B1")["movement_probability"] > .7
     assert c.decide("B1", "B") == b.decide("B1", "B")
+    a.save(tmp_path / "legacy.json")
+    c.load(tmp_path / "legacy.json")
+    assert c.sensor_expectation is None

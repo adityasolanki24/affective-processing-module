@@ -663,7 +663,7 @@ class IsaacWorld:
         x, y, _ = self.robot.pose()
         d_stop = round(math.hypot(sx - x, sy - y), 3)
         from apm_isaac.measurements import person_distance
-        person_xy = np.asarray(person._rb.get_world_pose()[0], float)[:2]
+        person_xy = np.asarray(person._rb.get_world_pose()[0], dtype=np.float64)[:2]  # type: ignore[attr-defined]
         measured_distance = person_distance((x, y), person_xy, self.robot.front, RADIUS)
         measured_distance["root_to_station_m"] = d_stop
         person.lunges = []

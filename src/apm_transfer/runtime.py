@@ -235,6 +235,8 @@ class Runtime:
         if "sensor_expectation" in s:
             self.sensor_expectation = SensorExpectation()
             self.sensor_expectation.load(s["sensor_expectation"])
+        else:
+            self.sensor_expectation = None
 
     def _log(self, rec: dict) -> None:
         if self.log_path is not None:
