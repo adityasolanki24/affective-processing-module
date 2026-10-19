@@ -121,3 +121,32 @@ def test_sensor_memory_is_person_specific_revisable_and_ignores_absent_windows()
     assert copy.readout("A") == memory.readout("A")
     memory.observe("A", [[float("nan"), -.2, .1]])
     assert memory.readout("A")["movement_probability"] < .25
+
+
+def test_runtime_persists_sensor_memory_without_changing_navigation(tmp_path):
+    import json
+
+    from apm_transfer.infoseek import Task
+    from apm_transfer.runtime import Observation, Runtime
+
+    root = Path(__file__).resolve().parents[1]
+    model = json.loads((root / "experiments/K_recovery/configs/K_types.json").read_text())
+    time = json.loads((root / "experiments/J_validation_transfer/configs/J6_model.json").read_text())
+    tasks = json.loads((root / "experiments/K_recovery/configs/K_tasks.json").read_text())
+    task = Task("handoff", **{k: v for k, v in tasks["tasks"]["handoff"].items() if k != "why"})
+    a = Runtime(model, time["time_coef"], task, tasks["voi"], seed=3)
+    b = Runtime(model, time["time_coef"], task, tasks["voi"], seed=3)
+    b.sensor_expectation = SensorExpectation()
+    for _ in range(6):
+        assert a.decide("B1", "B") == b.decide("B1", "B")
+        obs = Observation("B1", "B", 1, imu=(7,), camera=(5,), detected=True,
+                          report={"camera_reaches": [[.3]]})
+        a.observe(obs)
+        b.observe(obs)
+    state = tmp_path / "memory.json"
+    b.save(state)
+    c = Runtime(model, time["time_coef"], task, tasks["voi"], seed=3)
+    c.load(state)
+    assert c.state() == b.state()
+    assert c.sensor_expectation.readout("B1")["movement_probability"] > .7
+    assert c.decide("B1", "B") == b.decide("B1", "B")

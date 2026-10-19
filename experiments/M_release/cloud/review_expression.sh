@@ -6,7 +6,7 @@ source experiments/M_release/cloud/setup_nerva_inputs.sh
 mkdir -p /work/review_history
 gcloud storage cat "${REVIEW_ARCHIVE_URI:?set the completed physical-history archive}" |
   tar xzf - -C /work/review_history --wildcards 'out/expression/*/logs/*.jsonl' 'out/expression/*/lifetimes.jsonl'
-for robot in humanoid nerva; do
+for robot in ${REVIEW_ROBOTS:-humanoid nerva}; do
   model_args=$($ISAAC_PY -c "import sys; sys.path.insert(0,'experiments/M_release/cloud'); from m6_plan import model_args; print(model_args('$robot'))")
   for mode in matched neutral_matched; do
     histories=change_B,safe

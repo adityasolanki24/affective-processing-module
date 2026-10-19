@@ -10,21 +10,24 @@ from pathlib import Path
 
 
 def select(source: Path, meta: Path, dest: Path, after: int, phase: str):
-    import imageio.v2 as imageio
     frames = json.loads(meta.read_text())["frames"]
     keep = [i for i, m in enumerate(frames) if m.get("k", -1) >= after and
             (phase == "all" or m.get("phase") == phase)]
-    wanted = set(keep)
-    with imageio.get_reader(source) as reader, imageio.get_writer(
-            dest, fps=25, codec="libx264", quality=7, macro_block_size=2,
-            ffmpeg_params=["-threads", "2"]) as writer:
-        for i, frame in enumerate(reader):
-            if i in wanted:
-                writer.append_data(frame)
-            if keep and i >= keep[-1]:
-                break
     if not keep:
         raise ValueError(f"no requested frames in {source}")
+    groups = []
+    start = end = keep[0]
+    for index in keep[1:]:
+        if index == end + 1:
+            end = index
+        else:
+            groups.append((start, end))
+            start = end = index
+    groups.append((start, end))
+    expr = "+".join(f"between(n\\,{start}\\,{end})" for start, end in groups)
+    subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", str(source),
+                    "-vf", f"select={expr},setpts=N/(25*TB)", "-an", "-c:v", "libx264",
+                    "-crf", "18", "-threads", "2", str(dest)], check=True)
     return keep
 
 

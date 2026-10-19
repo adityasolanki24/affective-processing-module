@@ -45,6 +45,15 @@
 - Initial richer expression remains weak between physical histories. A documented
   alternative now learns camera-event expectations per identity; motion mapping
   remains designed. Original and alternative pilots are kept separate.
+- Camera-memory review: all six present-task pilot runs completed without falls.
+  T1 head-yaw span differs (0.405 vs 0.201 rad); NERVA's spans remain essentially
+  identical (0.465 vs 0.470 rad), despite a clear difference from neutral (0.049).
+  **NERVA history differentiation is still unresolved.** No expression success or
+  visual acceptance is claimed. Physical history-pair stopping gaps differ by
+  <1 cm; neutral controls differ by up to about 7 cm, so call them command-matched,
+  not exact realised-distance controls.
+- Framing QA: close-up T1 head was clipped. A capped 30 min worker re-renders
+  only its three views with a wider lens. The earlier footage remains intact.
 
 ---
 

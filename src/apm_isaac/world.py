@@ -422,8 +422,8 @@ class IsaacWorld:
             # Full robot framing, at the same fixed world coordinates in each history.
             distance = 1.1 if self.body_name == "nerva" else 1.8
             centre = np.array([sx, sy]) - distance * axis
-            mid = np.array([*centre, 0.24 if self.body_name == "nerva" else 0.45])
-            self._video_cam.set_focal_length(6.0 if self.body_name == "nerva" else 2.8)
+            mid = np.array([*centre, 0.24 if self.body_name == "nerva" else 0.55])
+            self._video_cam.set_focal_length(6.0 if self.body_name == "nerva" else 2.0)
         if self._video_eye is None:
             self._video_eye = self._clear_view(mid, np.array([sx - x, sy - y]))
         eye = self._video_eye
