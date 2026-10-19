@@ -163,9 +163,10 @@ def main() -> None:
     ap.add_argument("--task", default="handoff")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
-    recs = load(a.runs)
+    recs = [r for r in load(a.runs) if r.get("partition") == "X"]  # the locked test partition only
     tasks = {kv.split("=")[0]: json.loads(Path(kv.split("=")[1]).read_text())["tasks"][a.task] for kv in a.tasks}
     res: dict = {"lifetimes": len(recs), "robots": {}}
+    recs = [r for r in recs if r["robot"] in tasks]
     for robot in sorted({r["robot"] for r in recs}):
         task = tasks[robot]
         hyp, ps = {}, {}
