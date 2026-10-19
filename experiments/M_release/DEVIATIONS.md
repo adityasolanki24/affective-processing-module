@@ -122,8 +122,10 @@ The decision to use the MuJoCo backend for NERVA's comparative data stands, for 
 - **Fix** (a defect, not a tuning).
   - Each lunge's limit is frozen when the lunge starts.
   - For Nova Carter, the gap is measured to its collision footprint (`NovaCarterIsaac.surface_gap`).
-  - Each encounter's evaluation truth now records `idle_peak_speed` and a `physics_ejection` flag (> 1.5 m/s
-    while commanded to stand). These are never sensed by APM.
+  - Each encounter's evaluation truth now records `idle_peak_speed` and a `physics_ejection` flag (> 3 m/s
+    while commanded to stand). These are never sensed by APM. The threshold was 1.5 m/s at first and was raised
+    after the contact check showed normal contacts peaking at 1.4 m/s (ejections: 4–10 m/s), before any post-D6
+    comparison data existed.
   - Unit tests: `test_lunge_does_not_chase_a_receding_robot` and `test_lunge_uses_a_measured_gap`.
 - **Consequences.**
   - Programme M's Isaac results contain the artefact (Carter most; T1 and NERVA in Isaac also used this model).

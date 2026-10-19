@@ -856,7 +856,10 @@ class IsaacWorld:
         return outcome, truth
 
 
-EJECTION_M_S = 1.5  # no person's lunge moves a standing robot this fast (lunge surface speed <= 0.15 m/s)
+# a standing robot moving faster than this was thrown by the solver, not pushed: normal lunge contacts peak at
+# 0.7-1.4 m/s on Nova Carter (the capsule moves once per 20 ms control step; carter_contact_check), the D6
+# ejections at 4-10 m/s. Set before any post-D6 comparison data.
+EJECTION_M_S = 3.0
 
 
 def _pool_depth(depth: np.ndarray, cell: int = 8) -> np.ndarray:

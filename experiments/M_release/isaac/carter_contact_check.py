@@ -9,7 +9,7 @@
    extent in that direction.
 3. Encounters: the robot stands where an encounter's approach stops it (radial gap 0.10 m by `front`) and a
    person lunges as in `world.encounter` (agents.Person, "pushy" and "gentle" types) for 30 s; the robot's peak
-   base speed and any jump of its pose (> 1.5 m/s with no command) are recorded per seed.
+   base speed, physical contact reports and any ejection (> 3 m/s with no command) are recorded per seed.
 """
 from __future__ import annotations
 
@@ -110,6 +110,9 @@ def speed() -> float:
 
 
 def reset_robot() -> None:
+    place(stage, person, np.array([20.0, 0.0]), 0.0)  # never leave the person where the robot is reset
+    for _ in range(3):
+        world.step(render=False)
     world.reset()
     robot.post_reset()
     if a.front is not None:
@@ -172,7 +175,7 @@ for etype in ("pushy", "gentle"):
             sp = speed()
             peak = max(peak, sp)
             cur = robot.pose()
-            if sp > 1.5:
+            if sp > 3.0:  # world.EJECTION_M_S
                 jumps.append({"t": round(robot.t - t0, 2), "speed": round(sp, 2), "disp": round(p.disp, 3),
                               "pose": [round(v, 3) for v in cur]})
             prev = cur
