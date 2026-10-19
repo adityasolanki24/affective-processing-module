@@ -5,9 +5,12 @@
 Per robot (Isaac: nova_carter, humanoid):
 - restart: decisions of the save/load run vs the uninterrupted reference run (same seeds): identical up to the
   first physical divergence; reports where decisions first differ and whether that precedes the restart;
-- replay: `runtime.replay` on every logged X DT lifetime (mismatches must be 0);
+- replay: `runtime.replay` on every logged X DT lifetime (mismatches must be 0), and on the F long, reference and
+  no-camera logs (`replay_F`);
 - nocam, dropout, interrupt, contact, perturb, long: falls, trips, lunge contacts, encounters completed;
 - veto: supervisor vetoes and executed approaches above the risk cap (must be 0);
+- contact_imu: the scripted contact vs the paired reference run (same seeds), on approaches without a lunge contact
+  in either: is the IMU evidence different (peak, category, detector)?
 - anon: B1 handled as an anonymous track; its belief before every meeting must equal the kind prior (no memory).
 """
 from __future__ import annotations
@@ -51,20 +54,20 @@ def seed_of(index: int) -> int:
     return int(mod.world_seed("M6", "X", index).generate_state(1)[0])
 
 
-def replay_all(cloud: Path, robot: str) -> dict:
+def replay_all(cloud: Path, robot: str, tag: str | None = None, camera: bool = True) -> dict:
     from apm_transfer.infoseek import Task
     from apm_transfer.runtime import Runtime, replay
     mcfg = json.loads((CFG / f"M5_{robot}_types.json").read_text())
     tc = json.loads((CFG / f"M5_{robot}_tasks.json").read_text())
     time_coef = json.loads((CFG / f"M5_{robot}_time.json").read_text())["time_coef"]
     task = Task("handoff", **{k: v for k, v in tc["tasks"]["handoff"].items() if k != "why"})
-    logs = sorted((cloud / f"X_{robot}_main_DT").rglob(f"logs/{robot}_warehouse_DT_*_X*.jsonl"))
+    logs = sorted((cloud / (tag or f"X_{robot}_main_DT")).rglob(f"logs/{robot}_warehouse_DT_*_X*.jsonl"))
     total = {"lifetimes": 0, "decisions": 0, "mismatches": 0, "tolerance": 1e-9}
     for lg in logs:
         idx = int(re.search(r"_X(\d+)\.jsonl$", lg.name).group(1))  # type: ignore[union-attr]
 
         def factory(idx=idx):
-            return Runtime(mcfg, time_coef, task, tc["voi"], lam=0.02, seed=seed_of(idx) + 3, camera=True,
+            return Runtime(mcfg, time_coef, task, tc["voi"], lam=0.02, seed=seed_of(idx) + 3, camera=camera,
                            policy="greedy", supervise=True)
         r = replay(lg, factory, tol=1e-9)  # logs from Linux VMs, replayed here: last-digit float rounding
         total["lifetimes"] += 1
@@ -102,6 +105,24 @@ def main() -> None:
             r["replay"] = replay_all(a.cloud, robot)
         except Exception as e:  # noqa: BLE001
             r["replay"] = {"error": repr(e)[:200]}
+        r["replay_F"] = {chk: replay_all(a.cloud, robot, f"F_{robot}_{chk}", camera=chk != "nocam")
+                         for chk in ("long", "ref", "nocam")}
+        c = {(x["index"], y["k"]): y for x in recs(a.cloud, f"F_{robot}_contact") for y in x["rows"]}
+        f = {(x["index"], y["k"]): y for x in recs(a.cloud, f"F_{robot}_ref") for y in x["rows"]}
+        keys = [k for k in c if k in f and not c[k]["contacts"] and not f[k]["contacts"]
+                and c[k]["standoff"] == 0 and f[k]["standoff"] == 0]
+        if keys:
+            def peak(y: dict, key: str) -> float:
+                return float(max(y[key] or [0]))
+            r["contact_imu"] = {
+                "paired_approaches": len(keys),
+                "median_peak_contact": float(np.median([peak(c[k], "imu_peaks") for k in keys])),
+                "median_peak_reference": float(np.median([peak(f[k], "imu_peaks") for k in keys])),
+                "share_peak_higher": float(np.mean([peak(c[k], "imu_peaks") > peak(f[k], "imu_peaks") for k in keys])),
+                "share_category_higher": float(np.mean([peak(c[k], "imu_cats") > peak(f[k], "imu_cats")
+                                                        for k in keys])),
+                "detected_share_contact": float(np.mean([c[k]["detected"] for k in keys])),
+                "detected_share_reference": float(np.mean([f[k]["detected"] for k in keys]))}
         for chk in ("nocam", "dropout", "interrupt", "contact", "perturb", "long", "veto"):
             rs = recs(a.cloud, f"F_{robot}_{chk}")
             r[chk] = summary(rs) if rs else "not run"

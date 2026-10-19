@@ -1,0 +1,998 @@
+{
+ "lifetimes": 622,
+ "robots": {
+  "humanoid": {
+   "A1": {
+    "vs": "NOMEM",
+    "measure": "A",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 10,
+    "mean_diff_DT_minus_other": -1.4666666666666668,
+    "ci95": [
+     -2.0333333333333337,
+     -0.8833333333333334
+    ],
+    "p_one_sided": 0.0038,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "A2": {
+    "vs": "SHUFFLED",
+    "measure": "A",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 10,
+    "mean_diff_DT_minus_other": -0.5666666666666667,
+    "ci95": [
+     -1.0833333333333335,
+     -0.06666666666666668
+    ],
+    "p_one_sided": 0.0613,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "B1": {
+    "vs": "FROZEN",
+    "measure": "B_late",
+    "scene": "warehouse",
+    "history": "late_B",
+    "n_pairs": 9,
+    "mean_diff_DT_minus_other": -1.0953703703703705,
+    "ci95": [
+     -1.5768518518518517,
+     -0.5972222222222222
+    ],
+    "p_one_sided": 0.0089,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "B2": {
+    "vs": "FROZEN",
+    "measure": "B_change",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 9,
+    "mean_diff_DT_minus_other": 0.5666666666666667,
+    "ci95": [
+     0.4222222222222222,
+     0.7444444444444445
+    ],
+    "p_one_sided": 0.0021,
+    "predicted": "greater",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C1": {
+    "vs": "FIXED",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -13.463546568627454,
+    "ci95": [
+     -14.68626145833333,
+     -12.208804901960786
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C2": {
+    "vs": "NEUTRAL",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -4.606958333333333,
+    "ci95": [
+     -11.167642708333336,
+     -0.6386812499999999
+    ],
+    "p_one_sided": 0.0069,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C3": {
+    "vs": "LOOKUP",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 18,
+    "mean_diff_DT_minus_other": -21.092690631808278,
+    "ci95": [
+     -22.23555800653595,
+     -20.025248978758174
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C4": {
+    "vs": "MONOTONE",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -5.873678921568627,
+    "ci95": [
+     -7.258317095588235,
+     -4.664072058823529
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "D1": {
+    "vs": "REACTIVE",
+    "measure": "cost",
+    "scene": "hospital",
+    "history": null,
+    "n_pairs": 12,
+    "mean_diff_DT_minus_other": -8.34473611111111,
+    "ci95": [
+     -9.784284375000002,
+     -6.950668402777778
+    ],
+    "p_one_sided": 0.0004,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "D2": {
+    "vs": "MONOTONE",
+    "measure": "cost",
+    "scene": "hospital",
+    "history": null,
+    "n_pairs": 12,
+    "mean_diff_DT_minus_other": -5.852027777777778,
+    "ci95": [
+     -7.230017361111111,
+     -4.564300347222222
+    ],
+    "p_one_sided": 0.0004,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "D3": {
+    "vs": "REACTIVE",
+    "measure": "cost",
+    "scene": "home",
+    "history": null,
+    "n_pairs": 12,
+    "mean_diff_DT_minus_other": -6.510406746031747,
+    "ci95": [
+     -9.938243551587304,
+     -1.8981319444444453
+    ],
+    "p_one_sided": 0.0088,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   }
+  },
+  "nerva_mujoco": {
+   "A1": {
+    "vs": "NOMEM",
+    "measure": "A",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 10,
+    "mean_diff_DT_minus_other": -1.7,
+    "ci95": [
+     -3.3,
+     -0.5
+    ],
+    "p_one_sided": 0.0168,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "A2": {
+    "vs": "SHUFFLED",
+    "measure": "A",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 10,
+    "mean_diff_DT_minus_other": -1.1,
+    "ci95": [
+     -2.8,
+     0.0
+    ],
+    "p_one_sided": 0.1251,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "B1": {
+    "vs": "FROZEN",
+    "measure": "B_late",
+    "scene": "warehouse",
+    "history": "late_B",
+    "n_pairs": 9,
+    "mean_diff_DT_minus_other": -2.406481481481481,
+    "ci95": [
+     -3.012962962962963,
+     -1.751828703703704
+    ],
+    "p_one_sided": 0.0022,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "B2": {
+    "vs": "FROZEN",
+    "measure": "B_change",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 9,
+    "mean_diff_DT_minus_other": 0.25,
+    "ci95": [
+     0.05555555555555555,
+     0.5
+    ],
+    "p_one_sided": 0.0603,
+    "predicted": "greater",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "C1": {
+    "vs": "FIXED",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -20.121000000000002,
+    "ci95": [
+     -22.64845625,
+     -17.710905208333337
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C2": {
+    "vs": "NEUTRAL",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -6.022708333333332,
+    "ci95": [
+     -8.658541666666665,
+     -3.531202083333334
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C3": {
+    "vs": "LOOKUP",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -11.946833333333332,
+    "ci95": [
+     -13.210929166666666,
+     -10.64083125
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C4": {
+    "vs": "MONOTONE",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -3.078583333333332,
+    "ci95": [
+     -4.122426041666665,
+     -2.095987499999999
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "D1": {
+    "vs": "REACTIVE",
+    "measure": "cost",
+    "scene": "hospital",
+    "history": null,
+    "n_pairs": 0,
+    "mean_diff_DT_minus_other": null,
+    "ci95": [
+     NaN,
+     NaN
+    ],
+    "p_one_sided": NaN,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "D2": {
+    "vs": "MONOTONE",
+    "measure": "cost",
+    "scene": "hospital",
+    "history": null,
+    "n_pairs": 0,
+    "mean_diff_DT_minus_other": null,
+    "ci95": [
+     NaN,
+     NaN
+    ],
+    "p_one_sided": NaN,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "D3": {
+    "vs": "REACTIVE",
+    "measure": "cost",
+    "scene": "home",
+    "history": null,
+    "n_pairs": 0,
+    "mean_diff_DT_minus_other": null,
+    "ci95": [
+     NaN,
+     NaN
+    ],
+    "p_one_sided": NaN,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   }
+  },
+  "nova_carter": {
+   "A1": {
+    "vs": "NOMEM",
+    "measure": "A",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 10,
+    "mean_diff_DT_minus_other": -0.6,
+    "ci95": [
+     -1.0666666666666669,
+     -0.19999999999999998
+    ],
+    "p_one_sided": 0.0301,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "A2": {
+    "vs": "SHUFFLED",
+    "measure": "A",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 10,
+    "mean_diff_DT_minus_other": -0.5166666666666666,
+    "ci95": [
+     -0.9833333333333332,
+     -0.08333333333333333
+    ],
+    "p_one_sided": 0.0465,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "B1": {
+    "vs": "FROZEN",
+    "measure": "B_late",
+    "scene": "warehouse",
+    "history": "late_B",
+    "n_pairs": 9,
+    "mean_diff_DT_minus_other": -0.8527777777777777,
+    "ci95": [
+     -1.2231944444444445,
+     -0.4981481481481482
+    ],
+    "p_one_sided": 0.0045,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "B2": {
+    "vs": "FROZEN",
+    "measure": "B_change",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 9,
+    "mean_diff_DT_minus_other": 0.700925925925926,
+    "ci95": [
+     0.5472222222222222,
+     0.8342592592592593
+    ],
+    "p_one_sided": 0.0021,
+    "predicted": "greater",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C1": {
+    "vs": "FIXED",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -12.878874999999999,
+    "ci95": [
+     -15.158382291666664,
+     -10.833324999999999
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C2": {
+    "vs": "NEUTRAL",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -2.2571250000000003,
+    "ci95": [
+     -4.01694375,
+     -0.7641125000000007
+    ],
+    "p_one_sided": 0.0033,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C3": {
+    "vs": "LOOKUP",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -13.955999999999998,
+    "ci95": [
+     -15.202580208333334,
+     -12.768585416666667
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C4": {
+    "vs": "MONOTONE",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -4.8648333333333325,
+    "ci95": [
+     -6.148511458333331,
+     -3.6020583333333334
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "D1": {
+    "vs": "REACTIVE",
+    "measure": "cost",
+    "scene": "hospital",
+    "history": null,
+    "n_pairs": 12,
+    "mean_diff_DT_minus_other": -10.246527777777779,
+    "ci95": [
+     -12.84852777777778,
+     -7.715875000000003
+    ],
+    "p_one_sided": 0.0004,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "D2": {
+    "vs": "MONOTONE",
+    "measure": "cost",
+    "scene": "hospital",
+    "history": null,
+    "n_pairs": 12,
+    "mean_diff_DT_minus_other": -3.852986111111111,
+    "ci95": [
+     -5.373991319444444,
+     -2.463034722222221
+    ],
+    "p_one_sided": 0.0004,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "D3": {
+    "vs": "REACTIVE",
+    "measure": "cost",
+    "scene": "home",
+    "history": null,
+    "n_pairs": 12,
+    "mean_diff_DT_minus_other": -8.48840277777778,
+    "ci95": [
+     -10.992859375000004,
+     -5.866694444444449
+    ],
+    "p_one_sided": 0.0004,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   }
+  }
+ },
+ "E_robots_passing": {
+  "A1": 1,
+  "B1": 3,
+  "B2": 2,
+  "C2": 3,
+  "D1": 2
+ },
+ "verdicts": {
+  "A1": "Partially demonstrated",
+  "A2": "Not demonstrated",
+  "B1": "Demonstrated",
+  "B2": "Partially demonstrated",
+  "C1": "Demonstrated",
+  "C2": "Demonstrated",
+  "C3": "Demonstrated",
+  "C4": "Demonstrated",
+  "D1": "Partially demonstrated",
+  "D2": "Partially demonstrated",
+  "D3": "Partially demonstrated"
+ },
+ "safety": {
+  "humanoid/home/DT": {
+   "lifetimes": 12,
+   "encounters": 254,
+   "falls": 2,
+   "trips": 1,
+   "contacts": 105,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "change_B",
+     13,
+     1,
+     "B1"
+    ],
+    [
+     "late_B",
+     13,
+     11,
+     "B1"
+    ]
+   ]
+  },
+  "humanoid/home/MONOTONE:lo=0.2/width=0.4": {
+   "lifetimes": 12,
+   "encounters": 279,
+   "falls": 1,
+   "trips": 1,
+   "contacts": 109,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     11,
+     14,
+     "B1"
+    ]
+   ]
+  },
+  "humanoid/home/REACTIVE": {
+   "lifetimes": 12,
+   "encounters": 278,
+   "falls": 1,
+   "trips": 1,
+   "contacts": 206,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     15,
+     13,
+     "B1"
+    ]
+   ]
+  },
+  "humanoid/hospital/DT": {
+   "lifetimes": 12,
+   "encounters": 279,
+   "falls": 1,
+   "trips": 1,
+   "contacts": 107,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     11,
+     14,
+     "B1"
+    ]
+   ]
+  },
+  "humanoid/hospital/MONOTONE:lo=0.2/width=0.4": {
+   "lifetimes": 12,
+   "encounters": 288,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 113,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "humanoid/hospital/REACTIVE": {
+   "lifetimes": 12,
+   "encounters": 288,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 209,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "humanoid/warehouse/DT": {
+   "lifetimes": 20,
+   "encounters": 473,
+   "falls": 1,
+   "trips": 1,
+   "contacts": 126,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     9,
+     16,
+     "B1"
+    ]
+   ]
+  },
+  "humanoid/warehouse/FIXED": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 159,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "humanoid/warehouse/FROZEN": {
+   "lifetimes": 20,
+   "encounters": 464,
+   "falls": 2,
+   "trips": 1,
+   "contacts": 170,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     1,
+     14,
+     "B1"
+    ],
+    [
+     "late_B",
+     9,
+     16,
+     "B1"
+    ]
+   ]
+  },
+  "humanoid/warehouse/LOOKUP": {
+   "lifetimes": 18,
+   "encounters": 432,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 47,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "humanoid/warehouse/MONOTONE:lo=0.2/width=0.4": {
+   "lifetimes": 20,
+   "encounters": 473,
+   "falls": 1,
+   "trips": 1,
+   "contacts": 126,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     3,
+     16,
+     "B1"
+    ]
+   ]
+  },
+  "humanoid/warehouse/NEUTRAL": {
+   "lifetimes": 20,
+   "encounters": 452,
+   "falls": 3,
+   "trips": 3,
+   "contacts": 228,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     1,
+     23,
+     "B1"
+    ],
+    [
+     "change_B",
+     9,
+     2,
+     "B1"
+    ],
+    [
+     "late_B",
+     9,
+     16,
+     "B1"
+    ]
+   ]
+  },
+  "humanoid/warehouse/NOMEM": {
+   "lifetimes": 20,
+   "encounters": 452,
+   "falls": 3,
+   "trips": 3,
+   "contacts": 228,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     1,
+     23,
+     "B1"
+    ],
+    [
+     "change_B",
+     9,
+     2,
+     "B1"
+    ],
+    [
+     "late_B",
+     9,
+     16,
+     "B1"
+    ]
+   ]
+  },
+  "humanoid/warehouse/SHUFFLED": {
+   "lifetimes": 20,
+   "encounters": 471,
+   "falls": 1,
+   "trips": 0,
+   "contacts": 196,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     1,
+     14,
+     "B1"
+    ]
+   ]
+  },
+  "nerva_mujoco/warehouse/DT": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 125,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/SHUFFLED": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 188,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/NOMEM": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 296,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/FROZEN": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 254,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/MONOTONE:lo=0.1/width=0.4": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 167,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/NEUTRAL": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 296,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/LOOKUP": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 96,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/FIXED": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 258,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/home/DT": {
+   "lifetimes": 12,
+   "encounters": 288,
+   "falls": 0,
+   "trips": 89,
+   "contacts": 131,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/home/MONOTONE:lo=0.1/width=0.4": {
+   "lifetimes": 12,
+   "encounters": 288,
+   "falls": 0,
+   "trips": 102,
+   "contacts": 148,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/home/REACTIVE": {
+   "lifetimes": 12,
+   "encounters": 288,
+   "falls": 0,
+   "trips": 120,
+   "contacts": 177,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/hospital/DT": {
+   "lifetimes": 12,
+   "encounters": 288,
+   "falls": 0,
+   "trips": 65,
+   "contacts": 105,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/hospital/MONOTONE:lo=0.1/width=0.4": {
+   "lifetimes": 12,
+   "encounters": 288,
+   "falls": 0,
+   "trips": 99,
+   "contacts": 146,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/hospital/REACTIVE": {
+   "lifetimes": 12,
+   "encounters": 288,
+   "falls": 0,
+   "trips": 126,
+   "contacts": 182,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/warehouse/DT": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 109,
+   "contacts": 136,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/warehouse/FIXED": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 98,
+   "contacts": 130,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/warehouse/FROZEN": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 142,
+   "contacts": 174,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/warehouse/LOOKUP": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 73,
+   "contacts": 93,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/warehouse/MONOTONE:lo=0.1/width=0.4": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 167,
+   "contacts": 212,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/warehouse/NEUTRAL": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 154,
+   "contacts": 197,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/warehouse/NOMEM": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 154,
+   "contacts": 197,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nova_carter/warehouse/SHUFFLED": {
+   "lifetimes": 20,
+   "encounters": 474,
+   "falls": 1,
+   "trips": 135,
+   "contacts": 176,
+   "vetoes": 0,
+   "fall_list": [
+    [
+     "late_B",
+     3,
+     17,
+     "B1"
+    ]
+   ]
+  }
+ }
+}
