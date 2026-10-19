@@ -60,7 +60,9 @@ def test_plan_is_monotone_in_wariness_and_matched_removes_speed_and_distance():
 def test_neutral_program_has_no_expression():
     p = plan(None)
     g = upper_targets(p, "interact", 1.0, 0.3)
-    assert g["guard"] == g["openness"] == g["tilt"] == 0.0 and g["gaze_yaw"] == 0.0
+    assert g["guard"] == g["openness"] == g["tilt"] == g["side_on"] == 0.0
+    # while sensing every program looks at the person (functional, for the camera), not expressive
+    assert g["gaze_yaw"] == 0.3 and upper_targets(p, "approach", 1.0, 0.3)["gaze_yaw"] == 0.0
 
 
 def test_body_offsets_stay_in_bounds_and_rate_limited():
