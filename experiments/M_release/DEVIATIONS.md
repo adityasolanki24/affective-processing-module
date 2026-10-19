@@ -34,3 +34,24 @@ Every departure from the frozen protocol, with its reason. Entries are appended;
   first fit is kept in git history for the record.
 - **Separate finding in the same data:** 19 NERVA falls, all in the home scene, early in an approach, identical in
   paired lifetimes, so deterministic. They are diagnosed separately (D3).
+
+## D3 (2026-10-19): NERVA's comparative data come from its validated MuJoCo backend (no V or X data affected)
+
+- **What happened in Isaac Sim.** With body colliders (D2), NERVA's frozen controller still passes its gate
+  battery unchanged: no falls in nominal conditions or with pushes ≤ 0.15 m/s. It fails physical interaction:
+  - in the first encounter of an interaction check, a light contact from a person's body (impulse 0.12 N·s) toppled
+    it during its approach;
+  - in the home scene it cannot make progress on the floor, stepping in place with 0.01 straightness, and falls.
+
+  These are honest limits of NERVA's controller in PhysX with physical people. They are not tuned away; the
+  environment is not changed to make NERVA pass.
+- **Decision** (the brief's fallback: "keep the MuJoCo version and clearly label the backend").
+  - NERVA's comparative experiments (A, B, C, E) run on its validated MuJoCo backend: programme L's world, rendered
+    MuJoCo vision and L's NERVA models.
+  - They use the same runtime, systems, M seeds, partitions, lifetime design and analysis
+    (`scripts/m6_nerva_mujoco.py`; records labelled engine "mujoco 3.3.0").
+  - MONOTONE* for NERVA is calibrated on partition V by the same rule.
+  - Experiment D (realistic scenes) is not demonstrated for NERVA.
+- **NERVA in Isaac Sim** remains in the release for what it does demonstrate (import fixes, gate battery,
+  cross-physics agreement, perception, walking in the warehouse and hospital, videos). Every NERVA result names its
+  engine.
