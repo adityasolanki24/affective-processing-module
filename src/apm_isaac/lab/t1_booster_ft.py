@@ -29,6 +29,7 @@ from isaaclab.assets import ArticulationCfg
 from isaaclab.managers import ObservationGroupCfg as ObsGroup
 from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import RewardTermCfg as RewTerm
+from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
@@ -97,6 +98,13 @@ def stand_still(env, asset_cfg: SceneEntityCfg) -> torch.Tensor:
     return still * (v + 0.01 * dq)
 
 
+def nonfinite_state(env) -> torch.Tensor:
+    """Reset any environment whose physics state has become non-finite (a crashed simulation)."""
+    data = env.scene["robot"].data
+    bad = ~torch.isfinite(data.root_pos_w).all(dim=1) | ~torch.isfinite(data.root_lin_vel_w).all(dim=1)
+    return bad | ~torch.isfinite(data.joint_vel).all(dim=1)
+
+
 LEG_CFG = SceneEntityCfg("robot", joint_names=LEGS, preserve_order=True)
 
 
@@ -139,9 +147,10 @@ class T1BoosterFTEnvCfg(T1FlatEnvCfg):
         self.actions.joint_pos = mdp.JointPositionActionCfg(asset_name="robot", joint_names=LEGS, scale=1.0,
                                                             use_default_offset=True, preserve_order=True,
                                                             clip={".*": (-1.0, 1.0)})
-        # robustness: stronger, more frequent pushes than the battery's 0.5 m/s, while walking and standing
-        self.events.push_robot.interval_range_s = (3.0, 6.0)
-        self.events.push_robot.params = {"velocity_range": {"x": (-0.7, 0.7), "y": (-0.7, 0.7)}}
+        # robustness: pushes up to 0.6 m/s (above the battery's 0.5), every 4-8 s, while walking and standing
+        self.events.push_robot.interval_range_s = (4.0, 8.0)
+        self.events.push_robot.params = {"velocity_range": {"x": (-0.6, 0.6), "y": (-0.6, 0.6)}}
+        self.terminations.nonfinite = DoneTerm(func=nonfinite_state)
         self.events.add_base_mass.params["mass_distribution_params"] = (-1.0, 2.0)
         self.commands.base_velocity.ranges.lin_vel_x = (-0.3, 0.6)
         self.commands.base_velocity.ranges.lin_vel_y = (-0.3, 0.3)
@@ -164,7 +173,7 @@ class T1BoosterFTRunnerCfg(T1FlatPPORunnerCfg):
         self.policy.actor_hidden_dims = [256, 128, 128]
         self.policy.critic_hidden_dims = [512, 256, 128]
         self.policy.activation = "elu"
-        self.policy.init_noise_std = 0.25
+        self.policy.init_noise_std = 0.05  # fine-tuning a converged gait: large noise knocks it over
         self.policy.noise_std_type = "log"  # always positive (a scalar std can be driven below zero)
         self.algorithm.learning_rate = 1.0e-4
         self.algorithm.entropy_coef = 0.001
