@@ -76,21 +76,29 @@ def _obs(o):
     return o["policy"] if hasattr(o, "keys") else o
 
 
-# Zero-shot check: the official policy, deterministic and clipped to ±1 as deployed, in this training
-# environment. It must walk here before fine-tuning means anything. Reports falls, NaNs and observation range.
-with torch.no_grad():
-    o = _obs(env.get_observations())
-    n_done, n_nan, max_abs, steps = 0, 0, 0.0, 250
-    for _ in range(steps):
-        act = torch.clamp(official(torch.nan_to_num(o)), -1.0, 1.0)
-        o, _r, dones, _info = env.step(act)
-        o = _obs(o)
-        n_nan += int((~torch.isfinite(o)).any(dim=1).sum())
-        max_abs = max(max_abs, float(torch.nan_to_num(o, posinf=0.0, neginf=0.0).abs().max()))
-        n_done += int(dones.sum())
-zero_shot = {"steps": steps, "envs": a.num_envs, "terminations": n_done, "nan_obs_rows": n_nan,
-             "max_abs_obs": round(max_abs, 2)}
+def evaluate(actor, steps: int = 500) -> dict:
+    """Deterministic actions clipped to ±1 as deployed, in this push-enabled training environment (10 s).
+    Falls are base-contact terminations (time-outs excluded)."""
+    with torch.no_grad():
+        o = _obs(env.get_observations())
+        n_fall, n_nan, max_abs = 0, 0, 0.0
+        for _ in range(steps):
+            act = torch.clamp(actor(torch.nan_to_num(o)), -1.0, 1.0)
+            o, _r, dones, info = env.step(act)
+            o = _obs(o)
+            n_nan += int((~torch.isfinite(o)).any(dim=1).sum())
+            max_abs = max(max_abs, float(torch.nan_to_num(o, posinf=0.0, neginf=0.0).abs().max()))
+            timeouts = info.get("time_outs", torch.zeros_like(dones)) if isinstance(info, dict) else 0
+            n_fall += int((dones.bool() & ~torch.as_tensor(timeouts, device=dones.device).bool()).sum())
+    return {"steps": steps, "envs": a.num_envs, "falls": n_fall,
+            "falls_per_env_minute": round(n_fall / a.num_envs / (steps * 0.02 / 60), 4), "nan_obs_rows": n_nan,
+            "max_abs_obs": round(max_abs, 2)}
+
+
+# Zero-shot check: the official policy in this environment. It must walk here before fine-tuning means anything.
+zero_shot = evaluate(official)
 print("ZERO-SHOT official policy", json.dumps(zero_shot), flush=True)
+n_nan = zero_shot["nan_obs_rows"]
 if n_nan:
     raise RuntimeError("non-finite observations in the training environment: fix the environment first")
 
@@ -121,6 +129,8 @@ for p in frozen:
     p.requires_grad_(True)
 # 3. fine-tune everything
 runner.learn(num_learning_iterations=a.iterations - a.warmup, init_at_random_ep_len=False)
+final = evaluate(policy.actor)
+print("FINE-TUNED policy", json.dumps(final), "| official", json.dumps(zero_shot), flush=True)
 # 4. export, in the official interface
 export_policy_as_jit(policy, None, path=str(a.out), filename="policy.pt")
 cfg = json.loads((SRC / "env_cfg.json").read_text())
@@ -133,6 +143,7 @@ cfg["fine_tune"] = {"task": TASK, "num_envs": a.num_envs, "iterations": a.iterat
 for f in ("LICENSE", "T1.yaml", "source.json"):
     shutil.copy(SRC / f, a.out / f)
 cfg["fine_tune"]["zero_shot_official"] = zero_shot
+cfg["fine_tune"]["eval_fine_tuned"] = final
 (a.out / "env_cfg.json").write_text(json.dumps(cfg, indent=1))
 (a.out / "train_log.json").write_text(json.dumps(log))
 print("done", cfg["fine_tune"]["wall_s"], "s", flush=True)
