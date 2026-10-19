@@ -104,7 +104,9 @@ def nonfinite_state(env) -> torch.Tensor:
     bad = ~torch.isfinite(data.root_pos_w).all(dim=1) | ~torch.isfinite(data.root_lin_vel_w).all(dim=1)
     bad = bad | ~torch.isfinite(data.joint_vel).all(dim=1)
     # exploding but still finite (a crashing robot): such values poison a gradient update before they become NaN
-    return bad | (torch.linalg.norm(torch.nan_to_num(data.root_lin_vel_w), dim=1) > 10.0) |         (torch.nan_to_num(data.joint_vel).abs().amax(dim=1) > 100.0)
+    fast_base = torch.linalg.norm(torch.nan_to_num(data.root_lin_vel_w), dim=1) > 10.0
+    fast_joint = torch.nan_to_num(data.joint_vel).abs().amax(dim=1) > 100.0
+    return bad | fast_base | fast_joint
 
 
 LEG_CFG = SceneEntityCfg("robot", joint_names=LEGS, preserve_order=True)
