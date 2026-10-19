@@ -131,7 +131,10 @@ def cmd_create(a) -> None:
 def _archive(path: Path, commit: bool, cmd: str) -> str:
     with tempfile.TemporaryDirectory() as tmp, tarfile.open(path, "w:gz") as tar:
         job = Path(tmp) / "job.sh"
-        job.write_bytes(f"set -e\nmkdir -p out\n{cmd}\n".encode())
+        # strip Windows line endings from shipped shell scripts first: a CR after a line-continuation backslash
+        # silently changes what bash runs (a working tree edited on Windows can carry CRLF)
+        job.write_bytes(("find . -name '*.sh' -exec sed -i 's/\\r$//' {} +\n"
+                         f"set -e\nmkdir -p out\n{cmd}\n").encode())
         if commit:
             # shallow, sparse clone of HEAD: only what runs need; `git status` stays clean for the confirmatory lock
             clone = Path(tmp) / "repo"
