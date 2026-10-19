@@ -428,7 +428,7 @@ class IsaacWorld:
         if self._video_eye is None:
             self._video_eye = self._clear_view(mid, np.array([sx - x, sy - y]))
         eye = self._video_eye
-        if getattr(self, "video_fixed", None) is not None:  # one camera pose for every condition and history
+        if self.video_fixed is not None:  # one camera pose for every condition and history
             eye, mid = self.video_fixed
         self._video_cam.set_world_pose(position=eye, orientation=_look_at(eye, mid))
         self.world.render()
