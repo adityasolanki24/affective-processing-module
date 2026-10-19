@@ -36,8 +36,27 @@
     "lifetimes": 6,
     "mean_cost": 23.613
    }
+  },
+  "humanoid": {
+   "MONOTONE:lo=0.1/width=0.2": {
+    "lifetimes": 6,
+    "mean_cost": 25.019
+   },
+   "MONOTONE:lo=0.1/width=0.4": {
+    "lifetimes": 6,
+    "mean_cost": 26.062
+   },
+   "MONOTONE:lo=0.2/width=0.2": {
+    "lifetimes": 6,
+    "mean_cost": 25.031
+   },
+   "MONOTONE:lo=0.2/width=0.4": {
+    "lifetimes": 6,
+    "mean_cost": 23.021
+   }
   }
  },
  "_rule": "PROTOCOL.md \u00a73: lowest mean realised cost on partition V (warehouse, change_B and late_B)",
- "nerva_mujoco": "MONOTONE:lo=0.1/width=0.4"
+ "nerva_mujoco": "MONOTONE:lo=0.1/width=0.4",
+ "humanoid": "MONOTONE:lo=0.2/width=0.4"
 }
