@@ -55,6 +55,73 @@
 - Framing QA: close-up T1 head was clipped. A capped 30 min worker re-renders
   only its three views with a wider lens. The earlier footage remains intact.
 
+### Continued (Claude), after the user's review of the two gate videos (2026-10-19)
+
+The user's verdict: the T1 candidate is promising but is a candidate only (run full validation); expression is
+not acceptable yet, and NERVA's near-identical histories are a failed gate.
+
+**T1 gait battery** (protocol frozen before data; deviation G1 = start-point search):
+- design: 260 matched pairs, 4 environments x 13 scenarios x 5 fresh seeds;
+- gait quality: the candidate is far better (stance slip -69%, joint acceleration -57%, tilt p95 -48%, torque
+  proxy -40%, foot clearance x3.2, push peak tilt -41%, stop distance -30%);
+- failures: 3 falls at 0.5 m/s walking pushes (home, hospital, warehouse; 1/5 each) against v1's 0, and settle
+  time +42%;
+- verdict: **not promoted under the frozen rule; v1 remains the controller**
+  (`results/remediation/gait_battery_v1_vs_candidate.json`).
+- Cause: after a strong push the official policy develops a growing oscillation, and the supervisor trips only once
+  the robot is already falling.
+- Next iteration: the official weights fine-tuned in Isaac Lab (`lab/t1_booster_ft.py`, Booster's exact
+  observation, action and motor conventions; stronger pushes; stand-still term).
+  - run 1 diverged (NaN at iteration ~145);
+  - run 2 adds explosion guards.
+  - A fine-tuned policy must pass the same frozen rule on fresh seeds.
+
+**Expression v2** (`experience_state.py`, `expressive_program.py`, `posture.py`, `isaac/expression_v2.py`):
+- **Learned, label-free experience memory:**
+  - disturbance: unintended self-displacement while commanded to stand;
+  - camera evidence: looming;
+  - thresholds from a quiet-period calibration.
+- **Designed multi-phase program:**
+  - observe: watching time and gaze;
+  - approach: path shape and gaze;
+  - interact: guarded vs open posture, side-on torso;
+  - depart: backing away facing the person vs turning off.
+- **Body adapters** use only joints the locomotion policy does not control; posture signs and stability were
+  verified with stills.
+- **T1 findings:**
+  - the learned states separate the histories clearly (wariness 0.17 vs 0.73);
+  - the candidate controller fell in the pushy history (meeting 5), the same push weakness the battery found.
+- **NERVA findings:**
+  - contact topples it, so its pushy person makes near-miss lunges instead;
+  - its reach estimates are biased at close range, so looming replaces them.
+  - Pilot 5 is running.
+- Fixed along the way:
+  - head motion during sensing blinded the camera (the head now holds still on the person while sensing);
+  - teleport transients inflated the calibration;
+  - CRLF in shipped scripts (jobs now strip it).
+
+**Corrected comparisons** (protocol frozen before data; fresh R/Y seeds; every system under the same supervisor):
+- MONOTONE* re-tuned under supervision: NERVA lo=0.1/width=0.4 (M6_tuned_R.json).
+- NERVA (MuJoCo), 0 falls in every system (`results/remediation/corrected_nerva_mujoco.json`):
+  - DT beats MONOTONE* by only 0.67 s (M: 3.1 s), and FIXED, LOOKUP and NOMEM;
+  - **DT does not beat neutral motion + supervisor (+0.78 s)**: on NERVA, M's C2 advantage came largely from
+    memory-driven safety vetoes (218 vetoes), not from DT's expressive choices;
+  - **identity-specific memory supported**: DT beats POOLED (-2.5 s), SWAPPED (-15.0 s) and SHUFFLED (-7.9 s),
+    with fewer contacts from the pushy person than POOLED (-0.19 per encounter) and lower cost with calm people.
+- Nova Carter: re-tune finishing; RY needs about 10 GPU-hours (L4 stock is scarce; spot VMs used where possible).
+- T1: waits for the controller decision.
+
+**Security audit, commit 75c3b86:**
+- what it exposes: a `gcloud compute instances list` dump in a public repo, still reachable by SHA. It shows the
+  project ID, the runner service account's email, the bucket name (VM metadata), internal 10.x IPs and the
+  startup script;
+- what it does not expose: keys, tokens or passwords;
+- risk is low: the bucket has no public access and uniform bucket-level access is on;
+- options (each needs the user's authorisation):
+  - ask GitHub Support to purge the unreachable commit;
+  - enforce public-access prevention on the bucket.
+- No rotation is needed.
+
 ---
 
 This is the only tracker for the final sprint. The final account is `REPORT.md`. Confirmatory tests are frozen in
