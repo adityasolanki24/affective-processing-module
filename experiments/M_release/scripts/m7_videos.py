@@ -92,14 +92,20 @@ def main() -> None:
             continue
         parts.append(card(f"t_{robot}", f"{LABEL[robot]}\\nwarehouse: meets a person who pushes (B1), "
                                         "then the same person after they change"))
-        c = cut(s, [0, 1, 2, 3, 10, 11, 12], tmp / f"wh_{robot}.mp4", speed=3, eye=robot == "nerva")
+        c = cut(s, [0, 1, 2, 3, 10, 11, 12], tmp / f"wh_{robot}.mp4", speed=2, eye=robot == "nerva")
         if c:
             parts.append(str(c))
     parts.append(card("t_hosp", "Held-out scene: hospital\\nnever used for fitting or tuning"))
     for robot in ("nova_carter", "humanoid", "nerva"):
         s = stem(a.d, robot, "hospital", "late_B")
-        if s:
-            c = cut(s, [0, 1, 12, 13], tmp / f"hosp_{robot}.mp4", speed=3)
+        if s and robot == "nerva":  # NERVA's hospital lifetime ends with a fall in encounter 11: it is shown
+            parts.append(card("t_hosp_nerva", "NERVA, hospital\nfalls during encounter 11 of this lifetime "
+                                              "(shown; the lifetime ends there)"))
+            c = cut(s, [0, 1, 10], tmp / f"hosp_{robot}.mp4", speed=2)
+            if c:
+                parts.append(str(c))
+        elif s:
+            c = cut(s, [0, 1, 12, 13], tmp / f"hosp_{robot}.mp4", speed=2)
             if c:
                 parts.append(str(c))
     parts.append(card("end", "Simulation evidence only. No hardware, no human-participant data.\\n"
