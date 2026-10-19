@@ -42,6 +42,7 @@ class BoosterPolicyBody(LabPolicyBody):
         self.kd = np.asarray(self.cfg["damping"], float)
         self.limits = np.asarray(self.cfg["torque_limit"], float)
         self.head_target = np.zeros(2)
+        self.upper_offset = np.zeros(11)  # expressive posture: head, arms, waist (never the RL leg joints)
         self.target_filter = 0.2
         self.gait_frequency = 1.0
         profile = self.cfg.get("deployment_profile", {})
@@ -59,6 +60,7 @@ class BoosterPolicyBody(LabPolicyBody):
         self.last = np.zeros(12)
         self.filtered = self.default.copy()
         self.head_target = np.zeros(2)
+        self.upper_offset = np.zeros(11)
 
     def advance(self):
         q = np.asarray(self.art.get_joint_positions(), float)[self.idx]
@@ -76,6 +78,7 @@ class BoosterPolicyBody(LabPolicyBody):
         # Head motion is a separately bounded motor command; the leg policy is unchanged.
         if self.tilt() < self.TILT_TRIP and self.t >= self.brake_until:
             target[:2] += self.head_target
+            target[:11] += self.upper_offset
         for _ in range(self.decim):
             self.filtered += self.target_filter * (target - self.filtered)
             q = np.asarray(self.art.get_joint_positions(), float)[self.idx]
