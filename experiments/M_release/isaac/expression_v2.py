@@ -43,6 +43,9 @@ ap.add_argument("--near-miss", type=float, default=None,
                 help="lunges stop this far (m) short of the robot: sudden approaches without contact")
 ap.add_argument("--looming-near", type=float, default=None,
                 help="looming from cells nearer than this (m) only (NERVA: its sway flips silhouette edges)")
+ap.add_argument("--camera-calibration", choices=("q95", "robust"), default="q95",
+                help="camera threshold from the quiet period: 1.5 x 95th percentile, or median + 6 MAD (NERVA: "
+                     "posture-change transients contaminate the quiet period)")
 ap.add_argument("--looming-upright", action="store_true",
                 help="looming from upright surfaces only (NERVA: its low, swaying camera sees the floor's depth swing)")
 ap.add_argument("--looming-horizon", type=float, default=0.5,
@@ -134,7 +137,12 @@ def calibrate(n: int = 6) -> tuple[float, float, list[float], list[float]]:
         print("CALIBRATION", k, "disp", out["self_disp_peaks"], "looming", out["looming_peaks"],
               "reaches", out["camera_reaches"], flush=True)
     # camera evidence: looming (the nearest central depth dropping within 0.5 s), above the quiet-period noise
-    cam = max(0.05, 1.5 * float(np.quantile(looms, 0.95))) if looms else 0.10
+    if a.camera_calibration == "robust" and looms:
+        # median + 6 MAD: a few re-balancing transients after a posture change do not set the threshold
+        med = float(np.median(looms))
+        cam = max(0.05, med + 6.0 * float(np.median(np.abs(np.asarray(looms) - med))))
+    else:
+        cam = max(0.05, 1.5 * float(np.quantile(looms, 0.95))) if looms else 0.10
     return calibrate_threshold(disp), cam, disp, looms
 
 
@@ -156,7 +164,7 @@ record: dict = {"robot": a.robot, "scene": a.scene, "history": a.history, "seed"
                 "engine": "isaac sim 5.1 / physx", "controller": "booster_gym candidate" if candidate else "default",
                 "threshold_m_s": threshold, "camera_threshold_m": cam_threshold, "near_miss_m": a.near_miss,
                 "looming_near_m": a.looming_near, "looming_horizon_s": a.looming_horizon,
-                "looming_upright": a.looming_upright,
+                "looming_upright": a.looming_upright, "camera_calibration": a.camera_calibration,
                 "calibration_peaks": calib_peaks, "calibration_reaches": calib_reaches, "history_rows": [],
                 "present": {}}
 print("CALIBRATED", a.robot, "disturbance", round(threshold, 4), "camera", round(cam_threshold, 3), flush=True)
