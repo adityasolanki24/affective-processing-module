@@ -62,7 +62,7 @@ class BoosterPolicyBody(LabPolicyBody):
         # estimate; no external forces.
         self.reflex = profile.get("push_reflex")
         self.reflex_until, self.reflex_cmd = -1.0, np.zeros(3)
-        self.reflex_count = 0
+        self.reflex_count, self.v_filt, self.reflex_over = 0, np.zeros(2), 0.0
 
     def post_reset(self, gains=None):
         super().post_reset()
@@ -75,6 +75,7 @@ class BoosterPolicyBody(LabPolicyBody):
         self.upper_offset = np.zeros(11)
         self.cmd_smoothed = np.zeros(3)
         self.reflex_until, self.reflex_cmd = -1.0, np.zeros(3)
+        self.v_filt, self.reflex_over = np.zeros(2), 0.0
 
     def advance(self):
         q = np.asarray(self.art.get_joint_positions(), float)[self.idx]
@@ -83,10 +84,16 @@ class BoosterPolicyBody(LabPolicyBody):
         cmd = np.array([self.v_cmd, 0.0, self.w_cmd])
         if self.reflex:
             lin_b = r.T @ np.asarray(self.art.get_linear_velocity(), float)  # base frame
+            # low-pass filter (tau_s): the gait's own stride sway averages out, a push's velocity persists
+            tau = float(self.reflex.get("tau_s", 0.0))
+            a_ = 1.0 if tau <= 0 else min(1.0, DT / tau)
+            self.v_filt = (1 - a_) * self.v_filt + a_ * lin_b[:2]
             ref = self.cmd_smoothed if self.command_ramp is not None else cmd
-            err = lin_b[:2] - ref[:2]
-            if self.t >= self.reflex_until and float(np.linalg.norm(err)) > float(self.reflex["trigger_m_s"]):
-                step = np.clip(float(self.reflex.get("gain", 1.0)) * lin_b[:2], -float(self.reflex["max_m_s"]),
+            err = self.v_filt - ref[:2]
+            over = float(np.linalg.norm(err)) > float(self.reflex["trigger_m_s"])
+            self.reflex_over = self.reflex_over + DT if over else 0.0
+            if self.t >= self.reflex_until and self.reflex_over >= float(self.reflex.get("confirm_s", 0.0)):
+                step = np.clip(float(self.reflex.get("gain", 1.0)) * self.v_filt, -float(self.reflex["max_m_s"]),
                                float(self.reflex["max_m_s"]))
                 self.reflex_cmd = np.array([step[0], step[1], 0.0])
                 self.reflex_until = self.t + float(self.reflex["hold_s"])
