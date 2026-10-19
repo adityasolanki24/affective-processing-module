@@ -119,3 +119,19 @@ def test_looming_near_ignores_silhouette_edge_flips():
     assert _looming_peak([(0.0, far), (0.2, edge)], near_m=1.5) == 0.0
     lunge = near - 0.3
     assert abs(_looming_peak([(0.0, near), (0.2, lunge)], near_m=1.5) - 0.3) < 1e-6
+
+
+def test_upright_looming_ignores_floor_swing_from_pitch():
+    """NERVA: pitching a low camera swings the floor's depth; only upright surfaces (the person) count."""
+    from apm_isaac.world import _looming_peak, _upright_cells
+    rows = np.array([3.0, 2.0, 1.4, 1.0, 0.8, 0.6])[:, None] * np.ones((6, 8))  # floor: depth grows up the image
+    pitched = rows * 0.7  # the camera pitched down: the floor comes "closer"
+    assert not _upright_cells(rows).any()
+    assert _looming_peak([(0.0, rows), (0.2, pitched)], near_m=1.5) > 0.2
+    assert _looming_peak([(0.0, rows), (0.2, pitched)], near_m=1.5, upright=True) == 0.0
+    person = rows.copy()
+    person[:, 3:6] = 0.6  # an upright body in front
+    lunge = person.copy()
+    lunge[:, 3:6] = 0.45
+    assert _upright_cells(person)[:, 3:6].all()
+    assert abs(_looming_peak([(0.0, person), (0.5, lunge)], near_m=1.5, upright=True) - 0.15) < 1e-6

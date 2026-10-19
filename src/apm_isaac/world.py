@@ -839,7 +839,8 @@ class IsaacWorld:
                    "motion": motion_features(track, (sx, sy)),
                    "self_disp_peaks": [round(v, 4) for v in disp_peaks[:len(win_ev)]],
                    "looming_peaks": [_looming_peak(f, horizon_s=getattr(self, "looming_horizon_s", 0.5),
-                                                   near_m=getattr(self, "looming_near_m", None))
+                                                   near_m=getattr(self, "looming_near_m", None),
+                                                   upright=getattr(self, "looming_upright", False))
                                      for f in loom_frames[:len(win_ev)]],
                    "standing_peaks": standing_peaks,
                    "expression": ({"plan": program.as_dict(), "depart": depart, "trace": expr_trace,
@@ -875,14 +876,30 @@ def _pool_depth(depth: np.ndarray, cell: int = 8) -> np.ndarray:
         return np.nanmedian(blocks, axis=2)
 
 
-def _looming_peak(frames, horizon_s: float = 0.5, quantile: float = 90.0, near_m: float | None = None) -> float:
+def _upright_cells(d: np.ndarray, rel: float = 0.1) -> np.ndarray:
+    """Cells of a pooled depth image on upright surfaces: depth nearly equal to a vertical neighbour's (a person's
+    body). On the floor depth grows steeply up the image, so the floor is excluded at any camera pitch."""
+    d = np.asarray(d, float)
+    g = np.full(d.shape, np.inf)
+    if d.shape[0] > 1:
+        diff = np.abs(np.diff(d, axis=0))
+        g[:-1] = diff
+        g[1:] = np.minimum(g[1:], diff)
+    with np.errstate(invalid="ignore"):
+        return np.asarray(g <= rel * d)
+
+
+def _looming_peak(frames, horizon_s: float = 0.5, quantile: float = 90.0, near_m: float | None = None,
+                  upright: bool = False) -> float:
     """How far something came at the robot within `horizon_s` (m). For pooled depth images: the largest, over
     frame pairs within the horizon, of the `quantile`-th percentile of per-cell depth decrease (approaching
     surfaces anywhere in view; the static floor does not change). For scalar depths: the largest drop. Only still
     frames are recorded, so the robot's own head motion does not count.
 
     `near_m`: only cells nearer than this in both frames. A swaying body (NERVA) turns slightly, and at silhouette
-    edges cells flip from the far background to a near body, a "decrease" of metres that is not approach."""
+    edges cells flip from the far background to a near body, a "decrease" of metres that is not approach.
+    `upright`: only cells on upright surfaces in both frames (`_upright_cells`). A low camera on a swaying body
+    (NERVA: 0.3 m high, ~10 deg pitch sway) sees floor depths swing by decimetres without anything moving."""
     best = 0.0
     for i, (ti, di) in enumerate(frames):
         for tk, dk in frames[:i]:
@@ -895,6 +912,8 @@ def _looming_peak(frames, horizon_s: float = 0.5, quantile: float = 90.0, near_m
                 dec = a0 - a1
                 if near_m is not None:
                     dec = np.where((a0 < near_m) & (a1 < near_m), dec, np.nan)
+                if upright and a0.ndim == 2:
+                    dec = np.where(_upright_cells(a0) & _upright_cells(a1), dec, np.nan)
                 dec = dec[np.isfinite(dec)]
                 if dec.size:
                     best = max(best, float(np.percentile(dec, quantile)))

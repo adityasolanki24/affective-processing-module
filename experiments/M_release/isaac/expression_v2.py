@@ -43,6 +43,8 @@ ap.add_argument("--near-miss", type=float, default=None,
                 help="lunges stop this far (m) short of the robot: sudden approaches without contact")
 ap.add_argument("--looming-near", type=float, default=None,
                 help="looming from cells nearer than this (m) only (NERVA: its sway flips silhouette edges)")
+ap.add_argument("--looming-upright", action="store_true",
+                help="looming from upright surfaces only (NERVA: its low, swaying camera sees the floor's depth swing)")
 ap.add_argument("--looming-horizon", type=float, default=0.5,
                 help="looming time window (s); NERVA's near-miss lunges (<= 0.15 m/s, stopping short) need 1 s")
 ap.add_argument("--types-model", required=True)
@@ -139,6 +141,7 @@ def calibrate(n: int = 6) -> tuple[float, float, list[float], list[float]]:
 world.near_miss_margin = a.near_miss
 world.looming_near_m = a.looming_near
 world.looming_horizon_s = a.looming_horizon
+world.looming_upright = a.looming_upright
 world.new_lifetime(a.seed)
 threshold, cam_threshold, calib_peaks, calib_reaches = calibrate()
 rt = Runtime(mcfg, time_coef, task, tcfg["voi"], lam=0.02, seed=a.seed + 3, camera=True, policy="greedy",
@@ -153,6 +156,7 @@ record: dict = {"robot": a.robot, "scene": a.scene, "history": a.history, "seed"
                 "engine": "isaac sim 5.1 / physx", "controller": "booster_gym candidate" if candidate else "default",
                 "threshold_m_s": threshold, "camera_threshold_m": cam_threshold, "near_miss_m": a.near_miss,
                 "looming_near_m": a.looming_near, "looming_horizon_s": a.looming_horizon,
+                "looming_upright": a.looming_upright,
                 "calibration_peaks": calib_peaks, "calibration_reaches": calib_reaches, "history_rows": [],
                 "present": {}}
 print("CALIBRATED", a.robot, "disturbance", round(threshold, 4), "camera", round(cam_threshold, 3), flush=True)
@@ -167,9 +171,11 @@ for k in range(0 if a.demo else a.n_history):
     after = rt.experience.readout("B1")
     record["history_rows"].append({
         "k": k, "readout_before": before, "readout_after": after, "self_disp_peaks": obs.report["self_disp_peaks"],
-        "camera_reaches": obs.report.get("camera_reaches"), "contacts_truth": truth["contacts"],
+        "camera_reaches": obs.report.get("camera_reaches"), "looming_peaks": obs.report.get("looming_peaks"),
+        "contacts_truth": truth["contacts"],
         "fell": bool(body.last_out["fell"]), "expression": obs.report.get("expression")})
-    print("HISTORY", k, etype, "wariness", round(after["wariness"], 3), "disp", obs.report["self_disp_peaks"],
+    print("HISTORY", k, etype, "wariness", round(after["wariness"], 3), "loom", obs.report.get("looming_peaks"),
+          "disp", obs.report["self_disp_peaks"],
           "contacts(truth)", truth["contacts"], flush=True)
     if body.last_out["fell"]:
         break
