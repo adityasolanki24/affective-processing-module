@@ -1,0 +1,230 @@
+{
+ "note": "Development seeds 72101-72105, flat ground, 6 scenarios (REFLEX_DEV, REFLEX_DEV2). Exploratory: not the frozen battery. R5 produced no data (hung process). Variants: configs/t1_push_reflex_variants.json.",
+ "variants": {
+  "candidate": {
+   "rules": {
+    "1_falls": false,
+    "2_quality": true,
+    "3_tracking": true,
+    "4_stops": false
+   },
+   "promote": false,
+   "falls": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 2,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "falls_v1": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 0,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "speed_error": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.019981434968821148,
+    "push_walk_0.5": 0.025932204827655216,
+    "speed_0.2": 0.016741388972279496,
+    "startstop": 0.01873727597712772,
+    "turn_walk_+": 0.01918684896516078
+   },
+   "speed_error_v1": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.004886912578531588,
+    "push_walk_0.5": 0.008160756052819778,
+    "speed_0.2": 0.008959824496559344,
+    "startstop": 0.015218355929110828,
+    "turn_walk_+": 0.029303611487537833
+   },
+   "settle_s": {
+    "median_v1": 0.5800000000000001,
+    "median_candidate": 0.9600000000000009
+   }
+  },
+  "candidateR1": {
+   "rules": {
+    "1_falls": true,
+    "2_quality": true,
+    "3_tracking": false,
+    "4_stops": false
+   },
+   "promote": false,
+   "falls": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 0,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "falls_v1": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 0,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "speed_error": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.18507555895177016,
+    "push_walk_0.5": 0.20927377230420308,
+    "speed_0.2": 0.1217215807969146,
+    "startstop": 0.0024217237954471172,
+    "turn_walk_+": 0.008032072777488002
+   },
+   "speed_error_v1": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.004886912578531588,
+    "push_walk_0.5": 0.008160756052819778,
+    "speed_0.2": 0.008959824496559344,
+    "startstop": 0.015218355929110828,
+    "turn_walk_+": 0.029303611487537833
+   },
+   "settle_s": {
+    "median_v1": 0.5800000000000001,
+    "median_candidate": 1.0399999999999991
+   }
+  },
+  "candidateR2": {
+   "rules": {
+    "1_falls": false,
+    "2_quality": true,
+    "3_tracking": false,
+    "4_stops": false
+   },
+   "promote": false,
+   "falls": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 1,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "falls_v1": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 0,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "speed_error": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.05244243677149067,
+    "push_walk_0.5": 0.0873737988373543,
+    "speed_0.2": 0.07345577311294596,
+    "startstop": 0.0947069093537935,
+    "turn_walk_+": 0.16920867242009524
+   },
+   "speed_error_v1": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.004886912578531588,
+    "push_walk_0.5": 0.008160756052819778,
+    "speed_0.2": 0.008959824496559344,
+    "startstop": 0.015218355929110828,
+    "turn_walk_+": 0.029303611487537833
+   },
+   "settle_s": {
+    "median_v1": 0.5800000000000001,
+    "median_candidate": 0.8999999999999995
+   }
+  },
+  "candidateR3": {
+   "rules": {
+    "1_falls": true,
+    "2_quality": true,
+    "3_tracking": false,
+    "4_stops": true
+   },
+   "promote": false,
+   "falls": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 0,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "falls_v1": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 0,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "speed_error": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.27189650258484094,
+    "push_walk_0.5": 0.25643096040729485,
+    "speed_0.2": 0.26329722441299275,
+    "startstop": 0.3274762927415453,
+    "turn_walk_+": 0.283676005084972
+   },
+   "speed_error_v1": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.004886912578531588,
+    "push_walk_0.5": 0.008160756052819778,
+    "speed_0.2": 0.008959824496559344,
+    "startstop": 0.015218355929110828,
+    "turn_walk_+": 0.029303611487537833
+   },
+   "settle_s": {
+    "median_v1": 0.5800000000000001,
+    "median_candidate": null
+   }
+  },
+  "candidateR4": {
+   "rules": {
+    "1_falls": false,
+    "2_quality": true,
+    "3_tracking": false,
+    "4_stops": false
+   },
+   "promote": false,
+   "falls": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 1,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "falls_v1": {
+    "flat/push_stand_0.3": 0,
+    "flat/push_walk_0.3": 0,
+    "flat/push_walk_0.5": 0,
+    "flat/speed_0.2": 0,
+    "flat/startstop": 0,
+    "flat/turn_walk_+": 0
+   },
+   "speed_error": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.07250439588727631,
+    "push_walk_0.5": 0.11329887946394686,
+    "speed_0.2": 0.08131563557218995,
+    "startstop": 0.11636995969342431,
+    "turn_walk_+": 0.03438661721821951
+   },
+   "speed_error_v1": {
+    "push_stand_0.3": null,
+    "push_walk_0.3": 0.004886912578531588,
+    "push_walk_0.5": 0.008160756052819778,
+    "speed_0.2": 0.008959824496559344,
+    "startstop": 0.015218355929110828,
+    "turn_walk_+": 0.029303611487537833
+   },
+   "settle_s": {
+    "median_v1": 0.5800000000000001,
+    "median_candidate": 0.8200000000000003
+   }
+  }
+ }
+}
