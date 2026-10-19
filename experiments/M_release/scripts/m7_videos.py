@@ -99,7 +99,7 @@ def main() -> None:
     for robot in ("nova_carter", "humanoid", "nerva"):
         s = stem(a.d, robot, "hospital", "late_B")
         if s and robot == "nerva":  # NERVA's hospital lifetime ends with a fall in encounter 11: it is shown
-            parts.append(card("t_hosp_nerva", "NERVA, hospital\nfalls during encounter 11 of this lifetime "
+            parts.append(card("t_hosp_nerva", "NERVA, hospital\\nfalls during encounter 11 of this lifetime "
                                               "(shown; the lifetime ends there)"))
             c = cut(s, [0, 1, 10], tmp / f"hosp_{robot}.mp4", speed=2)
             if c:
