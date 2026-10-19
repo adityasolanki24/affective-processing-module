@@ -143,6 +143,14 @@ The decision to use the MuJoCo backend for NERVA's comparative data stands, for 
     stopped and are discarded.
   - The footprint now skips colliders wider than 2 m (`footprint_from_boxes`, unit-tested). The check counts
     PhysX contact reports, so "no ejection" can no longer come from "no contact".
+- **Third defect, in the first fix itself.**
+  - Lunges are scheduled from the start of an encounter, approach included. A limit frozen at onset therefore let a
+    lunge that began while the robot was still far away overrun it once it arrived, by up to 0.65 m.
+  - NERVA's near-miss person touched it twice and toppled it in its first pushy meeting.
+  - The limit is now the smallest seen since the lunge started. A robot pushed back is not followed, and a robot
+    that comes closer is not overrun (`test_near_miss_lunge_stays_short_of_an_arriving_robot`).
+  - Every job launched on the frozen-only rule was stopped and is discarded: the RV and RY jobs for Carter and T1,
+    and the Carter, T1 and NERVA expression runs and demos.
 
 ## D7 (2026-10-19, remediation): T1 controller decision; expressive posture on the retained controller
 

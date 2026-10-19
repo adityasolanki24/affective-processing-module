@@ -191,3 +191,16 @@ def test_carter_footprint_skips_colliders_without_extent():
     x0, x1, hw = footprint_from_boxes([chassis, wheel, caster], 0.14)
     assert (round(x0, 3), round(x1, 3), round(hw, 3)) == (-0.587, 0.14, 0.238)
     assert footprint_from_boxes([caster], 0.14) == (0.14 - 0.7, 0.14, 0.25)
+
+
+def test_near_miss_lunge_stays_short_of_an_arriving_robot():
+    """D6: a lunge that starts while the robot is still approaching must not overrun it once it arrives."""
+    from apm_isaac.agents import Lunge, Person
+    p = Person("P", "/P", np.zeros(2))
+    p.front, p.near_miss = 0.14, 0.03
+    p.lunges = [Lunge(t_peak=3.0, reach=0.8, speed=0.9)]
+    for k in range(250):
+        t = k * 0.02
+        gap = max(0.10, 1.0 - 0.3 * t)  # approaching at 0.3 m/s, stops with a 0.10 m gap
+        s = p.displacement(t, 0.0, gap=gap)
+        assert s <= max(0.0, gap - 0.03) + 1e-9

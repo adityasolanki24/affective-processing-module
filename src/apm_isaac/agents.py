@@ -82,9 +82,9 @@ class Person:
         (`gap`: the robot's surface gap to a body at the station; default: dist - front - RADIUS, which assumes the
         robot faces the person).
 
-        Each lunge's contact limit is frozen when the lunge starts. (Until remediation D6 it was recomputed every
-        step from the current gap, so a robot pushed back was followed: the overlap was re-created each step and the
-        kinematic capsule chased it at metres per second.)"""
+        Each lunge's contact limit is the smallest seen since the lunge started. (Until remediation D6 it was
+        recomputed every step from the current gap, so a robot pushed back was followed: the overlap was re-created
+        each step and the kinematic capsule chased it at metres per second.)"""
         s = 0.0
         if gap is None:
             gap = dist_to_robot - self.front - RADIUS
@@ -93,10 +93,14 @@ class Person:
         for i, lg in enumerate(self.lunges):
             v_surf = min(lg.speed * CONTACT_GAIN * 2, V_CONTACT_MAX)
             longest = max(max(lg.reach - GAP0, 0.0) / max(v_surf, 1e-3), 0.15)
+            now = gap + MAX_OVERLAP if self.near_miss is None else max(0.0, gap - self.near_miss)
             if lg.limit is None:
                 if t < lg.t_peak - longest:
                     continue
-                lg.limit = gap + MAX_OVERLAP if self.near_miss is None else max(0.0, gap - self.near_miss)
+                lg.limit = now
+            # never deeper than at onset (a robot pushed back is not followed) and never deeper than the current
+            # gap allows (a robot that came closer is not overrun; near-miss lunges stay short of the body)
+            lg.limit = min(lg.limit, now)
             peak = float(np.clip(lg.reach - GAP0, 0.0, lg.limit))
             ramp = max(peak / max(v_surf, 1e-3), 0.15)
             dt = abs(t - lg.t_peak)
