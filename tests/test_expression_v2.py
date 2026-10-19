@@ -97,3 +97,13 @@ def test_looming_detects_an_approach_but_not_quiet_frames():
     quiet = [(0.0, 0.30), (0.1, 0.31), (0.2, 0.30), (0.6, 0.29)]
     assert _looming_peak(lunge) == pytest.approx(0.25) and _looming_peak(quiet) <= 0.021
     assert _looming_peak([(0.0, 0.5), (0.8, 0.1)]) == 0.0  # slower than 0.5 s is not a lunge
+
+
+def test_pooled_looming_sees_an_approach_anywhere_but_not_a_static_floor():
+    from apm_isaac.world import _looming_peak, _pool_depth
+    rng = np.random.default_rng(0)
+    floor = np.tile(np.linspace(0.2, 1.5, 48)[:, None], (1, 64))  # static scene, near floor at the bottom
+    quiet = [(0.1 * i, _pool_depth(floor + rng.normal(0, 0.003, floor.shape))) for i in range(6)]
+    lunge = [(0.1 * i, _pool_depth(np.where(np.arange(64)[None, :] > 40, 1.0 - 0.15 * i, floor)
+                                   + rng.normal(0, 0.003, floor.shape))) for i in range(6)]
+    assert _looming_peak(quiet) < 0.02 and _looming_peak(lunge) > 0.3

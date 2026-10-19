@@ -708,7 +708,7 @@ class IsaacWorld:
         own = [False] * n_settle + obs_own
         k, k_arrive, t_arrive, fell, aborted = n_settle + len(obs_own), None, None, False, False
         disp_peaks = [0.0] * windows
-        loom_frames: list[list[tuple[float, float]]] = [[] for _ in range(windows)]
+        loom_frames: list[list[tuple[float, Any]]] = [[] for _ in range(windows)]
         win_ev: list = []
         cam_seen: list[list[float]] = [[] for _ in range(windows)]
         cam_quiet = [0] * windows
@@ -772,12 +772,9 @@ class IsaacWorld:
                     perc.frame(depth, own[-1], dist + nav_err - surf, self.robot.eye_offset)
                     if j >= 0 and not own[-1]:
                         cam_quiet[j // win_n] += 1
-                        # looming: the nearest depth in the centre of view (5th percentile of valid pixels)
-                        h_, w_ = depth.shape[:2]
-                        centre = depth[int(0.2 * h_):int(0.8 * h_), int(0.3 * w_):int(0.7 * w_)]
-                        valid = centre[centre > 0]
-                        if valid.size:
-                            loom_frames[j // win_n].append((self.t, float(np.percentile(valid, 5))))
+                        # looming: the whole view, pooled to 8x8-pixel cells (median of valid pixels), so a
+                        # lunge is caught wherever it appears and a head pitched down (floor in view) does not hide it
+                        loom_frames[j // win_n].append((self.t, _pool_depth(depth)))
             if self.robot.fallen(row):
                 fell = True
                 break
@@ -851,14 +848,34 @@ class IsaacWorld:
         return outcome, truth
 
 
-def _looming_peak(frames: list[tuple[float, float]], horizon_s: float = 0.5) -> float:
-    """Largest drop of the nearest central depth within `horizon_s` (m): something coming at the robot. Only still
+def _pool_depth(depth: np.ndarray, cell: int = 8) -> np.ndarray:
+    """Median of valid (> 0) pixels per cell x cell block; NaN where a block has none."""
+    h, w = (depth.shape[0] // cell) * cell, (depth.shape[1] // cell) * cell
+    raw = depth[:h, :w].reshape(h // cell, cell, w // cell, cell).swapaxes(1, 2).reshape(h // cell, w // cell, -1)
+    blocks: np.ndarray = np.where(raw > 0, raw, np.nan)
+    import warnings
+    with warnings.catch_warnings():  # all-NaN cells give NaN (excluded later)
+        warnings.simplefilter("ignore", RuntimeWarning)
+        return np.nanmedian(blocks, axis=2)
+
+
+def _looming_peak(frames, horizon_s: float = 0.5, quantile: float = 90.0) -> float:
+    """How far something came at the robot within `horizon_s` (m). For pooled depth images: the largest, over
+    frame pairs within the horizon, of the `quantile`-th percentile of per-cell depth decrease (approaching
+    surfaces anywhere in view; the static floor does not change). For scalar depths: the largest drop. Only still
     frames are recorded, so the robot's own head motion does not count."""
     best = 0.0
     for i, (ti, di) in enumerate(frames):
         for tk, dk in frames[:i]:
-            if ti - tk <= horizon_s:
-                best = max(best, dk - di)
+            if ti - tk > horizon_s:
+                continue
+            if np.ndim(di) == 0:
+                best = max(best, float(dk) - float(di))
+            else:
+                dec = np.asarray(dk, float) - np.asarray(di, float)
+                dec = dec[np.isfinite(dec)]
+                if dec.size:
+                    best = max(best, float(np.percentile(dec, quantile)))
     return round(best, 4)
 
 

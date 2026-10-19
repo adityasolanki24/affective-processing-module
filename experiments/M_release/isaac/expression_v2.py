@@ -3,11 +3,12 @@
     $ISAAC_PY experiments/M_release/isaac/expression_v2.py --robot humanoid|nerva --history pushy|calm \
         --out out/expr_v2 <model args from cloud/m6_plan.model_args(robot)>
 
-1. **Calibration (a quiet period, label-free).** Five encounters with a person who does not move, run through
-   the same encounter procedure, without memory updates. The robot's own readings set both thresholds:
+1. **Calibration (a quiet period, label-free).** Six encounters with a person who does not move, run through
+   the same encounter procedure, without memory updates, cycling the neutral, guarded and open postures. The
+   robot's own readings set both thresholds:
    - disturbance: its peak unintended base speed in the sensing windows (`calibrate_threshold`);
-   - camera: 1.5 x the 95th percentile of its looming peaks (the nearest central depth dropping within
-     0.5 s), and at least 0.05 m.
+   - camera: 1.5 x the 95th percentile of its looming peaks (how far surfaces anywhere in view came closer
+     within 0.5 s), and at least 0.05 m.
 2. **History.** `--n-history` meetings with person B1, whose physical behaviour is pushy or calm. Encounters are
    repositioned (the robot starts each one at its approach point); memory is continuous. The robot already
    expresses its current state during the history. Each meeting updates the runtime's experience state from
@@ -106,14 +107,19 @@ a.out.mkdir(parents=True, exist_ok=True)
 stem = f"{a.robot}_{a.scene}_{a.history}_{a.seed}"
 
 
-def calibrate(n: int = 5) -> tuple[float, float, list[float], list[float]]:
-    """Quiet-period calibration: the person stands still; the same encounter procedure; no memory update."""
+def calibrate(n: int = 6) -> tuple[float, float, list[float], list[float]]:
+    """Quiet-period calibration: the person stands still; the same encounter procedure; no memory update. The
+    encounters cycle the neutral, a fully guarded and a fully open plan, so the sway and camera behaviour of every
+    posture the robot can adopt set the thresholds (a guarded posture's own sway must not read as a push)."""
     from apm_express.intent import ExpressionIntent
     from apm_transfer.expressive_program import plan
+    postures = [None, {"wariness": 1.0, "uncertainty": 0.0, "familiarity": 1.0},
+                {"wariness": 0.0, "uncertainty": 0.0, "familiarity": 1.0}]
     disp, looms = [], []
     for k in range(n):
         out, _ = world.encounter(STATIONS["B1"], "still", ExpressionIntent(proximity=0.75).sanitized(), 3, 0.0,
-                                 approach_from=APPROACH_M[a.robot], return_home=False, program=plan(None))
+                                 approach_from=APPROACH_M[a.robot], return_home=False,
+                                 program=plan(postures[k % 3], matched=True))
         disp += list(out["self_disp_peaks"])  # the same measurement as at run time (sensing windows only)
         looms += [float(x) for x in out["looming_peaks"]]
         print("CALIBRATION", k, "disp", out["self_disp_peaks"], "looming", out["looming_peaks"],
