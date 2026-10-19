@@ -102,8 +102,42 @@ Further properties:
   from the JSONL log.
 - **AffectLink.** `ingest(EntityObservation)` binds tracks to identities, and `affectlink(decision)` emits
   `MemoryExpectation`, `ActionTendency` and `ExpressionIntent` (all validated).
-- **Bodies:** `NervaBody`, `WheeledBody`, `HumanoidBody`.
+- **Bodies:** `NervaBody`, `WheeledBody`, `HumanoidBody` (MuJoCo); `apm_isaac.body.IsaacBody` (Isaac Sim).
+- **Baselines share the runtime:** `policy` selects the decision-theoretic mapping (greedy, the v1.0 default; or
+  VOI) or a conventional baseline (lookup, monotone rule, fixed style, neutral, reactive, random). `supervise`
+  switches APM's risk supervisor; the physical safety layers always apply.
 - **Demo:** `experiments/L_audit_perception/scripts/f_runtime_demo.py`.
+
+## Isaac Sim integration (APM v1.0, `src/apm_isaac`)
+
+The runtime is unchanged. Isaac Sim 5.1 (PhysX, RTX) supplies the bodies, scenes, people and sensors:
+
+```
+ Runtime.decide ──> IsaacBody (runtime adapter: identity → station, distance → abstract band)
+                      │
+                      ▼
+ IsaacWorld.encounter: driver per body ── NERVA: H's BipedExpressionAdapter + SafetyMonitor
+                      │                    Nova Carter / T1: (v, ω) WheeledAdapter + the body's supervisor
+                      ├─ people: animated characters (AnimationGraph), kinematic capsule bodies,
+                      │          lunges from the K/L type distributions (surface speed ≤ 0.15 m/s)
+                      ├─ bystanders: patrol walkers on raycast-validated paths
+                      ├─ sensing: IMU from the body's own link (quiet windows, efference gate),
+                      │           depth eye posed from the PhysX link pose each frame → MotionPerception
+                      └─ truth (evaluation only): PhysX contact reports, lunge contacts
+                      ▼
+ Observation ──> Runtime.observe
+```
+
+| body | controller (never changed by APM) | physical safety layer |
+|---|---|---|
+| NVIDIA Nova Carter (stock asset) | the asset's wheel drives | shove/tilt supervisor: zero command for 0.5 s, counted trip |
+| Booster T1 (stock asset) | Isaac Lab PPO policy + frozen velocity map (`policies/t1_isaaclab_v1`) | tilt supervisor: zero command for 1 s |
+| NERVA (MJCF import, `apm_isaac.nerva`) | frozen neutral ONNX with NERVA's control step | NERVA's SafetyMonitor (neutral fallback) |
+
+**Rules carried over.**
+- No simulator state reaches APM. People's types, lunge parameters and contacts are evaluation truth only.
+- The camera reads only pixels, the robot's own-motion flags, its navigation distance and its own mounting.
+- Each robot's type model, IMU edges and time model are fitted on its own exploration data (`k_fit`).
 
 ## The v0.1 runtime and AffectLink
 
