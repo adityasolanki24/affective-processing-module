@@ -243,6 +243,7 @@ class IsaacWorld:
         self.overlay: dict[str, Any] = {}  # set by the lifetime runner (the runtime's decision), for video overlays
         self._video_target: tuple[float, float] = tuple(next(iter(scene.stations.values())))  # type: ignore[assignment]
         self._video_eye: np.ndarray | None = None
+        self.video_fixed: tuple[np.ndarray, np.ndarray] | None = None  # (eye, look-at) for review recordings
         self._video_cam = self._make_video_cam() if video else None
         self.contacts: list[tuple[float, str, float, int | None]] = []
         self._subscribe_contacts()
@@ -427,6 +428,8 @@ class IsaacWorld:
         if self._video_eye is None:
             self._video_eye = self._clear_view(mid, np.array([sx - x, sy - y]))
         eye = self._video_eye
+        if getattr(self, "video_fixed", None) is not None:  # one camera pose for every condition and history
+            eye, mid = self.video_fixed
         self._video_cam.set_world_pose(position=eye, orientation=_look_at(eye, mid))
         self.world.render()
         f = self._video_cam.get_rgba()

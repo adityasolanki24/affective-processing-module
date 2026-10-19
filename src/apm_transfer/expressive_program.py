@@ -48,6 +48,14 @@ class ExpressivePlan:
         return asdict(self)
 
 
+def _smoothstep(x: float, lo: float, hi: float) -> float:
+    """0 below lo, 1 above hi, smooth and monotone in between (hi < lo gives the falling ramp)."""
+    if hi < lo:
+        return 1.0 - _smoothstep(x, hi, lo)
+    t = min(1.0, max(0.0, (x - lo) / (hi - lo)))
+    return t * t * (3.0 - 2.0 * t)
+
+
 def plan(state: dict | None, matched: bool = False) -> ExpressivePlan:
     """Designed monotone mapping. `state=None` is the neutral program (no expression)."""
     if state is None:
@@ -57,22 +65,26 @@ def plan(state: dict | None, matched: bool = False) -> ExpressivePlan:
     w = min(1.0, max(0.0, float(state["wariness"])))
     u = min(1.0, max(0.0, float(state["uncertainty"])))
     f = min(1.0, max(0.0, float(state["familiarity"])))
-    calm = (1.0 - w) * f  # familiar and safe in experience
+    # Contrast (designed): guarded behaviour ramps in only between wariness 0.35 and 0.80, and open behaviour
+    # ramps out between 0.60 and 0.20, so a familiar, mostly safe history reads as open and a disturbing one as
+    # guarded. Both remain continuous in the learned state.
+    wary = _smoothstep(w, 0.35, 0.80)
+    calm = (1.0 - _smoothstep(w, 0.20, 0.60)) * f  # familiar and safe in experience
     p = ExpressivePlan(
-        observe_s=0.5 + 3.0 * w + 1.0 * u * (1.0 - w),
-        fixation=w,
-        scan_amp=0.35 * (1.0 - w) * (0.4 + 0.6 * max(u, calm)),
+        observe_s=0.5 + 3.0 * wary + 1.0 * u * (1.0 - wary),
+        fixation=wary,
+        scan_amp=0.35 * (1.0 - wary) * (0.4 + 0.6 * max(u, calm)),
         scan_hz=0.25,
-        directness=1.0 - 0.7 * w,
-        tempo=1.0 - 0.4 * w,
-        proximity=0.75 - 0.35 * w,
-        hesitation=0.5 * w,
-        guard=w,
+        directness=1.0 - 0.7 * wary,
+        tempo=1.0 - 0.4 * wary,
+        proximity=0.75 - 0.35 * wary,
+        hesitation=0.5 * wary,
+        guard=wary,
         openness=calm,
-        tilt=u * (1.0 - w),
-        side_on=w,
-        retreat_m=0.35 * w,
-        depart_turn_rad_s=0.5 + 0.3 * calm - 0.25 * w)
+        tilt=u * (1.0 - wary),
+        side_on=wary,
+        retreat_m=0.35 * wary,
+        depart_turn_rad_s=0.5 + 0.3 * calm - 0.25 * wary)
     if matched:  # speed- and distance-matched: only timing, gaze, posture, path shape and departure differ
         from dataclasses import replace
         p = replace(p, tempo=1.0, proximity=0.75, hesitation=0.0)

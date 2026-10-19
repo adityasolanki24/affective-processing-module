@@ -86,6 +86,10 @@ candidate = bool(a.policy_dir and json.loads((Path(a.policy_dir) / "env_cfg.json
 world = IsaacWorld(scene, a.robot, seed=a.seed, video=True, characters={k: v for k, v in chars.items() if v},
                    physics_dt=0.005 if a.robot == "humanoid" and not candidate else 0.002, policy_dir=a.policy_dir,
                    nerva_channels=channels, walkers=0)
+# Only B1 takes part in these runs: the other two station people are moved out of the scene (they would only
+# occlude the review camera; nothing in the experiment involves them).
+for sid in ("P1", "P3"):
+    world.people[sid].xy = np.array(world.people[sid].xy) + np.array([60.0, 60.0])
 mcfg = json.loads(Path(a.types_model).read_text())
 if "model" not in mcfg:
     mcfg = {"model": mcfg, "oracle": {}}
@@ -152,7 +156,29 @@ rt.save(snapshot)
 record["learned_state"] = rt.experience.readout("B1")
 print("LEARNED", json.dumps(record["learned_state"]), flush=True)
 
-# 3. present: identical seeds for every history and condition; B1 behaves calmly; speed/distance matched
+# 3. present: identical seeds for every history and condition; B1 behaves calmly; speed/distance matched.
+# One review camera for every condition and history: side-on to the approach line, full body, the less
+# occluded side (rendered depth check), at fixed world coordinates.
+
+
+def review_camera() -> tuple[np.ndarray, np.ndarray]:
+    s = np.array(world.people[STATIONS["B1"]].xy, float)
+    hx, hy, _ = world._home
+    dv = np.array([hx, hy]) - s
+    dv /= np.linalg.norm(dv) or 1.0
+    r = APPROACH_M[a.robot]
+    mid2 = s + 0.5 * r * dv
+    side = np.array([-dv[1], dv[0]])
+    dist, h, z = (1.15, 0.45, 0.22) if a.robot == "nerva" else (2.6, 1.3, 0.6)
+    look = np.array([*mid2, z])
+    eyes = [np.array([*(mid2 + sgn * dist * side), h]) for sgn in (1.0, -1.0)]
+    occ = [world._occlusion(e, look) for e in eyes]
+    world._video_cam.set_focal_length(2.2)
+    return eyes[int(np.argmin(occ))], look
+
+
+world.video_fixed = review_camera()
+record["review_camera"] = {"eye": world.video_fixed[0].tolist(), "look": world.video_fixed[1].tolist()}
 for cond in a.conditions.split(","):
     rt.load(snapshot)
     body.program_mode, body.program_matched, body.video = cond, not a.unmatched, True

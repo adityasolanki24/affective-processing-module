@@ -37,9 +37,9 @@ def t1_offsets(g: dict, side: float = 1.0) -> np.ndarray:
     # guarded: upper arms forward, elbows bent, forearms in front of the trunk;
     # open: arms slightly away from the body, elbows nearly straight
     for k, mirror in ((2, 1.0), (6, -1.0)):
-        o[k] += s["shoulder_forward"] * (0.55 * guard)
+        o[k] += s["shoulder_forward"] * (0.75 * guard)
         o[k + 1] += mirror * s["arm_out_left"] * (0.25 * openness - 0.15 * guard)
-        o[k + 2] += s["elbow_bend"] * (0.9 * guard)
+        o[k + 2] += s["elbow_bend"] * (1.2 * guard)
     o[10] = s["waist_left"] * side * 0.35 * g["side_on"]
     return o
 
