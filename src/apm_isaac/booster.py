@@ -51,6 +51,11 @@ class BoosterPolicyBody(LabPolicyBody):
             self.kd[11:] = [5., 5., 5., 5., 1., 1.] * 2
         self.target_filter = float(profile.get("target_filter", self.target_filter))
         self.gait_frequency = float(profile.get("gait_hz", self.gait_frequency))
+        # Booster's own deployment rate-limits commands (1 m/s^2 at 50 Hz); off unless the profile asks for it,
+        # so the battery-tested candidate stays exactly as tested
+        ramp = profile.get("command_ramp_m_s2")
+        self.command_ramp = float(ramp) if ramp is not None else None
+        self.cmd_smoothed = np.zeros(3)
 
     def post_reset(self, gains=None):
         super().post_reset()
@@ -61,12 +66,17 @@ class BoosterPolicyBody(LabPolicyBody):
         self.filtered = self.default.copy()
         self.head_target = np.zeros(2)
         self.upper_offset = np.zeros(11)
+        self.cmd_smoothed = np.zeros(3)
 
     def advance(self):
         q = np.asarray(self.art.get_joint_positions(), float)[self.idx]
         dq = np.asarray(self.art.get_joint_velocities(), float)[self.idx]
         r = self.rot()
         cmd = np.array([self.v_cmd, 0.0, self.w_cmd])
+        if self.command_ramp is not None:
+            step = self.command_ramp * DT
+            self.cmd_smoothed = self.cmd_smoothed + np.clip(cmd - self.cmd_smoothed, -step, step)
+            cmd = self.cmd_smoothed.copy()
         moving = float(np.linalg.norm(cmd) > 1e-5)
         obs = observation(q, dq, self.default, r.T @ np.array([0., 0., -1.]),
                           r.T @ np.asarray(self.art.get_angular_velocity()), cmd,
