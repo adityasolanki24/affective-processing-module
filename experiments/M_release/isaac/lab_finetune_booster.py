@@ -70,6 +70,30 @@ print("loaded official actor; max output difference", gap, flush=True)
 if gap > 1e-4:
     raise RuntimeError("the actor does not reproduce the official policy")
 
+
+def _obs(o):
+    o = o[0] if isinstance(o, tuple) else o
+    return o["policy"] if hasattr(o, "keys") else o
+
+
+# Zero-shot check: the official policy, deterministic and clipped to ±1 as deployed, in this training
+# environment. It must walk here before fine-tuning means anything. Reports falls, NaNs and observation range.
+with torch.no_grad():
+    o = _obs(env.get_observations())
+    n_done, n_nan, max_abs, steps = 0, 0, 0.0, 250
+    for _ in range(steps):
+        act = torch.clamp(official(torch.nan_to_num(o)), -1.0, 1.0)
+        o, _r, dones, _info = env.step(act)
+        o = _obs(o)
+        n_nan += int((~torch.isfinite(o)).any(dim=1).sum())
+        max_abs = max(max_abs, float(torch.nan_to_num(o, posinf=0.0, neginf=0.0).abs().max()))
+        n_done += int(dones.sum())
+zero_shot = {"steps": steps, "envs": a.num_envs, "terminations": n_done, "nan_obs_rows": n_nan,
+             "max_abs_obs": round(max_abs, 2)}
+print("ZERO-SHOT official policy", json.dumps(zero_shot), flush=True)
+if n_nan:
+    raise RuntimeError("non-finite observations in the training environment: fix the environment first")
+
 log: list = []
 orig_log = runner.log
 
@@ -108,6 +132,8 @@ cfg["fine_tune"] = {"task": TASK, "num_envs": a.num_envs, "iterations": a.iterat
 (a.out / "env_cfg.json").write_text(json.dumps(cfg, indent=1))
 for f in ("LICENSE", "T1.yaml", "source.json"):
     shutil.copy(SRC / f, a.out / f)
+cfg["fine_tune"]["zero_shot_official"] = zero_shot
+(a.out / "env_cfg.json").write_text(json.dumps(cfg, indent=1))
 (a.out / "train_log.json").write_text(json.dumps(log))
 print("done", cfg["fine_tune"]["wall_s"], "s", flush=True)
 from apm_isaac import hard_exit  # noqa: E402

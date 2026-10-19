@@ -165,6 +165,7 @@ class T1BoosterFTRunnerCfg(T1FlatPPORunnerCfg):
         self.policy.critic_hidden_dims = [512, 256, 128]
         self.policy.activation = "elu"
         self.policy.init_noise_std = 0.25
+        self.policy.noise_std_type = "log"  # always positive (a scalar std can be driven below zero)
         self.algorithm.learning_rate = 1.0e-4
         self.algorithm.entropy_coef = 0.001
 
