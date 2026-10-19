@@ -276,23 +276,40 @@ class Runtime:
         return msgs
 
 
-def replay(log_path: Path, factory) -> dict:
+def _same(a: dict, b: dict, tol: float) -> bool:
+    if tol == 0.0:
+        return a == b
+    for k, v in a.items():
+        w = b.get(k)
+        if isinstance(v, float) and isinstance(w, (int, float)) and not isinstance(w, bool):
+            if abs(v - float(w)) > tol:
+                return False
+        elif v != w:
+            return False
+    return set(a) == set(b)
+
+
+def replay(log_path: Path, factory, tol: float = 0.0) -> dict:
     """Rebuild a runtime from `factory()` and feed it the logged observations in order. Every decision must be
     identical to the logged one. Restarts within the log are transparent, because decisions depend only on the
-    memory state and the decision index."""
+    memory state and the decision index.
+
+    `tol` > 0 compares float fields within tol and everything else (actions, windows, stand-off, veto) exactly:
+    for replays on another platform, where floating-point rounding can differ in the last digit."""
     rt = factory()
-    n_dec = mismatches = 0
+    n_dec = mismatches = exact = 0
     for line in Path(log_path).read_text(encoding="utf-8").splitlines():
         rec = json.loads(line)
         if rec["t"] == "decide":
             d = asdict(rt.decide(rec["identity"], rec["kind"], rec.get("context", "")))
             n_dec += 1
-            mismatches += int(d != rec["decision"])
+            mismatches += int(not _same(d, rec["decision"], tol))
+            exact += int(d == rec["decision"])
         else:
             o = rec["obs"]
             rt.observe(Observation(o["identity"], o["kind"], o["band"], tuple(o["imu"]), tuple(o["camera"]),
                                    o["detected"], o.get("context", ""), o.get("report", {})))
-    return {"decisions": n_dec, "mismatches": mismatches, "identical": mismatches == 0}
+    return {"decisions": n_dec, "mismatches": mismatches, "identical": mismatches == 0, "bit_exact": exact}
 
 
 # ── body adapters: execute a decision through the body's own adapter and monitor; code what it sensed ─────────────
