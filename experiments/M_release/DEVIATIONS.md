@@ -133,6 +133,14 @@ The decision to use the MuJoCo backend for NERVA's comparative data stands, for 
   - RV (MONOTONE* re-tune) and all RY runs for Carter and T1 are redone with the fix, on the same frozen seeds,
     systems and criteria. Nothing else changed.
   - NERVA's corrected comparisons use the MuJoCo backend (impulse model, not this capsule) and are unaffected.
+- **Second defect, found while verifying the fix.**
+  - The first verification run showed 0 ejections, but also 0 physical contacts. Carter's two caster-wheel
+    cylinders have no authored extent and report a 100 m bounding box, so the footprint was 100 m wide, the gap
+    was always 0, and every lunge stopped 3 cm short of the station: the person never touched Carter.
+  - That result was not accepted. The Carter jobs launched on it (RY and expression, about one hour) were
+    stopped and are discarded.
+  - The footprint now skips colliders wider than 2 m (`footprint_from_boxes`, unit-tested). The check counts
+    PhysX contact reports, so "no ejection" can no longer come from "no contact".
 
 ## D7 (2026-10-19, remediation): T1 controller decision; expressive posture on the retained controller
 
