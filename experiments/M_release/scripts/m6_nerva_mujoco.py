@@ -50,6 +50,7 @@ SYSTEMS = {
     "LOOKUP": {"policy": "lookup:" + TUNED["handoff"]["E1"].split(":", 1)[1], "supervise": False},
     "MONOTONE": {"policy": "monotone:" + TUNED["handoff"]["E2"].split(":", 1)[1], "supervise": False},
     "REACTIVE": {"policy": "reactive", "supervise": False, "memory": "none"},
+    "SWAPPED": {"policy": "greedy", "memory": "swapped"}, "POOLED": {"policy": "greedy", "memory": "pooled"},
     "RANDINTENT": {"policy": "random", "supervise": False},
 }
 
@@ -63,7 +64,8 @@ def seeds_mod():
 
 
 def job(args: tuple) -> dict:
-    partition, index, history, system, n_enc, switch, task_name = args
+    partition, index, history, system, n_enc, switch, task_name = args[:7]
+    experiment, supervision = (args[7], args[8]) if len(args) > 7 else ("M6", "legacy")
     os.environ.setdefault("OMP_NUM_THREADS", "1")
     from apm_transfer.infoseek import Task
     from apm_transfer.runtime import NervaBody, Observation, Runtime
@@ -72,8 +74,10 @@ def job(args: tuple) -> dict:
     spec = dict(SYSTEMS[base_name])
     if params:
         spec["policy"] = spec["policy"].split(":")[0] + ":" + params
+    if supervision == "matched":  # every system under the same APM risk supervisor (remediation 5.1)
+        spec["supervise"] = True
     S = seeds_mod()
-    base = int(S.world_seed("M6", partition, index).generate_state(1)[0])
+    base = int(S.world_seed(experiment, partition, index).generate_state(1)[0])
     rng = np.random.default_rng(base)
     order = [ENTITIES[int(i)] for i in rng.choice(3, n_enc, p=P_ENTITY)]
     enc_seeds = rng.integers(0, 2**31, n_enc)
@@ -92,16 +96,22 @@ def job(args: tuple) -> dict:
         before, after = {"risky_B": ("pushy", "pushy"), "safe": ("calm", "calm"), "change_B": ("pushy", "calm"),
                          "late_B": ("calm", "pushy")}[history]
         etype = (before if k < switch else after) if ident == "B1" else "calm"
-        b_before = rt.memory.belief(ident, kind)
-        d = rt.decide(ident, kind, context=f"mujoco:{k}")
+        from apm_transfer.memory_routing import decide_identity, observe_identity
+        mem = spec.get("memory", "learn")
+        dec_ident = decide_identity(mem, ident)
+        b_before = rt.memory.belief(dec_ident, kind)
+        d = rt.decide(dec_ident, kind, context=f"mujoco:{k}")
+        if dec_ident != ident:  # the encounter is with the real person; only memory is routed
+            from dataclasses import replace as _replace
+            d = _replace(d, identity=ident)
         out, truth = body._run(int(enc_seeds[k]), etype, d)
         obs = body._observation(d.identity, d.kind, out, d.standoff)
-        mem = spec.get("memory", "learn")
         if mem == "learn" or (mem == "frozen" and k < switch):
             rt.observe(obs)
-        elif mem == "shuffled":
-            other = ENTITIES[int(shuffle_rng.integers(3))]
-            rt.observe(Observation(other[0], other[1], obs.band, obs.imu, obs.camera, obs.detected, obs.context,
+        elif mem in ("shuffled", "pooled", "swapped"):
+            target = observe_identity(mem, ident, ENTITIES, shuffle_rng)
+            tkind = next((e[1] for e in ENTITIES if e[0] == target), kind)
+            rt.observe(Observation(target, tkind, obs.band, obs.imu, obs.camera, obs.detected, obs.context,
                                    obs.report))
         d_abs = out["final_distance"]
         rows.append({
@@ -119,7 +129,8 @@ def job(args: tuple) -> dict:
             "hold_completed": task.hold_completed(out["arrived"], out.get("hold_max_dist"))})
         if out["fell"]:
             break
-    return {"experiment": "M6", "partition": partition, "index": index, "history": history, "system": system,
+    return {"experiment": experiment, "partition": partition, "supervision": supervision, "index": index,
+            "history": history, "system": system,
             "robot": "nerva_mujoco", "scene": "warehouse", "held_out": False, "task": task_name,
             "engine": "mujoco 3.3.0 (NERVA validated backend; abstract target, rendered MuJoCo vision)",
             "rows": rows, "wall_s": round(time.time() - t0, 1), "vetoes": rt.safety.vetoes}
@@ -136,10 +147,15 @@ def main() -> None:
     ap.add_argument("--switch", type=int, default=10)
     ap.add_argument("--task", default="handoff")
     ap.add_argument("--workers", type=int, default=os.cpu_count())
+    ap.add_argument("--experiment", default="M6", help="seed space; R = the remediation's corrected comparison")
+    ap.add_argument("--supervision", choices=("legacy", "matched"), default="legacy",
+                    help="matched: every system under APM's risk supervisor (remediation 5.1)")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
-    jobs = [(a.partition, i, h, s, a.n_enc, a.switch, a.task) for i in range(a.first, a.first + a.n)
-            for h in a.histories.split(",") for s in a.systems.split(",")]
+    if a.partition == "X" and (a.experiment != "M6" or a.supervision != "legacy"):
+        raise ValueError("programme M's locked test partition is not reused for corrected comparisons")
+    jobs = [(a.partition, i, h, s, a.n_enc, a.switch, a.task, a.experiment, a.supervision)
+            for i in range(a.first, a.first + a.n) for h in a.histories.split(",") for s in a.systems.split(",")]
     a.out.parent.mkdir(parents=True, exist_ok=True)
     with Pool(a.workers) as pool, open(a.out, "a", encoding="utf-8") as f:
         for rec in pool.imap_unordered(job, jobs):

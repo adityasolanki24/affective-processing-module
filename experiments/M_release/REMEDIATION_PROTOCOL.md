@@ -97,3 +97,48 @@ The warehouse hub has no collider-free 4 m straight path (shelving). Start point
 outward (rings at 0.5 m and 1.0 m, every 45°), with the same 4 m, collider-free and ≥ 1 m-from-stations rule. The
 other environments' starts are unchanged: their hub qualifies first. No scenario, seed, measure or criterion
 changed.
+
+## Corrected comparisons (5.1–5.3; frozen before any data, 2026-10-19)
+
+Programme M's results stay as recorded. These are new tests on fresh seeds: experiment `R`, partition `Y`, never
+used before this addendum.
+
+**5.1 Matched comparisons.** Every system runs under the same APM risk supervisor and cap (`--supervision
+matched`), with the same observations (IMU and camera), the same action grid and limits, and the same task.
+- MONOTONE* is re-tuned under supervision, by M's rule (lowest mean realised cost on the 4-configuration grid) on
+  fresh validation seeds R/V 0–2, before any R/Y run.
+- Systems: DT, MONOTONE*, FIXED, NEUTRAL, LOOKUP, NOMEM, plus the identity controls below.
+- Robots: Nova Carter (Isaac), NERVA (MuJoCo, labelled), and T1 (Isaac), the last with the controller the gait
+  battery selects.
+- Warehouse, histories change_B and late_B, Y indices 0–14 (30 lifetimes per system and robot).
+
+**5.2 Fall-aware outcomes.** Reported separately, never folded silently into cost:
+- full-lifetime completion rate and falls per lifetime (each fall listed);
+- contacts and the peak contact impulse;
+- task success, approaches completed and supervisor vetoes;
+- cost conditional on survival (the encounters that took place);
+- cost over all 24 planned encounters, where each encounter lost to a fall counts as a failed encounter (the
+  45 s approach budget plus the retry time).
+
+The second cost adds no extra penalty for the fall itself, because fall risk is reported on its own.
+
+"Better overall" requires both of these:
+- lower cost over all planned encounters (one-sided paired sign-flip test, Holm within robot, α 0.05);
+- no stability regression, meaning the fall rate is not higher. Higher means a one-sided Fisher exact test at α
+  0.05 on lifetimes with a fall.
+
+**5.3 Identity-specific memory.**
+- History risky_B: B1 pushy throughout, while A1 and C1 are calm.
+- DT is compared with:
+  - POOLED: one shared memory for everyone, i.e. population-wide caution;
+  - SWAPPED: when deciding, the robot recalls another person's memory (A1 ↔ B1); experiences are stored under the
+    true person;
+  - SHUFFLED: as in M.
+- Measures:
+  - cost over all planned encounters;
+  - B1 contacts per encounter, after B1's second meeting;
+  - A1/C1 cost per encounter, i.e. needless caution with calm people.
+- Y indices 0–14 (15 lifetimes per system).
+
+Identity-specific adaptation is supported only if DT beats both POOLED and SWAPPED on cost (Holm, α 0.05), and
+does not have more B1 contacts than POOLED. If not, the limitation is reported; no effect is amplified.

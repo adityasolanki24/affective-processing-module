@@ -74,3 +74,16 @@ def test_body_offsets_stay_in_bounds_and_rate_limited():
     v = r.step(np.ones(4), 0.02)
     assert np.allclose(v, 0.015)
     assert np.allclose(r.step(np.ones(4), 0.02, allowed=False), 0.0)
+
+
+def test_memory_routing_controls():
+    from apm_transfer.memory_routing import POOLED, decide_identity, observe_identity
+    ents = (("A1", "A", "P1"), ("B1", "B", "P2"), ("C1", "C", "P3"))
+    rng = np.random.default_rng(0)
+    assert decide_identity("learn", "B1") == observe_identity("learn", "B1", ents, rng) == "B1"
+    assert decide_identity("pooled", "A1") == observe_identity("pooled", "B1", ents, rng) == POOLED
+    # swapped reads the other person's memory but writes the true person's: not a mere renaming
+    assert decide_identity("swapped", "B1") == "A1" and observe_identity("swapped", "B1", ents, rng) == "B1"
+    assert {observe_identity("shuffled", "B1", ents, rng) for _ in range(50)} == {"A1", "B1", "C1"}
+    with pytest.raises(ValueError):
+        observe_identity("shuffled", "B1", ents, None)

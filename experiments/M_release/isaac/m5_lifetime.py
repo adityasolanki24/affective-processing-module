@@ -142,6 +142,7 @@ SYSTEMS = {
     "LOOKUP": {"policy": "lookup:" + TUNED[a.task]["E1"].split(":", 1)[1], "supervise": False},
     "MONOTONE": {"policy": "monotone:" + TUNED[a.task]["E2"].split(":", 1)[1], "supervise": False},
     "REACTIVE": {"policy": "reactive", "supervise": False, "memory": "none"},
+    "SWAPPED": {"policy": "greedy", "memory": "swapped"}, "POOLED": {"policy": "greedy", "memory": "pooled"},
     "RANDINTENT": {"policy": "random", "supervise": False},
 }
 
@@ -302,8 +303,14 @@ for index in range(a.first, a.first + a.n):
                                                 identity_confidence=0.3))
                     rt_ident = rt.identity_of(track)[0]
                     body.stations[rt_ident] = body.stations[ident]  # the track is the person at B1's station
-                b_before = rt.memory.belief(rt_ident, kind)
-                d = rt.decide(rt_ident, kind, context=f"{a.scene}:{k}")
+                from apm_transfer.memory_routing import decide_identity, observe_identity
+                mem_mode = spec.get("memory", "learn")
+                dec_ident = decide_identity(mem_mode, rt_ident)
+                b_before = rt.memory.belief(dec_ident, kind)
+                d = rt.decide(dec_ident, kind, context=f"{a.scene}:{k}")
+                if dec_ident != rt_ident:  # the encounter is with the real person; only memory is routed
+                    from dataclasses import replace as _replace
+                    d = _replace(d, identity=rt_ident)
                 body.expressive = a.expression_mode in ("memory", "matched") and k >= a.review_after
                 body.match_motion = a.expression_mode in ("matched", "neutral_matched")
                 body.expression_state = rt.sensor_expectation.readout(rt_ident) if a.sensor_expectation else None
@@ -326,9 +333,10 @@ for index in range(a.first, a.first + a.n):
                 mem = spec.get("memory", "learn")
                 if mem == "learn" or (mem == "frozen" and k < a.switch):
                     rt.observe(obs)
-                elif mem == "shuffled":
-                    other = ENTITIES[int(shuffle_rng.integers(3))]
-                    rt.observe(Observation(other[0], other[1], obs.band, obs.imu, obs.camera, obs.detected,
+                elif mem in ("shuffled", "pooled", "swapped"):
+                    target = observe_identity(mem, rt_ident, ENTITIES, shuffle_rng)
+                    tkind = next((e[1] for e in ENTITIES if e[0] == target), kind)
+                    rt.observe(Observation(target, tkind, obs.band, obs.imu, obs.camera, obs.detected,
                                            obs.context, obs.report))
                 d_abs = obs.report.get("d_stop", out["final_distance"])
                 imu_peaks = [round(e[1], 5) for e in out["windows"] if e[10] >= 25]
