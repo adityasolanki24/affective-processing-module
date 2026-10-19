@@ -46,6 +46,10 @@ ap.add_argument("--time-model", required=True)
 ap.add_argument("--task-config", required=True)
 ap.add_argument("--policy-dir", default=None)
 ap.add_argument("--out", type=Path, required=True)
+ap.add_argument("--demo", action="store_true", help="one continuous lifetime (no teleports): B1 pushy for "
+                "--pushy-n meetings, then calm for --calm-n; whole lifetime filmed with the learned state per frame")
+ap.add_argument("--pushy-n", type=int, default=6)
+ap.add_argument("--calm-n", type=int, default=6)
 a, _ = ap.parse_known_args()
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO / "src"))
@@ -139,7 +143,7 @@ print("CALIBRATED", a.robot, "disturbance", round(threshold, 4), "camera", round
 
 # 2. history: memory and physics continue; each encounter starts at the approach point (repositioned)
 etype = "pushy" if a.history == "pushy" else "calm"
-for k in range(a.n_history):
+for k in range(0 if a.demo else a.n_history):
     before = rt.experience.readout("B1")
     d = rt.decide("B1", "B", context=f"history:{k}")
     obs, truth = body.encounter(a.seed + 100 + k, etype, d)
@@ -181,6 +185,42 @@ def review_camera() -> tuple[np.ndarray, np.ndarray]:
 
 world.video_fixed = review_camera()
 record["review_camera"] = {"eye": world.video_fixed[0].tolist(), "look": world.video_fixed[1].tolist()}
+if a.demo:  # the complete learning-and-recovery demonstration: continuous physics, the robot walks home each time
+    from apm_transfer.expressive_program import plan as _plan
+    world.new_lifetime(a.seed + 11)
+    body.approach_from, body.video = None, True
+    body.program_mode, body.program_matched = "memory", False
+    world.video_writer = imageio.get_writer(str(a.out / f"{stem}_demo.mp4"), fps=25, codec="libx264",
+                                            quality=8, macro_block_size=8)
+    rows = []
+    for k in range(a.pushy_n + a.calm_n):
+        et = "pushy" if k < a.pushy_n else "calm"
+        st = rt.experience.readout("B1")
+        pl = _plan(st)
+        world.overlay = {"k": k, "person": et, "wariness": round(st["wariness"], 3),
+                         "disturbance_p": round(st["disturbance_p"], 3), "movement_p": round(st["movement_p"], 3),
+                         "familiarity": round(st["familiarity"], 3), "observe_s": round(pl.observe_s, 2),
+                         "guard": round(pl.guard, 2), "openness": round(pl.openness, 2),
+                         "retreat_m": round(pl.retreat_m, 2), "directness": round(pl.directness, 2)}
+        d = rt.decide("B1", "B", context=f"demo:{k}")
+        obs, truth = body.encounter(a.seed + 900 + k, et, d)
+        rt.observe(obs)
+        out = body.last_out
+        rows.append({"k": k, "person": et, "readout_before": st, "readout_after": rt.experience.readout("B1"),
+                     "self_disp_peaks": out.get("self_disp_peaks"), "looming_peaks": out.get("looming_peaks"),
+                     "expression": out.get("expression"), "motion": out.get("motion"),
+                     "fell": bool(out["fell"]), "contacts_truth": truth["contacts"]})
+        print("DEMO", k, et, "wariness", round(rt.experience.readout("B1")["wariness"], 3), "fell", out["fell"],
+              flush=True)
+        if out["fell"]:
+            break
+    world.video_writer.close()
+    world.video_writer = None
+    (a.out / f"{stem}_demo_meta.json").write_text(json.dumps({"frames": world.video_meta}, default=str))
+    record["demo"] = {"pushy_n": a.pushy_n, "calm_n": a.calm_n, "continuous_physics": True, "rows": rows}
+    (a.out / f"{stem}_demo.json").write_text(json.dumps(record, indent=1, default=str))
+    print("DEMO DONE", stem, flush=True)
+    hard_exit(0)
 for cond in a.conditions.split(","):
     rt.load(snapshot)
     body.program_mode, body.program_matched, body.video = cond, not a.unmatched, True
