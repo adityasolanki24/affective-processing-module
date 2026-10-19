@@ -838,7 +838,9 @@ class IsaacWorld:
                    "quiet_frames": [e.quiet_frames >= MIN_QUIET_FRAMES for e in win_ev],
                    "motion": motion_features(track, (sx, sy)),
                    "self_disp_peaks": [round(v, 4) for v in disp_peaks[:len(win_ev)]],
-                   "looming_peaks": [_looming_peak(f) for f in loom_frames[:len(win_ev)]],
+                   "looming_peaks": [_looming_peak(f, horizon_s=getattr(self, "looming_horizon_s", 0.5),
+                                                   near_m=getattr(self, "looming_near_m", None))
+                                     for f in loom_frames[:len(win_ev)]],
                    "standing_peaks": standing_peaks,
                    "expression": ({"plan": program.as_dict(), "depart": depart, "trace": expr_trace,
                                    "observe_s": round(len(obs_own) * DT, 2)} if program is not None else None)}
@@ -873,11 +875,14 @@ def _pool_depth(depth: np.ndarray, cell: int = 8) -> np.ndarray:
         return np.nanmedian(blocks, axis=2)
 
 
-def _looming_peak(frames, horizon_s: float = 0.5, quantile: float = 90.0) -> float:
+def _looming_peak(frames, horizon_s: float = 0.5, quantile: float = 90.0, near_m: float | None = None) -> float:
     """How far something came at the robot within `horizon_s` (m). For pooled depth images: the largest, over
     frame pairs within the horizon, of the `quantile`-th percentile of per-cell depth decrease (approaching
     surfaces anywhere in view; the static floor does not change). For scalar depths: the largest drop. Only still
-    frames are recorded, so the robot's own head motion does not count."""
+    frames are recorded, so the robot's own head motion does not count.
+
+    `near_m`: only cells nearer than this in both frames. A swaying body (NERVA) turns slightly, and at silhouette
+    edges cells flip from the far background to a near body, a "decrease" of metres that is not approach."""
     best = 0.0
     for i, (ti, di) in enumerate(frames):
         for tk, dk in frames[:i]:
@@ -886,7 +891,10 @@ def _looming_peak(frames, horizon_s: float = 0.5, quantile: float = 90.0) -> flo
             if np.ndim(di) == 0:
                 best = max(best, float(dk) - float(di))
             else:
-                dec = np.asarray(dk, float) - np.asarray(di, float)
+                a0, a1 = np.asarray(dk, float), np.asarray(di, float)
+                dec = a0 - a1
+                if near_m is not None:
+                    dec = np.where((a0 < near_m) & (a1 < near_m), dec, np.nan)
                 dec = dec[np.isfinite(dec)]
                 if dec.size:
                     best = max(best, float(np.percentile(dec, quantile)))

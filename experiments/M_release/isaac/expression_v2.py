@@ -41,6 +41,10 @@ ap.add_argument("--unmatched", action="store_true", help="let speed and stopping
 ap.add_argument("--seed", type=int, default=73001)
 ap.add_argument("--near-miss", type=float, default=None,
                 help="lunges stop this far (m) short of the robot: sudden approaches without contact")
+ap.add_argument("--looming-near", type=float, default=None,
+                help="looming from cells nearer than this (m) only (NERVA: its sway flips silhouette edges)")
+ap.add_argument("--looming-horizon", type=float, default=0.5,
+                help="looming time window (s); NERVA's near-miss lunges (<= 0.15 m/s, stopping short) need 1 s")
 ap.add_argument("--types-model", required=True)
 ap.add_argument("--edges", required=True)
 ap.add_argument("--time-model", required=True)
@@ -130,6 +134,8 @@ def calibrate(n: int = 6) -> tuple[float, float, list[float], list[float]]:
 
 
 world.near_miss_margin = a.near_miss
+world.looming_near_m = a.looming_near
+world.looming_horizon_s = a.looming_horizon
 world.new_lifetime(a.seed)
 threshold, cam_threshold, calib_peaks, calib_reaches = calibrate()
 rt = Runtime(mcfg, time_coef, task, tcfg["voi"], lam=0.02, seed=a.seed + 3, camera=True, policy="greedy",
@@ -143,6 +149,7 @@ body.experience_source = rt.experience.readout
 record: dict = {"robot": a.robot, "scene": a.scene, "history": a.history, "seed": a.seed,
                 "engine": "isaac sim 5.1 / physx", "controller": "booster_gym candidate" if candidate else "default",
                 "threshold_m_s": threshold, "camera_threshold_m": cam_threshold, "near_miss_m": a.near_miss,
+                "looming_near_m": a.looming_near, "looming_horizon_s": a.looming_horizon,
                 "calibration_peaks": calib_peaks, "calibration_reaches": calib_reaches, "history_rows": [],
                 "present": {}}
 print("CALIBRATED", a.robot, "disturbance", round(threshold, 4), "camera", round(cam_threshold, 3), flush=True)

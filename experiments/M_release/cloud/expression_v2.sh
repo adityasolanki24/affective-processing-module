@@ -8,7 +8,7 @@ MA=$($ISAAC_PY -c "import sys; sys.path.insert(0,'experiments/M_release/cloud');
 EXTRA=""
 # T1: the retained v1 locomotion controller unless T1_POLICY names another policy directory
 [ "$R" = humanoid ] && [ -n "${T1_POLICY:-}" ] && EXTRA="--policy-dir $T1_POLICY"
-[ "$R" = nerva ] && EXTRA="--near-miss 0.03"  # NERVA falls under contact in Isaac (D3): sudden approaches, no touch
+[ "$R" = nerva ] && EXTRA="--near-miss 0.03 --looming-near 1.5 --looming-horizon 1.0"  # NERVA falls under contact in Isaac (D3): sudden approaches, no touch
 for h in ${HISTORIES:-pushy calm}; do
   # each process its own asset cache (two NERVA imports racing on one cache broke the first pilot)
   APM_CACHE=/work/apm_cache_$h $ISAAC_PY experiments/M_release/isaac/expression_v2.py --robot $R --history $h \

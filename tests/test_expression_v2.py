@@ -107,3 +107,15 @@ def test_pooled_looming_sees_an_approach_anywhere_but_not_a_static_floor():
     lunge = [(0.1 * i, _pool_depth(np.where(np.arange(64)[None, :] > 40, 1.0 - 0.15 * i, floor)
                                    + rng.normal(0, 0.003, floor.shape))) for i in range(6)]
     assert _looming_peak(quiet) < 0.02 and _looming_peak(lunge) > 0.3
+
+
+def test_looming_near_ignores_silhouette_edge_flips():
+    """NERVA: a cell flipping from far background to a near body is not approach; a near body coming closer is."""
+    from apm_isaac.world import _looming_peak
+    far, near = np.full((4, 4), 6.0), np.full((4, 4), 0.6)
+    edge = far.copy()
+    edge[:, :2] = 0.6  # half the view flips from background to the person's edge
+    assert _looming_peak([(0.0, far), (0.2, edge)]) > 5.0  # whole-view rule: metres
+    assert _looming_peak([(0.0, far), (0.2, edge)], near_m=1.5) == 0.0
+    lunge = near - 0.3
+    assert abs(_looming_peak([(0.0, near), (0.2, lunge)], near_m=1.5) - 0.3) < 1e-6

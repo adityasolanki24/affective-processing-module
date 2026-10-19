@@ -7,7 +7,7 @@ OUT=out/expr_demo/$R
 mkdir -p "$OUT"
 MA=$($ISAAC_PY -c "import sys; sys.path.insert(0,'experiments/M_release/cloud'); from m6_plan import model_args; print(model_args('$R'))")
 EXTRA=""
-[ "$R" = nerva ] && EXTRA="--near-miss 0.03"  # as in expression_v2.sh
+[ "$R" = nerva ] && EXTRA="--near-miss 0.03 --looming-near 1.5 --looming-horizon 1.0"  # as in expression_v2.sh
 APM_CACHE=/work/apm_cache_demo $ISAAC_PY experiments/M_release/isaac/expression_v2.py --robot $R --history pushy --demo \
   --pushy-n ${PUSHY_N:-6} --calm-n ${CALM_N:-7} --out "$OUT" --seed ${SEED:-73401} $MA $EXTRA > "$OUT/proc_demo.log" 2>&1
 grep -hE "^(CALIBRATED|DEMO)|Traceback|Error:" "$OUT/proc_demo.log" | cut -c1-240
