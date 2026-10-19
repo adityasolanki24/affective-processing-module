@@ -406,8 +406,10 @@ class IsaacWorld:
         return best if best is not None else mid + np.array([0.0, 0.0, 1.0])
 
     def _occlusion(self, eye: np.ndarray, mid: np.ndarray) -> float:
-        """Share of the view's scene band (rows 15-55%, columns 15-85%) with something nearer than the robot and
-        person (image-plane depth < distance to `mid` - 0.8 m), from a rendered depth frame."""
+        """Share of the view (rows 15-92%, columns 12-88%, sampled every 16 px) showing something above the floor
+        and nearer than the robot and person (image-plane depth < distance to `mid` - 0.8 m), from a rendered depth
+        frame. Pixels are lifted to world points, so the floor between camera and scene is not an occluder, and a
+        robot low in the frame behind furniture is caught."""
         cam = self._video_cam
         if cam is None:
             return 0.0
@@ -420,9 +422,19 @@ class IsaacWorld:
             return 1.0
         d = np.asarray(d, float)
         h, w = d.shape[:2]
-        band = d[int(0.15 * h):int(0.55 * h), int(0.15 * w):int(0.85 * w)]
-        band = np.where(np.isfinite(band) & (band > 0), band, np.inf)
-        return float(np.mean(band < n - 0.8))
+        vv, uu = np.mgrid[int(0.15 * h):int(0.92 * h):16, int(0.12 * w):int(0.88 * w):16]
+        uv = np.stack([uu.ravel(), vv.ravel()], 1).astype(float)
+        dd = d[vv.ravel(), uu.ravel()]
+        ok = np.isfinite(dd) & (dd > 0)
+        near = ok & (dd < n - 0.8)
+        if not near.any():
+            return 0.0
+        try:
+            pts = np.asarray(cam.get_world_points_from_image_coords(uv[near], dd[near]), float)
+        except Exception as e:  # noqa: BLE001 - keep recording; count every near pixel as occluding
+            print("occlusion check without world points:", repr(e)[:120], flush=True)
+            return float(near.mean())
+        return float(np.sum(pts[:, 2] > 0.08) / len(dd))
 
     # ── one control step with the people ─────────────────────────────────────
     def _driver(self, seed: int):
