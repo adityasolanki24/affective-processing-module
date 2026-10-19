@@ -30,9 +30,10 @@ what works and what does not.
   - they sense them with an IMU and a rendered depth eye (no simulator state), learn who pushes, and change how
     they approach.
 - **NERVA:**
-  - imported into Isaac Sim with kinematics matching MuJoCo exactly; its frozen controller walks there;
-  - it fails physical contact with people in PhysX, so its comparative data come from its validated MuJoCo
-    backend, clearly labelled.
+  - imported into Isaac Sim with kinematics matching MuJoCo exactly; its frozen controller walks there and passes
+    its gate battery;
+  - it cannot walk in the home scene, and it had no valid Isaac model. Its comparative data therefore come from its
+    validated MuJoCo backend, clearly labelled (DEVIATIONS D3).
 - Results, with confidence intervals: [REPORT.md](experiments/M_release/REPORT.md).
 
 ## Install
