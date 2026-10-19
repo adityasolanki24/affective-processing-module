@@ -55,3 +55,25 @@ Every departure from the frozen protocol, with its reason. Entries are appended;
 - **NERVA in Isaac Sim** remains in the release for what it does demonstrate (import fixes, gate battery,
   cross-physics agreement, perception, walking in the warehouse and hospital, videos). Every NERVA result names its
   engine.
+
+### D3 correction (2026-10-19, after NERVA's Isaac demonstration lifetimes)
+
+D3 overstated NERVA's interaction failure; it rested on one observed fall. The complete Isaac evidence, all
+warehouse unless noted:
+
+| run | encounters | lunge contacts | falls |
+|---|---|---|---|
+| encounter check (one person) | 1 | 1 | 1 (after a light contact during the approach) |
+| demonstration lifetimes D0–D1, DT, change_B and safe | 96 | 4 | 0 |
+| partition T exploration, home scene (before body colliders) | 556 (both scenes) | 0 | 19, all home, deterministic |
+
+**Corrected statement.**
+- NERVA cannot work in the home scene: deterministic falls, and stepping in place on that floor.
+- In the warehouse it walks, perceives and survives most contacts. Its contact fall rate there is not yet
+  estimated (1 fall in 5 contacts observed).
+
+The decision to use the MuJoCo backend for NERVA's comparative data stands, for these reasons:
+- there is no valid Isaac NERVA model (its exploration data were contact-free, D2);
+- the home scene is impassable;
+- redoing NERVA's exploration, calibration and test in Isaac was not done in this sprint. It is listed as open work
+  in the report.
