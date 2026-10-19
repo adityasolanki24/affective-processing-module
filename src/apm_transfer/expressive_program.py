@@ -103,9 +103,11 @@ def upper_targets(p: ExpressivePlan, phase: str, t: float, bearing: float) -> di
         return {"gaze_yaw": look, "gaze_pitch": 0.0, "guard": 0.3 * p.guard, "openness": 0.3 * p.openness,
                 "tilt": 0.0, "side_on": 0.0}
     if phase == "interact":
-        return {"gaze_yaw": p.fixation * bearing + (1.0 - p.fixation) * 0.5 * scan,
-                "gaze_pitch": 0.15 * p.openness - 0.1 * p.guard, "guard": p.guard, "openness": p.openness,
-                "tilt": p.tilt, "side_on": p.side_on}
+        # While sensing, the head looks at the person and holds still: a moving head is the robot's own motion,
+        # which the camera discards (and a head-mounted eye turned away sees nothing). Expression here is
+        # carried by posture.
+        return {"gaze_yaw": bearing, "gaze_pitch": 0.15 * p.openness - 0.1 * p.guard, "guard": p.guard,
+                "openness": p.openness, "tilt": p.tilt, "side_on": p.side_on}
     if phase == "depart":
         return {"gaze_yaw": p.fixation * bearing, "gaze_pitch": 0.0, "guard": 0.5 * p.guard, "openness": 0.0,
                 "tilt": 0.0, "side_on": 0.0}

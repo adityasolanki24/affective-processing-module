@@ -3,9 +3,9 @@
     $ISAAC_PY experiments/M_release/isaac/expression_v2.py --robot humanoid|nerva --history pushy|calm \
         --out out/expr_v2 <model args from cloud/m6_plan.model_args(robot)>
 
-1. **Calibration (a quiet period, label-free).** Four encounters with a person who does not move, run through
+1. **Calibration (a quiet period, label-free).** Five encounters with a person who does not move, run through
    the same encounter procedure, without memory updates. The robot's own readings set both thresholds:
-   - disturbance: its peak unintended base speed while standing (`calibrate_threshold`);
+   - disturbance: its peak unintended base speed in the sensing windows (`calibrate_threshold`);
    - camera: 1.5 x the 95th percentile of its reach estimates, and at least 0.10 m.
 2. **History.** `--n-history` meetings with person B1, whose physical behaviour is pushy or calm. Encounters are
    repositioned (the robot starts each one at its approach point); memory is continuous. The robot already
@@ -101,7 +101,7 @@ a.out.mkdir(parents=True, exist_ok=True)
 stem = f"{a.robot}_{a.scene}_{a.history}_{a.seed}"
 
 
-def calibrate(n: int = 4) -> tuple[float, float, list[float], list[float]]:
+def calibrate(n: int = 5) -> tuple[float, float, list[float], list[float]]:
     """Quiet-period calibration: the person stands still; the same encounter procedure; no memory update."""
     from apm_express.intent import ExpressionIntent
     from apm_transfer.expressive_program import plan
@@ -109,7 +109,7 @@ def calibrate(n: int = 4) -> tuple[float, float, list[float], list[float]]:
     for k in range(n):
         out, _ = world.encounter(STATIONS["B1"], "still", ExpressionIntent(proximity=0.75).sanitized(), 3, 0.0,
                                  approach_from=APPROACH_M[a.robot], return_home=False, program=plan(None))
-        disp += list(out["self_disp_peaks"]) + list(out["standing_peaks"])
+        disp += list(out["self_disp_peaks"])  # the same measurement as at run time (sensing windows only)
         reaches += [float(x) for w in (out["camera_reaches"] or []) for x in w]
         print("CALIBRATION", k, "disp", out["self_disp_peaks"], "standing", out["standing_peaks"],
               "reaches", [round(x, 3) for x in reaches[-6:]], flush=True)
