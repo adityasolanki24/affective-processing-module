@@ -1,5 +1,5 @@
 {
- "lifetimes": 622,
+ "lifetimes": 624,
  "robots": {
   "humanoid": {
    "A1": {
@@ -103,11 +103,11 @@
     "measure": "cost",
     "scene": "warehouse",
     "history": null,
-    "n_pairs": 18,
-    "mean_diff_DT_minus_other": -21.092690631808278,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -21.228796568627452,
     "ci95": [
-     -22.23555800653595,
-     -20.025248978758174
+     -22.36147573529412,
+     -20.157828553921572
     ],
     "p_one_sided": 0.0,
     "predicted": "less",
@@ -693,11 +693,11 @@
    ]
   },
   "humanoid/warehouse/LOOKUP": {
-   "lifetimes": 18,
-   "encounters": 432,
+   "lifetimes": 20,
+   "encounters": 480,
    "falls": 0,
    "trips": 0,
-   "contacts": 47,
+   "contacts": 54,
    "vetoes": 0,
    "fall_list": []
   },

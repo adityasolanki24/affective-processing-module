@@ -24,10 +24,10 @@ Not chosen:
 | M2 | Isaac Sim infrastructure | pinned env restores on a fresh VM; headless render of a stock scene; physics/sensor smoke test | done |
 | M3 | three embodiments in Isaac | each robot imported, controller validated by a battery (stand, walk, stop, turn, pushes); MuJoCo vs Isaac characterised | gates passed (see below) |
 | M4 | perception and interaction | camera/IMU/odometry → perception → `Observation`, no simulator truth; moving agents with physical presence; ≥ 2 functional scenes | done (see below) |
-| M5 | integrated APM | the same runtime drives all three robots in Isaac; body-specific expressive realisation | runtime runs on all three in 3 scenes; exploration (T) running |
-| M6 | final evaluation | `PROTOCOL.md` frozen; experiments A–F on fresh seeds; held-out scene | protocol committed (f70d9aa) before V/X data |
-| M7 | videos and packaging | 4 videos from recorded traces; trace files, seeds, commands | |
-| M8 | QA and release | checklist verified; cloud audit; docs; release report | |
+| M5 | integrated APM | the same runtime drives all three robots in Isaac; body-specific expressive realisation | done: models fitted (T), MONOTONE* calibrated (V) per robot; NERVA comparative on MuJoCo (D3) |
+| M6 | final evaluation | `PROTOCOL.md` frozen; experiments A–F on fresh seeds; held-out scene | done: 624 X lifetimes, F checks; `REPORT.md` §4–§7 |
+| M7 | videos and packaging | 4 videos from recorded traces; trace files, seeds, commands | done: `REPORT.md` §11 |
+| M8 | QA and release | checklist verified; cloud audit; docs; release report | done: `REPORT.md` §15–§17 |
 
 ## M3 gate evidence (Isaac Sim 5.1 / PhysX unless stated)
 

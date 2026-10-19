@@ -77,3 +77,18 @@ The decision to use the MuJoCo backend for NERVA's comparative data stands, for 
 - the home scene is impassable;
 - redoing NERVA's exploration, calibration and test in Isaac was not done in this sprint. It is listed as open work
   in the report.
+
+## D4 (2026-10-19): completion of the X and F runs (after the X data; no threshold, seed or criterion changed)
+
+- **Two T1 LOOKUP lifetimes re-run.** The `X_humanoid_main_LOOKUP` job hit its timeout (LOOKUP lifetimes take
+  about 20 min each) before X late_B indices 3 and 7. They were run afterwards with the identical command, seeds
+  and system (`X_humanoid_main_LOOKUP_fill3`, `_fill7`). No other lifetime was re-run or dropped. With 18 of 20
+  pairs C3 was already decided (p < 10⁻⁴); with 20 it is unchanged.
+- **F, identity uncertainty.** The first `--anon-b1` runs failed before any lifetime: the runtime's anonymous track
+  id had no station in the Isaac body (KeyError). The harness now maps the track to the physical person at B1's
+  station (7ee3d8a); the runs were repeated with the same seeds.
+- **F sizes.** §8 asks for 4 lifetimes in the missing-sensor and camera-dropout checks; 2 per robot were run (as
+  for the other F checks), for time. F was also run on T1, not only Nova Carter. F was not run for NERVA (D3).
+- **F, unexpected contact.** The world does not write its fault log into the rows. IMU detection is therefore
+  assessed by comparing each scripted-contact approach with the paired reference approach (same seeds, no fault),
+  on approaches without a lunge contact in either (`m6_robustness.py`, `contact_imu`).
