@@ -541,6 +541,11 @@ class IsaacWorld:
             return float(math.hypot(x - origin[0], y - origin[1]))
 
         start, t0 = self.robot.pose()[:2], self.t
+        if hasattr(self.robot, "upper_offset"):  # T1: stand still while the posture relaxes, then move
+            while not fell and self.t - t0 < 3.0 and float(np.max(np.abs(self.robot.upper_offset))) > 0.02:
+                row, _ = self.step(overlay((0.0, 0.0), "release", self.t - t0), adapter, video)
+                fell = self.robot.fallen(row)
+            out["release_s"] = round(self.t - t0, 2)
         while not fell and self.t - t0 < 15.0 and moved(start) < program.retreat_m:
             cmd = MotionRequest("backward", 0.0, (0.0,) * 4) if nerva else (-0.15, 0.0)
             row, _ = self.step(overlay(cmd, "depart", self.t - t0), adapter, video)
@@ -647,7 +652,11 @@ class IsaacWorld:
             upright = self.robot.tilt() < math.radians(20)
             before = limiter.value.copy()
             if upper_kind == "t1":
-                self.robot.upper_offset = limiter.step(t1_offsets(g, program_side), DT, upright)
+                # at rest only (as NERVA's head): T1 fell backing away and turning with arms forward and the head
+                # turned (demo seeds 73401, 73402); while it walks the posture relaxes at the rate limit
+                resting = isinstance(cmd, tuple) and abs(cmd[0]) < 1e-6 and abs(cmd[1]) < 1e-6
+                self.robot.upper_offset = limiter.step(t1_offsets(g, program_side), DT,
+                                                       upright and resting and phase != "release")
             else:
                 from dataclasses import replace as _replace
                 resting = getattr(cmd, "command", "rest") == "rest"  # NERVA: head offsets at rest only (H0)
