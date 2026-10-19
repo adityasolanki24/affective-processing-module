@@ -39,6 +39,9 @@ def fisher_greater(a_fall: int, a_n: int, b_fall: int, b_n: int) -> float:
         if denom else 1.0
 
 
+EJECTION_M_S = 3.0  # apm_isaac.world.EJECTION_M_S (recomputed from the recorded peak; early D6 runs stored 1.5)
+
+
 def lifetime_measures(rec: dict, task: dict) -> dict:
     rows = rec["rows"]
     costs = [enc_cost(r, task) for r in rows]
@@ -55,8 +58,8 @@ def lifetime_measures(rec: dict, task: dict) -> dict:
             "approaches": sum(1 for r in rows if r.get("standoff", 0) == 0 and r.get("arrived")),
             "vetoes": rec.get("vetoes", 0),
             # D6 artefact check: encounters where the standing robot was thrown (> 1.5 m/s); None in pre-D6 records
-            "ejections": (sum(bool(r.get("physics_ejection")) for r in rows)
-                          if any("physics_ejection" in r for r in rows) else None)}
+            "ejections": (sum((r.get("idle_peak_speed") or 0.0) > EJECTION_M_S for r in rows)
+                          if any("idle_peak_speed" in r for r in rows) else None)}
 
 
 def identity_measures(rec: dict, task: dict) -> dict:
