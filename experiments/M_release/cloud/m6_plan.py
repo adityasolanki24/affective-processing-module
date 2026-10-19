@@ -30,6 +30,37 @@ def mono(robot: str) -> str:
     return t[robot]
 
 
+GRID = ["MONOTONE:lo=0.1/width=0.2", "MONOTONE:lo=0.1/width=0.4", "MONOTONE:lo=0.2/width=0.2",
+        "MONOTONE:lo=0.2/width=0.4"]
+R_MAIN = ("DT", "MONO", "FIXED", "NEUTRAL", "LOOKUP", "NOMEM")
+R_IDENTITY = ("DT", "POOLED", "SWAPPED", "SHUFFLED")
+
+
+def mono_r(robot: str) -> str:
+    """MONOTONE* re-tuned under matched supervision (remediation RV), from configs/M6_tuned_R.json."""
+    return json.loads((REPO / CFG / "M6_tuned_R.json").read_text())[robot]
+
+
+def r_jobs(stage: str, robots: tuple[str, ...], t1_policy: str) -> list[tuple[str, str, int]]:
+    """Remediation corrected comparisons (REMEDIATION_PROTOCOL.md): every system under matched supervision."""
+    out = []
+    for r in robots:
+        margs = model_args(r).replace("experiments/M_release/policies/t1_isaaclab_v1", t1_policy)
+        base = f"--robot {r} --scene warehouse --experiment R --supervision matched {margs}"
+        if stage == "RV":
+            out.append((f"RV_{r}", f"3 0 3 out/RV_{r} -- {base} --partition V --systems {','.join(GRID)} "
+                        f"--histories change_B,late_B", 14400))
+        else:
+            for sysname in R_MAIN:
+                sys_ = mono_r(r) if sysname == "MONO" else sysname
+                out.append((f"RY_{r}_main_{sysname}", f"3 0 15 out/RY_{r}_main_{sysname} -- {base} --partition Y "
+                            f"--systems {sys_} --histories change_B,late_B", 21600))
+            for sysname in R_IDENTITY:
+                out.append((f"RY_{r}_id_{sysname}", f"3 0 15 out/RY_{r}_id_{sysname} -- {base} --partition Y "
+                            f"--systems {sysname} --histories risky_B", 21600))
+    return out
+
+
 def jobs(stage: str) -> list[tuple[str, str, int]]:
     """(tag, m5_par command, timeout s)."""
     out = []
@@ -74,11 +105,16 @@ def jobs(stage: str) -> list[tuple[str, str, int]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", choices=("V", "X", "D", "F"), required=True)
+    ap.add_argument("--stage", choices=("V", "X", "D", "F", "RV", "RY"), required=True)
     ap.add_argument("--vms", required=True)
+    ap.add_argument("--robots", default="nova_carter,humanoid", help="RV/RY: Isaac robots")
+    ap.add_argument("--t1-policy", default="experiments/M_release/policies/t1_isaaclab_v1",
+                    help="RV/RY: the T1 controller selected by the gait battery")
     a = ap.parse_args()
     vms = a.vms.split(",")
-    for i, (tag, cmd, tmo) in enumerate(jobs(a.stage)):
+    todo = (r_jobs(a.stage, tuple(a.robots.split(",")), a.t1_policy) if a.stage.startswith("R")
+            else jobs(a.stage))
+    for i, (tag, cmd, tmo) in enumerate(todo):
         vm = vms[i % len(vms)]
         print(f'JC submit {vm} "$E {tag} {tmo} bash experiments/M_release/cloud/m5_par.sh {cmd}" --tag {tag}')
 
