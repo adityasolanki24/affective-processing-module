@@ -23,7 +23,7 @@ from typing import Any
 
 import numpy as np
 
-from apm_isaac.agents import Person, add_person, find_character, place
+from apm_isaac.agents import RADIUS, Person, add_person, find_character, place
 from apm_isaac.robots import DT
 
 REPO = Path(__file__).resolve().parents[2]
@@ -516,8 +516,10 @@ class IsaacWorld:
     def step(self, cmd, drv, render_video: bool = False) -> tuple[dict, bool]:
         x, y, _ = self.robot.pose()
         rxy = np.array([x, y])
+        footprint = getattr(self.robot, "surface_gap", None)
         for p in self.people.values():
-            pos, yaw = p.position(self.t, rxy)
+            gap = footprint(p.xy, RADIUS) if footprint is not None and p.lunges else None
+            pos, yaw = p.position(self.t, rxy, gap)
             place(self.world.stage, p, pos, yaw)
         tripped = drv.send(cmd)
         row = self.robot.advance()
@@ -720,6 +722,7 @@ class IsaacWorld:
         next_push = t_start + settle_s + frng.uniform(1.0, 2.0)
         contact_done = False
         track: list[tuple[float, float, float, float]] = []  # (t, x, y, yaw) during the approach (measurement)
+        idle_peak = 0.0  # peak base speed while commanded to stand after arriving (physics-artefact check)
         while True:
             x, y, yaw = self.robot.pose()
             dist = math.hypot(sx - x, sy - y)
@@ -758,6 +761,8 @@ class IsaacWorld:
             log.read(row)
             own.append(bool(adapter.own_motion(cmd, tripped) or upper_moved[0]))
             sp = base_speed()
+            if k_arrive is not None and loco_idle(cmd):
+                idle_peak = max(idle_peak, sp)
             if k_arrive is not None and loco_idle(cmd):  # unintended self-motion while commanded to stand
                 jw = k - (k_arrive + skip_n)
                 if 0 <= jw < windows * win_n:
@@ -844,8 +849,14 @@ class IsaacWorld:
         truth = {"type": etype, "contacts": len({c[3] for c in contacts if c[3] is not None}),
                  "contact_episodes": episodes,
                  "contact_s": round(0.02 * len({round(c[0] / 0.02) for c in contacts}), 2),
-                 "contact_impulse_max": max((c[2] for c in contacts), default=0.0), "station": station}
+                 "contact_impulse_max": max((c[2] for c in contacts), default=0.0), "station": station,
+                 # simulator artefact flag (evaluation only, never sensed): a standing robot moving faster than
+                 # EJECTION_M_S was thrown by the contact solver, not pushed by a person
+                 "idle_peak_speed": round(idle_peak, 3), "physics_ejection": bool(idle_peak > EJECTION_M_S)}
         return outcome, truth
+
+
+EJECTION_M_S = 1.5  # no person's lunge moves a standing robot this fast (lunge surface speed <= 0.15 m/s)
 
 
 def _pool_depth(depth: np.ndarray, cell: int = 8) -> np.ndarray:

@@ -6,7 +6,8 @@ OUT=out/expr_v2/$R
 mkdir -p "$OUT"
 MA=$($ISAAC_PY -c "import sys; sys.path.insert(0,'experiments/M_release/cloud'); from m6_plan import model_args; print(model_args('$R'))")
 EXTRA=""
-[ "$R" = humanoid ] && EXTRA="--policy-dir experiments/M_release/policies/t1_booster_candidate"
+# T1: the retained v1 locomotion controller unless T1_POLICY names another policy directory
+[ "$R" = humanoid ] && [ -n "${T1_POLICY:-}" ] && EXTRA="--policy-dir $T1_POLICY"
 [ "$R" = nerva ] && EXTRA="--near-miss 0.03"  # NERVA falls under contact in Isaac (D3): sudden approaches, no touch
 for h in ${HISTORIES:-pushy calm}; do
   # each process its own asset cache (two NERVA imports racing on one cache broke the first pilot)

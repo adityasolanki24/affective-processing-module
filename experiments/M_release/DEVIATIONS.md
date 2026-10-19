@@ -105,3 +105,52 @@ The decision to use the MuJoCo backend for NERVA's comparative data stands, for 
 - **Finding.** NERVA had no earlier hospital recording (the first NERVA demonstration lifetimes were all in the
   warehouse; D3's correction implied otherwise). Its hospital lifetime ends with a fall in encounter 11 (1 lunge
   contact before it), identically in two runs. NERVA in the warehouse: 48 more encounters, 3 contacts, 0 falls.
+
+## D6 (2026-10-19, remediation): a person's lunge chased a robot it had pushed back (simulator artefact; affects Isaac contact data)
+
+- **Finding.** Scanning Nova Carter's traces, about 9–12% of encounters ended with the robot thrown 1–4 m at
+  4–10 m/s while it was commanded to stand: the RY runs (DT 54/720 encounters) and programme M's X runs (most
+  systems 9–12%; FIXED and LOOKUP, which stop farther away, 1–2%).
+- **Cause** (`isaac/carter_contact_check.py`, 12/12 reproductions). `agents.Person.displacement` recomputed every
+  lunge's contact limit (the robot's gap + 3 cm) at every control step. Once contact moved the robot back, the gap
+  grew, the limit grew, and the kinematic capsule followed. The 3 cm overlap was re-created each step, and the
+  capsule chased the robot at up to 10 m/s, far outside the documented surface speed (≤ 0.15 m/s) and overlap
+  (3 cm). Carter is the worst case:
+  - its chassis origin is at its front edge, and the body extends 0.59 m behind it and 0.24 m to each side;
+  - the gap used `front` = 0.14 m, which is correct only straight ahead (measured extent 0.19 m at 30°, 0.26 m at
+    60°).
+- **Fix** (a defect, not a tuning).
+  - Each lunge's limit is frozen when the lunge starts.
+  - For Nova Carter, the gap is measured to its collision footprint (`NovaCarterIsaac.surface_gap`).
+  - Each encounter's evaluation truth now records `idle_peak_speed` and a `physics_ejection` flag (> 1.5 m/s
+    while commanded to stand). These are never sensed by APM.
+  - Unit tests: `test_lunge_does_not_chase_a_receding_robot` and `test_lunge_uses_a_measured_gap`.
+- **Consequences.**
+  - Programme M's Isaac results contain the artefact (Carter most; T1 and NERVA in Isaac also used this model).
+    They are preserved unmodified and must be read with this note.
+  - The four completed RY Carter jobs (main DT and LOOKUP, identity SWAPPED and SHUFFLED) are kept as pre-fix
+    evidence and not analysed as results. The jobs still running were stopped.
+  - RV (MONOTONE* re-tune) and all RY runs for Carter and T1 are redone with the fix, on the same frozen seeds,
+    systems and criteria. Nothing else changed.
+  - NERVA's corrected comparisons use the MuJoCo backend (impulse model, not this capsule) and are unaffected.
+
+## D7 (2026-10-19, remediation): T1 controller decision; expressive posture on the retained controller
+
+- **Gait battery.** The official Booster candidate failed the frozen battery (seeds 72001–72005):
+  - rule 1: 3 falls with 0.5 m/s walking pushes;
+  - rule 4: settle time +42%.
+  Its gait quality was much better: stance slip −69%, joint-acceleration RMS −57%, tilt p95 −48%.
+- **Push-reflex development** (seeds 72101–72105 only; flat ground; 6 scenarios): reflex variants R1–R4 (R5's
+  process hung and produced no data).
+  - R1–R3 hijacked normal walking: speed error about 0.27 m/s.
+  - R4 kept 1 fall at 0.5 m/s pushes and tripled the tracking error (0.07–0.12 m/s).
+  - Settle time stays above 1.2× v1 for every variant (the plain candidate 0.96 s vs 0.58 s).
+  - No variant met the frozen rule even on development seeds, so no fresh battery was run and the PPO fine-tune
+    was not resumed.
+- **Decision** (the frozen rule): **v1 remains T1's controller.** The candidate is reported as a better-looking
+  gait that is less robust to pushes and slower to settle.
+- **Expression on v1.** v1's policy also drives the head, arms and waist. The expressive posture offset is added to
+  those joints' targets and to the default pose the policy observes, so the policy holds the posture as its rest
+  pose (`LabPolicyBody.upper_offset`). This is a stability-relevant change. It is checked with
+  `isaac/posture_check.py --controller v1` (standing and walking with guarded and open postures, falls and tilt)
+  before any expression run uses it.

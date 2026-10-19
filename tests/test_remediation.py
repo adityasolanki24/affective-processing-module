@@ -153,3 +153,30 @@ def test_runtime_persists_sensor_memory_without_changing_navigation(tmp_path):
     a.save(tmp_path / "legacy.json")
     c.load(tmp_path / "legacy.json")
     assert c.sensor_expectation is None
+
+
+def test_lunge_does_not_chase_a_receding_robot():
+    """D6: a lunge's contact limit is frozen when it starts; a robot pushed back is not followed."""
+    from apm_isaac.agents import MAX_OVERLAP, RADIUS, Lunge, Person
+    p = Person("P", "/P", np.zeros(2))
+    p.front = 0.14
+    p.lunges = [Lunge(t_peak=2.0, reach=0.8, speed=0.9)]
+    d = 0.14 + RADIUS + 0.10  # gap 0.10 at the station
+    peak, prev, fastest = 0.0, 0.0, 0.0
+    for k in range(200):
+        t = k * 0.02
+        s = p.displacement(t, d)
+        peak, fastest = max(peak, s), max(fastest, abs(s - prev) / 0.02)
+        prev = s
+        if s > 0.10:  # in contact: the robot is pushed back 5 mm per step
+            d += 0.005
+    assert peak <= 0.10 + MAX_OVERLAP + 1e-9
+    assert fastest <= 0.15 + 1e-6  # V_CONTACT_MAX
+
+
+def test_lunge_uses_a_measured_gap():
+    from apm_isaac.agents import MAX_OVERLAP, Lunge, Person
+    p = Person("P", "/P", np.zeros(2))
+    p.lunges = [Lunge(t_peak=1.0, reach=0.8, speed=0.9)]
+    s = max(p.displacement(k * 0.02, 1.0, gap=0.02) for k in range(100))
+    assert abs(s - (0.02 + MAX_OVERLAP)) < 1e-6

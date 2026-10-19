@@ -1,6 +1,7 @@
 """Expressive posture check: verify joint signs from rendered stills, and stability while each posture is held.
 
-    $ISAAC_PY experiments/M_release/isaac/posture_check.py --robot humanoid|nerva --out out/posture
+    $ISAAC_PY experiments/M_release/isaac/posture_check.py --robot humanoid|nerva --out out/posture \
+        [--controller v1|candidate]
 
 For each descriptor at full strength (and the neutral pose) the robot stands 2 s, moves into the posture at the
 adapter's rate limit, holds it for 4 s, and front and side stills are rendered. T1 then walks 0.2 m/s for 6 s
@@ -18,6 +19,7 @@ from pathlib import Path
 ap = argparse.ArgumentParser()
 ap.add_argument("--robot", choices=("humanoid", "nerva"), required=True)
 ap.add_argument("--out", type=Path, required=True)
+ap.add_argument("--controller", choices=("v1", "candidate"), default="v1", help="T1 locomotion controller")
 a = ap.parse_args()
 
 from isaaclab.app import AppLauncher  # noqa: E402
@@ -48,11 +50,16 @@ POSES = {"neutral": {}, "guard": {"guard": 1.0}, "open": {"openness": 1.0}, "til
          "side_on": {"side_on": 1.0}, "gaze_left": {"gaze_yaw": 0.4}, "gaze_up": {"gaze_pitch": 0.25}}
 
 if a.robot == "humanoid":
-    world = World(stage_units_in_meters=1.0, physics_dt=0.002, rendering_dt=DT)
+    world = World(stage_units_in_meters=1.0, physics_dt=0.005 if a.controller == "v1" else 0.002, rendering_dt=DT)
     world.scene.add_default_ground_plane(static_friction=1.0, dynamic_friction=1.0)
-    from apm_isaac.booster import BoosterPolicyBody
-    body = BoosterPolicyBody(world, "/World/R", (0.0, 0.0), 0.0, 1, ROOT / "experiments/M_release/policies/"
-                             "t1_booster_candidate")
+    if a.controller == "v1":
+        from apm_isaac.robots import LabPolicyBody
+        body = LabPolicyBody.t1(world, "/World/R", (0.0, 0.0), 0.0, 1, ROOT / "experiments/M_release/policies/"
+                                "t1_isaaclab_v1")
+    else:
+        from apm_isaac.booster import BoosterPolicyBody
+        body = BoosterPolicyBody(world, "/World/R", (0.0, 0.0), 0.0, 1, ROOT / "experiments/M_release/policies/"
+                                 "t1_booster_candidate")
     views = {"front": ((2.4, 0.0, 1.1), (0.0, 0.0, 0.85)), "side": ((0.0, -2.4, 1.1), (0.0, 0.0, 0.85))}
     limiter = RateLimited(11, 0.6)
 else:
@@ -91,14 +98,15 @@ def still(name: str) -> None:
             world.render()
         frame = np.asarray(cam.get_rgba())
         if frame.size:
-            imageio.imwrite(a.out / f"{a.robot}_{name}_{view}.png", frame[..., :3].astype(np.uint8))
+            imageio.imwrite(a.out / f"{a.robot}_{a.controller}_{name}_{view}.png", frame[..., :3].astype(np.uint8))
 
 
 results = {}
 conditions = [(n, p, 0.0) for n, p in POSES.items()]
 if a.robot == "humanoid":
     conditions += [("walk_guard", {"guard": 1.0}, 0.2), ("walk_open", {"openness": 1.0}, 0.2),
-                   ("walk_neutral", {}, 0.2)]
+                   ("walk_neutral", {}, 0.2), ("walk_guard_side", {"guard": 1.0, "side_on": 1.0}, 0.3),
+                   ("walk_open_fast", {"openness": 1.0}, 0.4)]
 for name, pose, v in conditions:
     world.reset()
     body.post_reset()
@@ -120,6 +128,7 @@ for name, pose, v in conditions:
                      "tilt_max_deg": float(np.max(tilts)), "fell": fell,
                      "trips": int(getattr(body, "trips", 0) - trips0)}
     print("POSE", name, json.dumps(results[name]), flush=True)
-(a.out / f"posture_{a.robot}.json").write_text(json.dumps(results, indent=1))
+suffix = f"_{a.controller}" if a.robot == "humanoid" else ""
+(a.out / f"posture_{a.robot}{suffix}.json").write_text(json.dumps(results, indent=1))
 print("POSTURE DONE", a.robot, flush=True)
 hard_exit(0)

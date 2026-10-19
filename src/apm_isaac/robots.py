@@ -299,6 +299,19 @@ class NovaCarterIsaac(_IsaacBody):
         c0 = cache.GetLocalToWorldTransform(chassis).ExtractTranslation()
         self.front = float(bound.GetMax()[0] - c0[0])
         self.height = float(bound.GetMax()[2] - bound.GetMin()[2])
+        # the collision footprint in the chassis frame (union of all colliders): the chassis origin is near the
+        # front edge and the body extends ~0.6 m behind it, so `front` holds only straight ahead (remediation D6)
+        c_inv = cache.GetLocalToWorldTransform(chassis).GetInverse()
+        bbc = UsdGeom.BBoxCache(Usd.TimeCode.Default(), ["default", "render", "proxy", "guide"])
+        pts = []
+        for p in prims:
+            if p.HasAPI(UsdPhysics.CollisionAPI) and p.IsA(UsdGeom.Imageable):
+                rng = bbc.ComputeUntransformedBound(p).ComputeAlignedRange()
+                if not rng.IsEmpty():
+                    m = cache.GetLocalToWorldTransform(p) * c_inv
+                    pts += [list(m.Transform(rng.GetCorner(i)))[:2] for i in range(8)]
+        P = np.array(pts) if pts else np.array([[-0.6, -0.25], [self.front, 0.25]])
+        self.footprint = (float(P[:, 0].min()), float(P[:, 0].max()), float(np.abs(P[:, 1]).max()))
         art_root = next((str(p.GetPath()) for p in prims if p.HasAPI(UsdPhysics.ArticulationRootAPI)), path)
         # contact handling only: overlap with a person's kinematic collider is resolved at <= 0.3 m/s (as on the
         # reference robot), so a lunge transmits its contact velocity, not a depenetration spike
@@ -328,6 +341,16 @@ class NovaCarterIsaac(_IsaacBody):
         self.chassis_name = chassis.GetName()
         self.measured: dict | None = None
         self._init_common(seed)
+
+    def surface_gap(self, xy: np.ndarray, radius: float) -> float:
+        """Gap between a person's body (centre `xy`, `radius`) and the robot's collision footprint."""
+        x, y, yaw = self.pose()
+        c, s = math.cos(yaw), math.sin(yaw)
+        dx, dy = float(xy[0]) - x, float(xy[1]) - y
+        lx, ly = c * dx + s * dy, -s * dx + c * dy
+        x0, x1, hw = self.footprint
+        ex, ey = max(x0 - lx, 0.0, lx - x1), max(abs(ly) - hw, 0.0)
+        return math.hypot(ex, ey) - radius
 
     def post_reset(self) -> None:
         """Find the wheel joints and measure the asset's geometry (once)."""
@@ -573,6 +596,14 @@ class LabPolicyBody(_IsaacBody):
         self.art.set_world_pose(position=np.array([x, y, self.base_z]), orientation=yaw_quat(yaw))
         self.last = np.zeros(len(self.idx))
         self.expression_head = np.zeros(2)  # yaw/pitch; optional expressive driver only
+        # expressive upper-body posture (head, arms, waist; apm_isaac.booster.JOINTS[:11] order). This policy also
+        # drives those joints, so an offset shifts the reference pose they are held to: added to the targets and
+        # to the observed default alike (the policy sees the posture as its rest pose, not as a disturbance)
+        from apm_isaac.booster import JOINTS
+        cfg_names = list(self.cfg["joint_names"])
+        self.upper_pos = np.array([cfg_names.index(j) for j in JOINTS[:11]])
+        self.upper_offset = np.zeros(11)
+        self._ref_offset = np.zeros(len(self.idx))
         if self.eye_prim is None:
             self._make_eye_frame()
 
@@ -640,7 +671,8 @@ class LabPolicyBody(_IsaacBody):
         q = np.asarray(self.art.get_joint_positions(), float)[self.idx]
         dq = np.asarray(self.art.get_joint_velocities(), float)[self.idx]
         cmd = np.array([self.command_for(self.v_cmd), 0.0, self.w_cmd])
-        return np.concatenate([lin, ang, grav, cmd, q - self.default, dq, self.last]).astype(np.float32)
+        return np.concatenate([lin, ang, grav, cmd, q - self.default - self._ref_offset, dq,
+                               self.last]).astype(np.float32)
 
     def advance(self) -> dict:
         from isaacsim.core.utils.types import ArticulationAction
@@ -648,7 +680,10 @@ class LabPolicyBody(_IsaacBody):
             act = self.policy(self.torch.from_numpy(self.observation())[None]).numpy()[0]
         target = np.asarray(self.art.get_joint_positions(), float).copy()
         target[self.idx] = self.default + self.cfg["action_scale"] * act
+        self._ref_offset = np.zeros(len(self.idx))
         if self.tilt() < self.TILT_TRIP and self.t >= self.brake_until:
+            self._ref_offset[self.upper_pos] = self.upper_offset
+            target[self.idx] += self._ref_offset
             names = list(self.art.dof_names)
             for name, offset in zip(("AAHead_yaw", "Head_pitch"), self.expression_head, strict=True):
                 if name in names:

@@ -356,6 +356,7 @@ for index in range(a.first, a.first + a.n):
                     "intended_band": band_of(d.proximity), "contacts": truth["contacts"],
                     "contact_episodes": truth["contact_episodes"], "contact_s": truth["contact_s"],
                     "impulse_max": round(truth["contact_impulse_max"], 4), "arrived": out["arrived"],
+                    "physics_ejection": truth.get("physics_ejection"), "idle_peak_speed": truth.get("idle_peak_speed"),
                     "t_arrive": out["t_arrive"], "trips": out["trips"], "fell": out["fell"],
                     "task_success": task.p_success(d_abs),
                     "reached_interaction": bool(task.d_task is not None and d_abs <= task.d_task + 0.05),

@@ -48,6 +48,7 @@ class Lunge:
     t_peak: float
     reach: float
     speed: float
+    limit: float | None = None  # contact limit, frozen when the lunge starts (the robot's gap then + overlap)
 
 
 @dataclass
@@ -76,14 +77,27 @@ class Person:
 
     front: float = 0.12  # the robot's extent ahead of its origin (set by the world)
 
-    def displacement(self, t: float, dist_to_robot: float) -> float:
+    def displacement(self, t: float, dist_to_robot: float, gap: float | None = None) -> float:
+        """The person's displacement toward the robot now. `dist_to_robot` and `gap` are measured from the station
+        (`gap`: the robot's surface gap to a body at the station; default: dist - front - RADIUS, which assumes the
+        robot faces the person).
+
+        Each lunge's contact limit is frozen when the lunge starts. (Until remediation D6 it was recomputed every
+        step from the current gap, so a robot pushed back was followed: the overlap was re-created each step and the
+        kinematic capsule chased it at metres per second.)"""
         s = 0.0
-        gap = max(0.0, dist_to_robot - self.front - RADIUS)
+        if gap is None:
+            gap = dist_to_robot - self.front - RADIUS
+        gap = max(0.0, gap)
         self.active = None
         for i, lg in enumerate(self.lunges):
-            limit = gap + MAX_OVERLAP if self.near_miss is None else max(0.0, gap - self.near_miss)
-            peak = float(np.clip(lg.reach - GAP0, 0.0, limit))
             v_surf = min(lg.speed * CONTACT_GAIN * 2, V_CONTACT_MAX)
+            longest = max(max(lg.reach - GAP0, 0.0) / max(v_surf, 1e-3), 0.15)
+            if lg.limit is None:
+                if t < lg.t_peak - longest:
+                    continue
+                lg.limit = gap + MAX_OVERLAP if self.near_miss is None else max(0.0, gap - self.near_miss)
+            peak = float(np.clip(lg.reach - GAP0, 0.0, lg.limit))
             ramp = max(peak / max(v_surf, 1e-3), 0.15)
             dt = abs(t - lg.t_peak)
             if dt <= ramp and peak * (1.0 - dt / ramp) >= s:
@@ -93,7 +107,7 @@ class Person:
 
     active: int | None = None  # index of the lunge moving the person now (evaluation truth only)
 
-    def position(self, t: float, robot_xy: np.ndarray) -> tuple[np.ndarray, float]:
+    def position(self, t: float, robot_xy: np.ndarray, gap: float | None = None) -> tuple[np.ndarray, float]:
         if self.patrol is not None:
             pa, pb, v = self.patrol
             L = float(np.linalg.norm(pb - pa))
@@ -115,7 +129,7 @@ class Person:
         to = robot_xy - self.xy
         d = float(np.linalg.norm(to))
         u = to / d if d > 1e-6 else np.array([1.0, 0.0])
-        self.disp = self.displacement(t, d)
+        self.disp = self.displacement(t, d, gap)
         return self.xy + self.disp * u, math.atan2(u[1], u[0])
 
 

@@ -55,7 +55,9 @@ if [ ! -x $ROOT/venv/bin/python ]; then
 fi
 export PATH=$ROOT/uv:$PATH  # isaaclab.sh uses uv when the venv was made by uv
 LAB_OK='import importlib.util as u, sys; sys.exit(0 if all(u.find_spec(m) for m in ("isaaclab", "isaaclab_tasks", "isaaclab_rl", "rsl_rl")) else 1)'
-if [ ! -f $ROOT/.lab_ok ] && (cd / && $ROOT/venv/bin/python -c "$LAB_OK"); then touch $ROOT/.lab_ok; fi
+# checked on every job: the marker travels in the snapshot, so a restore that came out incomplete (VMs h4, h2 of the
+# remediation: editable-install finders missing) would otherwise be trusted
+if (cd / && $ROOT/venv/bin/python -c "$LAB_OK" 2>/dev/null); then touch $ROOT/.lab_ok; else rm -f $ROOT/.lab_ok; fi
 if [ ! -f $ROOT/.lab_ok ]; then
   echo "[isaac_env] (re)installing Isaac Lab $ISAAC_LAB_TAG extensions"
   # flatdict's sdist needs pkg_resources at build time, which recent setuptools in pip's build isolation lacks
@@ -64,8 +66,11 @@ if [ ! -f $ROOT/.lab_ok ]; then
   (cd $ROOT/IsaacLab/source && $ROOT/venv/bin/python -m pip install -q -e isaaclab -e isaaclab_assets      -e isaaclab_tasks -e "isaaclab_rl[rsl_rl]" > /tmp/isaaclab_install.log 2>&1) || tail -40 /tmp/isaaclab_install.log
   (cd / && $ROOT/venv/bin/python -c "import isaaclab, isaaclab_tasks, rsl_rl; print('[isaac_env] isaaclab ok', isaaclab.__file__)")
   (cd / && $ROOT/venv/bin/python -c "$LAB_OK") && touch $ROOT/.lab_ok
-  echo "[isaac_env] saving repaired snapshot $SNAP"
-  tar -C / -cf - work/isaac | zstd -T0 -3 | gcloud storage cp - "$SNAP"
+  # never overwrite the shared snapshot from a repair: a working one already exists (it restored on other VMs)
+  if [ -f $ROOT/.lab_ok ] && ! gcloud storage ls "$SNAP" >/dev/null 2>&1; then
+    echo "[isaac_env] saving repaired snapshot $SNAP"
+    tar -C / -cf - work/isaac | zstd -T0 -3 | gcloud storage cp - "$SNAP"
+  fi
 fi
 export ISAAC_PY=$ROOT/venv/bin/python ISAACLAB=$ROOT/IsaacLab
 $ISAAC_PY -c "import isaacsim, torch; print('[isaac_env] torch', torch.__version__, 'cuda', torch.cuda.is_available())"
