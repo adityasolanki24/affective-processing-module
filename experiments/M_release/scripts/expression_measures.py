@@ -79,7 +79,7 @@ def main() -> None:
         for cond, rows in d["present"].items():
             name = "neutral" if cond == "neutral" else f"memory_after_{hist}"
             r["conditions"].setdefault(name, []).extend(measures(x, robot) for x in rows)
-    for robot, r in res.items():
+    for r in res.values():
         r["summary"] = {c: summarise(v) for c, v in r["conditions"].items()}
         neu = r["summary"].get("neutral", {})
         r["matching"] = {c: {"approach_speed_diff_m_s": round(s.get("approach_speed_m_s", 0) -

@@ -76,7 +76,7 @@ def main() -> None:
     held = [0] * len(readers)
     for _ in range(n):
         tiles = []
-        for j, (lo, hi) in enumerate(spans):
+        for j, (_lo, hi) in enumerate(spans):
             if pos[j] < hi:
                 _, fr = next(iters[j])
                 pos[j] += 1
