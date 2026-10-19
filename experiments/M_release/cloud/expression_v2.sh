@@ -11,7 +11,7 @@ EXTRA=""
 for h in ${HISTORIES:-pushy calm}; do
   # each process its own asset cache (two NERVA imports racing on one cache broke the first pilot)
   APM_CACHE=/work/apm_cache_$h $ISAAC_PY experiments/M_release/isaac/expression_v2.py --robot $R --history $h \
-    --out "$OUT" $MA $EXTRA > "$OUT/proc_$h.log" 2>&1 &
+    --out "$OUT" --seed ${SEED:-73001} $MA $EXTRA > "$OUT/proc_$h.log" 2>&1 &
   # two NERVA simulations side by side crash Isaac (null USD stage): NERVA's histories run one after another
   if [ "$R" = nerva ]; then wait; fi
 done

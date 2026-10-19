@@ -620,6 +620,23 @@ class IsaacWorld:
         def overlay(cmd, phase: str, t_phase: float):
             if limiter is None:
                 upper_moved[0] = False
+                if program is not None and isinstance(cmd, tuple) and phase in ("settle", "observe"):
+                    # wheeled body (no head): gaze is the body's heading. While it stands and watches, a wary plan
+                    # holds the heading on the person; a relaxed one sweeps it to look around.
+                    xr, yr, yawr = self.robot.pose()
+                    bearing = math.atan2(sy - yr, sx - xr) - yawr
+                    bearing = math.atan2(math.sin(bearing), math.cos(bearing))
+                    scan = program.scan_amp * math.sin(2 * math.pi * program.scan_hz * t_phase)
+                    target = -(1.0 - program.fixation) * 1.5 * scan  # wanted bearing of the person
+                    if abs(cmd[0]) < 1e-6 and abs(cmd[1]) < 1e-6:
+                        cmd = (0.0, float(np.clip(1.5 * (bearing - target), -0.6, 0.6)))
+                    if int(round(self.t / DT)) % 10 == 0:
+                        expr_trace.append({"t": round(self.t, 2), "phase": phase,
+                                           "pose": [round(v, 4) for v in (xr, yr, yawr)], "upper": []})
+                elif program is not None and int(round(self.t / DT)) % 10 == 0:
+                    xr, yr, yawr = self.robot.pose()
+                    expr_trace.append({"t": round(self.t, 2), "phase": phase,
+                                       "pose": [round(v, 4) for v in (xr, yr, yawr)], "upper": []})
                 return cmd
             xr, yr, yawr = self.robot.pose()
             bearing = math.atan2(sy - yr, sx - xr) - yawr

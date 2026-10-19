@@ -30,7 +30,7 @@ from pathlib import Path
 from isaaclab.app import AppLauncher
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--robot", choices=("humanoid", "nerva"), required=True)
+ap.add_argument("--robot", choices=("humanoid", "nerva", "nova_carter"), required=True)
 ap.add_argument("--history", choices=("pushy", "calm"), required=True)
 ap.add_argument("--scene", default="warehouse")
 ap.add_argument("--n-history", type=int, default=8)
@@ -70,7 +70,7 @@ from apm_transfer.infoseek import Task  # noqa: E402
 from apm_transfer.runtime import Runtime  # noqa: E402
 
 M = REPO / "experiments" / "M_release"
-APPROACH_M = {"humanoid": 2.2, "nerva": 1.1}
+APPROACH_M = {"humanoid": 2.2, "nerva": 1.1, "nova_carter": 2.2}
 CHARACTERS = {"P1": "male_adult_construction_05_new", "P2": "F_Business_02", "P3": "M_Medical_01"}
 STATIONS = {"A1": "P1", "B1": "P2", "C1": "P3"}
 
@@ -171,7 +171,7 @@ def review_camera() -> tuple[np.ndarray, np.ndarray]:
     r = APPROACH_M[a.robot]
     mid2 = s + 0.5 * r * dv
     side = np.array([-dv[1], dv[0]])
-    dist, h, z = (1.15, 0.45, 0.22) if a.robot == "nerva" else (2.6, 1.3, 0.6)
+    dist, h, z = {"nerva": (1.15, 0.45, 0.22), "nova_carter": (2.6, 1.2, 0.4)}.get(a.robot, (2.6, 1.3, 0.6))
     look = np.array([*mid2, z])
     eyes = [np.array([*(mid2 + sgn * dist * side), h]) for sgn in (1.0, -1.0)]
     occ = [world._occlusion(e, look) for e in eyes]
