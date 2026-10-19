@@ -7,9 +7,11 @@ mkdir -p "$OUT"
 MA=$($ISAAC_PY -c "import sys; sys.path.insert(0,'experiments/M_release/cloud'); from m6_plan import model_args; print(model_args('$R'))")
 EXTRA=""
 [ "$R" = humanoid ] && EXTRA="--policy-dir experiments/M_release/policies/t1_booster_candidate"
-for h in pushy calm; do
-  $ISAAC_PY experiments/M_release/isaac/expression_v2.py --robot $R --history $h --out "$OUT" $MA $EXTRA \
-    > "$OUT/proc_$h.log" 2>&1 &
+[ "$R" = nerva ] && EXTRA="--near-miss 0.03"  # NERVA falls under contact in Isaac (D3): sudden approaches, no touch
+for h in ${HISTORIES:-pushy calm}; do
+  # each process its own asset cache (two NERVA imports racing on one cache broke the first pilot)
+  APM_CACHE=/work/apm_cache_$h $ISAAC_PY experiments/M_release/isaac/expression_v2.py --robot $R --history $h \
+    --out "$OUT" $MA $EXTRA > "$OUT/proc_$h.log" 2>&1 &
 done
 while [ "$(jobs -r | wc -l)" -gt 0 ]; do
   sleep 60

@@ -3,8 +3,10 @@
     $ISAAC_PY experiments/M_release/isaac/expression_v2.py --robot humanoid|nerva --history pushy|calm \
         --out out/expr_v2 <model args from cloud/m6_plan.model_args(robot)>
 
-1. **Calibration (label-free).** The robot stands alone at its approach point with nobody within reach, for 20 s.
-   Its own peak standing sway per second sets the disturbance threshold (`calibrate_threshold`).
+1. **Calibration (a quiet period, label-free).** Four encounters with a person who does not move, run through
+   the same encounter procedure, without memory updates. The robot's own readings set both thresholds:
+   - disturbance: its peak unintended base speed while standing (`calibrate_threshold`);
+   - camera: 1.5 x the 95th percentile of its reach estimates, and at least 0.10 m.
 2. **History.** `--n-history` meetings with person B1, whose physical behaviour is pushy or calm. Encounters are
    repositioned (the robot starts each one at its approach point); memory is continuous. The robot already
    expresses its current state during the history. Each meeting updates the runtime's experience state from
@@ -21,7 +23,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import sys
 from pathlib import Path
 
@@ -36,6 +37,8 @@ ap.add_argument("--n-present", type=int, default=2)
 ap.add_argument("--conditions", default="memory,neutral")
 ap.add_argument("--unmatched", action="store_true", help="let speed and stopping distance vary too")
 ap.add_argument("--seed", type=int, default=73001)
+ap.add_argument("--near-miss", type=float, default=None,
+                help="lunges stop this far (m) short of the robot: sudden approaches without contact")
 ap.add_argument("--types-model", required=True)
 ap.add_argument("--edges", required=True)
 ap.add_argument("--time-model", required=True)
@@ -60,7 +63,6 @@ from isaacsim.storage.native import get_assets_root_path  # noqa: E402
 
 from apm_isaac.agents import find_character  # noqa: E402
 from apm_isaac.body import IsaacBody  # noqa: E402
-from apm_isaac.robots import DT  # noqa: E402
 from apm_isaac.world import IsaacWorld, SceneSpec  # noqa: E402
 from apm_transfer.experience_state import ExperienceState, calibrate_threshold  # noqa: E402
 from apm_transfer.infoseek import Task  # noqa: E402
@@ -95,42 +97,39 @@ a.out.mkdir(parents=True, exist_ok=True)
 stem = f"{a.robot}_{a.scene}_{a.history}_{a.seed}"
 
 
-def calibrate(seconds: float = 20.0) -> tuple[float, list[float]]:
-    """Stand alone at the approach point (the nearest person 2.2 m / 1.1 m away, out of reach)."""
-    sx, sy = world.people[STATIONS["B1"]].xy
-    hx, hy, _ = world._home
-    dv = np.array([hx - sx, hy - sy])
-    dv /= np.linalg.norm(dv) or 1.0
-    r = APPROACH_M[a.robot]
-    world.robot.teleport(sx + r * dv[0], sy + r * dv[1], math.atan2(-dv[1], -dv[0]))
-    from apm_express.adapter import NEUTRAL_REQUEST
-    drv = world._driver(a.seed)
-    idle = NEUTRAL_REQUEST if a.robot == "nerva" else drv.idle
-    pts, peaks = [], []
-    for _ in range(int(seconds / DT)):
-        world.step(idle, drv)
-        pts.append(world.robot.pose()[:2])
-    sp = np.r_[0.0, np.linalg.norm(np.diff(np.asarray(pts), axis=0), axis=1) / DT]
-    sm = np.convolve(sp, np.ones(5) / 5, mode="same")
-    per = int(round(1.0 / DT))
-    for j in range(1, len(sm) // per):  # skip the first second (settling after the teleport)
-        peaks.append(float(sm[j * per:(j + 1) * per].max()))
-    return calibrate_threshold(peaks), peaks
+def calibrate(n: int = 4) -> tuple[float, float, list[float], list[float]]:
+    """Quiet-period calibration: the person stands still; the same encounter procedure; no memory update."""
+    from apm_express.intent import ExpressionIntent
+    from apm_transfer.expressive_program import plan
+    disp, reaches = [], []
+    for k in range(n):
+        out, _ = world.encounter(STATIONS["B1"], "still", ExpressionIntent(proximity=0.75).sanitized(), 3, 0.0,
+                                 approach_from=APPROACH_M[a.robot], return_home=False, program=plan(None))
+        disp += list(out["self_disp_peaks"]) + list(out["standing_peaks"])
+        reaches += [float(x) for w in (out["camera_reaches"] or []) for x in w]
+        print("CALIBRATION", k, "disp", out["self_disp_peaks"], "standing", out["standing_peaks"],
+              "reaches", [round(x, 3) for x in reaches[-6:]], flush=True)
+    cam = max(0.10, 1.5 * float(np.quantile(reaches, 0.95))) if reaches else 0.14
+    return calibrate_threshold(disp), cam, disp, reaches
 
 
+world.near_miss_margin = a.near_miss
 world.new_lifetime(a.seed)
-threshold, calib_peaks = calibrate()
+threshold, cam_threshold, calib_peaks, calib_reaches = calibrate()
 rt = Runtime(mcfg, time_coef, task, tcfg["voi"], lam=0.02, seed=a.seed + 3, camera=True, policy="greedy",
              supervise=True)
 rt.experience = ExperienceState()
 rt.experience.disturbance.threshold_m_s = threshold
+rt.experience.movement.minimum_reach_m = cam_threshold
 body = IsaacBody(world, edges, STATIONS, video=False, approach_from=APPROACH_M[a.robot])
 body.program_mode, body.program_matched = "memory", False
 body.experience_source = rt.experience.readout
 record: dict = {"robot": a.robot, "scene": a.scene, "history": a.history, "seed": a.seed,
                 "engine": "isaac sim 5.1 / physx", "controller": "booster_gym candidate" if candidate else "default",
-                "threshold_m_s": threshold, "calibration_peaks": calib_peaks, "history_rows": [], "present": {}}
-print("CALIBRATED", a.robot, round(threshold, 4), flush=True)
+                "threshold_m_s": threshold, "camera_threshold_m": cam_threshold, "near_miss_m": a.near_miss,
+                "calibration_peaks": calib_peaks, "calibration_reaches": calib_reaches, "history_rows": [],
+                "present": {}}
+print("CALIBRATED", a.robot, "disturbance", round(threshold, 4), "camera", round(cam_threshold, 3), flush=True)
 
 # 2. history: memory and physics continue; each encounter starts at the approach point (repositioned)
 etype = "pushy" if a.history == "pushy" else "calm"

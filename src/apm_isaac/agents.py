@@ -62,8 +62,13 @@ class Person:
     patrol: tuple[np.ndarray, np.ndarray, float] | None = None  # a bystander walking A <-> B at a speed (m/s)
     moving: bool = False
 
+    near_miss: float | None = None  # if set: every lunge stops this far short of the robot's body (no contact)
+
     def schedule(self, rng: np.random.Generator, etype: str, t0: float, seconds: float) -> None:
         from apm_transfer.nerva_world import lunges
+        if etype == "still":  # a calibration period: the person does not move
+            self.lunges = []
+            return
         self.lunges = [Lunge(t0 + t, r, s) for t, r, s in lunges(rng, etype, seconds)]
 
     def walk_to(self, target: np.ndarray, t0: float, speed: float) -> None:
@@ -76,7 +81,8 @@ class Person:
         gap = max(0.0, dist_to_robot - self.front - RADIUS)
         self.active = None
         for i, lg in enumerate(self.lunges):
-            peak = float(np.clip(lg.reach - GAP0, 0.0, gap + MAX_OVERLAP))
+            limit = gap + MAX_OVERLAP if self.near_miss is None else max(0.0, gap - self.near_miss)
+            peak = float(np.clip(lg.reach - GAP0, 0.0, limit))
             v_surf = min(lg.speed * CONTACT_GAIN * 2, V_CONTACT_MAX)
             ramp = max(peak / max(v_surf, 1e-3), 0.15)
             dt = abs(t - lg.t_peak)

@@ -579,6 +579,7 @@ class IsaacWorld:
         from apm_transfer.vision import MotionPerception
         from apm_transfer.wheeled_world import WheeledLogger
         person = self.people[station]
+        person.near_miss = getattr(self, "near_miss_margin", None)
         sx, sy = person.xy
         self._video_target, self._video_eye = (sx, sy), None
         if approach_from is not None:
