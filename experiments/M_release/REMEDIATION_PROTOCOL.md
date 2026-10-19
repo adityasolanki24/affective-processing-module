@@ -90,3 +90,10 @@ station.
 
 If any condition fails, v1 stays the controller and the failure is reported. A command calibration (velocity map)
 for the candidate may be fitted only on separate calibration seeds 72101–72103, not on battery seeds.
+
+### Battery deviation G1 (before any warehouse data)
+
+The warehouse hub has no collider-free 4 m straight path (shelving). Start points are now tried from the hub
+outward (rings at 0.5 m and 1.0 m, every 45°), with the same 4 m, collider-free and ≥ 1 m-from-stations rule. The
+other environments' starts are unchanged: their hub qualifies first. No scenario, seed, measure or criterion
+changed.

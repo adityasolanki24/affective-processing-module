@@ -110,16 +110,24 @@ else:
     hx, hy, _ = scene.home
     stations = [np.array(v) for v in scene.stations.values()]
     free_path = None
-    for deg in range(0, 360, 15):  # the protocol's start heading rule
-        u = np.array([math.cos(math.radians(deg)), math.sin(math.radians(deg))])
-        pts = [np.array([hx, hy]) + f * u for f in np.linspace(0.0, 4.0, 17)]
-        if all(iw._free(float(p[0]), float(p[1]), r=0.35) for p in pts) and \
-                all(min(np.linalg.norm(p - s) for s in stations) >= 1.0 for p in pts[2:]):
-            free_path = deg
+    # The protocol's start rule: the first 15-degree heading with a collider-free 4 m path at least 1 m from every
+    # station; starting points are tried from the hub outward (0, 0.5, 1.0 m rings), so cluttered scenes such as
+    # the warehouse still get a 4 m straight test path on their own floor.
+    origins = [np.array([hx, hy])] + [np.array([hx, hy]) + r * np.array([math.cos(b), math.sin(b)])
+                                      for r in (0.5, 1.0) for b in np.radians(np.arange(0, 360, 45))]
+    for o in origins:
+        for deg in range(0, 360, 15):
+            u = np.array([math.cos(math.radians(deg)), math.sin(math.radians(deg))])
+            pts = [o + f * u for f in np.linspace(0.0, 4.0, 17)]
+            if all(iw._free(float(p[0]), float(p[1]), r=0.35) for p in pts) and \
+                    all(min(np.linalg.norm(p - s) for s in stations) >= 1.0 for p in pts[2:]):
+                free_path = (float(o[0]), float(o[1]), math.radians(deg))
+                break
+        if free_path is not None:
             break
     if free_path is None:
-        raise RuntimeError(f"no collider-free 4 m heading from the {a.env} hub")
-    start = (hx, hy, math.radians(free_path))
+        raise RuntimeError(f"no collider-free 4 m heading near the {a.env} hub")
+    start = free_path
 
 feet = []
 for side in ("left", "right"):
