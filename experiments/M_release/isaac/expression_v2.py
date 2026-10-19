@@ -53,6 +53,9 @@ ap.add_argument("--policy-dir", default=None)
 ap.add_argument("--out", type=Path, required=True)
 ap.add_argument("--demo", action="store_true", help="one continuous lifetime (no teleports): B1 pushy for "
                 "--pushy-n meetings, then calm for --calm-n; whole lifetime filmed with the learned state per frame")
+ap.add_argument("--demo-reposition", action="store_true",
+                help="demo: start each meeting at the approach point, as the histories do (no long walk from home; "
+                     "T1's v1 policy is trained for turn rates up to 1 rad/s), so meetings are cut together")
 ap.add_argument("--pushy-n", type=int, default=6)
 ap.add_argument("--calm-n", type=int, default=6)
 a, _ = ap.parse_known_args()
@@ -201,7 +204,7 @@ record["review_camera"] = {"eye": world.video_fixed[0].tolist(), "look": world.v
 if a.demo:  # the complete learning-and-recovery demonstration: continuous physics, the robot walks home each time
     from apm_transfer.expressive_program import plan as _plan
     world.new_lifetime(a.seed + 11)
-    body.approach_from, body.video = None, True
+    body.approach_from, body.video = (APPROACH_M[a.robot] if a.demo_reposition else None), True
     body.program_mode, body.program_matched = "memory", False
     world.video_writer = imageio.get_writer(str(a.out / f"{stem}_demo.mp4"), fps=25, codec="libx264",
                                             quality=8, macro_block_size=8)
@@ -230,7 +233,8 @@ if a.demo:  # the complete learning-and-recovery demonstration: continuous physi
     world.video_writer.close()
     world.video_writer = None
     (a.out / f"{stem}_demo_meta.json").write_text(json.dumps({"frames": world.video_meta}, default=str))
-    record["demo"] = {"pushy_n": a.pushy_n, "calm_n": a.calm_n, "continuous_physics": True, "rows": rows}
+    record["demo"] = {"pushy_n": a.pushy_n, "calm_n": a.calm_n, "continuous_physics": not a.demo_reposition,
+                      "repositioned_meetings": a.demo_reposition, "rows": rows}
     (a.out / f"{stem}_demo.json").write_text(json.dumps(record, indent=1, default=str))
     print("DEMO DONE", stem, flush=True)
     hard_exit(0)
