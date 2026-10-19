@@ -133,31 +133,33 @@ def cmd_panel(a) -> None:
     """Three lifetimes side by side, aligned by encounter: each panel shows its own robot's encounter k; a robot that
     finishes earlier holds its last frame (marked) until all have finished."""
     lo, hi = (int(x) for x in a.encounters.split("-"))
+    # One sequential pass per lifetime keeps only the needed frames, already overlaid and downscaled (full 1080p
+    # lifetimes do not fit in memory).
     streams = []
-    for stem in a.stems:
+    for stem, lab in zip(a.stems, a.labels, strict=True):
         rd, meta, _ = load_stem(stem)
-        frames = [f for f in rd]
-        streams.append((frames, meta))
+        per = {k: [i for i, m in enumerate(meta) if m.get("k") == k][:: a.speed] for k in range(lo, hi + 1)}
+        need = {i for idx in per.values() for i in idx}
+        tiles: dict[int, np.ndarray] = {}
+        for i, fr in enumerate(rd):
+            if i in need:
+                t = overlay(fr, meta[i], title=f"Isaac Sim 5.1  |  {lab}")
+                tiles[i] = np.asarray(Image.fromarray(t).resize((640, 360)))
+        rd.close()
+        streams.append(({k: [i for i in idx if i in tiles] for k, idx in per.items()}, tiles))
     wr = imageio.get_writer(a.out, fps=FPS, codec="libx264", quality=8, macro_block_size=8)
     for k in range(lo, hi + 1):
-        per = []
-        for frames, meta in streams:
-            idx = [i for i, m in enumerate(meta) if m.get("k") == k and i < len(frames)]
-            per.append(idx[:: a.speed])
-        n = max((len(p) for p in per), default=0)
+        n = max((len(per[k]) for per, _ in streams), default=0)
         for j in range(n):
-            tiles = []
-            for (frames, meta), idx, lab in zip(streams, per, a.labels, strict=True):
+            row = []
+            for per, tiles in streams:
+                idx = per[k]
                 if not idx:
-                    tiles.append(np.zeros((360, 640, 3), np.uint8))
+                    row.append(np.zeros((360, 640, 3), np.uint8))
                     continue
-                i = idx[min(j, len(idx) - 1)]
-                t = overlay(frames[i], meta[i], title=f"Isaac Sim 5.1  |  {lab}")
-                t = np.asarray(Image.fromarray(t).resize((640, 360)))
-                if j >= len(idx):
-                    t = (t * 0.6).astype(np.uint8)
-                tiles.append(t)
-            wr.append_data(np.concatenate(tiles, axis=1))
+                t = tiles[idx[min(j, len(idx) - 1)]]
+                row.append((t * 0.6).astype(np.uint8) if j >= len(idx) else t)
+            wr.append_data(np.concatenate(row, axis=1))
     wr.close()
 
 

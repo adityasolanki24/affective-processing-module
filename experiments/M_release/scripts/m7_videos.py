@@ -27,8 +27,15 @@ COMPOSE = [sys.executable, str(HERE / "m7_compose.py")]
 LABEL = {"nerva": "NERVA (Open Duck Mini v2)", "humanoid": "Booster T1", "nova_carter": "NVIDIA Nova Carter"}
 
 
+FAILED: list[str] = []
+
+
 def run(*args: str) -> None:
-    subprocess.run([*COMPOSE, *args], check=True)
+    """One composer step; a failure is reported and the remaining videos are still built."""
+    r = subprocess.run([*COMPOSE, *args])
+    if r.returncode:
+        FAILED.append(f"{args[0]} {args[-1]} (exit {r.returncode})")
+        print("FAILED:", FAILED[-1], flush=True)
 
 
 def stem(d: Path, robot: str, scene: str, history: str, index: int = 0) -> str | None:
@@ -113,7 +120,7 @@ def main() -> None:
         if s:
             run("clip", "--stem", s, "--speed", "2", "--out", str(o / f"4_{robot}.mp4"),
                 *(["--eye"] if robot == "nerva" else []))
-    print("videos in", o)
+    print("videos in", o, "| failed:", FAILED or "none")
 
 
 if __name__ == "__main__":
