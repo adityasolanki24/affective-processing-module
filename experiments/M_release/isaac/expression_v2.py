@@ -107,7 +107,7 @@ def calibrate(seconds: float = 20.0) -> tuple[float, list[float]]:
     drv = world._driver(a.seed)
     idle = NEUTRAL_REQUEST if a.robot == "nerva" else drv.idle
     pts, peaks = [], []
-    for i in range(int(seconds / DT)):
+    for _ in range(int(seconds / DT)):
         world.step(idle, drv)
         pts.append(world.robot.pose()[:2])
     sp = np.r_[0.0, np.linalg.norm(np.diff(np.asarray(pts), axis=0), axis=1) / DT]
