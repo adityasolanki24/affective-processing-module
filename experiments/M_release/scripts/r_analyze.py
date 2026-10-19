@@ -53,7 +53,10 @@ def lifetime_measures(rec: dict, task: dict) -> dict:
             "impulse_peak": max((float(x) for x in imp if x is not None), default=0.0),
             "success": float(np.mean([r["d_stop"] <= task["d_task"] + 0.05 for r in rows])) if rows else 0.0,
             "approaches": sum(1 for r in rows if r.get("standoff", 0) == 0 and r.get("arrived")),
-            "vetoes": rec.get("vetoes", 0)}
+            "vetoes": rec.get("vetoes", 0),
+            # D6 artefact check: encounters where the standing robot was thrown (> 1.5 m/s); None in pre-D6 records
+            "ejections": (sum(bool(r.get("physics_ejection")) for r in rows)
+                          if any("physics_ejection" in r for r in rows) else None)}
 
 
 def identity_measures(rec: dict, task: dict) -> dict:
@@ -93,7 +96,9 @@ def summary(recs: list[dict], task: dict) -> dict:
             "contacts_per_encounter": float(np.mean([x["contacts"] for x in m])),
             "impulse_peak_max": float(max(x["impulse_peak"] for x in m)),
             "success": float(np.mean([x["success"] for x in m])),
-            "approaches": float(np.mean([x["approaches"] for x in m])), "vetoes": int(sum(x["vetoes"] for x in m))}
+            "approaches": float(np.mean([x["approaches"] for x in m])), "vetoes": int(sum(x["vetoes"] for x in m)),
+            "physics_ejections": (int(sum(x["ejections"] for x in m if x["ejections"] is not None))
+                                  if any(x["ejections"] is not None for x in m) else None)}
 
 
 def main() -> None:

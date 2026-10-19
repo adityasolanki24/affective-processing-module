@@ -28,11 +28,19 @@ if ! ldconfig -p | grep -q libGLX_nvidia.so.0 || ! ls /usr/share/vulkan/icd.d/nv
   sh /tmp/nv.run --no-kernel-module --silent --no-questions --accept-license --no-backup --no-nouveau-check     --no-x-check --install-libglvnd > /tmp/nv_install.log 2>&1 || { tail -20 /tmp/nv_install.log; }
 fi
 vulkaninfo --summary 2>/dev/null | grep -E "deviceName|driverVersion|apiVersion" | head -3 || echo "[isaac_env] vulkan not available"
+# an incomplete local install (an interrupted restore, or a truncated snapshot restored on 2026-10-19) is wiped and
+# restored again: it must have the venv's pip and the Isaac Lab checkout
+if [ -d $ROOT ] && { [ ! -d $ROOT/IsaacLab/source ] || ! $ROOT/venv/bin/python -c "import pip" >/dev/null 2>&1; }; then
+  echo "[isaac_env] local install incomplete: removing it and restoring again"
+  rm -rf $ROOT
+fi
 if [ ! -x $ROOT/venv/bin/python ]; then
   mkdir -p $ROOT
   if gcloud storage ls "$SNAP" >/dev/null 2>&1; then
     echo "[isaac_env] restoring $SNAP"
-    gcloud storage cat "$SNAP" | zstd -d -T0 | tar -x -C /
+    set -o pipefail
+    gcloud storage cat "$SNAP" | zstd -d -T0 | tar -x -C / || { echo "[isaac_env] restore failed"; exit 3; }
+    set +o pipefail
     if [ ! -x $ROOT/venv/bin/python ]; then  # uv's interpreter lived outside the snapshot: reinstall that version
       PYV=$(awk -F' = ' '/^version_info/ {print $2}' $ROOT/venv/pyvenv.cfg | cut -d. -f1-3)
       $ROOT/uv/uv python install "$PYV" >/dev/null 2>&1
