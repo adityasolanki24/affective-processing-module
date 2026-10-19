@@ -254,6 +254,22 @@ class WheeledIsaac(_IsaacBody):
         return math.radians(row["tilt"]) > self.TILT_FALL or not row["finite"]
 
 
+def footprint_from_boxes(boxes: list[list[list[float]]], front: float) -> tuple[float, float, float]:
+    """(x_min, x_max, half_width) of a wheeled robot's colliders in its chassis frame, from each collider's 2-D
+    bounding corners. Colliders wider than MAX_COLLIDER_M are skipped: the stock Nova Carter's caster-wheel
+    cylinders have no authored extent and report a 100 m box (remediation D6). Without usable colliders: a
+    0.7 x 0.5 m box ending at `front`."""
+    arrays = [np.asarray(b, float) for b in boxes if len(b)]
+    ok = [b for b in arrays if np.ptp(b, axis=0).max() <= MAX_COLLIDER_M]
+    if not ok:
+        return (front - 0.7, front, 0.25)
+    P = np.concatenate(ok)
+    return (float(P[:, 0].min()), float(P[:, 0].max()), float(np.abs(P[:, 1]).max()))
+
+
+MAX_COLLIDER_M = 2.0
+
+
 class NovaCarterIsaac(_IsaacBody):
     """NVIDIA Nova Carter, the stock Isaac Sim asset: a commercial differential-drive AMR. It is APM v1.0's wheeled
     embodiment (user decision 2026-10-19). The custom `WheeledIsaac` remains only as a MuJoCo cross-physics
@@ -303,15 +319,14 @@ class NovaCarterIsaac(_IsaacBody):
         # front edge and the body extends ~0.6 m behind it, so `front` holds only straight ahead (remediation D6)
         c_inv = cache.GetLocalToWorldTransform(chassis).GetInverse()
         bbc = UsdGeom.BBoxCache(Usd.TimeCode.Default(), ["default", "render", "proxy", "guide"])
-        pts = []
+        pts: list[list[list[float]]] = []  # one list of 2-D corners per collider
         for p in prims:
             if p.HasAPI(UsdPhysics.CollisionAPI) and p.IsA(UsdGeom.Imageable):
                 rng = bbc.ComputeUntransformedBound(p).ComputeAlignedRange()
                 if not rng.IsEmpty():
                     m = cache.GetLocalToWorldTransform(p) * c_inv
-                    pts += [list(m.Transform(rng.GetCorner(i)))[:2] for i in range(8)]
-        P = np.array(pts) if pts else np.array([[-0.6, -0.25], [self.front, 0.25]])
-        self.footprint = (float(P[:, 0].min()), float(P[:, 0].max()), float(np.abs(P[:, 1]).max()))
+                    pts.append([list(m.Transform(rng.GetCorner(i)))[:2] for i in range(8)])
+        self.footprint = footprint_from_boxes(pts, self.front)
         art_root = next((str(p.GetPath()) for p in prims if p.HasAPI(UsdPhysics.ArticulationRootAPI)), path)
         # contact handling only: overlap with a person's kinematic collider is resolved at <= 0.3 m/s (as on the
         # reference robot), so a lunge transmits its contact velocity, not a depenetration spike

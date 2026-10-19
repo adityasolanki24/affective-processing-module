@@ -180,3 +180,14 @@ def test_lunge_uses_a_measured_gap():
     p.lunges = [Lunge(t_peak=1.0, reach=0.8, speed=0.9)]
     s = max(p.displacement(k * 0.02, 1.0, gap=0.02) for k in range(100))
     assert abs(s - (0.02 + MAX_OVERLAP)) < 1e-6
+
+
+def test_carter_footprint_skips_colliders_without_extent():
+    """D6: the stock caster cylinders report a 100 m box; the footprint must come from the real colliders."""
+    from apm_isaac.robots import footprint_from_boxes
+    chassis = [[-0.587, -0.238], [0.12, 0.238], [-0.587, 0.238], [0.12, -0.238]]
+    wheel = [[-0.14, 0.197], [0.14, 0.217]]
+    caster = [[-50.5, -49.9], [49.5, 50.1]]
+    x0, x1, hw = footprint_from_boxes([chassis, wheel, caster], 0.14)
+    assert (round(x0, 3), round(x1, 3), round(hw, 3)) == (-0.587, 0.14, 0.238)
+    assert footprint_from_boxes([caster], 0.14) == (0.14 - 0.7, 0.14, 0.25)

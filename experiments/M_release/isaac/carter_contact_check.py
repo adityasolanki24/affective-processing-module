@@ -49,6 +49,23 @@ world = World(stage_units_in_meters=1.0, physics_dt=0.002, rendering_dt=DT)
 world.scene.add_default_ground_plane(static_friction=1.0, dynamic_friction=1.0)
 robot = NovaCarterIsaac(world, "/World/Robot", (0.0, 0.0), 0.0, 1, 0.002)
 person = add_person(world.stage, "P", (5.0, 0.0), None)
+# physical contact truth, as in IsaacWorld._subscribe_contacts: PhysX contact reports person <-> robot
+from omni.physx import get_physx_simulation_interface  # noqa: E402
+from pxr import PhysicsSchemaTools, PhysxSchema  # noqa: E402
+
+PhysxSchema.PhysxContactReportAPI.Apply(world.stage.GetPrimAtPath(person.cap_path)).CreateThresholdAttr(0.0)
+touches = [0]
+
+
+def on_contact(headers, data):
+    for h in headers:
+        a0 = str(PhysicsSchemaTools.intToSdfPath(h.actor0))
+        a1 = str(PhysicsSchemaTools.intToSdfPath(h.actor1))
+        if "/World/People/" in a0 + a1 and "/World/Robot" in a0 + a1:
+            touches[0] += 1
+
+
+_sub = get_physx_simulation_interface().subscribe_contact_report_events(on_contact)
 world.reset()
 robot.post_reset()
 if a.front is not None:
@@ -84,7 +101,7 @@ if geo["colliders"]:
     allc = np.array([c["lo"] for c in geo["colliders"]] + [c["hi"] for c in geo["colliders"]])
     geo["collision_extent_chassis_frame"] = {"x": [float(allc[:, 0].min()), float(allc[:, 0].max())],
                                              "y": [float(allc[:, 1].min()), float(allc[:, 1].max())]}
-geo["footprint"] = list(robot.footprint)
+geo["footprint"] = [round(v, 3) for v in robot.footprint]
 print("GEOMETRY", json.dumps(geo)[:3000], flush=True)
 
 
@@ -143,6 +160,7 @@ for etype in ("pushy", "gentle"):
         p.front = robot.front
         t0 = robot.t
         p.schedule(rng, etype, t0, 30.0)
+        touches[0] = 0
         peak, jumps, prev = 0.0, [], robot.pose()
         while robot.t < t0 + 30.0:
             x, y, _ = robot.pose()
@@ -160,7 +178,7 @@ for etype in ("pushy", "gentle"):
             prev = cur
         x, y, _ = prev
         enc.append({"type": etype, "seed": s, "lunges": len(p.lunges), "peak_speed_m_s": round(peak, 3),
-                    "ejections": len(jumps), "first_jumps": jumps[:3],
+                    "ejections": len(jumps), "first_jumps": jumps[:3], "contact_reports": touches[0],
                     "net_displacement_m": round(math.hypot(x - x0, y - y0), 3)})
         print("ENCOUNTER", json.dumps(enc[-1]), flush=True)
 (a.out / "carter_contact.json").write_text(json.dumps({"geometry": geo, "probe": probe, "encounters": enc},
