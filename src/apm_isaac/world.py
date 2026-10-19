@@ -320,6 +320,7 @@ class IsaacWorld:
         cam = Camera(prim_path="/World/VideoCam", resolution=(1280, 720))
         cam.initialize()
         cam.set_focal_length(1.8)
+        cam.add_distance_to_image_plane_to_frame()  # rendered visibility check of candidate views (_clear_view)
         return cam
 
     def depth(self) -> np.ndarray:
@@ -381,31 +382,47 @@ class IsaacWorld:
             self.video_meta.append({"t": round(self.t, 2), "phase": self.phase, **self.overlay})
 
     def _clear_view(self, mid: np.ndarray, axis: np.ndarray) -> np.ndarray:
-        """A camera position looking at `mid` from the side of the interaction axis, with no collider in between
-        (multi-hit PhysX raycasts; the scene's walls and shelving block views)."""
-        import omni.physx
-        q = omni.physx.get_physx_scene_query_interface()
-        u = axis / (np.linalg.norm(axis) or 1.0)
-        side = np.array([-u[1], u[0]])
-        best, best_d = None, -1.0
+        """A camera position looking at `mid` from the side of the interaction axis, with nothing in between.
+
+        Candidates must stand in open floor space (multi-hit PhysX raycasts). Visibility is then checked on a
+        rendered depth frame from the candidate, because much of the scenes' clutter (boxes on shelving) is visual
+        geometry without colliders, which raycasts miss. The first candidate whose view of the scene band is
+        unoccluded is used; otherwise the least occluded one."""
+        best, best_occ = None, 2.0
         for dist in (4.0, 3.4, 2.8, 2.2, 1.6):
             for sgn in (1.0, -1.0):
                 for back in (-0.8, 0.0, 0.8):
+                    u = axis / (np.linalg.norm(axis) or 1.0)
+                    side = np.array([-u[1], u[0]])
                     eye = np.array([mid[0] + sgn * dist * side[0] + back * u[0],
                                     mid[1] + sgn * dist * side[1] + back * u[1], 1.7])
-                    d = eye - mid
-                    n = float(np.linalg.norm(d))
-                    hit = q.raycast_closest(tuple(float(v) for v in mid), tuple(float(v) for v in d / n), n)
-                    free = n if not hit["hit"] or "/World/People" in str(hit.get("rigidBody", "")) \
-                        or "/World/Robot" in str(hit.get("rigidBody", "")) else float(hit["distance"])
-                    # the camera itself must stand in open floor space (a clear ray can start inside shelving)
                     if not self._free(float(eye[0]), float(eye[1]), r=0.4):
-                        free = min(free, 0.5 * n)
-                    if free >= n - 1e-3:
+                        continue
+                    occ = self._occlusion(eye, mid)
+                    if occ < 0.02:
                         return eye
-                    if free > best_d:
-                        best, best_d = eye, free
+                    if occ < best_occ:
+                        best, best_occ = eye, occ
         return best if best is not None else mid + np.array([0.0, 0.0, 1.0])
+
+    def _occlusion(self, eye: np.ndarray, mid: np.ndarray) -> float:
+        """Share of the view's scene band (rows 15-55%, columns 15-85%) with something nearer than the robot and
+        person (image-plane depth < distance to `mid` - 0.8 m), from a rendered depth frame."""
+        cam = self._video_cam
+        if cam is None:
+            return 0.0
+        n = float(np.linalg.norm(mid - eye))
+        cam.set_world_pose(position=eye, orientation=_look_at(eye, mid))
+        self.world.render()
+        self.world.render()
+        d = cam.get_depth()
+        if d is None or not np.size(d):
+            return 1.0
+        d = np.asarray(d, float)
+        h, w = d.shape[:2]
+        band = d[int(0.15 * h):int(0.55 * h), int(0.15 * w):int(0.85 * w)]
+        band = np.where(np.isfinite(band) & (band > 0), band, np.inf)
+        return float(np.mean(band < n - 0.8))
 
     # ── one control step with the people ─────────────────────────────────────
     def _driver(self, seed: int):
