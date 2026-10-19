@@ -62,7 +62,13 @@ def metrics(meta: dict, rows: list[dict]) -> dict:
         strides.append(float(np.median(iv)) if len(iv) else None)
     out["swing_clearance_m"] = float(np.mean(clear)) if clear else None
     out["stride_s"] = float(np.mean([s for s in strides if s])) if any(strides) else None
-    out["stride_asymmetry_s"] = abs(strides[0] - strides[1]) if all(strides) else None
+    # step-time asymmetry: left->right vs right->left step durations (per-foot cycle times are always equal)
+    events = sorted([(tt, f) for f in range(2) for tt in t[1:][contact[1:, f] & ~contact[:-1, f]]])
+    lr = [b[0] - a_[0] for a_, b in zip(events, events[1:], strict=False) if a_[1] == 0 and b[1] == 1
+          and 0.1 < b[0] - a_[0] < 1.5]
+    rl = [b[0] - a_[0] for a_, b in zip(events, events[1:], strict=False) if a_[1] == 1 and b[1] == 0
+          and 0.1 < b[0] - a_[0] < 1.5]
+    out["stride_asymmetry_s"] = abs(float(np.median(lr)) - float(np.median(rl))) if lr and rl else None
     out["tilt_p95_deg"] = float(np.percentile([r["tilt"] for r in rows], 95))
     dq = np.array([r["dq"] for r in rows])
     out["joint_accel_rms"] = float(np.sqrt(np.mean((np.diff(dq, axis=0) / dt[:, None]) ** 2)))
