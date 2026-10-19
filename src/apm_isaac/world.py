@@ -691,6 +691,7 @@ class IsaacWorld:
         own = [False] * n_settle + obs_own
         k, k_arrive, t_arrive, fell, aborted = n_settle + len(obs_own), None, None, False, False
         disp_peaks = [0.0] * windows
+        loom_frames: list[list[tuple[float, float]]] = [[] for _ in range(windows)]
         win_ev: list = []
         cam_seen: list[list[float]] = [[] for _ in range(windows)]
         cam_quiet = [0] * windows
@@ -750,9 +751,16 @@ class IsaacWorld:
                     perc.end_window(dist + nav_err - surf)
                     perc.events = []
                 if -int(0.5 / DT) <= j < windows * win_n and j % every == 0:
-                    perc.frame(self.depth(), own[-1], dist + nav_err - surf, self.robot.eye_offset)
+                    depth = self.depth()
+                    perc.frame(depth, own[-1], dist + nav_err - surf, self.robot.eye_offset)
                     if j >= 0 and not own[-1]:
                         cam_quiet[j // win_n] += 1
+                        # looming: the nearest depth in the centre of view (5th percentile of valid pixels)
+                        h_, w_ = depth.shape[:2]
+                        centre = depth[int(0.2 * h_):int(0.8 * h_), int(0.3 * w_):int(0.7 * w_)]
+                        valid = centre[centre > 0]
+                        if valid.size:
+                            loom_frames[j // win_n].append((self.t, float(np.percentile(valid, 5))))
             if self.robot.fallen(row):
                 fell = True
                 break
@@ -811,6 +819,7 @@ class IsaacWorld:
                    "quiet_frames": [e.quiet_frames >= MIN_QUIET_FRAMES for e in win_ev],
                    "motion": motion_features(track, (sx, sy)),
                    "self_disp_peaks": [round(v, 4) for v in disp_peaks[:len(win_ev)]],
+                   "looming_peaks": [_looming_peak(f) for f in loom_frames[:len(win_ev)]],
                    "standing_peaks": standing_peaks,
                    "expression": ({"plan": program.as_dict(), "depart": depart, "trace": expr_trace,
                                    "observe_s": round(len(obs_own) * DT, 2)} if program is not None else None)}
@@ -823,6 +832,17 @@ class IsaacWorld:
                  "contact_s": round(0.02 * len({round(c[0] / 0.02) for c in contacts}), 2),
                  "contact_impulse_max": max((c[2] for c in contacts), default=0.0), "station": station}
         return outcome, truth
+
+
+def _looming_peak(frames: list[tuple[float, float]], horizon_s: float = 0.5) -> float:
+    """Largest drop of the nearest central depth within `horizon_s` (m): something coming at the robot. Only still
+    frames are recorded, so the robot's own head motion does not count."""
+    best = 0.0
+    for i, (ti, di) in enumerate(frames):
+        for tk, dk in frames[:i]:
+            if ti - tk <= horizon_s:
+                best = max(best, dk - di)
+    return round(best, 4)
 
 
 def motion_features(track: list[tuple[float, float, float, float]], target: tuple[float, float]) -> dict:

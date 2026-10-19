@@ -171,7 +171,9 @@ class Runtime:
         if self.sensor_expectation is not None:
             self.sensor_expectation.observe(obs.identity, obs.report.get("camera_reaches"))
         if self.experience is not None:
-            self.experience.observe(obs.identity, obs.report.get("self_disp_peaks"), obs.report.get("camera_reaches"))
+            loom = obs.report.get("looming_peaks")  # close-range camera evidence, when the body measures it
+            movement = [[v] for v in loom] if loom is not None else obs.report.get("camera_reaches")
+            self.experience.observe(obs.identity, obs.report.get("self_disp_peaks"), movement)
         cats = obs.categories(self.camera_block) if self.observe_imu else (
             [CAM_OFFSET + c for c in obs.camera] if self.camera_block else [])
         self.memory.observe_many(obs.identity, obs.kind, cats, float(obs.detected))

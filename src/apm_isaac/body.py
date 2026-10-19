@@ -88,7 +88,7 @@ class IsaacBody(_Body):
         obs = super()._observation(identity, kind, abstract, out.get("executed_standoff", standoff))
         obs.report["d_stop_physical"] = physical
         obs.report["measured_distance"] = out.get("measured_distance")
-        for key in ("self_disp_peaks", "standing_peaks", "expression", "experience_readout"):
+        for key in ("self_disp_peaks", "standing_peaks", "looming_peaks", "expression", "experience_readout"):
             obs.report[key] = out.get(key)
         reaches, observed = out.get("camera_reaches"), out.get("camera_observed_frames")
         obs.report["camera_reaches"] = ([r for r, n in zip(reaches, observed, strict=True) if n >= 8]

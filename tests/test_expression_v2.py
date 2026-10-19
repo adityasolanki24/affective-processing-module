@@ -89,3 +89,11 @@ def test_memory_routing_controls():
     assert {observe_identity("shuffled", "B1", ents, rng) for _ in range(50)} == {"A1", "B1", "C1"}
     with pytest.raises(ValueError):
         observe_identity("shuffled", "B1", ents, None)
+
+
+def test_looming_detects_an_approach_but_not_quiet_frames():
+    from apm_isaac.world import _looming_peak
+    lunge = [(0.0, 0.30), (0.1, 0.29), (0.2, 0.12), (0.3, 0.05), (0.9, 0.31)]
+    quiet = [(0.0, 0.30), (0.1, 0.31), (0.2, 0.30), (0.6, 0.29)]
+    assert _looming_peak(lunge) == pytest.approx(0.25) and _looming_peak(quiet) <= 0.011
+    assert _looming_peak([(0.0, 0.5), (0.8, 0.1)]) == 0.0  # slower than 0.5 s is not a lunge

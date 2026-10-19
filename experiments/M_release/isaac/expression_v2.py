@@ -6,7 +6,8 @@
 1. **Calibration (a quiet period, label-free).** Five encounters with a person who does not move, run through
    the same encounter procedure, without memory updates. The robot's own readings set both thresholds:
    - disturbance: its peak unintended base speed in the sensing windows (`calibrate_threshold`);
-   - camera: 1.5 x the 95th percentile of its reach estimates, and at least 0.10 m.
+   - camera: 1.5 x the 95th percentile of its looming peaks (the nearest central depth dropping within
+     0.5 s), and at least 0.05 m.
 2. **History.** `--n-history` meetings with person B1, whose physical behaviour is pushy or calm. Encounters are
    repositioned (the robot starts each one at its approach point); memory is continuous. The robot already
    expresses its current state during the history. Each meeting updates the runtime's experience state from
@@ -105,16 +106,17 @@ def calibrate(n: int = 5) -> tuple[float, float, list[float], list[float]]:
     """Quiet-period calibration: the person stands still; the same encounter procedure; no memory update."""
     from apm_express.intent import ExpressionIntent
     from apm_transfer.expressive_program import plan
-    disp, reaches = [], []
+    disp, looms = [], []
     for k in range(n):
         out, _ = world.encounter(STATIONS["B1"], "still", ExpressionIntent(proximity=0.75).sanitized(), 3, 0.0,
                                  approach_from=APPROACH_M[a.robot], return_home=False, program=plan(None))
         disp += list(out["self_disp_peaks"])  # the same measurement as at run time (sensing windows only)
-        reaches += [float(x) for w in (out["camera_reaches"] or []) for x in w]
-        print("CALIBRATION", k, "disp", out["self_disp_peaks"], "standing", out["standing_peaks"],
-              "reaches", [round(x, 3) for x in reaches[-6:]], flush=True)
-    cam = max(0.10, 1.5 * float(np.quantile(reaches, 0.95))) if reaches else 0.14
-    return calibrate_threshold(disp), cam, disp, reaches
+        looms += [float(x) for x in out["looming_peaks"]]
+        print("CALIBRATION", k, "disp", out["self_disp_peaks"], "looming", out["looming_peaks"],
+              "reaches", out["camera_reaches"], flush=True)
+    # camera evidence: looming (the nearest central depth dropping within 0.5 s), above the quiet-period noise
+    cam = max(0.05, 1.5 * float(np.quantile(looms, 0.95))) if looms else 0.10
+    return calibrate_threshold(disp), cam, disp, looms
 
 
 world.near_miss_margin = a.near_miss
