@@ -13,7 +13,7 @@
 
 **Governance documents.**
 - Protocol: [PROTOCOL.md](PROTOCOL.md), committed at f70d9aa before any V or X data.
-- Deviations: [DEVIATIONS.md](DEVIATIONS.md), D1–D4.
+- Deviations: [DEVIATIONS.md](DEVIATIONS.md), D1–D5.
 - Milestones and gate evidence: [TRACKER.md](TRACKER.md).
 - Raw records: one JSON line per lifetime, with every encounter's sensor codes, decision, risk, PhysX contact truth
   and the motion measured from the pose trace. Records are in the job archives (`runs/M/cloud/<job>/out`, not in
@@ -90,6 +90,7 @@
   - process hangs and crash handling;
   - `/` in system names;
   - an out-of-memory failure in the video panel;
+  - video views blocked by clutter without colliders (rendered visibility check, D5);
   - the anonymous-track KeyError (D4).
 
 ## 3. Which robots work, and where
@@ -98,7 +99,7 @@
 |---|---|---|---|---|
 | Nova Carter | works | works | works | Isaac Sim (A–F) |
 | Booster T1 | works | works | works | Isaac Sim (A–F) |
-| NERVA | walks, perceives, survives most contacts (96 demonstration encounters, 4 contacts, 0 falls) | **fails**: deterministic falls, steps in place on the floor | walks (demonstration lifetimes) | **MuJoCo 3.3.0** (A, B, C, E; D3) |
+| NERVA | walks, perceives, survives most contacts (144 demonstration encounters, 7 contacts, 0 falls) | **fails**: deterministic falls, steps in place on the floor | **falls**: the one demonstration lifetime ends with a fall in encounter 11 (deterministic: identical in two runs) | **MuJoCo 3.3.0** (A, B, C, E; D3) |
 
 **Gate batteries (M3, Isaac Sim):** all three pass ([results/m3](results/m3)).
 
@@ -325,7 +326,25 @@ All footage is recorded Isaac Sim 5.1 / PhysX demonstration lifetimes (partition
 artificial motion, and every frame carries an engine label. NERVA's footage is Isaac Sim (warehouse and hospital),
 although its comparative numbers come from MuJoCo.
 
-<!-- VIDEOS: filled when the build finishes -->
+| # | file | length | content |
+|---|---|---|---|
+| 1 | `1_showcase.mp4` | 4.3 min | title, each robot in the warehouse (first meetings with the pushing person and the first after the switch), each robot in the held-out hospital (NERVA's fall in encounter 11 shown, with a card), closing card |
+| 2 | `2_three_robots.mp4` | 1.7 min | NERVA, T1 and Nova Carter side by side, same history and seed index, aligned by encounter (0–12), with overlays |
+| 3 | `3_lifetime.mp4` | 2.8 min | one complete 24-encounter DT lifetime (Nova Carter, warehouse, change_B) at 2x, belief and decision overlay |
+| 4 | `4_nova_carter.mp4`, `4_humanoid.mp4`, `4_nerva.mp4` | 2.8, 2.9, 1.9 min | per robot, a complete warehouse lifetime; NERVA's includes its 64×48 depth-eye inset |
+
+- **Overlays** show what the robot sensed (IMU and camera codes), its belief and uncertainty, and its decision.
+  The person's true type is labelled as evaluation truth not given to the robot.
+- **Cuts.** Between encounters the robot is reset to its approach point, as in the experiments, and cuts are
+  marked.
+- **Where the files are.** The videos (1.3 GB) are not in git. They are in the project bucket (job `M7_VIDEOS5`)
+  and in a local copy under `runs/M/videos/`; they can be attached to a GitHub release on approval.
+- **Re-recorded lifetimes (D5).** A first build showed shelving instead of the robot in some encounters, because
+  the camera check missed clutter without colliders. The demonstration lifetimes the videos use were re-recorded
+  with a rendered visibility check.
+- **Remaining imperfections:**
+  - some views are close, so robots are sometimes at the frame edge and people are cropped;
+  - the walking bystander occasionally passes in front of the camera.
 
 ## 12. Deviations
 
@@ -336,6 +355,7 @@ See [DEVIATIONS.md](DEVIATIONS.md):
 | D1 | Exploration ran short; models fitted on the completed lifetimes. |
 | D2 | NERVA body colliders; NERVA exploration redone. |
 | D3 + correction | NERVA's comparative data come from MuJoCo. |
+| D5 | Demonstration recordings redone with a rendered camera visibility check; NERVA's hospital fall. |
 | D4 | Two T1 LOOKUP lifetimes completed after a timeout; anonymous-track fix; F sizes; how contact detection was assessed. |
 
 No threshold, seed, reward or criterion was changed after its data were seen.
@@ -346,6 +366,7 @@ No threshold, seed, reward or criterion was changed after its data were seen.
    - It cannot walk in the home scene.
    - Its Isaac exploration data were contact-free before body colliders were added (D2), so it has no valid Isaac
      type model.
+   - Its one hospital demonstration lifetime ends with a deterministic fall in encounter 11.
    - Its A–C results are MuJoCo results. D was not run for NERVA.
 2. **A2 not demonstrated.** Identity-specific memory is not shown over a shuffled-identity control on any robot.
 3. **A1 passes only on T1, and B2 not on NERVA,** after Holm correction.
@@ -374,7 +395,7 @@ No threshold, seed, reward or criterion was changed after its data were seen.
 | Q5 | Does it improve task performance or safety against competent baselines? | **Demonstrated for task cost; not demonstrated for falls** | C1–C4 on all three robots, including the simple rule calibrated on V (C4: 3–6 s per encounter) and neutral motion (C2). D1–D3 on two robots in a held-out scene. Falls: T1 DT 4 vs 1–3 for the baselines; no safety advantage is shown. §4, §6. |
 | Q6 | Does it produce physically measurable expressive movement beyond binary avoidance? | **Demonstrated** (physical measurement); **not demonstrated** (meaning to people) | 114–345 distinct executed intents; 83–88% graded proximity; proximity, tempo and hesitation each map monotonically onto measured stopping distance, speed or arrival time, and pauses. §5. |
 | Q7 | Can the same core run across NERVA, a humanoid and a wheeled robot? | **Demonstrated** (same runtime on all three); **partially** in Isaac Sim (NERVA's comparative data are MuJoCo) | One runtime class and the same systems and analysis on all three. Nova Carter and T1 in Isaac; NERVA in Isaac for gates, perception and demonstrations; its experiments in MuJoCo. §3. |
-| Q8 | Does it work in realistic, physically interactive simulation environments? | **Partially demonstrated** | Nova Carter and T1: warehouse, home and held-out hospital with animated, physically present people and a walking bystander; D1–D3 pass. NERVA fails the home scene. These are stock Isaac scenes with scripted lunging people, not human behaviour models. §3, §4. |
+| Q8 | Does it work in realistic, physically interactive simulation environments? | **Partially demonstrated** | Nova Carter and T1: warehouse, home and held-out hospital with animated, physically present people and a walking bystander; D1–D3 pass. NERVA falls in the home scene and in its one hospital lifetime (encounter 11). These are stock Isaac scenes with scripted lunging people, not human behaviour models. §3, §4. |
 | Q9 | Can someone independently reproduce the results? | **Partially demonstrated** | Pinned environment, frozen seeds, job commands, raw records and deterministic replay (0 mismatches). Not yet reproduced by anyone else; raw archives are in a private bucket; Isaac needs an RTX GPU. §10. |
 | Q10 | What remains unsupported? | — | See the list below. |
 
@@ -392,7 +413,29 @@ No threshold, seed, reward or criterion was changed after its data were seen.
 
 ## 15. Cloud spend and cleanup
 
-<!-- COST: filled at teardown -->
+**Compute.** From the Compute Engine audit log (every VM's create and delete or expiry event):
+- **124.2 VM-hours** of on-demand g2-standard-16 with one L4 GPU;
+- 0.4 h of CPU spot VMs.
+
+**Estimate.** At about US$1.15–1.20 per hour including a 100 GB disk, compute is about **US$145–150**. Cloud NAT
+data processing, bucket storage (about 30 GB) and egress add an estimated US$5–35 (NAT traffic was not metered
+separately). The total is therefore an estimated **US$150–185 of the US$500 cap**. The billing console is
+authoritative; the account's startup credits apply.
+
+**Cleanup at release:**
+
+| resource | state |
+|---|---|
+| VM instances | 0 |
+| disks | 0 |
+| static or NAT addresses | 0 |
+| Cloud NAT gateways and routers | 0 (deleted in us-central1, us-west1 and us-west4) |
+| snapshots and images | 0 |
+
+**What remains in the bucket** (about 30 GB, cents per day):
+- job archives: raw records, logs, the demonstration recordings and the videos.
+
+The superseded first demonstration recordings (about 13 GB) can be deleted on approval.
 
 ## 16. QA checklist
 
@@ -403,14 +446,14 @@ No threshold, seed, reward or criterion was changed after its data were seen.
 | X partition only in the confirmatory analysis; T/V/X seeds disjoint (`seeds.py`) | yes |
 | Held-out hospital unused for fitting and tuning | yes (T: warehouse and home; V: warehouse) |
 | No simulator truth in observations (PhysX contacts are evaluation-only) | yes (`apm_isaac/body.py`, `world.py`) |
-| Every deviation logged | D1–D4 |
+| Every deviation logged | D1–D5 |
 | Raw traces per encounter, per-decision logs, replay | yes |
 | Negative results reported | A2, A1 (2 robots), B2 (NERVA), contact IMU, T1 falls, NERVA home |
 | Neutral controllers preserved; expression through adapters only; two safety layers | yes |
 | Videos authentic and engine-labelled; mixed backends labelled | yes (all video footage is Isaac Sim) |
 | No project IDs, bucket names or personal paths committed | checked |
-| ruff, mypy (CI numpy and local), pytest | see the commit at release |
-| Cloud resources deleted | see §15 |
+| ruff, mypy (CI numpy and local), pytest | pass (158 passed, 3 skipped) |
+| Cloud resources deleted | yes: 0 VMs, disks, addresses, NATs (§15) |
 
 ## 17. Recommendation
 

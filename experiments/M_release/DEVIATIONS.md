@@ -92,3 +92,16 @@ The decision to use the MuJoCo backend for NERVA's comparative data stands, for 
 - **F, unexpected contact.** The world does not write its fault log into the rows. IMU detection is therefore
   assessed by comparing each scripted-contact approach with the paired reference approach (same seeds, no fault),
   on approaches without a lunge contact in either (`m6_robustness.py`, `contact_imu`).
+
+## D5 (2026-10-19): demonstration recordings redone for the videos; a NERVA hospital result (no V or X data affected)
+
+- **Why.** In the first video build, the side camera of some encounters showed only shelving. The camera-placement
+  check used PhysX raycasts, but much of the scenes' clutter (boxes on shelving, the backs of hospital chairs) is
+  visual geometry without colliders. The check now renders a depth frame from each candidate position and rejects
+  views with anything above the floor in front of the robot and person (`IsaacWorld._occlusion`).
+- **What was redone.** Only the partition-D lifetimes the videos use, with the same D seeds and the DT system:
+  warehouse change_B and late_B D0 per robot, and hospital late_B D0 per robot. Physics is unchanged; the camera
+  only renders.
+- **Finding.** NERVA had no earlier hospital recording (the first NERVA demonstration lifetimes were all in the
+  warehouse; D3's correction implied otherwise). Its hospital lifetime ends with a fall in encounter 11 (1 lunge
+  contact before it), identically in two runs. NERVA in the warehouse: 48 more encounters, 3 contacts, 0 falls.

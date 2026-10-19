@@ -26,7 +26,7 @@ One **integrated runtime** runs all of it, in Isaac Sim (NVIDIA Isaac Sim 5.1, P
 |---|---|---|---|
 | controller | stock wheel drives | Isaac Lab PPO policy + velocity map | frozen neutral ONNX + SafetyMonitor |
 | Isaac Sim gate battery | pass | pass | pass |
-| Isaac scenes (warehouse / home / hospital) | all three | all three | warehouse and hospital; **fails in the home** |
+| Isaac scenes (warehouse / home / hospital) | all three | all three | warehouse only; **falls in the home and in its hospital lifetime** |
 | comparative experiments | Isaac | Isaac | **MuJoCo** (DEVIATIONS D3) |
 
 Preregistered tests on 624 fresh-seed lifetimes, verdicts across the three robots:
