@@ -36,9 +36,13 @@ R_MAIN = ("DT", "MONO", "FIXED", "NEUTRAL", "LOOKUP", "NOMEM")
 R_IDENTITY = ("DT", "POOLED", "SWAPPED", "SHUFFLED")
 
 
+TUNED_R = "M6_tuned_R.json"
+
+
 def mono_r(robot: str) -> str:
-    """MONOTONE* re-tuned under matched supervision (remediation RV), from configs/M6_tuned_R.json."""
-    return json.loads((REPO / CFG / "M6_tuned_R.json").read_text())[robot]
+    """MONOTONE* re-tuned under matched supervision (remediation RV), from configs/M6_tuned_R.json (Isaac robots
+    after D6: M6_tuned_R6.json, via --tuned). Not yet tuned: the placeholder MONO_UNTUNED (do not submit)."""
+    return json.loads((REPO / CFG / TUNED_R).read_text()).get(robot, "MONO_UNTUNED")
 
 
 def r_jobs(stage: str, robots: tuple[str, ...], t1_policy: str) -> list[tuple[str, str, int]]:
@@ -110,7 +114,10 @@ def main() -> None:
     ap.add_argument("--robots", default="nova_carter,humanoid", help="RV/RY: Isaac robots")
     ap.add_argument("--t1-policy", default="experiments/M_release/policies/t1_isaaclab_v1",
                     help="RV/RY: the T1 controller selected by the gait battery")
+    ap.add_argument("--tuned", default="M6_tuned_R.json", help="RY: the MONOTONE* tuning file in configs/")
     a = ap.parse_args()
+    global TUNED_R
+    TUNED_R = a.tuned
     vms = a.vms.split(",")
     todo = (r_jobs(a.stage, tuple(a.robots.split(",")), a.t1_policy) if a.stage.startswith("R")
             else jobs(a.stage))
