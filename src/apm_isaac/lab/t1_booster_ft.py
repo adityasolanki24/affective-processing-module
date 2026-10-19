@@ -99,10 +99,12 @@ def stand_still(env, asset_cfg: SceneEntityCfg) -> torch.Tensor:
 
 
 def nonfinite_state(env) -> torch.Tensor:
-    """Reset any environment whose physics state has become non-finite (a crashed simulation)."""
+    """Reset any environment whose physics state is non-finite or exploding (a crashed simulation)."""
     data = env.scene["robot"].data
     bad = ~torch.isfinite(data.root_pos_w).all(dim=1) | ~torch.isfinite(data.root_lin_vel_w).all(dim=1)
-    return bad | ~torch.isfinite(data.joint_vel).all(dim=1)
+    bad = bad | ~torch.isfinite(data.joint_vel).all(dim=1)
+    # exploding but still finite (a crashing robot): such values poison a gradient update before they become NaN
+    return bad | (torch.linalg.norm(torch.nan_to_num(data.root_lin_vel_w), dim=1) > 10.0) |         (torch.nan_to_num(data.joint_vel).abs().amax(dim=1) > 100.0)
 
 
 LEG_CFG = SceneEntityCfg("robot", joint_names=LEGS, preserve_order=True)
