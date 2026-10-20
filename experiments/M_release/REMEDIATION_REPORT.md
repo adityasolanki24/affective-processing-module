@@ -208,6 +208,22 @@ H.264 / yuv420p / faststart and play on web and mobile.
 
 The v1-vs-candidate walking comparison from the gait gate is `runs/remediation/review/01_T1_walking_comparison.mp4`.
 
+### Figures
+
+`scripts/make_figures.py` generates them from the committed results only, in light and dark variants, into
+[figures/remediation/](figures/remediation/). Titles, sample sizes, interpretation and sources for each are in
+`figures.json`:
+
+| figure | shows |
+|---|---|
+| A | person-specific memory vs pooled, swapped and shuffled memory |
+| B | fair comparisons |
+| C | learning and recovery |
+| D | measured expression per robot |
+| E | T1 gait |
+
+The full-quality videos are attached to the `v1.0-sim-snapshot` GitHub release.
+
 ## 6. Simulator defects found and fixed
 
 - **D6, the person model.**

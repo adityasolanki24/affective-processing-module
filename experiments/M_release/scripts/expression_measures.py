@@ -86,7 +86,7 @@ def main() -> None:
                                                              neu.get("approach_speed_m_s", 0), 3),
                              "stop_gap_diff_m": round((s.get("stop_gap_m") or 0) - (neu.get("stop_gap_m") or 0), 3)}
                          for c, s in r["summary"].items() if c != "neutral"}
-        del r["conditions"]
+        r["meetings"] = r.pop("conditions")  # per-meeting measures (compact; the figures use them)
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(res, indent=1))
     for robot, r in res.items():

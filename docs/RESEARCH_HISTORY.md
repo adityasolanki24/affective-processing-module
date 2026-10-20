@@ -15,6 +15,7 @@ happens, it is marked ⟶.
 | K (v0.7) | 2026-10-18 | recovery from negative experience; frozen-task confirmation; continuous demonstration; other bodies | Recovery was limited by information (IMU at a safe distance) **and** by a memory defect (D1: no change step between consecutive meetings). Fixed memory + value of information + a modelled camera: **recovery in both directions on NERVA and a wheeled robot, 0 falls**. Decision-theoretic mapping **replaces L0** (4/4 frozen tasks). Continuous two-robot demo with controls | `experiments/K_recovery/REPORT.md` |
 | L (v0.8) | 2026-10-18 | independent audit corrections; genuine vision; stress tests; fair controller comparison; integrated runtime | Audit confirmed: unenforced risk cap (5–29% over-cap decisions), recovery-metric and target-calibration defects, proxy task success, abstract camera. **Corrected on fresh seeds, 6/7 K claims survive** (caution-return claim fails for wheeled IMU). Rendered depth vision passes the perception gate on NERVA/wheeled; recovers on NERVA, too slowly on wheeled (K's camera result depended on the idealised sensor). Memory halves contacts under stress but its cost gain is significant in 6/15 scenarios. Runtime passes F1–F6 on 3 bodies; continuous demo with vision | `experiments/L_audit_perception/REPORT.md` |
 | M (v1.0) | 2026-10-19 | final release: Isaac Sim, three robots, realistic scenes, preregistered A–F | Isaac Sim 5.1: Nova Carter and T1 run APM in warehouse, home and held-out hospital with physically present animated people and rendered depth eyes; NERVA imported (gates pass) but fails the home scene, so its comparative data are MuJoCo (D3). 624 X lifetimes: **B1 and C1–C4 on all three robots**; B2 and D1–D3 on two; A1 on T1 only; **A2 (identity-specific memory) not demonstrated**. Explicit memory beats a GRU. 0 executed over-cap approaches; T1 16 falls (all systems, pushing person). Not merged | `experiments/M_release/REPORT.md` |
+| M remediation (v1.0 snapshot) | 2026-10-19/20 | fair comparisons, visible expression, T1 gait, simulator audit | **D6:** a person-contact artefact had thrown Nova Carter in ~9–12% of encounters, fixed and all affected Isaac comparisons rerun on fresh seeds. **Identity-specific memory supported on all three robots** (beats pooled, swapped, shuffled). APM beats rule, lookup, fixed-style and no-memory baselines but **not neutral motion with the same supervisor**. Experience-dependent movement measured on all three robots; recovery incomplete. Booster's official T1 controller smoother but **failed the frozen stability gate**; v1 kept | `experiments/M_release/REMEDIATION_REPORT.md` |
 
 ## Architecture recommendations over time
 
@@ -30,6 +31,8 @@ Only the last item is current.
    supervisor, in one runtime behind AffectLink; value of information optional.
 7. **M, v1.0 (current):** L's architecture unchanged, greedy (no value of information) by default, on three bodies
    in Isaac Sim and MuJoCo, with each robot's own controller and physical supervisor as the second safety layer.
+   The remediation added a learned, label-free experience state and a designed multi-phase expressive program
+   (observe, approach, interact, depart) realised through each robot's posture and timing channels.
 
 ## Conventions used throughout
 

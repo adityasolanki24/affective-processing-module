@@ -1,11 +1,30 @@
 # Project state
 
-*The single authoritative account of what APM is and does today. Updated 2026-10-19, after the APM v1.0 release
-programme (M; branch `release/apm-v1.0`, not merged; report: `experiments/M_release/REPORT.md`). Where M differs from
-programme L, M governs.*
+*The single authoritative account of what APM is and does today. Updated 2026-10-20 for the v1.0 simulation research
+snapshot (tag `v1.0-sim-snapshot`). Current results: `experiments/M_release/REMEDIATION_REPORT.md`, which governs
+where it differs from the original v1.0 report (`experiments/M_release/REPORT.md`).*
 
 Everything below is **simulation only**. No hardware has been tested, and no human has evaluated the robots'
 expression.
+
+## Current results (remediation, October 2026)
+
+These are the corrected results. They supersede the comparisons further down where the two differ, because those
+were affected by the person-contact artefact, DEVIATIONS D6.
+
+| question | Nova Carter (Isaac) | Booster T1 (Isaac) | NERVA (MuJoCo) |
+|---|---|---|---|
+| identity-specific memory (beats pooled, swapped and shuffled memory) | supported | supported | supported |
+| beats the calibrated rule, lookup, fixed style and no memory | yes | yes | yes |
+| beats neutral motion with the same supervisor | no (identical) | no (n.s.) | no (worse) |
+| falls in the corrected comparisons | 0 / 240 lifetimes | 0 / 240 | 0 / 240 |
+| experience-dependent movement (one matched present-task seed) | timing, backing away | guarded arms, side-on torso, watching, backing away | head and neck pitch, watching, backing away |
+| recovery within 7 calm meetings | not visible | partial | not visible |
+
+- **T1 controller:** the original Isaac Lab PPO policy. The official Booster controller failed the frozen stability
+  gate.
+- **Perception:** rendered depth and motion heuristics. In the identity experiments the memory receives the
+  person's identity.
 
 ## Current architecture (one sentence)
 
@@ -20,7 +39,7 @@ expression.
 One **integrated runtime** runs all of it, in Isaac Sim (NVIDIA Isaac Sim 5.1, PhysX) and in MuJoCo. Details:
 [ARCHITECTURE.md](ARCHITECTURE.md).
 
-## What works (simulation; evidence in the report)
+## Original v1.0 results (preserved; partly superseded by the remediation)
 
 | | Nova Carter | Booster T1 | NERVA |
 |---|---|---|---|
@@ -53,7 +72,8 @@ Other results:
 - Emotion, feeling or consciousness.
 - Hardware.
 - Production safety.
-- Identity-specific memory.
+- Identity-specific memory with visual re-identification (identities are provided; the corrected tests support
+  identity-specific memory given identities).
 - NERVA in Isaac experiments.
 - Independent reproduction.
 

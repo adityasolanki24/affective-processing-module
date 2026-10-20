@@ -1,5 +1,12 @@
 # APM v1.0 release report
 
+> **Correction notice (2026-10-20).** This report is preserved as originally written. A simulator defect found
+> later, in which a person's lunge chased a robot it had pushed (DEVIATIONS D6), affected its Isaac Sim results:
+> Nova Carter was thrown in about 9–12% of encounters, and T1 and NERVA in Isaac used the same contact model.
+> The corrected comparisons and expression results are in [REMEDIATION_REPORT.md](REMEDIATION_REPORT.md). Where
+> the two differ, the remediation report governs. Notably, identity-specific memory (A2), "not demonstrated"
+> here, is supported in the corrected tests, and APM does not beat neutral motion with the same supervisor.
+
 **Branch:** `release/apm-v1.0`, from programme L's `research/apm-v0.8-audit` at 84aeef9. Not merged.
 
 **Scope.** Simulation only throughout: no hardware, no human participants.
