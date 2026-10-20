@@ -172,3 +172,30 @@ The decision to use the MuJoCo backend for NERVA's comparative data stands, for 
   pose (`LabPolicyBody.upper_offset`). This is a stability-relevant change. It is checked with
   `isaac/posture_check.py --controller v1` (standing and walking with guarded and open postures, falls and tilt)
   before any expression run uses it.
+
+## D8 (2026-10-19/20, remediation): expression pipeline changes after pilot data (exploratory, validated on a fresh seed)
+
+The expression runs are exploratory development, not a frozen confirmatory test. Each change below was made after
+seeing pilot data, so the reported NERVA result comes from a fresh seed (73302) run after the last change.
+
+- **NERVA looming** (`world._looming_peak`, options set by `expression_v2.sh` for NERVA only; T1 and Carter keep
+  the defaults):
+  - near cells only (< 1.5 m), because NERVA's sway flipped silhouette edges from background to body;
+  - a 1 s window, because near-miss lunges stop short at ≤ 0.15 m/s;
+  - upright surfaces only (`_upright_cells`), because NERVA's camera is 0.3 m high with ~10° pitch sway and the
+    floor's depth swung by decimetres.
+  - Seed 73301 pilots: the camera threshold calibrated to 2.87 m and then 0.54–0.62 m, so lunges never
+    registered.
+- **NERVA camera threshold:** a robust quiet-period rule, median + 6·MAD (≥ 0.05 m), instead of 1.5 × 95th
+  percentile. Three re-balancing transients after posture changes had set the threshold. Pilot threshold:
+  0.62 → 0.12 m.
+- **T1 posture:**
+  - applied only while standing still, with a still "release" before departing;
+  - reason: the T1 demo fell twice (seeds 73401, 73402) while backing away and turning in the guarded posture,
+    head turned 0.6 rad;
+  - the expression run was repeated (EXPR10) and replaces EXPR7.
+- **Demos:** T1 and NERVA start each meeting at the approach point (`--demo-reposition`) instead of walking from
+  home. The long walk commanded 2 rad/s turns, outside v1's 1 rad/s training range; T1 fell (seed 73401, first
+  version). Carter's demo is one continuous lifetime.
+- **Every demo attempt is reported** (T1: 73401 fell in meeting 1, without the reposition; 73401 fell in meeting 3
+  and 73402 in meeting 1, both before the posture fix; 73401 completed after it).
