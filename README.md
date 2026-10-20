@@ -21,6 +21,14 @@ The release report, with every claim linked to evidence, is
 [experiments/M_release/REPORT.md](experiments/M_release/REPORT.md). Read [docs/STATE.md](docs/STATE.md) first for
 what works and what does not.
 
+## Remediation after v1.0 (branch `codex/apm-v1-remediation`)
+
+[experiments/M_release/REMEDIATION_REPORT.md](experiments/M_release/REMEDIATION_REPORT.md) covers:
+- expression on all three robots, measured from recorded movement, with unlabeled side-by-side videos;
+- the T1 controller decision (the original controller is kept);
+- corrected comparisons under one supervisor, with fall-aware scoring;
+- three simulator defects found and fixed, which also affect some v1.0 Isaac results (DEVIATIONS D6).
+
 ## What works (simulation)
 
 - The same runtime (memory, decision-theoretic expression, risk supervisor, persistence, replay, AffectLink) drives
@@ -61,6 +69,7 @@ pytest -q && ruff check . && mypy src
 | NERVA lifetimes on its MuJoCo backend | `python experiments/M_release/scripts/m6_nerva_mujoco.py --partition P --n 1 --systems DT --out out/nerva.jsonl` |
 | gate batteries | `isaac/m3_nerva_battery.py`, `isaac/m3_lab_battery.py`, `isaac/m3_wheeled.py` |
 | analysis | `python experiments/M_release/scripts/m6_analyze.py --runs <dirs> --tasks <robot>=<tasks.json> ... --out <json>` |
+| expression run, measures and videos (remediation) | see [REMEDIATION_REPORT.md §7](experiments/M_release/REMEDIATION_REPORT.md) |
 
 ## Where the code lives
 
