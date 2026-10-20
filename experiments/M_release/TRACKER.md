@@ -122,6 +122,17 @@ not acceptable yet, and NERVA's near-identical histories are a failed gate.
   - enforce public-access prevention on the bucket.
 - No rotation is needed.
 
+### Final remediation pass (Claude, 2026-10-19/20). The account is `REMEDIATION_REPORT.md`
+
+- **T1:** v1 kept (D7). The push-reflex variants fail even on development seeds; fine-tuning stopped.
+- **D6, a person-model defect** (Carter ejections) plus two defects in its first fixes, all found by
+  verification runs. Every affected job was discarded and rerun (tags *7_*, EXPR10/11, DEMO10/11).
+- **Expression** (D8 changes, NERVA validated on fresh seed 73302): all three robots move differently after
+  different histories. The T1 and Carter demos show learning; T1 also shows partial recovery.
+- **Corrected comparisons:** NERVA (MuJoCo) and Nova Carter done; T1 finishing. DT is never better than
+  neutral + supervisor. Identity-specific memory is supported on NERVA and Carter.
+- **Env snapshot** restored from soft delete; setup hardened.
+
 ---
 
 This is the only tracker for the final sprint. The final account is `REPORT.md`. Confirmatory tests are frozen in
