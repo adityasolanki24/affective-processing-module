@@ -1,0 +1,891 @@
+{
+ "anchors": {
+  "calm": 0.9216229442065274,
+  "pushy": 0.9671814386153667
+ },
+ "midpoint": 0.9444021914109471,
+ "systems": {
+  "DT_CAM": {
+   "safe_mean_d_stop": 0.3003766816143498,
+   "revision_pushy_to_calm": {
+    "median": 3.0,
+    "median_ci95": [
+     2.0,
+     3.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 2.8666666666666667,
+    "rmst_ci95": [
+     2.466666666666667,
+     3.266666666666667
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "behaviour_recovery": {
+    "median": 5.0,
+    "median_ci95": [
+     5.0,
+     6.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 4.966666666666668,
+    "rmst_ci95": [
+     4.433333333333334,
+     5.5
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "revision_calm_to_pushy": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     2.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 1.7,
+    "rmst_ci95": [
+     1.3666666666666667,
+     2.066666666666667
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "belief_correct_after_switch": {
+    "estimate": 0.8689007751507751,
+    "ci95": [
+     0.8399231023606024,
+     0.8984414405039405
+    ],
+    "n": 60
+   },
+   "excess_avoidance_calm_far": 0.08417508417508418,
+   "informative_per_B1": 2.0,
+   "windows_per_B1": 1.0,
+   "contacts_per_pushy_B1": 0.8215488215488216,
+   "maxpush_per_pushy_B1": 0.024843771043771046,
+   "repeated_push_rate_pushy_B1": 0.06060606060606061,
+   "falls": 0,
+   "trip_rate": 0.0,
+   "arrival_rate": 1.0,
+   "task_success_calm_B1": 0.9123288439955106,
+   "task_success_all": 0.7735020833333334,
+   "approach_time_s": 4.239795833333334,
+   "encounter_time_s": 9.239795833333332,
+   "expressive_differentiation_m": {
+    "estimate": 0.27747846590758746,
+    "ci95": [
+     0.26639385826353307,
+     0.284933785739308
+    ],
+    "n": 30
+   }
+  },
+  "DT": {
+   "safe_mean_d_stop": 0.2997309417040359,
+   "revision_pushy_to_calm": {
+    "median": 8.0,
+    "median_ci95": [
+     7.0,
+     9.0
+    ],
+    "p_median_above_6": 0.995,
+    "rmst": 7.633333333333334,
+    "rmst_ci95": [
+     6.666666666666667,
+     8.533333333333331
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "behaviour_recovery": {
+    "median": 12.0,
+    "median_ci95": [
+     11.0,
+     13.0
+    ],
+    "p_median_above_6": 1.0,
+    "rmst": 11.366045066045068,
+    "rmst_ci95": [
+     10.380884711779448,
+     12.235653931904553
+    ],
+    "items": 30,
+    "events": 20,
+    "censored": 10,
+    "lifetimes": 30,
+    "revised": 20
+   },
+   "revision_calm_to_pushy": {
+    "median": 2.0,
+    "median_ci95": [
+     1.0,
+     3.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 2.8,
+    "rmst_ci95": [
+     2.199166666666666,
+     3.4666666666666672
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "belief_correct_after_switch": {
+    "estimate": 0.6280545843045843,
+    "ci95": [
+     0.5575629405316905,
+     0.6947189685314685
+    ],
+    "n": 60
+   },
+   "excess_avoidance_calm_far": 0.2281144781144781,
+   "informative_per_B1": 1.0,
+   "windows_per_B1": 1.0,
+   "contacts_per_pushy_B1": 0.8324915824915825,
+   "maxpush_per_pushy_B1": 0.025121548821548826,
+   "repeated_push_rate_pushy_B1": 0.0664983164983165,
+   "falls": 0,
+   "trip_rate": 0.0,
+   "arrival_rate": 1.0,
+   "task_success_calm_B1": 0.7734567901234569,
+   "task_success_all": 0.7403895833333334,
+   "approach_time_s": 4.166304166666667,
+   "encounter_time_s": 9.166304166666665,
+   "expressive_differentiation_m": {
+    "estimate": 0.2830754985813693,
+    "ci95": [
+     0.27690520691423726,
+     0.28773784973574046
+    ],
+    "n": 30
+   }
+  },
+  "ORACLE": {
+   "safe_mean_d_stop": 0.2979910313901345,
+   "revision_pushy_to_calm": {
+    "median": 2.0,
+    "median_ci95": [
+     2.0,
+     3.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 2.2333333333333334,
+    "rmst_ci95": [
+     1.9333333333333333,
+     2.5333333333333337
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "behaviour_recovery": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     1.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 1.0,
+    "rmst_ci95": [
+     1.0,
+     1.0
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "revision_calm_to_pushy": {
+    "median": 3.0,
+    "median_ci95": [
+     2.0,
+     5.0
+    ],
+    "p_median_above_6": 0.0005,
+    "rmst": 4.073333333333333,
+    "rmst_ci95": [
+     3.033333333333333,
+     5.2148611111111105
+    ],
+    "items": 30,
+    "events": 29,
+    "censored": 1,
+    "lifetimes": 30,
+    "revised": 29
+   },
+   "belief_correct_after_switch": {
+    "estimate": 0.8012796462796462,
+    "ci95": [
+     0.7440378718503717,
+     0.8554083324083324
+    ],
+    "n": 60
+   },
+   "excess_avoidance_calm_far": 0.0,
+   "informative_per_B1": 1.0,
+   "windows_per_B1": 1.0,
+   "contacts_per_pushy_B1": 0.6734006734006734,
+   "maxpush_per_pushy_B1": 0.020035353535353535,
+   "repeated_push_rate_pushy_B1": 0.02861952861952862,
+   "falls": 0,
+   "trip_rate": 0.0,
+   "arrival_rate": 1.0,
+   "task_success_calm_B1": 1.0,
+   "task_success_all": 0.7633930555555556,
+   "approach_time_s": 4.215858333333334,
+   "encounter_time_s": 9.215858333333331,
+   "expressive_differentiation_m": {
+    "estimate": 0.2888317327496778,
+    "ci95": [
+     0.2886327222172428,
+     0.289034802314444
+    ],
+    "n": 30
+   }
+  },
+  "L0": {
+   "safe_mean_d_stop": 0.5973026905829595,
+   "revision_pushy_to_calm": {
+    "median": 4.0,
+    "median_ci95": [
+     1.0,
+     5.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 3.566666666666667,
+    "rmst_ci95": [
+     2.7666666666666666,
+     4.433333333333333
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "behaviour_recovery": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     1.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 1.0,
+    "rmst_ci95": [
+     1.0,
+     1.0
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "revision_calm_to_pushy": {
+    "median": 2.0,
+    "median_ci95": [
+     2.0,
+     3.0249999999998636
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 3.266666666666667,
+    "rmst_ci95": [
+     2.3666666666666667,
+     4.258541666666665
+    ],
+    "items": 30,
+    "events": 29,
+    "censored": 1,
+    "lifetimes": 30,
+    "revised": 29
+   },
+   "belief_correct_after_switch": {
+    "estimate": 0.7439854127354126,
+    "ci95": [
+     0.6800227573352574,
+     0.8027732302419802
+    ],
+    "n": 60
+   },
+   "excess_avoidance_calm_far": 1.0,
+   "informative_per_B1": 1.0,
+   "windows_per_B1": 1.0,
+   "contacts_per_pushy_B1": 0.8468013468013468,
+   "maxpush_per_pushy_B1": 0.021045791245791246,
+   "repeated_push_rate_pushy_B1": 0.05218855218855219,
+   "falls": 0,
+   "trip_rate": 0.0,
+   "arrival_rate": 1.0,
+   "task_success_calm_B1": 0.02103535353535355,
+   "task_success_all": 0.02236805555555557,
+   "approach_time_s": 10.193308333333334,
+   "encounter_time_s": 15.193308333333334,
+   "expressive_differentiation_m": {
+    "estimate": -0.0009944511260726522,
+    "ci95": [
+     -0.0019086992651240055,
+     -6.585391562056333e-05
+    ],
+    "n": 30
+   }
+  },
+  "DT_CAM_VOI": {
+   "safe_mean_d_stop": 0.3063206278026906,
+   "revision_pushy_to_calm": {
+    "median": 3.0,
+    "median_ci95": [
+     2.0,
+     4.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 3.0666666666666664,
+    "rmst_ci95": [
+     2.533333333333333,
+     3.6
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "behaviour_recovery": {
+    "median": 6.0,
+    "median_ci95": [
+     5.0,
+     7.0
+    ],
+    "p_median_above_6": 0.067,
+    "rmst": 6.1000000000000005,
+    "rmst_ci95": [
+     5.466666666666668,
+     6.733333333333333
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "revision_calm_to_pushy": {
+    "median": 1.0,
+    "median_ci95": [
+     1.0,
+     2.0
+    ],
+    "p_median_above_6": 0.0,
+    "rmst": 1.7333333333333334,
+    "rmst_ci95": [
+     1.4,
+     2.1333333333333333
+    ],
+    "items": 30,
+    "events": 30,
+    "censored": 0,
+    "lifetimes": 30,
+    "revised": 30
+   },
+   "belief_correct_after_switch": {
+    "estimate": 0.8540886428386428,
+    "ci95": [
+     0.8185573153698154,
+     0.8870704434454434
+    ],
+    "n": 60
+   },
+   "excess_avoidance_calm_far": 0.10016835016835017,
+   "informative_per_B1": 1.5193602693602695,
+   "windows_per_B1": 1.0,
+   "contacts_per_pushy_B1": 0.2474747474747475,
+   "maxpush_per_pushy_B1": 0.007478872053872054,
+   "repeated_push_rate_pushy_B1": 0.03367003367003367,
+   "falls": 0,
+   "trip_rate": 0.0,
+   "arrival_rate": 1.0,
+   "task_success_calm_B1": 0.8761840628507296,
+   "task_success_all": 0.7337548611111111,
+   "approach_time_s": 3.676770833333334,
+   "encounter_time_s": 8.676770833333332,
+   "expressive_differentiation_m": {
+    "estimate": 0.5559579102442106,
+    "ci95": [
+     0.5348829622289476,
+     0.5730928719299706
+    ],
+    "n": 30
+   }
+  }
+ },
+ "vs_DT": {
+  "DT_CAM": {
+   "risky_B": {
+    "d_stop_after_switch": {
+     "estimate": -0.0049076098901098915,
+     "ci95": [
+      -0.013494471688034188,
+      0.0019652881562881555
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": 0.02162087912087912,
+     "ci95": [
+      0.0012569444444444394,
+      0.04623740842490842
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": -0.0019841269841269845,
+     "ci95": [
+      -0.01626984126984127,
+      0.010683760683760682
+     ],
+     "n": 30
+    }
+   },
+   "change_B": {
+    "d_stop_after_switch": {
+     "estimate": -0.1403315332815333,
+     "ci95": [
+      -0.1589151155881156,
+      -0.12032585428460428
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": 0.07404595404595406,
+     "ci95": [
+      0.04171857309357309,
+      0.11087229437229437
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   },
+   "safe": {
+    "d_stop_after_switch": {
+     "estimate": 0.000685714285714284,
+     "ci95": [
+      0.0,
+      0.002057142857142852
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   },
+   "late_B": {
+    "d_stop_after_switch": {
+     "estimate": 0.01088376984126984,
+     "ci95": [
+      6.803016890515486e-05,
+      0.02142411955636956
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": -0.04307794057794057,
+     "ci95": [
+      -0.09164321326821324,
+      0.002413079975580002
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": -0.014546194546194546,
+     "ci95": [
+      -0.027663817663817664,
+      -0.0037037037037037034
+     ],
+     "n": 30
+    }
+   }
+  },
+  "ORACLE": {
+   "risky_B": {
+    "d_stop_after_switch": {
+     "estimate": 0.004515921855921856,
+     "ci95": [
+      0.0004155555555555542,
+      0.01020656898656899
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": -0.01467643467643468,
+     "ci95": [
+      -0.030037240537240547,
+      -0.002222222222222222
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": -0.00989010989010989,
+     "ci95": [
+      -0.022344322344322338,
+      0.0
+     ],
+     "n": 30
+    }
+   },
+   "late_B": {
+    "d_stop_after_switch": {
+     "estimate": 0.05716630554630552,
+     "ci95": [
+      0.04537207308894806,
+      0.06919513897213894
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": -0.22872368372368374,
+     "ci95": [
+      -0.2910480676730677,
+      -0.17232146094646097
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": -0.051620416620416616,
+     "ci95": [
+      -0.07171215821215822,
+      -0.03251007788507788
+     ],
+     "n": 30
+    }
+   },
+   "change_B": {
+    "d_stop_after_switch": {
+     "estimate": -0.22845899729899732,
+     "ci95": [
+      -0.24700300631775632,
+      -0.20819966117216113
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": 0.11473248973248973,
+     "ci95": [
+      0.08205060217560219,
+      0.14994089244089243
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   },
+   "safe": {
+    "d_stop_after_switch": {
+     "estimate": -0.0018547619047619072,
+     "ci95": [
+      -0.005326190476190483,
+      0.0
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": 0.004166666666666667,
+     "ci95": [
+      0.0,
+      0.0125
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   }
+  },
+  "L0": {
+   "safe": {
+    "d_stop_after_switch": {
+     "estimate": 0.2975810186110186,
+     "ci95": [
+      0.2937113352388352,
+      0.300078827080327
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": -0.13806332556332557,
+     "ci95": [
+      -0.17973840742590738,
+      -0.09716624347874347
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   },
+   "late_B": {
+    "d_stop_after_switch": {
+     "estimate": 0.06792291560291557,
+     "ci95": [
+      0.05608458858271353,
+      0.08001153573278573
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": -0.09124810374810373,
+     "ci95": [
+      -0.2180444116069116,
+      0.034918364043364084
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": -0.029958189958189965,
+     "ci95": [
+      -0.06432041569541569,
+      0.0035375134125134136
+     ],
+     "n": 30
+    }
+   },
+   "risky_B": {
+    "d_stop_after_switch": {
+     "estimate": 0.014471934546934517,
+     "ci95": [
+      0.010408469058719052,
+      0.01987097164409658
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": 0.11198930698930701,
+     "ci95": [
+      0.015068140193140218,
+      0.20613930051430046
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": 0.009543789543789545,
+     "ci95": [
+      -0.013569763569763566,
+      0.03382819957819958
+     ],
+     "n": 30
+    }
+   },
+   "change_B": {
+    "d_stop_after_switch": {
+     "estimate": 0.07057446035446031,
+     "ci95": [
+      0.05247116870629366,
+      0.09063781591094089
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": -0.0274975024975025,
+     "ci95": [
+      -0.04648407148407148,
+      -0.01114996114996115
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   }
+  },
+  "DT_CAM_VOI": {
+   "risky_B": {
+    "d_stop_after_switch": {
+     "estimate": 0.282842456987457,
+     "ci95": [
+      0.2736235338550339,
+      0.2913897766539017
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": -0.6297886372886373,
+     "ci95": [
+      -0.7106115620490623,
+      -0.5469031755281755
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": -0.032536352536352536,
+     "ci95": [
+      -0.05667812742812743,
+      -0.013103563103563106
+     ],
+     "n": 30
+    }
+   },
+   "change_B": {
+    "d_stop_after_switch": {
+     "estimate": -0.024162088097088103,
+     "ci95": [
+      -0.06362717863617864,
+      0.01693062664187666
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": 0.06065934065934065,
+     "ci95": [
+      0.032722222222222215,
+      0.09463018925518928
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   },
+   "late_B": {
+    "d_stop_after_switch": {
+     "estimate": 0.25840959975209976,
+     "ci95": [
+      0.24074005703786952,
+      0.27409536476023977
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": -0.5940054390054389,
+     "ci95": [
+      -0.6638074703074703,
+      -0.5306463536463537
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": -0.03481148481148481,
+     "ci95": [
+      -0.06245374995374996,
+      -0.01147101972101972
+     ],
+     "n": 30
+    }
+   },
+   "safe": {
+    "d_stop_after_switch": {
+     "estimate": 0.007311441798941802,
+     "ci95": [
+      0.0016001984126984147,
+      0.016722461970899473
+     ],
+     "n": 30
+    },
+    "contacts_after_switch": {
+     "estimate": -0.006984126984126985,
+     "ci95": [
+      -0.01873015873015873,
+      0.0
+     ],
+     "n": 30
+    },
+    "repeated_push_after_switch": {
+     "estimate": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n": 30
+    }
+   }
+  }
+ },
+ "criteria": {
+  "DT_CAM_VOI": {
+   "P1_revision_pushy_to_calm": true,
+   "P2_behaviour_recovery": true,
+   "P3_revision_calm_to_pushy": true,
+   "P4_safety": true,
+   "P5_task": true,
+   "recovery_milestone_met": true
+  },
+  "DT_CAM": {
+   "P1_revision_pushy_to_calm": true,
+   "P2_behaviour_recovery": true,
+   "P3_revision_calm_to_pushy": true,
+   "P4_safety": true,
+   "P5_task": true,
+   "recovery_milestone_met": true
+  },
+  "DT": {
+   "P1_revision_pushy_to_calm": false,
+   "P2_behaviour_recovery": false,
+   "P3_revision_calm_to_pushy": true,
+   "P4_safety": true,
+   "P5_task": true,
+   "recovery_milestone_met": false
+  }
+ }
+}

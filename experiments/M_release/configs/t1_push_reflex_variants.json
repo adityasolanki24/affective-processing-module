@@ -1,0 +1,48 @@
+{
+ "_doc": "Push-recovery reflex variants for the official T1 policy, compared on development seeds 72101-72105 (flat) only; the chosen one is frozen in t1_push_reflex.json before the fresh-seed battery (72201-72205).",
+ "R1": {
+  "push_reflex": {
+   "trigger_m_s": 0.25,
+   "hold_s": 0.8,
+   "gain": 1.0,
+   "max_m_s": 0.5
+  }
+ },
+ "R2": {
+  "push_reflex": {
+   "trigger_m_s": 0.35,
+   "hold_s": 0.6,
+   "gain": 1.0,
+   "max_m_s": 0.5
+  }
+ },
+ "R3": {
+  "push_reflex": {
+   "trigger_m_s": 0.25,
+   "hold_s": 0.8,
+   "gain": 1.0,
+   "max_m_s": 0.5
+  },
+  "command_ramp_m_s2": 1.0
+ },
+ "R4": {
+  "push_reflex": {
+   "trigger_m_s": 0.25,
+   "hold_s": 0.8,
+   "gain": 1.0,
+   "max_m_s": 0.5,
+   "tau_s": 0.25,
+   "confirm_s": 0.1
+  }
+ },
+ "R5": {
+  "push_reflex": {
+   "trigger_m_s": 0.2,
+   "hold_s": 0.8,
+   "gain": 1.0,
+   "max_m_s": 0.5,
+   "tau_s": 0.4,
+   "confirm_s": 0.1
+  }
+ }
+}

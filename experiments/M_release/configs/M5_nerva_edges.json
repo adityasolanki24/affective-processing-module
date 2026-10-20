@@ -1,0 +1,17 @@
+{
+ "acc8": [
+  1.72428,
+  1.86543,
+  1.96015,
+  2.0647349999999998,
+  2.1611562500000003,
+  2.2678325,
+  2.45529625
+ ],
+ "source": "K5-T pooled quantiles",
+ "meta": {
+  "robot": "nerva",
+  "lifetimes": 40,
+  "source": "M5 partition T (RANDINTENT; risky_B, safe; warehouse and home)"
+ }
+}

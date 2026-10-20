@@ -1,0 +1,150 @@
+{
+ "_doc": "APM v1.0 asset manifest: everything the release loads, with versions or SHA-256. Stock assets are NVIDIA's Isaac Sim 5.1 content (not redistributed here); NERVA and Open Duck Playground are external repositories at pinned versions.",
+ "engine": {
+  "isaac_sim": "5.1.0 (pip wheel isaacsim-5.1.0.0, Python 3.11)",
+  "isaac_lab": "v2.3.2",
+  "physx": "PhysX 5 (Isaac Sim 5.1)",
+  "mujoco": "3.3.0 (NERVA validated backend, reference wheeled robot)",
+  "gpu": "NVIDIA L4, driver 580 (GCP common-cu129-ubuntu-2204-nvidia-580)"
+ },
+ "assets_root": "Isaac Sim 5.1 stock content (get_assets_root_path(): .../Assets/Isaac/5.1)",
+ "scenes": {
+  "home": {
+   "usd": "/Isaac/Environments/Simple_Room/simple_room.usd",
+   "role": "development (residential room)",
+   "floor_z": -0.815,
+   "hub": [
+    1.65,
+    2.02,
+    0.0
+   ],
+   "stations": {
+    "P1": [
+     3.206,
+     3.576
+    ],
+    "P2": [
+     0.094,
+     3.576
+    ],
+    "P3": [
+     3.206,
+     0.464
+    ]
+   }
+  },
+  "warehouse": {
+   "usd": "/Isaac/Environments/Simple_Warehouse/full_warehouse.usd",
+   "role": "development (industrial)",
+   "floor_z": 0.0,
+   "hub": [
+    2.02,
+    13.31,
+    0.0
+   ],
+   "stations": {
+    "P1": [
+     2.02,
+     15.51
+    ],
+    "P2": [
+     0.464,
+     14.866
+    ],
+    "P3": [
+     0.464,
+     11.754
+    ]
+   }
+  },
+  "hospital": {
+   "usd": "/Isaac/Environments/Hospital/hospital.usd",
+   "role": "held-out (public interior)",
+   "floor_z": 0.0,
+   "hub": [
+    -6.61,
+    2.69,
+    0.0
+   ],
+   "stations": {
+    "P1": [
+     -4.41,
+     2.69
+    ],
+    "P2": [
+     -6.61,
+     4.89
+    ],
+    "P3": [
+     -8.81,
+     2.69
+    ]
+   }
+  }
+ },
+ "robots": {
+  "nova_carter": {
+   "usd": "/Isaac/Robots/NVIDIA/NovaCarter/nova_carter.usd",
+   "controller": "the asset's wheel drives; APM's (v, w) adapter",
+   "measured": {
+    "wheel_radius_m": 0.14,
+    "track_m": 0.4132,
+    "mass_kg": 48.72
+   }
+  },
+  "booster_t1": {
+   "usd": "/Isaac/Robots/BoosterRobotics/BoosterT1/T1_locomotion.usd",
+   "policy": "experiments/M_release/policies/t1_isaaclab_v1/policy.pt",
+   "policy_sha256": "b14d86f323425985a03b2dd1b327701e883d5168530b0d8d95bc495402447818",
+   "policy_onnx_sha256": "33ef5678482cc0354276056948d8e5d854c6ed02ab9cac8f7beafc5ac7dc1a44",
+   "velocity_map_sha256": "078b67539fecaf2401fae508a2919c40890599e6662dbbcbea73b6c7f60a4718",
+   "training": "Isaac Lab task APM-Velocity-Flat-T1-v0 (src/apm_isaac/lab/t1.py), rsl_rl PPO, 2500 iterations, 4096 envs, seed 42",
+   "failed_iteration": {
+    "policy": "experiments/M_release/policies/t1_isaaclab_v2/policy.pt",
+    "policy_sha256": "6a4ecd859b7cec87749538ff25078dc619d452888b4ddeb6823297a0441280d6",
+    "result": "failed its gate battery (results/m3/t1_v2_battery_failed.json)"
+   }
+  },
+  "nerva": {
+   "source": "Open Duck Mini v2 MJCF open_duck_mini_v2_backlash.xml, Open_Duck_Playground @ b9be205ac64488c23504ca42e5ec790337adeec3",
+   "policy": "experiments/cloud_runs/turn_translation-20261011-000711/candidate.onnx (NERVA repository)",
+   "policy_sha256": "610b1c59446cb9f6067238a61a641a60aa706c48f4a56dc8b07d1956d4813446",
+   "isaac_import": "src/apm_isaac/nerva.py (merged defaults, backlash removed, MuJoCo inertials and joint frames, SI gains, upper-body colliders)",
+   "comparative_backend": "MuJoCo 3.3.0 (DEVIATIONS D3)"
+  },
+  "wheeled_reference": {
+   "definition": "src/apm_isaac/robots.py WheeledIsaac (USD) and apm_transfer.wheeled_world (MJCF)",
+   "role": "MuJoCo vs Isaac cross-physics reference only"
+  }
+ },
+ "people": {
+  "characters": [
+   "male_adult_construction_05_new",
+   "F_Business_02",
+   "M_Medical_01"
+  ],
+  "bystanders": [
+   "F_Medical_01",
+   "male_adult_police_04",
+   "female_adult_police_02"
+  ],
+  "animation": "/Isaac/People/Characters/Biped_Setup.usd (AnimationGraph, retargeting)",
+  "physical_body": "kinematic capsule r 0.22 m, 1.7 m"
+ },
+ "apm_models": {
+  "M5_humanoid_edges.json": "f250f2ee3999f29e6fc7960d9d2d594cc56300b3c7e5d63621262232b2037487",
+  "M5_humanoid_tasks.json": "91d3d0a87e95aeaa4981e21cc8971dd89f43c7c02e518d88742d36e2d5c9c3dc",
+  "M5_humanoid_time.json": "ba48a72706e472b9430852c20e1430d9835bea8792a263aedbdd34ea36bf98d1",
+  "M5_humanoid_types.json": "6acc4cd9f55c1a112a90d5cf9f812c6075688b48d061174f9126d9f086d868a8",
+  "M5_nerva_edges.json": "72aaf43688fba47edbcaa41ea6d174eee14aaf58a7f2128d6f4211dd6ea55d96",
+  "M5_nerva_mujoco_tasks.json": "6aef9361f1ed4b970833d076e9536751fc651b57b756d73a807c389f4ec40d70",
+  "M5_nerva_tasks.json": "af3bccbd1bfc313caa0d7ee2d4f077775e3e9db15139f4cbe91b222fdfc29cb8",
+  "M5_nerva_time.json": "69a5e7ff719a7cb6c894f5a1823cf78d675798116708e35b3ed0ec6d40198ae5",
+  "M5_nerva_types.json": "65ce99283e62752e590d0b65252bf5bd6b9fa82d4be05f61ed834acad399fb7b",
+  "M5_nova_carter_edges.json": "f0af0ba2242fb580e5de2fde8df48f75379aab502b63be7486b3b2711d11d9a8",
+  "M5_nova_carter_tasks.json": "afb0acfcb494ce9029dd5e07d41b7ba73b85b18c0415e38b7965e5556df4b760",
+  "M5_nova_carter_time.json": "be31b8ab5868d3cd8190126ac31a2171ced00217762e81b84e6461bd00332774",
+  "M5_nova_carter_types.json": "9ee20e2dee8e5fce6be530f48814e0a2f44ca986dcf840898d08c767e92a646e",
+  "M6_tuned.json": "2ad66fcc53d10765da7b429cc93affd8a431b8ec2020d022d98ef34c930564d2"
+ }
+}

@@ -1,0 +1,168 @@
+{
+ "systems": {
+  "B0|EU_I": {
+   "kind": "observer",
+   "driver": {
+    "kind": "b0"
+   },
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+   "lam": 0.0007208233903943412
+  },
+  "B0|EU_T": {
+   "kind": "observer",
+   "driver": {
+    "kind": "b0"
+   },
+   "type_model": "experiments/J_validation_transfer/configs/types_J2T_EU-T.json",
+   "lam": 0.0007208233903943412
+  },
+  "B0|EA": {
+   "kind": "observer",
+   "driver": {
+    "kind": "b0"
+   },
+   "type_model": "experiments/J_validation_transfer/configs/types_J2T_EA.json",
+   "lam": 0.0007208233903943412
+  },
+  "B0|EC": {
+   "kind": "observer",
+   "driver": {
+    "kind": "b0"
+   },
+   "type_model": "experiments/J_validation_transfer/configs/types_J2T_EC.json",
+   "lam": 0.0007208233903943412
+  },
+  "cautious|EU_I": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M0",
+     "evidence": "all"
+    },
+    "lam_c_scale": 2.0
+   },
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+   "lam": 0.0007208233903943412
+  },
+  "cautious|EU_T": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M0",
+     "evidence": "all"
+    },
+    "lam_c_scale": 2.0
+   },
+   "type_model": "experiments/J_validation_transfer/configs/types_J2T_EU-T.json",
+   "lam": 0.0007208233903943412
+  },
+  "cautious|EA": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M0",
+     "evidence": "all"
+    },
+    "lam_c_scale": 2.0
+   },
+   "type_model": "experiments/J_validation_transfer/configs/types_J2T_EA.json",
+   "lam": 0.0007208233903943412
+  },
+  "cautious|EC": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "ema",
+    "params": {
+     "tau": 0.621595,
+     "k": 0.449887,
+     "c": 0.017277
+    },
+    "lam_c": 3.946054,
+    "lam_s": 0.993398,
+    "memory": {
+     "model": "M0",
+     "evidence": "all"
+    },
+    "lam_c_scale": 2.0
+   },
+   "type_model": "experiments/J_validation_transfer/configs/types_J2T_EC.json",
+   "lam": 0.0007208233903943412
+  },
+  "R1|EU_I": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "static",
+    "params": {},
+    "lam_c": 2.507591,
+    "lam_s": 1.513288
+   },
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+   "lam": 0.0007208233903943412
+  },
+  "R1|EU_T": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "static",
+    "params": {},
+    "lam_c": 2.507591,
+    "lam_s": 1.513288
+   },
+   "type_model": "experiments/J_validation_transfer/configs/types_J2T_EU-T.json",
+   "lam": 0.0007208233903943412
+  },
+  "R1|EA": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "static",
+    "params": {},
+    "lam_c": 2.507591,
+    "lam_s": 1.513288
+   },
+   "type_model": "experiments/J_validation_transfer/configs/types_J2T_EA.json",
+   "lam": 0.0007208233903943412
+  },
+  "R1|EC": {
+   "kind": "observer",
+   "driver": {
+    "kind": "regulated",
+    "regulator": "static",
+    "params": {},
+    "lam_c": 2.507591,
+    "lam_s": 1.513288
+   },
+   "type_model": "experiments/J_validation_transfer/configs/types_J2T_EC.json",
+   "lam": 0.0007208233903943412
+  }
+ }
+}

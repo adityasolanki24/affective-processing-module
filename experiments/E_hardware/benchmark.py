@@ -1,6 +1,6 @@
 """Resource benchmark of the APM runtime and learned predictor on the machine it runs on.
 
-Measures (on THIS machine; embedded boards are estimated from these numbers in docs/hardware.md, never measured):
+Measures (on THIS machine; boards are estimated from these numbers in docs/archive/hardware.md, never measured):
 - APM step latency and message-ingest throughput in a busy synthetic scene (10 tracked entities, 6 live hypotheses),
 - Python heap allocated by a long-running APM with populated memory (tracemalloc), saved-state size,
 - GRU (64 hidden) single-sample CPU inference latency, model size, shadow-update training throughput.

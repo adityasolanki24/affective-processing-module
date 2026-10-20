@@ -1,0 +1,277 @@
+{
+ "lifetimes": 160,
+ "robots": {
+  "nerva_mujoco": {
+   "A1": {
+    "vs": "NOMEM",
+    "measure": "A",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 10,
+    "mean_diff_DT_minus_other": -1.7,
+    "ci95": [
+     -3.3,
+     -0.5
+    ],
+    "p_one_sided": 0.0168,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "A2": {
+    "vs": "SHUFFLED",
+    "measure": "A",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 10,
+    "mean_diff_DT_minus_other": -1.1,
+    "ci95": [
+     -2.8,
+     0.0
+    ],
+    "p_one_sided": 0.1251,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "B1": {
+    "vs": "FROZEN",
+    "measure": "B_late",
+    "scene": "warehouse",
+    "history": "late_B",
+    "n_pairs": 9,
+    "mean_diff_DT_minus_other": -2.406481481481481,
+    "ci95": [
+     -3.012962962962963,
+     -1.751828703703704
+    ],
+    "p_one_sided": 0.0022,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "B2": {
+    "vs": "FROZEN",
+    "measure": "B_change",
+    "scene": "warehouse",
+    "history": "change_B",
+    "n_pairs": 9,
+    "mean_diff_DT_minus_other": 0.25,
+    "ci95": [
+     0.05555555555555555,
+     0.5
+    ],
+    "p_one_sided": 0.0603,
+    "predicted": "greater",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "C1": {
+    "vs": "FIXED",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -20.121000000000002,
+    "ci95": [
+     -22.64845625,
+     -17.710905208333337
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C2": {
+    "vs": "NEUTRAL",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -6.022708333333332,
+    "ci95": [
+     -8.658541666666665,
+     -3.531202083333334
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C3": {
+    "vs": "LOOKUP",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -11.946833333333332,
+    "ci95": [
+     -13.210929166666666,
+     -10.64083125
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "C4": {
+    "vs": "MONOTONE",
+    "measure": "cost",
+    "scene": "warehouse",
+    "history": null,
+    "n_pairs": 20,
+    "mean_diff_DT_minus_other": -3.078583333333332,
+    "ci95": [
+     -4.122426041666665,
+     -2.095987499999999
+    ],
+    "p_one_sided": 0.0,
+    "predicted": "less",
+    "holm_pass": true,
+    "failed_wrong_direction": false
+   },
+   "D1": {
+    "vs": "REACTIVE",
+    "measure": "cost",
+    "scene": "hospital",
+    "history": null,
+    "n_pairs": 0,
+    "mean_diff_DT_minus_other": null,
+    "ci95": [
+     NaN,
+     NaN
+    ],
+    "p_one_sided": NaN,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "D2": {
+    "vs": "MONOTONE",
+    "measure": "cost",
+    "scene": "hospital",
+    "history": null,
+    "n_pairs": 0,
+    "mean_diff_DT_minus_other": null,
+    "ci95": [
+     NaN,
+     NaN
+    ],
+    "p_one_sided": NaN,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   },
+   "D3": {
+    "vs": "REACTIVE",
+    "measure": "cost",
+    "scene": "home",
+    "history": null,
+    "n_pairs": 0,
+    "mean_diff_DT_minus_other": null,
+    "ci95": [
+     NaN,
+     NaN
+    ],
+    "p_one_sided": NaN,
+    "predicted": "less",
+    "holm_pass": false,
+    "failed_wrong_direction": false
+   }
+  }
+ },
+ "E_robots_passing": {
+  "A1": 0,
+  "B1": 1,
+  "B2": 0,
+  "C2": 1,
+  "D1": 0
+ },
+ "verdicts": {
+  "A1": "Not demonstrated",
+  "A2": "Not demonstrated",
+  "B1": "Partially demonstrated",
+  "B2": "Not demonstrated",
+  "C1": "Partially demonstrated",
+  "C2": "Partially demonstrated",
+  "C3": "Partially demonstrated",
+  "C4": "Partially demonstrated",
+  "D1": "Not demonstrated",
+  "D2": "Not demonstrated",
+  "D3": "Not demonstrated"
+ },
+ "safety": {
+  "nerva_mujoco/warehouse/DT": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 125,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/SHUFFLED": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 188,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/NOMEM": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 296,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/FROZEN": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 254,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/MONOTONE:lo=0.1/width=0.4": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 167,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/NEUTRAL": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 296,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/LOOKUP": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 96,
+   "vetoes": 0,
+   "fall_list": []
+  },
+  "nerva_mujoco/warehouse/FIXED": {
+   "lifetimes": 20,
+   "encounters": 480,
+   "falls": 0,
+   "trips": 0,
+   "contacts": 258,
+   "vetoes": 0,
+   "fall_list": []
+  }
+ }
+}

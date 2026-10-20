@@ -1,200 +1,177 @@
-# APM — Affective Processing Module
+# APM: Affective Processing Module
 
-APM is a portable, experience-grounded affective regulation and learning system for robots. A robot connects to it
-through **AffectLink**, a small versioned contract of robot-relevant facts:
-- **inputs:** entities, self-state margins, goals, predicted outcomes and observed outcomes;
-- **outputs (advisory):** persistent affect, appraisal frames, per-target action tendencies, attention, expression
-  intent and learned expectations.
+**Experience-driven memory, adaptive behaviour and expressive motion across robot embodiments.**
 
-Status: **research prototype (private).** The v0.1 core is implemented and tested. Programmes F, G and H (v0.2–v0.4)
-then tested which parts of it earn their place; their findings are summarised under
-[What the research found](#what-the-research-found). Implemented and measured results are listed separately from
-proposals.
+APM is an independent, simulation-based robotics research project. It asks whether a robot can build lasting,
+person-specific expectations from its own sensor experience, use them to act more safely and efficiently, and show
+what it has learned through how it moves, on top of each robot's own validated motion controller and safety layer.
 
-**In one paragraph.** What works is simple:
-- a learned consequence predictor;
-- explicit, outcome-grounded memory of each entity;
-- a smoothed risk signal, combined by a transparent rule.
+> **Scope.** All results are in simulation (NVIDIA Isaac Sim 5.1 with PhysX, and MuJoCo). APM's "beliefs" are
+> estimates of the physical perturbation to expect from specific people. They are not emotions, and nothing here
+> claims feelings, consciousness, production safety or hardware deployment. The expressive mapping is designed, not
+> learned end to end, and no human study has tested how people read the movement.
 
-The emotion-like layer of v0.1 (the PAD affect state) did **not** earn its place. It added no predictive information
-and made behaviour worse once baselines were tuned equally. Memory-conditioned expressive motion is mechanically
-reliable in simulation, but has not been shown to be legible to people. The main open problem is **autonomous
-revision**: a robot that avoids something it has learned is risky stops collecting the evidence that would let it
-change its mind.
+**Snapshot:** `v1.0-sim-snapshot`, the APM v1.0 simulation research snapshot including the October 2026
+remediation. Project page: <https://aditya-solanki.vercel.app/projects/apm>. Videos: the
+[release assets](https://github.com/adityasolanki24/affective-processing-module/releases/tag/v1.0-sim-snapshot).
 
-## What APM is not
+## Where it came from
 
-- Not an emotion-recognition product. It does not infer human emotions from faces or voices.
-- Not a consciousness detector, and not a claim that a robot feels anything. It implements *functional* affect: an
-  internal control state shaped by appraisal and experience.
-- Not a motor controller and not a safety system. Every output is advisory; the robot must behave safely with APM
-  absent ([docs/safety.md](docs/safety.md)).
-- Not an LLM wrapper. The core runs offline on NumPy; no cloud or foundation model is in the affect, motor or
-  safety path.
+APM began as the affect layer of [NERVA](https://github.com/adityasolanki24/NERVA), an expressive biped built on
+Open Duck Mini. NERVA's first design used a continuous PAD (pleasure–arousal–dominance) affective state.
 
-## Why it exists
+APM's controlled experiments showed that PAD did not improve behaviour; in programme G it made it worse. The
+project then moved to what the evidence supported:
+- an explicit, revisable memory of *who* caused *what*;
+- a decision layer that uses that memory under a hard risk cap;
+- a bounded expressive channel that each robot realises with its own controller.
 
-To test whether one set of affective learning mechanisms can give different robot bodies adaptive, persistent,
-context-sensitive behaviour from their own experiences:
-- appraisal of explicit predicted and observed outcomes;
-- persistent affect dynamics;
-- outcome-grounded memory;
-- learned outcome prediction.
-
-A common API alone does not make anything universal, so portability, learning and transfer are tested separately.
-Each has preregistered criteria ([docs/research_questions.md](docs/research_questions.md)).
+NERVA remains the embodied robot platform. APM is the robot-independent architecture that grew out of it.
 
 ## Architecture
 
 ```
-robot (any body) ──► embodiment adapter ──► AffectLink v1 ──► APM core ──► advisory outputs ──► robot planner
-                     (robot-specific)        (versioned)      │                                   (owns safety)
-                                                              ├─ StreamGate: validation, ordering, staleness, resets
-                                                              ├─ Context: entities, calibrated margins, goals, predictions
-                                                              ├─ Appraisal frames (hypothesis / memory / outcome)
-                                                              ├─ Affect: tonic attractor + phasic impulses → PAD readout
-                                                              ├─ Tendencies (per target), attention, expression intent
-                                                              ├─ Memory: entity/context outcome statistics, episodes
-                                                              └─ Learning (optional): outcome predictors, shadow learner
+ sensors (IMU, rendered depth camera; robot-specific)
+   │  only robot-observable signals, never simulator state
+   ▼
+ observation model ──────► encounter evidence: unintended self-displacement, camera looming, quiet-period thresholds
+   ▼
+ experience memory  ─────► per-person belief over learned behaviour types; Bayesian, change-aware, revisable
+   ▼
+ decision / regulation ──► decision-theoretic choice of an abstract ExpressionIntent under an enforced risk cap
+   ▼                       (proximity, tempo, hesitation, gaze, posture: bounded channels)
+ independent risk supervisor (re-checks every decision; can veto → hold)
+   ▼
+ embodiment adapter ─────► Nova Carter wheels │ T1 arms, waist, head │ NERVA neck and head
+   ▼
+ the robot's own controller + physical safety monitor (never bypassed by APM)
+   ▼
+ physical world ─► sensors
 ```
 
-Details: [docs/architecture.md](docs/architecture.md). The learned predictor is replaceable (GRU today; a
-Transformer, an active-inference model or a neuromorphic implementation later) without changing AffectLink.
+| part | how it is made |
+|---|---|
+| per-person memory, behaviour types, sensor thresholds | **learned** from the robot's own experience (EM-fitted types, online Bayesian updates, self-calibrated thresholds) |
+| decision layer, risk cap, supervisor | **designed** (decision-theoretic, with a 5-parameter time model fitted from the robot's own exploration) |
+| expressive mapping (state → posture, gaze, timing) | **designed**, bounded and rate-limited |
+| controllers and physical safety | each robot's own: stock Nova Carter drives; an Isaac Lab PPO policy for T1; NERVA's frozen ONNX policy and SafetyMonitor |
 
-## AffectLink
+More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-- **Schema:** Protocol Buffers ([proto/affectlink/v1/affectlink.proto](proto/affectlink/v1/affectlink.proto)), with a
-  Python reference implementation (`apm.protocol`) checked against it field by field.
-- **Rules:**
-  - units, uncertainty and validity status on every value;
-  - missing values are never zero;
-  - predictions and outcomes are distinct types;
-  - per-stream ordering, duplicate rejection, staleness, reset epochs and size limits.
-- **Transports:** the in-process API and JSON codec are implemented. Mappings for a C ABI, ROS 2, Ethernet, CAN FD
-  and UART are documented but not implemented ([docs/affectlink.md](docs/affectlink.md)).
+## Robots
 
-## Quick start (no robot, no simulator)
+| robot | engine | controller | role |
+|---|---|---|---|
+| NVIDIA Nova Carter (wheeled) | Isaac Sim 5.1 / PhysX | stock wheel drives | comparative experiments and demonstrations |
+| Booster T1 (humanoid) | Isaac Sim 5.1 / PhysX | Isaac Lab PPO velocity policy (`policies/t1_isaaclab_v1`) | comparative experiments and demonstrations |
+| NERVA / Open Duck Mini v2 (small biped) | **MuJoCo** for comparative results; Isaac Sim for demonstrations | frozen neutral ONNX policy + SafetyMonitor | NERVA cannot reliably tolerate contact in Isaac, so its comparative data come from its validated MuJoCo backend |
+
+## Research contributions
+
+- **One runtime across three morphologies.** The same memory, decision layer and supervisor drive a wheeled robot,
+  a humanoid and a small biped through robot-specific adapters.
+- **Person-specific memory that pays off.** On fresh seeds with controlled baselines, correct per-person memory
+  beats pooled, swapped and shuffled memory on all three robots.
+- **Experience-dependent movement.** The same calm meeting looks different after a pushy or a calm history, and the
+  differences are measured from joint and pose traces.
+- **A research record that changed direction.** Every confirmatory test was preregistered, run once and reported,
+  including failures. Negative results retired PAD, a lookup expression mapping, a memory variant and a
+  smoother-looking T1 controller (see [docs/RESEARCH_HISTORY.md](docs/RESEARCH_HISTORY.md)).
+
+## Key results (corrected, October 2026)
+
+Source: [experiments/M_release/REMEDIATION_REPORT.md](experiments/M_release/REMEDIATION_REPORT.md). The figures
+are generated from committed results by `experiments/M_release/scripts/make_figures.py`
+([figures](experiments/M_release/figures/remediation)).
+
+| question | Nova Carter (Isaac) | Booster T1 (Isaac) | NERVA (MuJoCo) |
+|---|---|---|---|
+| person-specific memory beats pooled / swapped / shuffled memory (s per encounter, Holm) | +4.1 / +7.5 / +6.4 | +5.0 / +4.8 / +7.2 | +2.5 / +15.0 / +7.9 |
+| APM beats the calibrated rule, lookup, fixed style and no memory | yes, all four | yes, all four | yes, all four |
+| **APM beats neutral motion with the same supervisor** | **no** (identical behaviour) | **no** (+0.38 s, n.s.) | **no** (0.78 s worse) |
+| falls / ejections in 240 lifetimes | 0 / 0 | 0 / 0 | 0 / – |
+
+- **What the comparisons mean.** The task-cost gains come from per-person memory acting through the safety
+  supervisor, not from the choice of expressive style.
+- **Expression after a pushy vs a calm history** (matched speed and distance):
+  - T1 watches longer, guards with its arms, turns side-on and backs away;
+  - NERVA lowers or raises its head and neck and backs away;
+  - Nova Carter changes its timing and backs away.
+- **Learning is fast; recovery is slow.** T1 recovers part-way within 7 calm meetings; Nova Carter and NERVA barely
+  do.
+- **T1 controller.** The official Booster controller walks more smoothly, but it fell under 0.5 m/s pushes and
+  settles more slowly, so it failed the frozen promotion rule and the original controller was kept.
+
+**Results superseded by the remediation.** A simulator defect in the people's lunge contacts (DEVIATIONS D6)
+affected programme M's original Isaac results. Those results are preserved in
+[experiments/M_release/REPORT.md](experiments/M_release/REPORT.md), and the corrected results above govern. The
+corrected comparisons cover a narrower scope (one scene, two histories plus an identity history) than the original
+experiments.
+
+## Known limitations
+
+- Simulation only, with no hardware.
+- Perception is rendered depth plus motion heuristics, not a deployed detector or tracker.
+- In the identity experiments the memory receives the person's identity. Visual re-identification is not tested.
+- The expressive mapping is designed, and experience-dependent movement is shown in a limited set of conditions
+  (one present-task seed per robot).
+- No human evaluation of how the movement is perceived.
+- Recovery after a person changes behaviour is incomplete within the tested horizon.
+- NERVA cannot reliably take contact in Isaac. Its expression memory is near-miss learning.
+
+## Install and run
 
 ```bash
 git clone https://github.com/adityasolanki24/affective-processing-module && cd affective-processing-module
 python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"                             # add ".[learning]" (PyTorch CPU) for the learning stack
-python examples/standalone/scenario.py              # synthetic robot; writes runs/standalone.jsonl
-python examples/wheeled_robot/run.py                # second embodiment: simulated wheeled robot, 10 minutes
-pytest -q
+pip install -e ".[dev,sim]"                          # sim: MuJoCo 3.3.0
+pytest -q && ruff check . && mypy src
 ```
 
-## Examples
+- **Isaac Sim** (Linux, an RTX GPU such as an NVIDIA L4; pinned Isaac Sim 5.1.0 + Isaac Lab v2.3.2):
+  `source experiments/M_release/cloud/isaac_env.sh` installs the pinned environment and exports `ISAAC_PY`.
+- **NERVA** needs the NERVA repository and Open Duck Playground at the pinned commits
+  (`experiments/M_release/cloud/setup_nerva_inputs.sh`).
+- **The Booster T1 candidate controller** (not adopted) is fetched at a pinned commit, with hashes checked, by
+  `python experiments/M_release/scripts/prepare_booster.py`.
 
-| example | what it shows | needs |
-|---|---|---|
-| `examples/standalone/scenario.py` | synthetic robot: collision with a stranger; on the next visit, memory predicts adverse outcomes, valence falls and an avoid tendency appears before anything happens | APM only |
-| `examples/wheeled_robot/run.py` | the same core on a differential-drive robot with obstacles, pedestrians, slippery floor and battery; learned per-pedestrian expectations | APM only |
-| `examples/nerva/replay_gate.py` | 160 stored rollouts of the NERVA biped (MuJoCo) through the NERVA adapter, observe-only | stored NERVA telemetry |
-| `examples/nerva/live_rollout.py` | one live NERVA simulation with a push: stability loss predicted ≈ 140 ms ahead, then loss, fall and APM's response | a NERVA checkout and its simulator environment |
-| `examples/nerva/generate_experience.py` | randomized-push NERVA experience for learning | same |
-
-## Robot integration
-
-Write an embodiment adapter ([docs/robot_integration.md](docs/robot_integration.md)):
-1. Declare capabilities and margin calibrations in an `EmbodimentProfile`.
-2. Send calibrated `SelfState`, plus entities, goals and predictions if you have them.
-3. Detect real outcomes and send `OutcomeSignal`, documenting each threshold.
-4. Use `Emitter` for headers.
-
-There are two worked adapters: `apm.adapters.nerva` (biped) and `apm.adapters.wheeled`.
-
-## Learning
-
-See [docs/learning.md](docs/learning.md):
-- **Statistical baselines:** goal rate, margin bins, logistic regression.
-- **GRU outcome predictor:** 64 hidden units, 17,857 parameters.
-- **Labels:** observed outcomes only; no counterfactual credit.
-- **Replay buffer and shadow learner:** frozen evaluation, promotion thresholds and rollback; the live model never
-  changes after a gradient step.
-
-## Hardware
-
-See [docs/hardware.md](docs/hardware.md). It covers Raspberry Pi 5-class, NXP i.MX 8M Plus-class and Jetson Orin
-Nano-class candidates, failure behaviour, a block diagram and a bench test procedure.
-- **No hardware was purchased or tested.**
-- Runtime numbers are measured on a development PC; board figures are estimates.
-
-## What the research found
-
-Every programme was preregistered: criteria were fixed before confirmatory data, and negative results were kept.
-
-| programme | question | decision / result | report |
-|---|---|---|---|
-| A–E (v0.1) | build the core; portability; learning; transfer; hardware | portable across two bodies; learning mixed; **no learned transfer**; PAD adds no predictive value | `experiments/{B,C,D,E}_*` |
-| F (v0.2) | does the existing APM improve behaviour? | v0.1's PAD layer cut collisions 25% vs the B1 baseline; G later traced this to B2's 9× larger tuning budget. Memory revision too slow (E3); learned regulator B3 not credible (E4) | `experiments/F_behavioral_learning/results/CONFIRMATORY_SUMMARY.md` |
-| G (v0.3) | smallest architecture that behaves better through experience | **Decision A:** predictor ensemble + entity memory + EMA risk penalty. PAD **harmful** under equal tuning (+99% avoidable collisions); neural policies and specialised regulators not better; no validated deployment-time weight learning | `experiments/G_architecture_selection/reports/ARCHITECTURE_DECISION.md` |
-| H (v0.4) | can experience be expressed through embodied movement? | **Decision B:** memory + fixed lookup → bounded adapter on NERVA's validated controller; lived history recoverable from motion 98–100%, 0 falls. No learned or specialised model beat it. **Human legibility untested**; a researcher self-pilot found the styles hard to tell apart | `experiments/H_expressive_intelligence/reports/EXPRESSIVE_ARCHITECTURE_DECISION.md` |
-
-**Open problems, in order:**
-1. **Autonomous revision (the avoidance trap).** Avoidance censors the evidence needed to revise beliefs. No memory
-   design met the revision criterion in F (E3) or G (G2).
-2. **Deployment-time learning.** It needs a statistically powered promotion gate (G7).
-3. **Learned cross-embodiment transfer.** Not demonstrated.
-4. **Human legibility of expression.** The H2 study is ready but needs an ethics determination, and probably a
-   richer motion vocabulary from NERVA.
-
-## Project status
-
-| area | state |
+| what | command |
 |---|---|
-| AffectLink v1, codec, validation, ordering, staleness, resets | implemented, tested |
-| core: context, appraisal frames, attractor affect, tendencies, attention, expression intent, diagnostics | implemented, tested (hand-set transparent baseline, not fitted) |
-| memory: entity/context outcome statistics, memory-derived predictions, ambiguous identities, atomic persistence | implemented, tested |
-| NERVA biped adapter: replay + live rollout | **measured** (Milestone B) |
-| learning on NERVA experience | **measured** (Milestone C), mixed: see below |
-| second embodiment (wheeled) + portability | **measured** (Milestone D): same core unchanged |
-| cross-embodiment learned transfer | **not demonstrated** (Milestone D, TR2 failed) |
-| embedded hardware | design + PC benchmark only (Milestone E) |
-| research harnesses for F/G/H (`apm_research`, `apm_select`, `apm_express`, `apm_testbeds.wheeled_ctrl`) | implemented, tested; used by the experiment scripts |
-| decision-A regulator as a production runtime | **not yet**: it exists as research code in `apm_select`, while the v0.1 core still carries PAD |
+| integration check (runtime, memory, veto, restart, replay; MuJoCo) | `python experiments/M_release/scripts/m1_integration.py` |
+| NERVA lifetimes on MuJoCo | `python experiments/M_release/scripts/m6_nerva_mujoco.py --partition P --n 1 --systems DT --out out/nerva.jsonl` |
+| one robot meeting people in Isaac | `$ISAAC_PY experiments/M_release/isaac/m4_encounter.py --body nova_carter --scene warehouse --video --out out/m4` |
+| expression run (both histories) | `HISTORIES="pushy calm" SEED=73302 bash experiments/M_release/cloud/expression_v2.sh nerva` |
+| corrected comparisons | `python experiments/M_release/cloud/m6_plan.py --stage RY --vms <vm> --tuned M6_tuned_R6.json`, then `scripts/r_analyze.py` |
+| figures | `python experiments/M_release/scripts/make_figures.py` |
 
-## Milestone A–E results (v0.1)
+More commands are in [REMEDIATION_REPORT.md §7](experiments/M_release/REMEDIATION_REPORT.md).
 
-All preregistered; details in `experiments/*/README.md`. Later programmes, above, supersede the PAD and learning
-conclusions here.
+## Documentation
 
-| question | result |
+| document | contents |
 |---|---|
-| software portability | **demonstrated**: the same core and AffectLink ran unmodified on a simulated biped (NERVA) and a simulated wheeled robot; core file hashes unchanged |
-| experience-grounded learning | **partially demonstrated** (see below) |
-| PAD's predictive value | **not supported**: in an ablation, PAD added nothing measurable; the appraisal vector carried the gain |
-| learned transfer (biped → wheeled) | zero-shot ranking carried over (AUROC 0.83); fine-tuning did not improve sample efficiency, so **no transfer claim** |
-| persistent functional affect | bounded, rate-invariant, recovering and memory-carrying affect is **demonstrated in simulation** |
+| [docs/STATE.md](docs/STATE.md) | what works today and what does not |
+| [docs/RESEARCH_HISTORY.md](docs/RESEARCH_HISTORY.md) | programmes A–M: questions, decisive results, retired ideas |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | components, learning, safety boundaries |
+| [experiments/M_release/REMEDIATION_REPORT.md](experiments/M_release/REMEDIATION_REPORT.md) | the corrected v1.0 results (current) |
+| [experiments/M_release/REPORT.md](experiments/M_release/REPORT.md) | the original v1.0 release report (partly superseded) |
+| [experiments/M_release/DEVIATIONS.md](experiments/M_release/DEVIATIONS.md) | every deviation from the preregistered protocols |
 
-Learning detail:
-- **Biped:**
-  - calibrated GRU with better ranking than baselines (AUROC 0.79 vs 0.74);
-  - failed the preregistered Brier margin and held-out-context criteria;
-  - shadow learning was safe but nearly a no-op.
-- **Wheeled robot:** the GRU clearly beat logistic regression (slip Brier −17%, collision Brier −38%).
+## Code layout
 
-Persistent-affect caveat: the hand-set baseline sat chronically negative on the busy wheeled robot, a calibration
-limitation.
+| package | role |
+|---|---|
+| `src/apm_transfer` | integrated runtime, memory, experience state, expressive program, rendered vision, MuJoCo worlds |
+| `src/apm_isaac` | Isaac Sim integration: robots, NERVA import, people, scenes and encounters, the Isaac Lab T1 task |
+| `src/apm_express` | `ExpressionIntent`, expression adapters, safety monitor |
+| `src/apm_revise` | learned behaviour types, change-aware beliefs |
+| `src/apm` | AffectLink protocol (the runtime's message contract) |
+| `experiments/<programme>/` | preregistrations, scripts, results and reports per programme |
 
-## Reproducibility
+## Principles
 
-| step | command | notes |
-|---|---|---|
-| tests | `pytest -q` | core; `-m learning` needs torch |
-| Milestone B | `python examples/nerva/replay_gate.py --gate-dir <NERVA gate rollouts>` | |
-| Milestone C | `python examples/nerva/generate_experience.py --nerva <NERVA> --policy <candidate.onnx> --trials 600`, then `python experiments/C_learning/run_learning.py --experience runs/nerva_experience` | seeds fixed in the scripts; data seed 2026 |
-| Milestone D | `python experiments/D_portability/run_portability.py --nerva-experience runs/nerva_experience` | wheeled seeds 10,000–10,399 |
-| Milestone E | `python experiments/E_hardware/benchmark.py` | |
-| programmes F, G, H | see each programme's `README.md` | frozen seeds in each `seeds.py`; confirmatory runs refuse to start on a dirty checkout |
+- Preregistered confirmatory tests on fresh seeds; deviations logged; failures kept.
+- Robot-observable evidence only; simulator truth is never an input.
+- APM never bypasses a robot's own controller or safety layer.
 
-Raw data and logs stay local under `runs/` (ignored). Committed results are the JSON summaries in `experiments/`.
-The exception is the small F snapshot in `runs/E1` and `runs/E2`, which F's preregistration cites by hash.
-
-Confirmatory runs record the exact commit and source hashes they ran with, in each `run_meta.json`. Reproduce a
-result at that commit. Later maintenance (for example the 2026-10-17 cleanup) changes library source hashes, but not
-the behaviour the experiments used.
-
-## Licence
-
-No licence has been chosen yet; all rights reserved until a licence is selected.
+Licence: none chosen yet; all rights reserved.

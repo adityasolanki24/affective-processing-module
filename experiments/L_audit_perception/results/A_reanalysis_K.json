@@ -1,0 +1,441 @@
+{
+ "K3-X (NERVA, frozen memory)": {
+  "published": {
+   "DT": {
+    "pushy_to_calm": 8.0,
+    "recovery": 11.0,
+    "recovered": 27,
+    "calm_to_pushy": 2.0,
+    "milestone": false
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 8.0,
+    "recovery": 11.0,
+    "recovered": 27,
+    "calm_to_pushy": 2.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 4.0,
+    "recovery": 5.0,
+    "recovered": 49,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 5.0,
+    "recovery": 7.0,
+    "recovered": 47,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   }
+  },
+  "A1": {
+   "DT": {
+    "pushy_to_calm": 8.0,
+    "recovery": 11.0,
+    "recovered": 24,
+    "calm_to_pushy": 2.0,
+    "milestone": false
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 8.0,
+    "recovery": 11.0,
+    "recovered": 24,
+    "calm_to_pushy": 2.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 4.0,
+    "recovery": 5.0,
+    "recovered": 49,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 5.0,
+    "recovery": 7.0,
+    "recovered": 47,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   }
+  },
+  "A1+A2task": {
+   "DT": {
+    "pushy_to_calm": 8.0,
+    "recovery": 11.0,
+    "recovered": 24,
+    "calm_to_pushy": 2.0,
+    "milestone": false
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 8.0,
+    "recovery": 11.0,
+    "recovered": 24,
+    "calm_to_pushy": 2.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 4.0,
+    "recovery": 5.0,
+    "recovered": 49,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 5.0,
+    "recovery": 7.0,
+    "recovered": 47,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   }
+  }
+ },
+ "K3-X2 (NERVA, fixed memory)": {
+  "published": {
+   "DT": {
+    "pushy_to_calm": 5.0,
+    "recovery": 8.0,
+    "recovered": 45,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 5.0,
+    "recovery": 8.0,
+    "recovered": 45,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 50,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 50,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   }
+  },
+  "A1": {
+   "DT": {
+    "pushy_to_calm": 5.0,
+    "recovery": 8.0,
+    "recovered": 43,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 5.0,
+    "recovery": 8.0,
+    "recovered": 42,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 50,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 47,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   }
+  },
+  "A1+A2task": {
+   "DT": {
+    "pushy_to_calm": 5.0,
+    "recovery": 8.0,
+    "recovered": 43,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 5.0,
+    "recovery": 8.0,
+    "recovered": 42,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 50,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 47,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   }
+  }
+ },
+ "K5-X (wheeled, frozen)": {
+  "published": {
+   "DT": {
+    "pushy_to_calm": 5.0,
+    "recovery": 9.0,
+    "recovered": 42,
+    "calm_to_pushy": 4.0,
+    "milestone": false
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 5.0,
+    "recovery": 9.0,
+    "recovered": 41,
+    "calm_to_pushy": 4.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 50,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 4.0,
+    "recovery": 6.0,
+    "recovered": 49,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   }
+  },
+  "A1": {
+   "DT": {
+    "pushy_to_calm": 5.0,
+    "recovery": 9.0,
+    "recovered": 37,
+    "calm_to_pushy": 4.0,
+    "milestone": false
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 5.0,
+    "recovery": 9.0,
+    "recovered": 36,
+    "calm_to_pushy": 4.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 50,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 4.0,
+    "recovery": 6.0,
+    "recovered": 48,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   }
+  },
+  "A1+A2task": {
+   "DT": {
+    "pushy_to_calm": 5.0,
+    "recovery": 9.0,
+    "recovered": 37,
+    "calm_to_pushy": 4.0,
+    "milestone": false
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 5.0,
+    "recovery": 9.0,
+    "recovered": 36,
+    "calm_to_pushy": 4.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 50,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 4.0,
+    "recovery": 6.0,
+    "recovered": 48,
+    "calm_to_pushy": 2.0,
+    "milestone": true
+   }
+  }
+ },
+ "K5-X2 (wheeled, fixed)": {
+  "published": {
+   "DT": {
+    "pushy_to_calm": 4.0,
+    "recovery": 8.0,
+    "recovered": 46,
+    "calm_to_pushy": 5.0,
+    "milestone": false
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 4.0,
+    "recovery": 8.0,
+    "recovered": 46,
+    "calm_to_pushy": 5.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 2.0,
+    "recovery": 5.0,
+    "recovered": 49,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 50,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   }
+  },
+  "A1": {
+   "DT": {
+    "pushy_to_calm": 4.0,
+    "recovery": 8.0,
+    "recovered": 45,
+    "calm_to_pushy": 5.0,
+    "milestone": false
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 4.0,
+    "recovery": 8.0,
+    "recovered": 45,
+    "calm_to_pushy": 5.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 2.0,
+    "recovery": 5.0,
+    "recovered": 49,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 49,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   }
+  },
+  "A1+A2task": {
+   "DT": {
+    "pushy_to_calm": 4.0,
+    "recovery": 8.0,
+    "recovered": 45,
+    "calm_to_pushy": 5.0,
+    "milestone": false
+   },
+   "DT_VOI": {
+    "pushy_to_calm": 4.0,
+    "recovery": 8.0,
+    "recovered": 45,
+    "calm_to_pushy": 5.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 2.0,
+    "recovery": 5.0,
+    "recovered": 49,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 49,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   }
+  }
+ },
+ "K6-X (humanoid, fixed)": {
+  "published": {
+   "DT": {
+    "pushy_to_calm": 8.0,
+    "recovery": 12.0,
+    "recovered": 20,
+    "calm_to_pushy": 2.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 30,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 3.0,
+    "recovery": 6.0,
+    "recovered": 30,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   }
+  },
+  "A1": {
+   "DT": {
+    "pushy_to_calm": 8.0,
+    "recovery": 12.0,
+    "recovered": 14,
+    "calm_to_pushy": 2.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 30,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 3.0,
+    "recovery": 6.0,
+    "recovered": 30,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   }
+  },
+  "A1+A2task": {
+   "DT": {
+    "pushy_to_calm": 8.0,
+    "recovery": 12.0,
+    "recovered": 14,
+    "calm_to_pushy": 2.0,
+    "milestone": false
+   },
+   "DT_CAM": {
+    "pushy_to_calm": 3.0,
+    "recovery": 5.0,
+    "recovered": 30,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   },
+   "DT_CAM_VOI": {
+    "pushy_to_calm": 3.0,
+    "recovery": 6.0,
+    "recovered": 30,
+    "calm_to_pushy": 1.0,
+    "milestone": true
+   }
+  }
+ }
+}

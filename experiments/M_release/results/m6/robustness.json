@@ -1,0 +1,318 @@
+{
+ "nova_carter": {
+  "restart": {
+   "restart_at": 12,
+   "pairs": [
+    {
+     "lifetime": [
+      "change_B",
+      40
+     ],
+     "decisions": 24,
+     "first_decision_difference": null,
+     "first_observation_difference": null
+    },
+    {
+     "lifetime": [
+      "change_B",
+      41
+     ],
+     "decisions": 24,
+     "first_decision_difference": null,
+     "first_observation_difference": null
+    }
+   ],
+   "summary": {
+    "lifetimes": 2,
+    "encounters": 48,
+    "falls": 0,
+    "trips": 6,
+    "lunge_contacts": 11,
+    "arrived": 48,
+    "vetoes": 0,
+    "max_executed_risk": 0.279
+   }
+  },
+  "replay": {
+   "lifetimes": 20,
+   "decisions": 480,
+   "mismatches": 0,
+   "tolerance": 1e-09,
+   "bit_exact": 255
+  },
+  "replay_F": {
+   "long": {
+    "lifetimes": 1,
+    "decisions": 100,
+    "mismatches": 0,
+    "tolerance": 1e-09,
+    "bit_exact": 49
+   },
+   "ref": {
+    "lifetimes": 2,
+    "decisions": 48,
+    "mismatches": 0,
+    "tolerance": 1e-09,
+    "bit_exact": 23
+   },
+   "nocam": {
+    "lifetimes": 2,
+    "decisions": 48,
+    "mismatches": 0,
+    "tolerance": 1e-09,
+    "bit_exact": 28
+   }
+  },
+  "contact_imu": {
+   "paired_approaches": 28,
+   "median_peak_contact": 0.19561,
+   "median_peak_reference": 0.199915,
+   "share_peak_higher": 0.5714285714285714,
+   "share_category_higher": 0.42857142857142855,
+   "detected_share_contact": 0.0,
+   "detected_share_reference": 0.0
+  },
+  "nocam": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 7,
+   "lunge_contacts": 11,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2981
+  },
+  "dropout": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 6,
+   "lunge_contacts": 11,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2985
+  },
+  "interrupt": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 4,
+   "lunge_contacts": 14,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2893
+  },
+  "contact": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 8,
+   "lunge_contacts": 9,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2952
+  },
+  "perturb": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 18,
+   "lunge_contacts": 9,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2769
+  },
+  "long": {
+   "lifetimes": 1,
+   "encounters": 100,
+   "falls": 0,
+   "trips": 0,
+   "lunge_contacts": 17,
+   "arrived": 100,
+   "vetoes": 0,
+   "max_executed_risk": 0.2774
+  },
+  "veto": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 8,
+   "lunge_contacts": 16,
+   "arrived": 48,
+   "vetoes": 12,
+   "max_executed_risk": 0.288
+  },
+  "anon": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 8,
+   "lunge_contacts": 17,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2608,
+   "b1_meetings": 29,
+   "distinct_b1_beliefs_before": 1,
+   "kind_prior_only": true,
+   "types": 4
+  }
+ },
+ "humanoid": {
+  "restart": {
+   "restart_at": 12,
+   "pairs": [
+    {
+     "lifetime": [
+      "change_B",
+      40
+     ],
+     "decisions": 24,
+     "first_decision_difference": null,
+     "first_observation_difference": null
+    },
+    {
+     "lifetime": [
+      "change_B",
+      41
+     ],
+     "decisions": 24,
+     "first_decision_difference": null,
+     "first_observation_difference": null
+    }
+   ],
+   "summary": {
+    "lifetimes": 2,
+    "encounters": 48,
+    "falls": 0,
+    "trips": 0,
+    "lunge_contacts": 10,
+    "arrived": 48,
+    "vetoes": 0,
+    "max_executed_risk": 0.2923
+   }
+  },
+  "replay": {
+   "lifetimes": 20,
+   "decisions": 473,
+   "mismatches": 0,
+   "tolerance": 1e-09,
+   "bit_exact": 350
+  },
+  "replay_F": {
+   "long": {
+    "lifetimes": 1,
+    "decisions": 100,
+    "mismatches": 0,
+    "tolerance": 1e-09,
+    "bit_exact": 80
+   },
+   "ref": {
+    "lifetimes": 2,
+    "decisions": 48,
+    "mismatches": 0,
+    "tolerance": 1e-09,
+    "bit_exact": 30
+   },
+   "nocam": {
+    "lifetimes": 2,
+    "decisions": 48,
+    "mismatches": 0,
+    "tolerance": 1e-09,
+    "bit_exact": 31
+   }
+  },
+  "contact_imu": {
+   "paired_approaches": 23,
+   "median_peak_contact": 0.13866,
+   "median_peak_reference": 0.14144,
+   "share_peak_higher": 0.6086956521739131,
+   "share_category_higher": 0.30434782608695654,
+   "detected_share_contact": 0.21739130434782608,
+   "detected_share_reference": 0.30434782608695654
+  },
+  "nocam": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 0,
+   "lunge_contacts": 8,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2991
+  },
+  "dropout": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 0,
+   "lunge_contacts": 9,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2948
+  },
+  "interrupt": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 0,
+   "lunge_contacts": 17,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2935
+  },
+  "contact": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 0,
+   "lunge_contacts": 11,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2985
+  },
+  "perturb": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 0,
+   "lunge_contacts": 6,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2695
+  },
+  "long": {
+   "lifetimes": 1,
+   "encounters": 100,
+   "falls": 0,
+   "trips": 0,
+   "lunge_contacts": 18,
+   "arrived": 100,
+   "vetoes": 0,
+   "max_executed_risk": 0.2789
+  },
+  "veto": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 0,
+   "lunge_contacts": 13,
+   "arrived": 48,
+   "vetoes": 19,
+   "max_executed_risk": 0.2675
+  },
+  "anon": {
+   "lifetimes": 2,
+   "encounters": 48,
+   "falls": 0,
+   "trips": 0,
+   "lunge_contacts": 26,
+   "arrived": 48,
+   "vetoes": 0,
+   "max_executed_risk": 0.2675,
+   "b1_meetings": 29,
+   "distinct_b1_beliefs_before": 1,
+   "kind_prior_only": true,
+   "types": 2
+  }
+ }
+}

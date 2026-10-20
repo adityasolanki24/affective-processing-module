@@ -1,0 +1,16 @@
+{
+ "time_coef": [
+  23.571788472794392,
+  10.815803366268621,
+  -19.947126422546305,
+  -5.85679874761881,
+  13.067837264764654
+ ],
+ "r2": 0.8828760020326916,
+ "encounters": 521,
+ "meta": {
+  "robot": "nerva",
+  "lifetimes": 40,
+  "source": "M5 partition T (RANDINTENT; risky_B, safe; warehouse and home)"
+ }
+}

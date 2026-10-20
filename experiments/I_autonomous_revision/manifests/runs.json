@@ -1,0 +1,55 @@
+{
+ "I1_X": {
+  "lifetimes_sha256": "17111b1dd20abfced3c6837421a8954cd0341715ad39499b2cd264846d7a4174",
+  "lines": 12000,
+  "commit": "cc3e77ac0f2cc2c60a02593c2b412c72b068fa1d",
+  "dirty": true,
+  "addendum": "experiments/I_autonomous_revision/prereg/I12_ADDENDUM.md",
+  "addendum_sha256": "5dfc8a02ecd46bbd6b8839da6eadb0ab697ae9cca0b4b2fe2539e5b20db5183f",
+  "cpus": 128,
+  "python": "3.12.3",
+  "numpy": "2.5.4",
+  "wall_s": 635.5,
+  "jobs": 12000
+ },
+ "I2_X": {
+  "lifetimes_sha256": "2acbea7ccce781dba3d5ea18ac82e004a10db76f44f1606e657f99deca1f3d75",
+  "lines": 16000,
+  "commit": "cc3e77ac0f2cc2c60a02593c2b412c72b068fa1d",
+  "dirty": true,
+  "addendum": "experiments/I_autonomous_revision/prereg/I12_ADDENDUM.md",
+  "addendum_sha256": "5dfc8a02ecd46bbd6b8839da6eadb0ab697ae9cca0b4b2fe2539e5b20db5183f",
+  "cpus": 128,
+  "python": "3.12.3",
+  "numpy": "2.5.4",
+  "wall_s": 844.4,
+  "jobs": 16000
+ },
+ "I1_X_explore_conf": {
+  "lifetimes_sha256": "9f4b2e0859e1641e4946b56875515e6fcbc61a345f1f280f366c1b4944d58210",
+  "lines": 6000,
+  "commit": "bf17cf858bf791f11f2b74e67a2da10316529f9e",
+  "dirty": true,
+  "addendum": "experiments/I_autonomous_revision/prereg/I12_ADDENDUM.md",
+  "addendum_sha256": "5dfc8a02ecd46bbd6b8839da6eadb0ab697ae9cca0b4b2fe2539e5b20db5183f",
+  "cpus": 128,
+  "python": "3.12.3",
+  "numpy": "2.5.4",
+  "wall_s": 307.3,
+  "jobs": 6000
+ },
+ "I0_T": {
+  "lifetimes_sha256": "3b95c6e5c41db9d11b041cd901df6ec34f068d63b13827d86040565b164de611",
+  "lines": 400,
+  "commit": "cceb6825bab2f50727d623976919f3bb3b008117",
+  "dirty": true,
+  "addendum": null,
+  "addendum_sha256": null,
+  "cpus": 128,
+  "python": "3.12.3",
+  "numpy": "2.5.4",
+  "wall_s": 22.8,
+  "jobs": 400
+ },
+ "_note": "'dirty' is git status including untracked files; it is True because of the untracked out/ results folder on the VM. The confirmatory lock (tracked files only) passed for every X run."
+}

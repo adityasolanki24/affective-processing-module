@@ -1,0 +1,17 @@
+{
+ "system": "CL",
+ "history": "safe",
+ "index": 64,
+ "k": 1,
+ "tag": "first",
+ "type": "calm",
+ "p_before": 0.3467,
+ "proximity": 0.366,
+ "tempo": 0.653,
+ "hesitation": 0.745,
+ "frames": 530,
+ "d_stop": 0.461,
+ "contacts": 0,
+ "max_push": 0.0,
+ "t_arrive": 16.22
+}

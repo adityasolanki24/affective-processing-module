@@ -1,0 +1,16 @@
+{
+ "nerva_mujoco": {
+  "approaches": 3659,
+  "distinct_intents": 228,
+  "graded_proximity_share": 0.8767422793112872,
+  "spearman_proximity_vs_final_distance": -0.7506343400388403,
+  "spearman_tempo_vs_mean_speed": null,
+  "spearman_tempo_vs_arrival_time": -0.5667879532344448,
+  "spearman_hesitation_vs_pauses": null,
+  "final_distance_iqr": [
+   0.298,
+   0.402
+  ],
+  "mean_speed_iqr": null
+ }
+}

@@ -1,0 +1,104 @@
+{
+ "K3-X2 NERVA": {
+  "DT_STATIC": {
+   "decisions": 8000,
+   "over_cap": 1710,
+   "share": 0.2137,
+   "over_cap_with_contact": 665
+  },
+  "DT": {
+   "decisions": 8000,
+   "over_cap": 432,
+   "share": 0.054,
+   "over_cap_with_contact": 205
+  },
+  "DT_CAM": {
+   "decisions": 8000,
+   "over_cap": 1096,
+   "share": 0.137,
+   "over_cap_with_contact": 537
+  },
+  "ORACLE": {
+   "decisions": 0,
+   "over_cap": 0,
+   "share": 0.0,
+   "over_cap_with_contact": 0
+  },
+  "DT_UNC": {
+   "decisions": 8000,
+   "over_cap": 2315,
+   "share": 0.2894,
+   "over_cap_with_contact": 1041
+  },
+  "DT_VOI": {
+   "decisions": 8000,
+   "over_cap": 428,
+   "share": 0.0535,
+   "over_cap_with_contact": 203
+  },
+  "DT_CAM_VOI": {
+   "decisions": 5956,
+   "over_cap": 0,
+   "share": 0.0,
+   "over_cap_with_contact": 0
+  }
+ },
+ "K5-X2 wheeled": {
+  "DT": {
+   "decisions": 8000,
+   "over_cap": 1705,
+   "share": 0.2131,
+   "over_cap_with_contact": 732
+  },
+  "DT_CAM": {
+   "decisions": 8000,
+   "over_cap": 1856,
+   "share": 0.232,
+   "over_cap_with_contact": 855
+  },
+  "ORACLE": {
+   "decisions": 0,
+   "over_cap": 0,
+   "share": 0.0,
+   "over_cap_with_contact": 0
+  },
+  "DT_VOI": {
+   "decisions": 8000,
+   "over_cap": 1709,
+   "share": 0.2136,
+   "over_cap_with_contact": 734
+  },
+  "DT_CAM_VOI": {
+   "decisions": 5847,
+   "over_cap": 0,
+   "share": 0.0,
+   "over_cap_with_contact": 0
+  }
+ },
+ "K6-X humanoid": {
+  "DT_CAM": {
+   "decisions": 4800,
+   "over_cap": 1122,
+   "share": 0.2338,
+   "over_cap_with_contact": 507
+  },
+  "DT": {
+   "decisions": 4800,
+   "over_cap": 1284,
+   "share": 0.2675,
+   "over_cap_with_contact": 500
+  },
+  "ORACLE": {
+   "decisions": 0,
+   "over_cap": 0,
+   "share": 0.0,
+   "over_cap_with_contact": 0
+  },
+  "DT_CAM_VOI": {
+   "decisions": 3658,
+   "over_cap": 0,
+   "share": 0.0,
+   "over_cap_with_contact": 0
+  }
+ }
+}

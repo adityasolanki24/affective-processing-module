@@ -1,0 +1,16 @@
+{
+ "time_coef": [
+  21.42914353537098,
+  4.878469566598323,
+  -15.905409698564773,
+  12.12454390984949,
+  -7.531368814840731
+ ],
+ "r2": 0.4595602842119503,
+ "encounters": 866,
+ "meta": {
+  "robot": "nova_carter",
+  "lifetimes": 37,
+  "source": "M5 partition T (RANDINTENT; risky_B, safe; warehouse and home)"
+ }
+}

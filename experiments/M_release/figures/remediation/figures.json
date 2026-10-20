@@ -1,0 +1,62 @@
+{
+ "A_person_memory": {
+  "title": "Person-specific memory against pooled, swapped and shuffled memory",
+  "n": "15 paired lifetimes per comparison per robot (history risky_B, R/Y seeds 0-14)",
+  "interpretation": "Bars show how much more each control costs than APM's correct per-person memory (positive = APM better). All nine comparisons pass Holm-corrected one-sided tests. APM also takes fewer contacts from the pushy person than pooled memory on all three robots. Identities are provided to the memory; visual re-identification is not tested.",
+  "sources": [
+   "corrected_nova_carter.json",
+   "corrected_humanoid.json",
+   "corrected_nerva_mujoco.json"
+  ]
+ },
+ "B_fair_comparisons": {
+  "title": "Fair controller comparisons under one safety supervisor",
+  "n": "30 paired lifetimes per comparison per robot (histories change_B and late_B, R/Y seeds 0-14); 0 falls in all 720 lifetimes",
+  "interpretation": "Positive bars: the baseline is costlier than APM (decision-theoretic expression, DT). Hatched bars are not significant. Against neutral motion with the same supervisor APM is not better: identical on Nova Carter, +0.38 s (n.s.) on T1 and +0.78 s worse on NERVA. The gains come from per-person memory acting through the supervisor, not from the choice of expressive style.",
+  "sources": [
+   "corrected_nova_carter.json",
+   "corrected_humanoid.json",
+   "corrected_nerva_mujoco.json"
+  ]
+ },
+ "C_learning_recovery": {
+  "title": "Learning and recovery across one lifetime per robot",
+  "n": "one lifetime per robot (seed 73401): 6 pushy meetings, then 7 calm meetings with the same person",
+  "interpretation": "Wariness is the robot's own memory readout, learned from its IMU and depth camera without labels. It rises within the first meeting. After the switch, T1 falls from 0.97 to 0.61 and its guarded posture visibly weakens; Nova Carter (0.79) and NERVA (0.71) stay high, because memory retention is slow and occasional calm touches still count as disturbance. Recovery is incomplete in this horizon. Single lifetimes, so no statistical claim; T1 needed three attempts (earlier ones fell).",
+  "sources": [
+   "demo_traces.json"
+  ]
+ },
+ "D_expression_humanoid": {
+  "title": "Physical expression, Booster T1 (v1 controller)",
+  "n": "meetings: neutral 4, after calm 2, after pushy 2 (dots = individual meetings; bars = means). Descriptive, not a test.",
+  "interpretation": "Measured from the recorded joint and pose traces in a matched present task (identical physics seeds; approach speed matched within 0.005 m/s). The experience state is learned; the mapping from it to these movements is designed.",
+  "sources": [
+   "expression10_humanoid.json"
+  ]
+ },
+ "D_expression_nerva": {
+  "title": "Physical expression, NERVA",
+  "n": "meetings: neutral 4, after calm 2, after pushy 2 (dots = individual meetings; bars = means). Descriptive, not a test.",
+  "interpretation": "Measured from the recorded joint and pose traces in a matched present task (identical physics seeds; approach speed matched within 0.005 m/s). The experience state is learned; the mapping from it to these movements is designed.",
+  "sources": [
+   "expression11_nerva.json"
+  ]
+ },
+ "D_expression_nova_carter": {
+  "title": "Physical expression, Nova Carter",
+  "n": "meetings: neutral 4, after calm 2, after pushy 2 (dots = individual meetings; bars = means). Descriptive, not a test.",
+  "interpretation": "Measured from the recorded joint and pose traces in a matched present task (identical physics seeds; approach speed matched within 0.005 m/s). The experience state is learned; the mapping from it to these movements is designed.",
+  "sources": [
+   "expression7_nova_carter.json"
+  ]
+ },
+ "E_t1_gait": {
+  "title": "T1 gait: original controller vs the official Booster controller",
+  "n": "frozen battery, 260 matched pairs (4 environments x 13 scenarios x 5 seeds); dots = runs, bars = medians",
+  "interpretation": "The candidate halves foot slip, joint acceleration and tilt, but falls in 3 of 20 runs with 0.5 m/s walking pushes (v1: 0) and takes 42% longer to settle after stopping. It failed two of the four promotion rules frozen before the data, so the original Isaac Lab PPO controller remains.",
+  "sources": [
+   "gait_battery_v1_vs_candidate.json"
+  ]
+ }
+}

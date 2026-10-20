@@ -1,0 +1,11 @@
+{
+ "note": "Frozen before any programme-K data (2026-10-18). Values come from task requirements, not from observed behaviour. retry_s = the robot's mean predicted approach time over the intent grid (J6 time model, 12.6 s): a failed attempt costs one more average approach. price_s = 20 s per strong perturbation: an operational rule that a strong push triggers a safety stop and check. risk_cap = 0.30 expected strong perturbations per encounter: the safety budget. Sensitivity of price (10 and 40 s) is reported and never used for decisions.",
+ "tasks": {
+  "waypoint":   {"d_task": null, "retry_s": 12.6, "price_s": 20.0, "risk_cap": 0.30, "min_sep": null, "why": "reach a waypoint beside the entity; proximity irrelevant"},
+  "inspect":    {"d_task": 0.40, "retry_s": 12.6, "price_s": 20.0, "risk_cap": 0.30, "min_sep": null, "why": "inspect an object at the entity's location; sensing needs <= 0.4 m"},
+  "handoff":    {"d_task": 0.30, "retry_s": 12.6, "price_s": 20.0, "risk_cap": 0.30, "min_sep": null, "why": "hand over at the entity's location; reach needs <= 0.3 m"},
+  "separation": {"d_task": null, "retry_s": 12.6, "price_s": 20.0, "risk_cap": 0.30, "min_sep": 0.50, "why": "approach but always keep >= 0.5 m from an uncertain obstacle"}
+ },
+ "recovery_study_task": "handoff",
+ "voi": {"horizon": 5.0, "gap": 3.0, "samples": 48, "u_trigger": 0.6}
+}

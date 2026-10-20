@@ -1,0 +1,17 @@
+{
+ "system": "LEARNED_V",
+ "history": "safe",
+ "index": 65,
+ "k": 27,
+ "tag": "last",
+ "type": "calm",
+ "p_before": 0.248,
+ "proximity": 0.75,
+ "tempo": 1.0,
+ "hesitation": 0.0,
+ "frames": 343,
+ "d_stop": 0.306,
+ "contacts": 0,
+ "max_push": 0.0,
+ "t_arrive": 8.74
+}

@@ -1,0 +1,34 @@
+{
+ "n_obs": 2000,
+ "action_dim": 23,
+ "max_abs_action_diff": 7.054987777033173e-07,
+ "mean_abs_action_diff": 7.058294545525558e-08,
+ "equivalent_float32": true,
+ "npz_matches_pickle": {
+  "mean": true,
+  "std": true,
+  "hidden_0_kernel": true,
+  "hidden_0_bias": true,
+  "hidden_1_kernel": true,
+  "hidden_1_bias": true,
+  "hidden_2_kernel": true,
+  "hidden_2_bias": true,
+  "hidden_3_kernel": true,
+  "hidden_3_bias": true,
+  "no_extra": true
+ },
+ "sha256": {
+  "t1_model.mjb": "b0dff0f2862dc74a4294184981fa9ae7e954c210a5074deb738a04307e37b2a1",
+  "t1_policy.npz": "7963707566586aa2493b8b45457e53704a25509cfa1d419f3d638b4d66d93917",
+  "t1_params.pkl": "ff4692f16a8e765a51c9c81d7bce4d3c40312a7702a4a8a80aa3f474307e2d3d"
+ },
+ "mjb_matches_stored_hash": true,
+ "training_versions": {
+  "playground": "0.0.4",
+  "brax": "0.14.1",
+  "jax": "0.5.3",
+  "mujoco": "3.16.0",
+  "mujoco-mjx": "3.16.0",
+  "flax": "0.10.6"
+ }
+}

@@ -1,0 +1,445 @@
+{
+ "source": "isaac/expression_v2.py --demo (Isaac Sim 5.1 / PhysX); DEVIATIONS D8",
+ "robots": {
+  "humanoid": {
+   "seed": 73401,
+   "pushy_n": 6,
+   "calm_n": 7,
+   "continuous_physics": false,
+   "repositioned_meetings": true,
+   "meetings": [
+    {
+     "meeting": 1,
+     "person": "pushy",
+     "wariness_before": 0.75,
+     "wariness_after": 0.9333,
+     "disturbance_p_after": 0.6667,
+     "movement_p_after": 0.8,
+     "fell": false,
+     "contacts_truth": 2
+    },
+    {
+     "meeting": 2,
+     "person": "pushy",
+     "wariness_before": 0.9333,
+     "wariness_after": 0.9663,
+     "disturbance_p_after": 0.7403,
+     "movement_p_after": 0.8701,
+     "fell": false,
+     "contacts_truth": 4
+    },
+    {
+     "meeting": 3,
+     "person": "pushy",
+     "wariness_before": 0.9663,
+     "wariness_after": 0.9784,
+     "disturbance_p_after": 0.7813,
+     "movement_p_after": 0.9013,
+     "fell": false,
+     "contacts_truth": 4
+    },
+    {
+     "meeting": 4,
+     "person": "pushy",
+     "wariness_before": 0.9784,
+     "wariness_after": 0.9659,
+     "disturbance_p_after": 0.8072,
+     "movement_p_after": 0.8233,
+     "fell": false,
+     "contacts_truth": 2
+    },
+    {
+     "meeting": 5,
+     "person": "pushy",
+     "wariness_before": 0.9659,
+     "wariness_after": 0.959,
+     "disturbance_p_after": 0.8248,
+     "movement_p_after": 0.7659,
+     "fell": false,
+     "contacts_truth": 3
+    },
+    {
+     "meeting": 6,
+     "person": "pushy",
+     "wariness_before": 0.959,
+     "wariness_after": 0.9693,
+     "disturbance_p_after": 0.8375,
+     "movement_p_after": 0.8111,
+     "fell": false,
+     "contacts_truth": 4
+    },
+    {
+     "meeting": 7,
+     "person": "calm",
+     "wariness_before": 0.9693,
+     "wariness_after": 0.8947,
+     "disturbance_p_after": 0.6937,
+     "movement_p_after": 0.6562,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 8,
+     "person": "calm",
+     "wariness_before": 0.8947,
+     "wariness_after": 0.81,
+     "disturbance_p_after": 0.5839,
+     "movement_p_after": 0.5432,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 9,
+     "person": "calm",
+     "wariness_before": 0.81,
+     "wariness_after": 0.7542,
+     "disturbance_p_after": 0.4984,
+     "movement_p_after": 0.5099,
+     "fell": false,
+     "contacts_truth": 1
+    },
+    {
+     "meeting": 10,
+     "person": "calm",
+     "wariness_before": 0.7542,
+     "wariness_after": 0.7991,
+     "disturbance_p_after": 0.5667,
+     "movement_p_after": 0.5364,
+     "fell": false,
+     "contacts_truth": 1
+    },
+    {
+     "meeting": 11,
+     "person": "calm",
+     "wariness_before": 0.7991,
+     "wariness_after": 0.7213,
+     "disturbance_p_after": 0.489,
+     "movement_p_after": 0.4546,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 12,
+     "person": "calm",
+     "wariness_before": 0.7213,
+     "wariness_after": 0.6773,
+     "disturbance_p_after": 0.4261,
+     "movement_p_after": 0.4377,
+     "fell": false,
+     "contacts_truth": 1
+    },
+    {
+     "meeting": 13,
+     "person": "calm",
+     "wariness_before": 0.6773,
+     "wariness_after": 0.6116,
+     "disturbance_p_after": 0.3747,
+     "movement_p_after": 0.3789,
+     "fell": false,
+     "contacts_truth": 0
+    }
+   ]
+  },
+  "nova_carter": {
+   "seed": 73401,
+   "pushy_n": 6,
+   "calm_n": 7,
+   "continuous_physics": true,
+   "repositioned_meetings": false,
+   "meetings": [
+    {
+     "meeting": 1,
+     "person": "pushy",
+     "wariness_before": 0.75,
+     "wariness_after": 0.8889,
+     "disturbance_p_after": 0.6667,
+     "movement_p_after": 0.6667,
+     "fell": false,
+     "contacts_truth": 2
+    },
+    {
+     "meeting": 2,
+     "person": "pushy",
+     "wariness_before": 0.8889,
+     "wariness_after": 0.9334,
+     "disturbance_p_after": 0.7403,
+     "movement_p_after": 0.7436,
+     "fell": false,
+     "contacts_truth": 1
+    },
+    {
+     "meeting": 3,
+     "person": "pushy",
+     "wariness_before": 0.9334,
+     "wariness_after": 0.9674,
+     "disturbance_p_after": 0.7813,
+     "movement_p_after": 0.851,
+     "fell": false,
+     "contacts_truth": 2
+    },
+    {
+     "meeting": 4,
+     "person": "pushy",
+     "wariness_before": 0.9674,
+     "wariness_after": 0.9766,
+     "disturbance_p_after": 0.8072,
+     "movement_p_after": 0.8786,
+     "fell": false,
+     "contacts_truth": 1
+    },
+    {
+     "meeting": 5,
+     "person": "pushy",
+     "wariness_before": 0.9766,
+     "wariness_after": 0.9797,
+     "disturbance_p_after": 0.8248,
+     "movement_p_after": 0.8839,
+     "fell": false,
+     "contacts_truth": 2
+    },
+    {
+     "meeting": 6,
+     "person": "pushy",
+     "wariness_before": 0.9797,
+     "wariness_after": 0.9818,
+     "disturbance_p_after": 0.8375,
+     "movement_p_after": 0.8883,
+     "fell": false,
+     "contacts_truth": 2
+    },
+    {
+     "meeting": 7,
+     "person": "calm",
+     "wariness_before": 0.9818,
+     "wariness_after": 0.8912,
+     "disturbance_p_after": 0.6937,
+     "movement_p_after": 0.6447,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 8,
+     "person": "calm",
+     "wariness_before": 0.8912,
+     "wariness_after": 0.8221,
+     "disturbance_p_after": 0.5839,
+     "movement_p_after": 0.5725,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 9,
+     "person": "calm",
+     "wariness_before": 0.8221,
+     "wariness_after": 0.7614,
+     "disturbance_p_after": 0.4984,
+     "movement_p_after": 0.5243,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 10,
+     "person": "calm",
+     "wariness_before": 0.7614,
+     "wariness_after": 0.7434,
+     "disturbance_p_after": 0.4307,
+     "movement_p_after": 0.5493,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 11,
+     "person": "calm",
+     "wariness_before": 0.7434,
+     "wariness_after": 0.7645,
+     "disturbance_p_after": 0.3764,
+     "movement_p_after": 0.6223,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 12,
+     "person": "calm",
+     "wariness_before": 0.7645,
+     "wariness_after": 0.7853,
+     "disturbance_p_after": 0.3325,
+     "movement_p_after": 0.6784,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 13,
+     "person": "calm",
+     "wariness_before": 0.7853,
+     "wariness_after": 0.7853,
+     "disturbance_p_after": 0.3325,
+     "movement_p_after": 0.6784,
+     "fell": false,
+     "contacts_truth": 0
+    }
+   ]
+  },
+  "nerva": {
+   "seed": 73401,
+   "pushy_n": 6,
+   "calm_n": 7,
+   "continuous_physics": false,
+   "repositioned_meetings": true,
+   "meetings": [
+    {
+     "meeting": 1,
+     "person": "pushy",
+     "wariness_before": 0.75,
+     "wariness_after": 0.8667,
+     "disturbance_p_after": 0.3333,
+     "movement_p_after": 0.8,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 2,
+     "person": "pushy",
+     "wariness_before": 0.8667,
+     "wariness_after": 0.9039,
+     "disturbance_p_after": 0.2597,
+     "movement_p_after": 0.8701,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 3,
+     "person": "pushy",
+     "wariness_before": 0.9039,
+     "wariness_after": 0.9229,
+     "disturbance_p_after": 0.2187,
+     "movement_p_after": 0.9013,
+     "fell": false,
+     "contacts_truth": 1
+    },
+    {
+     "meeting": 4,
+     "person": "pushy",
+     "wariness_before": 0.9229,
+     "wariness_after": 0.8034,
+     "disturbance_p_after": 0.1928,
+     "movement_p_after": 0.7564,
+     "fell": false,
+     "contacts_truth": 1
+    },
+    {
+     "meeting": 5,
+     "person": "pushy",
+     "wariness_before": 0.8034,
+     "wariness_after": 0.7229,
+     "disturbance_p_after": 0.1752,
+     "movement_p_after": 0.664,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 6,
+     "person": "pushy",
+     "wariness_before": 0.7229,
+     "wariness_after": 0.7695,
+     "disturbance_p_after": 0.1625,
+     "movement_p_after": 0.7247,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 7,
+     "person": "calm",
+     "wariness_before": 0.7695,
+     "wariness_after": 0.7084,
+     "disturbance_p_after": 0.1532,
+     "movement_p_after": 0.6557,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 8,
+     "person": "calm",
+     "wariness_before": 0.7084,
+     "wariness_after": 0.7508,
+     "disturbance_p_after": 0.146,
+     "movement_p_after": 0.7082,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 9,
+     "person": "calm",
+     "wariness_before": 0.7508,
+     "wariness_after": 0.6999,
+     "disturbance_p_after": 0.1404,
+     "movement_p_after": 0.6509,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 10,
+     "person": "calm",
+     "wariness_before": 0.6999,
+     "wariness_after": 0.6189,
+     "disturbance_p_after": 0.136,
+     "movement_p_after": 0.5589,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 11,
+     "person": "calm",
+     "wariness_before": 0.6189,
+     "wariness_after": 0.6677,
+     "disturbance_p_after": 0.1324,
+     "movement_p_after": 0.6169,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 12,
+     "person": "calm",
+     "wariness_before": 0.6677,
+     "wariness_after": 0.7082,
+     "disturbance_p_after": 0.1296,
+     "movement_p_after": 0.6648,
+     "fell": false,
+     "contacts_truth": 0
+    },
+    {
+     "meeting": 13,
+     "person": "calm",
+     "wariness_before": 0.7082,
+     "wariness_after": 0.7065,
+     "disturbance_p_after": 0.1272,
+     "movement_p_after": 0.6637,
+     "fell": false,
+     "contacts_truth": 0
+    }
+   ]
+  }
+ },
+ "failed_attempts": [
+  {
+   "robot": "humanoid",
+   "seed": 73401,
+   "repositioned_meetings": false,
+   "ended_at_meeting": 1,
+   "fell": true
+  },
+  {
+   "robot": "humanoid",
+   "seed": 73401,
+   "repositioned_meetings": true,
+   "ended_at_meeting": 3,
+   "fell": true
+  },
+  {
+   "robot": "humanoid",
+   "seed": 73402,
+   "repositioned_meetings": true,
+   "ended_at_meeting": 1,
+   "fell": true
+  }
+ ]
+}

@@ -1,0 +1,413 @@
+{
+ "geometry": {
+  "front_used": 0.14071644881234616,
+  "chassis": "chassis_link",
+  "colliders": [
+   {
+    "prim": "/chassis_link/visual",
+    "lo": [
+     -0.587,
+     -0.238,
+     0.076
+    ],
+    "hi": [
+     0.12,
+     0.238,
+     0.48
+    ]
+   },
+   {
+    "prim": "/wheel_left/Colliders/Cylinder",
+    "lo": [
+     -0.125,
+     0.177,
+     0.015
+    ],
+    "hi": [
+     0.125,
+     0.237,
+     0.265
+    ]
+   },
+   {
+    "prim": "/wheel_left/Colliders/Cylinder_01",
+    "lo": [
+     -0.1,
+     0.167,
+     0.04
+    ],
+    "hi": [
+     0.1,
+     0.247,
+     0.24
+    ]
+   },
+   {
+    "prim": "/wheel_left/Colliders/Cylinder_02",
+    "lo": [
+     -0.14,
+     0.197,
+     -0.0
+    ],
+    "hi": [
+     0.14,
+     0.217,
+     0.28
+    ]
+   },
+   {
+    "prim": "/wheel_right/Colliders/Cylinder",
+    "lo": [
+     -0.125,
+     -0.237,
+     0.015
+    ],
+    "hi": [
+     0.125,
+     -0.177,
+     0.265
+    ]
+   },
+   {
+    "prim": "/wheel_right/Colliders/Cylinder_01",
+    "lo": [
+     -0.1,
+     -0.247,
+     0.04
+    ],
+    "hi": [
+     0.1,
+     -0.167,
+     0.24
+    ]
+   },
+   {
+    "prim": "/wheel_right/Colliders/Cylinder_02",
+    "lo": [
+     -0.14,
+     -0.217,
+     -0.0
+    ],
+    "hi": [
+     0.14,
+     -0.197,
+     0.28
+    ]
+   },
+   {
+    "prim": "/caster_frame_base/visual",
+    "lo": [
+     -0.522,
+     -0.164,
+     0.16
+    ],
+    "hi": [
+     -0.422,
+     0.164,
+     0.239
+    ]
+   },
+   {
+    "prim": "/caster_swivel_left/Colliders/Cube",
+    "lo": [
+     -0.522,
+     0.092,
+     0.06
+    ],
+    "hi": [
+     -0.467,
+     0.172,
+     0.175
+    ]
+   },
+   {
+    "prim": "/caster_swivel_right/Colliders/Cube",
+    "lo": [
+     -0.522,
+     -0.172,
+     0.06
+    ],
+    "hi": [
+     -0.467,
+     -0.092,
+     0.175
+    ]
+   },
+   {
+    "prim": "/caster_wheel_left/Colliders/Cylinder",
+    "lo": [
+     -50.512,
+     -49.868,
+     -49.924
+    ],
+    "hi": [
+     49.488,
+     50.132,
+     50.076
+    ]
+   },
+   {
+    "prim": "/caster_wheel_right/Colliders/Cylinder",
+    "lo": [
+     -50.512,
+     -50.132,
+     -49.924
+    ],
+    "hi": [
+     49.488,
+     49.868,
+     50.076
+    ]
+   }
+  ],
+  "purpose_bounds": {
+   "default": [
+    [
+     -0.5877105914664876,
+     -0.4478792902210513,
+     -0.14021133288952264
+    ],
+    [
+     0.14071644881234616,
+     0.4478792902210512,
+     0.5542999975562095
+    ]
+   ],
+   "default+render": [
+    [
+     -0.5877105914664876,
+     -0.4478792902210513,
+     -0.14021133288952264
+    ],
+    [
+     0.14071644881234616,
+     0.4478792902210512,
+     0.5542999975562095
+    ]
+   ],
+   "default+proxy": [
+    [
+     -50.511949097421365,
+     -50.13224996706965,
+     -49.92369289279602
+    ],
+    [
+     49.488050902578706,
+     50.13224995835382,
+     50.07630710720404
+    ]
+   ],
+   "default+guide": [
+    [
+     -0.5877105914664876,
+     -0.4478792902210513,
+     -0.14021133288952264
+    ],
+    [
+     0.14071644881234616,
+     0.4478792902210512,
+     0.5542999975562095
+    ]
+   ]
+  },
+  "collision_extent_chassis_frame": {
+   "x": [
+    -50.512,
+    49.488
+   ],
+   "y": [
+    -50.132,
+    50.132
+   ]
+  },
+  "footprint": [
+   -0.587,
+   0.14,
+   0.247
+  ]
+ },
+ "probe": {
+  "0": {
+   "contact_root_to_person_centre_m": 0.34,
+   "extent_m": 0.12
+  },
+  "30": {
+   "contact_root_to_person_centre_m": 0.406,
+   "extent_m": 0.186
+  },
+  "60": {
+   "contact_root_to_person_centre_m": 0.48,
+   "extent_m": 0.26
+  },
+  "90": {
+   "contact_root_to_person_centre_m": 0.466,
+   "extent_m": 0.246
+  },
+  "180": {
+   "contact_root_to_person_centre_m": 0.806,
+   "extent_m": 0.586
+  }
+ },
+ "encounters": [
+  {
+   "type": "pushy",
+   "seed": 0,
+   "lunges": 9,
+   "peak_speed_m_s": 1.428,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 128,
+   "net_displacement_m": 0.68
+  },
+  {
+   "type": "pushy",
+   "seed": 1,
+   "lunges": 3,
+   "peak_speed_m_s": 1.422,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 137,
+   "net_displacement_m": 0.187
+  },
+  {
+   "type": "pushy",
+   "seed": 2,
+   "lunges": 6,
+   "peak_speed_m_s": 1.393,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 228,
+   "net_displacement_m": 0.186
+  },
+  {
+   "type": "pushy",
+   "seed": 3,
+   "lunges": 10,
+   "peak_speed_m_s": 1.301,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 273,
+   "net_displacement_m": 0.159
+  },
+  {
+   "type": "pushy",
+   "seed": 4,
+   "lunges": 5,
+   "peak_speed_m_s": 1.338,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 364,
+   "net_displacement_m": 0.151
+  },
+  {
+   "type": "pushy",
+   "seed": 5,
+   "lunges": 10,
+   "peak_speed_m_s": 1.262,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 352,
+   "net_displacement_m": 0.138
+  },
+  {
+   "type": "pushy",
+   "seed": 6,
+   "lunges": 8,
+   "peak_speed_m_s": 1.392,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 292,
+   "net_displacement_m": 0.173
+  },
+  {
+   "type": "pushy",
+   "seed": 7,
+   "lunges": 8,
+   "peak_speed_m_s": 1.057,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 547,
+   "net_displacement_m": 0.103
+  },
+  {
+   "type": "gentle",
+   "seed": 0,
+   "lunges": 10,
+   "peak_speed_m_s": 1.038,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 318,
+   "net_displacement_m": 0.221
+  },
+  {
+   "type": "gentle",
+   "seed": 1,
+   "lunges": 4,
+   "peak_speed_m_s": 1.113,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 57,
+   "net_displacement_m": 0.126
+  },
+  {
+   "type": "gentle",
+   "seed": 2,
+   "lunges": 10,
+   "peak_speed_m_s": 1.044,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 366,
+   "net_displacement_m": 0.216
+  },
+  {
+   "type": "gentle",
+   "seed": 3,
+   "lunges": 12,
+   "peak_speed_m_s": 0.637,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 918,
+   "net_displacement_m": 0.062
+  },
+  {
+   "type": "gentle",
+   "seed": 4,
+   "lunges": 7,
+   "peak_speed_m_s": 0.94,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 1209,
+   "net_displacement_m": 0.092
+  },
+  {
+   "type": "gentle",
+   "seed": 5,
+   "lunges": 13,
+   "peak_speed_m_s": 1.191,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 346,
+   "net_displacement_m": 0.326
+  },
+  {
+   "type": "gentle",
+   "seed": 6,
+   "lunges": 11,
+   "peak_speed_m_s": 0.889,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 265,
+   "net_displacement_m": 0.177
+  },
+  {
+   "type": "gentle",
+   "seed": 7,
+   "lunges": 8,
+   "peak_speed_m_s": 1.125,
+   "ejections": 0,
+   "first_jumps": [],
+   "contact_reports": 553,
+   "net_displacement_m": 0.14
+  }
+ ]
+}

@@ -1,0 +1,32 @@
+2026-10-18 02:17:39.073165: E external/xla/xla/service/slow_operation_alarm.cc:73] 
+********************************
+[Compiling module pmap_reset] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+2026-10-18 02:18:29.731696: E external/xla/xla/service/slow_operation_alarm.cc:140] The operation took 2m50.658735786s
+
+********************************
+[Compiling module pmap_reset] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+Failed to import warp: No module named 'warp'
+Failed to import mujoco_warp: No module named 'warp'
+step 0 reward 0.06 t 419s
+step 10649600 reward 0.44 t 1285s
+step 21299200 reward 1.27 t 1629s
+step 31948800 reward 3.56 t 1972s
+step 42598400 reward 9.37 t 2315s
+step 53248000 reward 10.32 t 2658s
+step 63897600 reward 11.33 t 3001s
+step 74547200 reward 15.57 t 3344s
+step 85196800 reward 21.26 t 3687s
+step 95846400 reward 21.19 t 4030s
+step 106496000 reward 25.99 t 4373s
+step 117145600 reward 24.95 t 4716s
+step 127795200 reward 24.60 t 5059s
+step 138444800 reward 24.74 t 5401s
+step 149094400 reward 26.08 t 5744s
+step 159744000 reward 28.48 t 6087s
+step 170393600 reward 29.27 t 6430s
+step 181043200 reward 27.73 t 6773s
+step 191692800 reward 28.10 t 7116s
+step 202342400 reward 28.06 t 7459s
+saved out/humanoid wall 7460.8

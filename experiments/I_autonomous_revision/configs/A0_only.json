@@ -1,0 +1,1 @@
+{"systems": {"A0": {"kind": "regulated", "regulator": "ema", "params": {"tau": 0.621595, "k": 0.449887, "c": 0.017277}, "lam_c": 3.946054, "lam_s": 0.993398, "memory": {"model": "M0", "evidence": "all"}}}}

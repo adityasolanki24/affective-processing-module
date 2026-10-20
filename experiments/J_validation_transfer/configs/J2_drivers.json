@@ -1,0 +1,45 @@
+{
+ "drivers": {
+  "A0": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M0",
+    "evidence": "all"
+   }
+  },
+  "B0": {
+   "kind": "b0"
+  },
+  "cautious": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M0",
+    "evidence": "all"
+   },
+   "lam_c_scale": 2.0
+  },
+  "R1": {
+   "kind": "regulated",
+   "regulator": "static",
+   "params": {},
+   "lam_c": 2.507591,
+   "lam_s": 1.513288
+  }
+ }
+}

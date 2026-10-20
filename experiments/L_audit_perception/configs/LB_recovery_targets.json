@@ -1,0 +1,75 @@
+{
+ "rule": "mean B1 d_stop, encounters >= 10, safe history, partition V",
+ "targets": {
+  "LB1": {
+   "DT": 0.3,
+   "DT_CAM": 0.3,
+   "DT_CAM_VOI": 0.3,
+   "DT_CAM_VOI_K": 0.3,
+   "DT_K": 0.3,
+   "DT_STATIC": 0.3,
+   "DT_UNC": 0.3,
+   "DT_VOI": 0.3,
+   "L0": 0.4231,
+   "ORACLE": 0.3
+  },
+  "LB2": {
+   "DT": 0.275,
+   "DT_CAM": 0.2784,
+   "DT_CAM_VOI": 0.2786,
+   "DT_VOI": 0.275,
+   "L0": 0.3632,
+   "ORACLE": 0.275
+  },
+  "LB3": {
+   "DT": 0.3127,
+   "DT_CAM": 0.3026,
+   "DT_CAM_VOI": 0.3047,
+   "DT_VOI": 0.3132,
+   "L0": 0.5969,
+   "ORACLE": 0.298
+  }
+ },
+ "sources": {
+  "LB1": {
+   "file": "LB1_V.jsonl",
+   "sha256": "ec4a0d7218d432f4c33a28a3eaa058c4d14ba7064f1eb7a9be0ada59feeb1a97",
+   "n_values": {
+    "DT_STATIC": 452,
+    "ORACLE": 452,
+    "DT_K": 452,
+    "DT": 452,
+    "DT_UNC": 452,
+    "DT_CAM": 452,
+    "L0": 452,
+    "DT_VOI": 452,
+    "DT_CAM_VOI_K": 452,
+    "DT_CAM_VOI": 452
+   }
+  },
+  "LB2": {
+   "file": "LB2_V.jsonl",
+   "sha256": "dce10a98ef16b3923e7e1e4024780afe68554bdbcb87314c3684a20552419c90",
+   "n_values": {
+    "DT": 451,
+    "DT_CAM": 451,
+    "ORACLE": 451,
+    "L0": 451,
+    "DT_VOI": 451,
+    "DT_CAM_VOI": 451
+   }
+  },
+  "LB3": {
+   "file": "LB3_V.jsonl",
+   "sha256": "6fad2ef27a5564d12ffc97eec0c5c3553cb83f78cb0a80179bbd3390ad3cc949",
+   "n_values": {
+    "DT": 442,
+    "DT_CAM": 442,
+    "ORACLE": 442,
+    "L0": 442,
+    "DT_VOI": 442,
+    "DT_CAM_VOI": 442
+   }
+  }
+ }
+}

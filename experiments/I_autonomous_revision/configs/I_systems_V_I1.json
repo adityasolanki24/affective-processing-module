@@ -1,0 +1,60 @@
+{
+ "systems": {
+  "A0": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M0",
+    "evidence": "all"
+   }
+  },
+  "G2b": {
+   "kind": "regulated",
+   "regulator": "ema",
+   "params": {
+    "tau": 0.621595,
+    "k": 0.449887,
+    "c": 0.017277
+   },
+   "lam_c": 3.946054,
+   "lam_s": 0.993398,
+   "memory": {
+    "model": "M1t",
+    "params": {
+     "tau_s": 356.352646
+    },
+    "evidence": "exposed",
+    "probe": {
+     "mode": "uncertainty",
+     "budget": 2,
+     "conf_max": 0.5
+    }
+   }
+  },
+  "R_sparse": {
+   "kind": "revising",
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_sparse_K2.json",
+   "lam": 0.0028062089933239896
+  },
+  "R_static": {
+   "kind": "revising",
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+   "lam": 0.0
+  },
+  "R_dense": {
+   "kind": "revising",
+   "type_model": "experiments/I_autonomous_revision/configs/types_T_dense.json",
+   "lam": 0.0028062089933239896
+  },
+  "Oracle": {
+   "kind": "oracle"
+  }
+ }
+}

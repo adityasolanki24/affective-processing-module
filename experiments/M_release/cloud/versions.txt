@@ -1,0 +1,4 @@
+name, driver_version
+NVIDIA L4, 580.178.04
+6.8.0-1070-gcp
+v2.3.2

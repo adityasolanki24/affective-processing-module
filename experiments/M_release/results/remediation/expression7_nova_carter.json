@@ -1,0 +1,166 @@
+{
+ "nova_carter": {
+  "learned": {
+   "pushy": {
+    "wariness": 0.822,
+    "uncertainty": 0.605,
+    "familiarity": 0.801,
+    "disturbance_p": 0.603,
+    "movement_p": 0.551,
+    "meetings": 4.85
+   },
+   "calm": {
+    "wariness": 0.553,
+    "uncertainty": 0.604,
+    "familiarity": 0.801,
+    "disturbance_p": 0.392,
+    "movement_p": 0.264,
+    "meetings": 4.85
+   }
+  },
+  "summary": {
+   "memory_after_pushy": {
+    "approach_speed_m_s": 0.193,
+    "approach_straightness": 0.968,
+    "encounter_s": 43.2,
+    "heading_sweep_rad": 0.0,
+    "observe_s": 3.5,
+    "retreat_m": 0.35,
+    "stop_gap_m": 0.182,
+    "turn_s": 10.91,
+    "falls": 0,
+    "n": 2
+   },
+   "neutral": {
+    "approach_speed_m_s": 0.197,
+    "approach_straightness": 1.0,
+    "encounter_s": 29.8,
+    "heading_sweep_rad": 0.0,
+    "observe_s": 0.5,
+    "retreat_m": 0.0,
+    "stop_gap_m": 0.228,
+    "turn_s": 7.51,
+    "falls": 0,
+    "n": 4
+   },
+   "memory_after_calm": {
+    "approach_speed_m_s": 0.195,
+    "approach_straightness": 0.996,
+    "encounter_s": 33.0,
+    "heading_sweep_rad": 0.057,
+    "observe_s": 1.87,
+    "retreat_m": 0.115,
+    "stop_gap_m": 0.236,
+    "turn_s": 8.32,
+    "falls": 0,
+    "n": 2
+   }
+  },
+  "matching": {
+   "memory_after_pushy": {
+    "approach_speed_diff_m_s": -0.004,
+    "stop_gap_diff_m": -0.046
+   },
+   "memory_after_calm": {
+    "approach_speed_diff_m_s": -0.002,
+    "stop_gap_diff_m": 0.008
+   }
+  },
+  "meetings": {
+   "memory_after_pushy": [
+    {
+     "observe_s": 3.5,
+     "fell": false,
+     "heading_sweep_rad": 0.0002999999999997449,
+     "approach_straightness": 0.968,
+     "approach_speed_m_s": 0.1931,
+     "stop_gap_m": 0.0944306246111287,
+     "retreat_m": 0.351,
+     "turn_s": 10.94,
+     "encounter_s": 43.2
+    },
+    {
+     "observe_s": 3.5,
+     "fell": false,
+     "heading_sweep_rad": 0.00019999999999997797,
+     "approach_straightness": 0.968,
+     "approach_speed_m_s": 0.1938,
+     "stop_gap_m": 0.27040346490310385,
+     "retreat_m": 0.35,
+     "turn_s": 10.88,
+     "encounter_s": 43.2
+    }
+   ],
+   "neutral": [
+    {
+     "observe_s": 0.5,
+     "fell": false,
+     "heading_sweep_rad": 9.999999999976694e-05,
+     "approach_straightness": 1.0,
+     "approach_speed_m_s": 0.1969,
+     "stop_gap_m": 0.09867436675668503,
+     "retreat_m": 0.0,
+     "turn_s": 9.58,
+     "encounter_s": 36.0
+    },
+    {
+     "observe_s": 0.5,
+     "fell": false,
+     "heading_sweep_rad": 0.0,
+     "approach_straightness": 1.0,
+     "approach_speed_m_s": 0.1969,
+     "stop_gap_m": 0.35701690559526844,
+     "retreat_m": 0.0,
+     "turn_s": 5.44,
+     "encounter_s": 23.6
+    },
+    {
+     "observe_s": 0.5,
+     "fell": false,
+     "heading_sweep_rad": 9.999999999976694e-05,
+     "approach_straightness": 1.0,
+     "approach_speed_m_s": 0.1969,
+     "stop_gap_m": 0.09867436675668503,
+     "retreat_m": 0.0,
+     "turn_s": 9.58,
+     "encounter_s": 36.0
+    },
+    {
+     "observe_s": 0.5,
+     "fell": false,
+     "heading_sweep_rad": 0.0,
+     "approach_straightness": 1.0,
+     "approach_speed_m_s": 0.1969,
+     "stop_gap_m": 0.35701690559526844,
+     "retreat_m": 0.0,
+     "turn_s": 5.44,
+     "encounter_s": 23.6
+    }
+   ],
+   "memory_after_calm": [
+    {
+     "observe_s": 2.12,
+     "fell": false,
+     "heading_sweep_rad": 0.040699999999999736,
+     "approach_straightness": 0.994,
+     "approach_speed_m_s": 0.196,
+     "stop_gap_m": 0.09773271015837079,
+     "retreat_m": 0.15,
+     "turn_s": 10.96,
+     "encounter_s": 40.2
+    },
+    {
+     "observe_s": 1.62,
+     "fell": false,
+     "heading_sweep_rad": 0.07379999999999987,
+     "approach_straightness": 0.998,
+     "approach_speed_m_s": 0.1943,
+     "stop_gap_m": 0.37519829595454246,
+     "retreat_m": 0.08,
+     "turn_s": 5.68,
+     "encounter_s": 25.8
+    }
+   ]
+  }
+ }
+}

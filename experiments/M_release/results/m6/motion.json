@@ -1,0 +1,50 @@
+{
+ "humanoid": {
+  "approaches": 5020,
+  "distinct_intents": 114,
+  "graded_proximity_share": 0.853386454183267,
+  "spearman_proximity_vs_final_distance": -0.806322539145644,
+  "spearman_tempo_vs_mean_speed": 0.6611980341614616,
+  "spearman_tempo_vs_arrival_time": -0.5850602866308345,
+  "spearman_hesitation_vs_pauses": 0.9901435443170462,
+  "final_distance_iqr": [
+   0.542,
+   0.643
+  ],
+  "mean_speed_iqr": [
+   0.1289,
+   0.1868
+  ]
+ },
+ "nerva_mujoco": {
+  "approaches": 3659,
+  "distinct_intents": 228,
+  "graded_proximity_share": 0.8767422793112872,
+  "spearman_proximity_vs_final_distance": -0.7506343400388403,
+  "spearman_tempo_vs_mean_speed": null,
+  "spearman_tempo_vs_arrival_time": -0.5667879532344448,
+  "spearman_hesitation_vs_pauses": null,
+  "final_distance_iqr": [
+   0.298,
+   0.402
+  ],
+  "mean_speed_iqr": null
+ },
+ "nova_carter": {
+  "approaches": 5283,
+  "distinct_intents": 345,
+  "graded_proximity_share": 0.8326708309672535,
+  "spearman_proximity_vs_final_distance": -0.7528844424085558,
+  "spearman_tempo_vs_mean_speed": 0.7007321626795102,
+  "spearman_tempo_vs_arrival_time": -0.7080035701292393,
+  "spearman_hesitation_vs_pauses": 0.8642050233232427,
+  "final_distance_iqr": [
+   0.508,
+   0.51
+  ],
+  "mean_speed_iqr": [
+   0.1403,
+   0.1969
+  ]
+ }
+}
