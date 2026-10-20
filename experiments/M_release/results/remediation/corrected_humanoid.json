@@ -1,0 +1,358 @@
+{
+ "lifetimes": 240,
+ "robots": {
+  "humanoid": {
+   "systems": {
+    "main/DT": {
+     "lifetimes": 30,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 16.830333333333336,
+     "cost_survived": 16.830333333333336,
+     "contacts_per_encounter": 0.30277777777777776,
+     "impulse_peak_max": 2.0867,
+     "success": 0.761111111111111,
+     "approaches": 19.233333333333334,
+     "vetoes": 0,
+     "physics_ejections": 0
+    },
+    "identity/DT": {
+     "lifetimes": 15,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 18.159388888888888,
+     "cost_survived": 18.159388888888888,
+     "contacts_per_encounter": 0.29444444444444445,
+     "impulse_peak_max": 2.2464,
+     "success": 0.625,
+     "approaches": 15.866666666666667,
+     "vetoes": 0,
+     "physics_ejections": 0
+    },
+    "main/FIXED": {
+     "lifetimes": 30,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 27.667694444444447,
+     "cost_survived": 27.667694444444447,
+     "contacts_per_encounter": 0.275,
+     "impulse_peak_max": 2.1944,
+     "success": 0.1416666666666667,
+     "approaches": 18.533333333333335,
+     "vetoes": 164,
+     "physics_ejections": 0
+    },
+    "main/LOOKUP": {
+     "lifetimes": 30,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 32.70594444444444,
+     "cost_survived": 32.70594444444444,
+     "contacts_per_encounter": 0.052777777777777785,
+     "impulse_peak_max": 1.7578,
+     "success": 0.0,
+     "approaches": 18.033333333333335,
+     "vetoes": 179,
+     "physics_ejections": 0
+    },
+    "main/MONOTONE": {
+     "lifetimes": 30,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 21.005444444444446,
+     "cost_survived": 21.005444444444446,
+     "contacts_per_encounter": 0.2222222222222222,
+     "impulse_peak_max": 2.1373,
+     "success": 0.32083333333333336,
+     "approaches": 19.233333333333334,
+     "vetoes": 143,
+     "physics_ejections": 0
+    },
+    "main/NEUTRAL": {
+     "lifetimes": 30,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 16.450777777777777,
+     "cost_survived": 16.450777777777777,
+     "contacts_per_encounter": 0.2694444444444445,
+     "impulse_peak_max": 2.0886,
+     "success": 0.7291666666666665,
+     "approaches": 17.7,
+     "vetoes": 189,
+     "physics_ejections": 0
+    },
+    "main/NOMEM": {
+     "lifetimes": 30,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 18.061333333333334,
+     "cost_survived": 18.061333333333334,
+     "contacts_per_encounter": 0.48749999999999993,
+     "impulse_peak_max": 2.1062,
+     "success": 0.9861111111111112,
+     "approaches": 24.0,
+     "vetoes": 0,
+     "physics_ejections": 0
+    },
+    "identity/POOLED": {
+     "lifetimes": 15,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 23.15555555555556,
+     "cost_survived": 23.15555555555556,
+     "contacts_per_encounter": 0.5777777777777777,
+     "impulse_peak_max": 1.9149,
+     "success": 0.6916666666666667,
+     "approaches": 17.266666666666666,
+     "vetoes": 0,
+     "physics_ejections": 0
+    },
+    "identity/SHUFFLED": {
+     "lifetimes": 15,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 25.365555555555556,
+     "cost_survived": 25.365555555555556,
+     "contacts_per_encounter": 0.7666666666666668,
+     "impulse_peak_max": 2.1481,
+     "success": 0.8416666666666667,
+     "approaches": 21.333333333333332,
+     "vetoes": 0,
+     "physics_ejections": 0
+    },
+    "identity/SWAPPED": {
+     "lifetimes": 15,
+     "fall_lifetimes": 0,
+     "complete_rate": 1.0,
+     "cost_planned": 22.925055555555552,
+     "cost_survived": 22.925055555555552,
+     "contacts_per_encounter": 0.5611111111111112,
+     "impulse_peak_max": 2.177,
+     "success": 0.6861111111111111,
+     "approaches": 17.866666666666667,
+     "vetoes": 0,
+     "physics_ejections": 0
+    }
+   },
+   "tests": {
+    "main/DT_vs_MONOTONE": {
+     "n_pairs": 30,
+     "mean_diff_DT_minus_other": -4.175111111111111,
+     "ci95": [
+      -5.239396527777775,
+      -3.18458125
+     ],
+     "p_one_sided": 0.0,
+     "cost_survived": {
+      "n_pairs": 30,
+      "mean_diff_DT_minus_other": -4.175111111111111,
+      "ci95": [
+       -5.239396527777775,
+       -3.1845812499999986
+      ],
+      "p_one_sided": 0.0
+     },
+     "falls": {
+      "DT": 0,
+      "other": 0,
+      "n": 30,
+      "p_DT_more_falls": 1.0
+     },
+     "holm_pass": true,
+     "better_overall": true
+    },
+    "main/DT_vs_FIXED": {
+     "n_pairs": 30,
+     "mean_diff_DT_minus_other": -10.837361111111111,
+     "ci95": [
+      -12.087894444444444,
+      -9.601245833333332
+     ],
+     "p_one_sided": 0.0,
+     "cost_survived": {
+      "n_pairs": 30,
+      "mean_diff_DT_minus_other": -10.837361111111111,
+      "ci95": [
+       -12.087894444444444,
+       -9.601245833333332
+      ],
+      "p_one_sided": 0.0
+     },
+     "falls": {
+      "DT": 0,
+      "other": 0,
+      "n": 30,
+      "p_DT_more_falls": 1.0
+     },
+     "holm_pass": true,
+     "better_overall": true
+    },
+    "main/DT_vs_NEUTRAL": {
+     "n_pairs": 30,
+     "mean_diff_DT_minus_other": 0.3795555555555553,
+     "ci95": [
+      -0.18861180555555557,
+      0.9773111111111104
+     ],
+     "p_one_sided": 0.8884,
+     "cost_survived": {
+      "n_pairs": 30,
+      "mean_diff_DT_minus_other": 0.379555555555556,
+      "ci95": [
+       -0.18861180555555515,
+       0.9773111111111116
+      ],
+      "p_one_sided": 0.8885
+     },
+     "falls": {
+      "DT": 0,
+      "other": 0,
+      "n": 30,
+      "p_DT_more_falls": 1.0
+     },
+     "holm_pass": false,
+     "better_overall": false
+    },
+    "main/DT_vs_LOOKUP": {
+     "n_pairs": 30,
+     "mean_diff_DT_minus_other": -15.875611111111109,
+     "ci95": [
+      -17.362619444444444,
+      -14.361474305555555
+     ],
+     "p_one_sided": 0.0,
+     "cost_survived": {
+      "n_pairs": 30,
+      "mean_diff_DT_minus_other": -15.875611111111109,
+      "ci95": [
+       -17.362619444444444,
+       -14.361474305555555
+      ],
+      "p_one_sided": 0.0
+     },
+     "falls": {
+      "DT": 0,
+      "other": 0,
+      "n": 30,
+      "p_DT_more_falls": 1.0
+     },
+     "holm_pass": true,
+     "better_overall": true
+    },
+    "main/DT_vs_NOMEM": {
+     "n_pairs": 30,
+     "mean_diff_DT_minus_other": -1.231,
+     "ci95": [
+      -2.4151895833333326,
+      -0.16830000000000056
+     ],
+     "p_one_sided": 0.0192,
+     "cost_survived": {
+      "n_pairs": 30,
+      "mean_diff_DT_minus_other": -1.2309999999999997,
+      "ci95": [
+       -2.415189583333333,
+       -0.1683000000000005
+      ],
+      "p_one_sided": 0.0192
+     },
+     "falls": {
+      "DT": 0,
+      "other": 0,
+      "n": 30,
+      "p_DT_more_falls": 1.0
+     },
+     "holm_pass": true,
+     "better_overall": true
+    }
+   },
+   "identity_tests": {
+    "identity/DT_vs_POOLED": {
+     "n_pairs": 15,
+     "mean_diff_DT_minus_other": -4.996166666666666,
+     "ci95": [
+      -7.658511111111112,
+      -2.3276083333333344
+     ],
+     "p_one_sided": 0.0022,
+     "b1_contacts": {
+      "n_pairs": 15,
+      "mean_diff_DT_minus_other": -0.7579410404410406,
+      "ci95": [
+       -1.2513280955155954,
+       -0.24406045574795587
+      ],
+      "p_one_sided": 0.0075
+     },
+     "calm_cost": {
+      "n_pairs": 15,
+      "mean_diff_DT_minus_other": -1.933152173752174,
+      "ci95": [
+       -3.6522061344211356,
+       -0.5022199933399933
+      ],
+      "p_one_sided": 0.0095
+     },
+     "holm_pass": true
+    },
+    "identity/DT_vs_SWAPPED": {
+     "n_pairs": 15,
+     "mean_diff_DT_minus_other": -4.765666666666667,
+     "ci95": [
+      -7.399068055555556,
+      -2.006880555555556
+     ],
+     "p_one_sided": 0.0036,
+     "b1_contacts": {
+      "n_pairs": 15,
+      "mean_diff_DT_minus_other": -0.6425069375069374,
+      "ci95": [
+       -1.0090527528027526,
+       -0.22150793650793654
+      ],
+      "p_one_sided": 0.006
+     },
+     "calm_cost": {
+      "n_pairs": 15,
+      "mean_diff_DT_minus_other": -1.4612246087246092,
+      "ci95": [
+       -2.2651248742923746,
+       -0.7013832181707199
+      ],
+      "p_one_sided": 0.0015
+     },
+     "holm_pass": true
+    },
+    "identity/DT_vs_SHUFFLED": {
+     "n_pairs": 15,
+     "mean_diff_DT_minus_other": -7.206166666666666,
+     "ci95": [
+      -9.852208333333333,
+      -4.313881944444444
+     ],
+     "p_one_sided": 0.0001,
+     "b1_contacts": {
+      "n_pairs": 15,
+      "mean_diff_DT_minus_other": -1.0393302993302993,
+      "ci95": [
+       -1.37941341991342,
+       -0.6585772005772006
+      ],
+      "p_one_sided": 0.0004
+     },
+     "calm_cost": {
+      "n_pairs": 15,
+      "mean_diff_DT_minus_other": -1.1732577903577905,
+      "ci95": [
+       -2.435116578606579,
+       0.1873597832722839
+      ],
+      "p_one_sided": 0.0573
+     },
+     "holm_pass": true
+    }
+   },
+   "identity_specific_supported": true
+  }
+ }
+}
